@@ -12,6 +12,7 @@ export default function SettingsPage() {
   const [error, setError] = useState<string | null>(null);
 
   const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [age, setAge] = useState("");
   const [occupation, setOccupation] = useState("");
   const [goals, setGoals] = useState<string[]>([]);
@@ -46,6 +47,7 @@ export default function SettingsPage() {
         const profile = profileRes.data;
         if (profile) {
           setName(profile.name ?? "");
+          setUsername(profile.username ?? "");
           setAge(profile.age?.toString() ?? "");
           setOccupation(profile.occupation ?? "");
           setGoals(profile.goals ?? []);
@@ -83,6 +85,7 @@ export default function SettingsPage() {
       const { error: profileErr } = await supabase.from("profiles").upsert({
         user_id: user.id,
         name,
+        username: username || null,
         age: age ? Number(age) : null,
         occupation: occupation || null,
         goals,
@@ -189,6 +192,18 @@ export default function SettingsPage() {
               onChange={(e) => setName(e.target.value)}
               className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-sm font-medium">Username</label>
+            <input
+              value={username}
+              onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))}
+              placeholder="yourname"
+              className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+            <p className="mt-1 text-xs text-muted-foreground">
+              Lowercase letters, numbers, and underscores only
+            </p>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>

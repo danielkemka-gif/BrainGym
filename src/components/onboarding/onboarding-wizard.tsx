@@ -20,6 +20,7 @@ export function OnboardingWizard() {
 
   const [basicInfo, setBasicInfo] = useState<BasicInfoData>({
     name: "",
+    username: "",
     age: 25,
     occupation: "",
   });

@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: "◉" },
@@ -20,6 +22,22 @@ const navItems = [
 
 export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   const pathname = usePathname();
+  const [profile, setProfile] = useState<{ name: string | null; username: string | null } | null>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return;
+      supabase
+        .from("profiles")
+        .select("name, username")
+        .eq("user_id", user.id)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data) setProfile(data);
+        });
+    });
+  }, []);
 
   return (
     <>
@@ -40,6 +58,15 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
             BrainGym
           </Link>
         </div>
+
+        {profile && (
+          <div className="border-b border-border px-4 py-3">
+            <p className="text-sm font-medium truncate">{profile.name || "User"}</p>
+            {profile.username && (
+              <p className="text-xs text-muted-foreground truncate">@{profile.username}</p>
+            )}
+          </div>
+        )}
 
         <nav className="flex-1 space-y-1 p-3">
           {navItems.map((item) => {

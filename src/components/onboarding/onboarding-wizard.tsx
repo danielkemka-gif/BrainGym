@@ -21,6 +21,7 @@ export function OnboardingWizard() {
   const [basicInfo, setBasicInfo] = useState<BasicInfoData>({
     name: "",
     username: "",
+    gender: "",
     age: 25,
     occupation: "",
   });
@@ -50,6 +51,7 @@ export function OnboardingWizard() {
       const { error: profileError } = await supabase.from("profiles").upsert({
         user_id: user.id,
         name: basicInfo.name,
+        avatar_url: basicInfo.avatar_url || null,
         age: basicInfo.age,
         occupation: basicInfo.occupation || null,
         goals: goalsSchedule.goals,

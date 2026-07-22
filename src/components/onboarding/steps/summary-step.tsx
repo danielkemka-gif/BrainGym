@@ -38,11 +38,20 @@ export function SummaryStep({
     <div className="space-y-6">
       <div className="rounded-lg border border-border bg-card p-4">
         <h3 className="mb-2 text-sm font-medium">About you</h3>
-        <div className="space-y-1 text-sm text-muted-foreground">
-          <p>
-            {basicInfo.name}, {basicInfo.age}
-            {basicInfo.occupation ? ` — ${basicInfo.occupation}` : ""}
-          </p>
+        <div className="flex items-center gap-4">
+          {basicInfo.avatar_url && (
+            <img
+              src={basicInfo.avatar_url}
+              alt="Avatar"
+              className="h-14 w-14 rounded-full object-cover"
+            />
+          )}
+          <div className="space-y-1 text-sm text-muted-foreground">
+            <p>
+              {basicInfo.name}, {basicInfo.gender ? `${basicInfo.gender}, ` : ""}{basicInfo.age}
+              {basicInfo.occupation ? ` — ${basicInfo.occupation}` : ""}
+            </p>
+          </div>
         </div>
       </div>
 

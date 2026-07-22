@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { generateUsernameSuggestions } from "@/lib/usernames";
+import { createClient } from "@/lib/supabase/client";
+import { Camera, X } from "lucide-react";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -13,6 +15,7 @@ const schema = z.object({
     .min(3, "Username must be at least 3 characters")
     .max(20, "Username must be at most 20 characters")
     .regex(/^[a-z0-9_]+$/, "Only lowercase letters, numbers, and underscores"),
+  gender: z.string().min(1, "Please select a gender"),
   age: z.coerce
     .number()
     .int()
@@ -21,7 +24,7 @@ const schema = z.object({
   occupation: z.string().optional(),
 });
 
-export type BasicInfoData = z.infer<typeof schema>;
+export type BasicInfoData = z.infer<typeof schema> & { avatar_url?: string };
 
 interface Props {
   defaultValues: BasicInfoData;
@@ -30,6 +33,11 @@ interface Props {
 
 export function BasicInfoStep({ defaultValues, onNext }: Props) {
   const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(
+    defaultValues.avatar_url ?? null
+  );
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
     register,
@@ -54,8 +62,92 @@ export function BasicInfoStep({ defaultValues, onNext }: Props) {
     refreshSuggestions();
   }, [refreshSuggestions]);
 
+  async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const ext = file.name.split(".").pop() ?? "jpg";
+      const path = `${user.id}/avatar.${ext}`;
+
+      const { error } = await supabase.storage
+        .from("avatars")
+        .upload(path, file, { upsert: true });
+
+      if (error) throw error;
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("avatars").getPublicUrl(path);
+
+      setAvatarUrl(publicUrl);
+    } catch (err) {
+      console.error("Avatar upload failed:", err);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  function handleRemoveAvatar() {
+    setAvatarUrl(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
+  function handleFormSubmit(data: BasicInfoData) {
+    onNext({ ...data, avatar_url: avatarUrl ?? undefined });
+  }
+
   return (
-    <form onSubmit={handleSubmit(onNext)} className="space-y-5">
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-5">
+      <div className="flex justify-center">
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-dashed border-border bg-muted transition-colors hover:border-primary/50 hover:bg-accent"
+          >
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt="Avatar"
+                className="h-full w-full rounded-full object-cover"
+              />
+            ) : uploading ? (
+              <span className="h-6 w-6 animate-spin rounded-full border-2 border-current border-t-transparent" />
+            ) : (
+              <Camera className="h-8 w-8 text-muted-foreground" />
+            )}
+          </button>
+          {avatarUrl && (
+            <button
+              type="button"
+              onClick={handleRemoveAvatar}
+              className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-destructive text-destructive-foreground"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleAvatarUpload}
+            className="hidden"
+          />
+        </div>
+      </div>
+      <p className="text-center text-xs text-muted-foreground">
+        Add a profile picture <span className="text-muted-foreground">(optional)</span>
+      </p>
+
       <div className="space-y-2">
         <label htmlFor="name" className="text-sm font-medium">
           Your name
@@ -105,6 +197,33 @@ export function BasicInfoStep({ defaultValues, onNext }: Props) {
               ↻ New ideas
             </button>
           </div>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Gender</label>
+        <div className="grid grid-cols-3 gap-2">
+          {["male", "female", "other"].map((g) => (
+            <label
+              key={g}
+              className={`flex cursor-pointer items-center justify-center rounded-lg border border-border px-3 py-2.5 text-sm transition-colors ${
+                watch("gender") === g
+                  ? "border-primary bg-primary/10 text-primary font-medium"
+                  : "bg-background text-muted-foreground hover:bg-accent"
+              }`}
+            >
+              <input
+                type="radio"
+                value={g}
+                {...register("gender")}
+                className="sr-only"
+              />
+              {g.charAt(0).toUpperCase() + g.slice(1)}
+            </label>
+          ))}
+        </div>
+        {errors.gender && (
+          <p className="text-xs text-destructive">{errors.gender.message}</p>
         )}
       </div>
 

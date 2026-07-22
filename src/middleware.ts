@@ -19,6 +19,12 @@ const dashboardPattern = /^\/dashboard(\/|$)/;
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Allow all API routes through without auth
+  if (pathname.startsWith("/api/")) {
+    return NextResponse.next();
+  }
+
   const { supabaseResponse, user } = await updateSession(request);
 
   if (user && authPaths.includes(pathname)) {

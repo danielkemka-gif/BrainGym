@@ -58,9 +58,16 @@ export default function ChallengePage() {
     supabase
       .from("activities")
       .select("id, title, description, instructions, tips, benefits, estimated_time, difficulty, xp, coins, category_id")
-      .eq("is_active", true)
-      .then(({ data }) => {
-        if (data && data.length > 0) setActivities(data as Activity[]);
+      .then(({ data, error }) => {
+        if (error) {
+          setError("Failed to load activities: " + error.message);
+          return;
+        }
+        if (data && data.length > 0) {
+          setActivities(data as Activity[]);
+        } else {
+          setError("No activities found in the database.");
+        }
       });
   }, []);
 
@@ -262,10 +269,10 @@ export default function ChallengePage() {
           <button
             onClick={startChallenge}
             disabled={activities.length === 0}
-            className="mt-8 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-red-600 px-6 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-all hover:shadow-xl hover:shadow-orange-500/30 disabled:pointer-events-none disabled:opacity-50"
+            className="mt-8 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-red-600 px-6 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-all hover:shadow-xl hover:shadow-orange-500/30 disabled:opacity-70"
           >
             <Zap className="h-4 w-4" />
-            Start Challenge
+            {activities.length === 0 ? "Loading activities..." : "Start Challenge"}
           </button>
         </div>
       </div>

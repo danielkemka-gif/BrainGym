@@ -66,6 +66,11 @@ export function BasicInfoStep({ defaultValues, onNext }: Props) {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image must be under 5MB");
+      return;
+    }
+
     setUploading(true);
     try {
       const supabase = createClient();
@@ -73,6 +78,8 @@ export function BasicInfoStep({ defaultValues, onNext }: Props) {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) return;
+
+      await fetch("/api/admin/setup-storage", { method: "POST" }).catch(() => {});
 
       const ext = file.name.split(".").pop() ?? "jpg";
       const path = `${user.id}/avatar.${ext}`;
@@ -88,8 +95,19 @@ export function BasicInfoStep({ defaultValues, onNext }: Props) {
       } = supabase.storage.from("avatars").getPublicUrl(path);
 
       setAvatarUrl(publicUrl);
-    } catch (err) {
-      console.error("Avatar upload failed:", err);
+    } catch {
+      // Fallback: store as base64 data URL in profile
+      try {
+        const reader = new FileReader();
+        const dataUrl = await new Promise<string>((resolve, reject) => {
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+        setAvatarUrl(dataUrl);
+      } catch {
+        console.error("Avatar upload failed completely");
+      }
     } finally {
       setUploading(false);
     }

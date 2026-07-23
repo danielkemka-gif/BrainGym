@@ -46,40 +46,80 @@ export function OnboardingWizard() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        setSubmitError("Please sign in again to continue.");
+        setSubmitting(false);
+        return;
+      }
 
-      const { error: profileError } = await supabase.from("profiles").upsert({
+      const profilePayload: Record<string, unknown> = {
         user_id: user.id,
         name: basicInfo.name,
-        avatar_url: basicInfo.avatar_url || null,
         age: basicInfo.age,
         occupation: basicInfo.occupation || null,
         goals: goalsSchedule.goals,
         challenges: goalsSchedule.challenges,
         preferred_workout_time: goalsSchedule.preferred_workout_time || null,
         onboarding_complete: true,
-      });
+      };
+
+      if (basicInfo.avatar_url) {
+        profilePayload.avatar_url = basicInfo.avatar_url;
+      }
+
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .upsert(profilePayload);
 
       if (profileError) throw profileError;
 
+      if (basicInfo.gender) {
+        await supabase.auth.updateUser({
+          data: { gender: basicInfo.gender, display_name: basicInfo.name },
+        }).catch(() => {});
+      }
+
       const scores = Object.entries(assessment.scores);
       if (scores.length > 0) {
-        const today = new Date().toISOString().split("T")[0];
-        const { error: scoresError } = await supabase.from("brain_scores").insert(
-          scores.map(([categorySlug, score]) => ({
-            user_id: user.id,
-            date: today,
-            category_id: categorySlug,
-            score,
-          }))
-        );
-        if (scoresError) throw scoresError;
+        try {
+          const { data: cats } = await supabase
+            .from("categories")
+            .select("id, slug");
+
+          if (cats && cats.length > 0) {
+            const slugToId: Record<string, string> = {};
+            for (const c of cats) {
+              slugToId[c.slug] = c.id;
+            }
+
+            const today = new Date().toISOString().split("T")[0];
+            const rows: { user_id: string; date: string; category_id: string; score: number }[] = [];
+
+            for (const [slug, score] of scores) {
+              const categoryId = slugToId[slug];
+              if (categoryId) {
+                rows.push({ user_id: user.id, date: today, category_id: categoryId, score });
+              }
+            }
+
+            if (rows.length > 0) {
+              await supabase.from("brain_scores").insert(rows);
+            }
+          }
+        } catch {
+          // Assessment scores are optional — don't block onboarding
+        }
       }
 
       router.push("/dashboard");
       router.refresh();
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Something went wrong");
+      const msg = err instanceof Error ? err.message : "";
+      if (msg.includes("profiles")) {
+        setSubmitError("Could not save your profile. Please try again.");
+      } else {
+        setSubmitError(msg || "Something went wrong. Please try again.");
+      }
     } finally {
       setSubmitting(false);
     }

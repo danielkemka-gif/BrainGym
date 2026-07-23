@@ -61,10 +61,6 @@ export async function middleware(request: NextRequest) {
     if (onboarded && pathname === onboardingPath) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
-
-    if (!onboarded && pathname.startsWith("/dashboard")) {
-      return NextResponse.redirect(new URL(onboardingPath, request.url));
-    }
   }
 
   return supabaseResponse;

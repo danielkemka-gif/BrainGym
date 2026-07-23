@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { generateUsernameSuggestions } from "@/lib/usernames";
-import { createClient } from "@/lib/supabase/client";
 import { Camera, X } from "lucide-react";
 
 const schema = z.object({
@@ -66,51 +65,47 @@ export function BasicInfoStep({ defaultValues, onNext }: Props) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
-      alert("Image must be under 5MB");
+    if (file.size > 10 * 1024 * 1024) {
+      alert("Image must be under 10MB");
       return;
     }
 
     setUploading(true);
     try {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
-
-      await fetch("/api/admin/setup-storage", { method: "POST" }).catch(() => {});
-
-      const ext = file.name.split(".").pop() ?? "jpg";
-      const path = `${user.id}/avatar.${ext}`;
-
-      const { error } = await supabase.storage
-        .from("avatars")
-        .upload(path, file, { upsert: true });
-
-      if (error) throw error;
-
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("avatars").getPublicUrl(path);
-
-      setAvatarUrl(publicUrl);
+      const dataUrl = await compressImage(file);
+      setAvatarUrl(dataUrl);
     } catch {
-      // Fallback: store as base64 data URL in profile
-      try {
-        const reader = new FileReader();
-        const dataUrl = await new Promise<string>((resolve, reject) => {
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-        setAvatarUrl(dataUrl);
-      } catch {
-        console.error("Avatar upload failed completely");
-      }
+      alert("Could not process image. Please try another.");
     } finally {
       setUploading(false);
     }
+  }
+
+  function compressImage(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const size = 200;
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) return reject(new Error("No canvas context"));
+
+          const minDim = Math.min(img.width, img.height);
+          const sx = (img.width - minDim) / 2;
+          const sy = (img.height - minDim) / 2;
+          ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
+          resolve(canvas.toDataURL("image/jpeg", 0.7));
+        };
+        img.onerror = reject;
+        img.src = reader.result as string;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
   }
 
   function handleRemoveAvatar() {

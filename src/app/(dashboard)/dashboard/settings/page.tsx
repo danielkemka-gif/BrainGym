@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { GOALS, CHALLENGES, WORKOUT_TIMES } from "@/lib/constants";
+import { Camera, X } from "lucide-react";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -29,6 +30,9 @@ export default function SettingsPage() {
   const [subPlan, setSubPlan] = useState<string>("free");
   const [subPeriodEnd, setSubPeriodEnd] = useState<string | null>(null);
   const [loadingPortal, setLoadingPortal] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
 
   const [loading, setLoading] = useState(true);
 
@@ -53,6 +57,7 @@ export default function SettingsPage() {
           setGoals(profile.goals ?? []);
           setChallenges(profile.challenges ?? []);
           setPreferredTime(profile.preferred_workout_time ?? "");
+          setAvatarUrl(profile.avatar_url ?? null);
         }
 
         const settings = settingsRes.data;
@@ -86,6 +91,7 @@ export default function SettingsPage() {
         user_id: user.id,
         name,
         username: username || null,
+        avatar_url: avatarUrl || null,
         age: age ? Number(age) : null,
         occupation: occupation || null,
         goals,
@@ -150,6 +156,51 @@ export default function SettingsPage() {
     router.push("/login");
   }
 
+  async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingAvatar(true);
+    try {
+      const dataUrl = await compressImage(file);
+      setAvatarUrl(dataUrl);
+    } catch {
+      alert("Could not process image. Please try another.");
+    } finally {
+      setUploadingAvatar(false);
+    }
+  }
+
+  function compressImage(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const size = 200;
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) return reject(new Error("No canvas context"));
+          const minDim = Math.min(img.width, img.height);
+          const sx = (img.width - minDim) / 2;
+          const sy = (img.height - minDim) / 2;
+          ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
+          resolve(canvas.toDataURL("image/jpeg", 0.7));
+        };
+        img.onerror = reject;
+        img.src = reader.result as string;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function handleRemoveAvatar() {
+    setAvatarUrl(null);
+    if (avatarInputRef.current) avatarInputRef.current.value = "";
+  }
+
   if (loading) {
     return (
       <div className="mx-auto max-w-2xl space-y-6">
@@ -177,6 +228,44 @@ export default function SettingsPage() {
       <section className="rounded-2xl border border-border bg-card p-6">
         <h2 className="mb-5 text-lg font-semibold">Profile</h2>
         <div className="space-y-4">
+          <div className="flex items-center gap-4">
+            <div className="relative shrink-0">
+              <button
+                type="button"
+                onClick={() => avatarInputRef.current?.click()}
+                disabled={uploadingAvatar}
+                className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-dashed border-border bg-muted transition-colors hover:border-primary/50 hover:bg-accent"
+              >
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Avatar" className="h-full w-full rounded-full object-cover" />
+                ) : uploadingAvatar ? (
+                  <span className="h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                ) : (
+                  <Camera className="h-6 w-6 text-muted-foreground" />
+                )}
+              </button>
+              {avatarUrl && (
+                <button
+                  type="button"
+                  onClick={handleRemoveAvatar}
+                  className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-destructive-foreground"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              )}
+              <input
+                ref={avatarInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarUpload}
+                className="hidden"
+              />
+            </div>
+            <div>
+              <p className="text-sm font-medium">Profile picture</p>
+              <p className="text-xs text-muted-foreground">JPG, PNG or GIF. Max 10MB.</p>
+            </div>
+          </div>
           <div>
             <label className="mb-1.5 block text-sm font-medium">Email</label>
             <input

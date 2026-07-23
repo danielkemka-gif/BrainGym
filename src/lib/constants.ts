@@ -22,11 +22,21 @@ export const CATEGORIES = [
 export const DIFFICULTIES = ["beginner", "intermediate", "advanced"] as const;
 
 export const LEVELS = [
-  { level: 1, title: "Bronze", xpRequired: 0 },
-  { level: 2, title: "Silver", xpRequired: 500 },
-  { level: 3, title: "Gold", xpRequired: 1500 },
-  { level: 4, title: "Diamond", xpRequired: 4000 },
-  { level: 5, title: "Mastermind", xpRequired: 10000 },
+  { level: 1, title: "Bronze", xpRequired: 0, premium: false },
+  { level: 2, title: "Silver", xpRequired: 500, premium: false },
+  { level: 3, title: "Gold", xpRequired: 1500, premium: false },
+  { level: 4, title: "Diamond", xpRequired: 4000, premium: false },
+  { level: 5, title: "Mastermind", xpRequired: 10000, premium: false },
+  { level: 6, title: "Grandmaster", xpRequired: 20000, premium: true },
+  { level: 7, title: "Champion", xpRequired: 35000, premium: true },
+  { level: 8, title: "Legend", xpRequired: 55000, premium: true },
+  { level: 9, title: "Mythic", xpRequired: 80000, premium: true },
+  { level: 10, title: "Transcendent", xpRequired: 120000, premium: true },
+  { level: 11, title: "Ascendant", xpRequired: 170000, premium: true },
+  { level: 12, title: "Cosmic", xpRequired: 230000, premium: true },
+  { level: 13, title: "Infinite", xpRequired: 300000, premium: true },
+  { level: 14, title: "Omniscient", xpRequired: 400000, premium: true },
+  { level: 15, title: "Brain God", xpRequired: 500000, premium: true },
 ] as const;
 
 export const XP = {

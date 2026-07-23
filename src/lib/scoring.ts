@@ -8,12 +8,15 @@ export function getLevel(totalXp: number) {
   return level;
 }
 
+export function getNextLevel(totalXp: number) {
+  const current = getLevel(totalXp);
+  const nextIndex = LEVELS.findIndex((l) => l.level === current.level) + 1;
+  return nextIndex < LEVELS.length ? LEVELS[nextIndex] : null;
+}
+
 export function getLevelProgress(totalXp: number) {
   const current = getLevel(totalXp);
-  const nextIndex = LEVELS.findIndex(
-    (l) => l.level === current.level
-  );
-  const next = LEVELS[nextIndex + 1];
+  const next = getNextLevel(totalXp);
 
   if (!next) return { level: current, progress: 1, xpInLevel: 0, xpForNext: 0 };
 

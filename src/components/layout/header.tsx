@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { Brain } from "lucide-react";
 
 const links = [
   { href: "/features", label: "Features" },
@@ -14,9 +13,11 @@ export function Header() {
     <header className="fixed top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-            <Brain className="h-5 w-5 text-primary-foreground" />
-          </div>
+          <img
+            src="/logo.png"
+            alt="BrainGym"
+            className="h-9 w-9 rounded-lg object-contain"
+          />
           <span className="text-lg font-bold tracking-tight">BrainGym</span>
         </Link>
 

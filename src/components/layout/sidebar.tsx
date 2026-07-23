@@ -16,6 +16,8 @@ const navItems = [
   { href: "/dashboard/leaderboard", label: "Leaderboard", icon: "☰" },
   { href: "/dashboard/missions", label: "Missions", icon: "★" },
   { href: "/dashboard/challenges", label: "Challenges", icon: "🏆" },
+  { href: "/dashboard/journal", label: "Journal", icon: "📓" },
+  { href: "/dashboard/share", label: "Share Card", icon: "📤" },
   { href: "/dashboard/decision-lab", label: "Decision Lab", icon: "⚖" },
   { href: "/dashboard/settings", label: "Settings", icon: "⚙" },
 ];
@@ -53,7 +55,12 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex h-14 items-center border-b border-border px-4">
+        <div className="flex h-14 items-center gap-2.5 border-b border-border px-4">
+          <img
+            src="/logo.png"
+            alt="BrainGym"
+            className="h-8 w-8 rounded-lg object-contain"
+          />
           <Link href="/dashboard" className="text-lg font-bold" onClick={onClose}>
             BrainGym
           </Link>

@@ -65,6 +65,14 @@ const MissionsSection = dynamic(
     )
 );
 
+const CentralCTA = dynamic(
+  () =>
+    import("@/components/dashboard/central-cta").then(
+      (m) => ({ default: m.CentralCTA })
+    ),
+  { ssr: false }
+);
+
 export default function DashboardPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-6">
@@ -86,6 +94,15 @@ export default function DashboardPage() {
       {/* Onboarding prompt — only shows for new users */}
       <Suspense fallback={null}>
         <OnboardingPrompt />
+      </Suspense>
+
+      {/* BIG central Start Training button */}
+      <Suspense
+        fallback={
+          <div className="h-44 animate-pulse rounded-2xl bg-muted" />
+        }
+      >
+        <CentralCTA />
       </Suspense>
 
       {/* Today's Workout + XP/Streak/Coins */}

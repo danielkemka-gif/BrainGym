@@ -4,10 +4,14 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { GOALS, CHALLENGES, WORKOUT_TIMES } from "@/lib/constants";
-import { Camera, X } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
+import { LOCALES, type Locale } from "@/lib/i18n/types";
+import { Avatar } from "@/components/ui/avatar";
+import { Camera, X, Globe } from "lucide-react";
 
 export default function SettingsPage() {
   const router = useRouter();
+  const { t, locale, setLocale: setI18nLocale } = useI18n();
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,6 +29,7 @@ export default function SettingsPage() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [reminderTime, setReminderTime] = useState("08:00");
   const [darkMode, setDarkMode] = useState(true);
+  const [localeSetting, setLocaleSetting] = useState<Locale>("en");
 
   const [subStatus, setSubStatus] = useState<string | null>(null);
   const [subPlan, setSubPlan] = useState<string>("free");
@@ -65,6 +70,9 @@ export default function SettingsPage() {
           setNotificationsEnabled(settings.notifications_enabled ?? true);
           setReminderTime(settings.workout_reminder_time?.slice(0, 5) ?? "08:00");
           setDarkMode(settings.dark_mode ?? true);
+          if (settings.locale && LOCALES.some((l) => l.id === settings.locale)) {
+            setLocaleSetting(settings.locale as Locale);
+          }
         }
 
         const sub = subRes.data;
@@ -105,10 +113,12 @@ export default function SettingsPage() {
         notifications_enabled: notificationsEnabled,
         workout_reminder_time: reminderTime,
         dark_mode: darkMode,
+        locale: localeSetting,
       });
       if (settingsErr) throw settingsErr;
 
       setSaved(true);
+      setI18nLocale(localeSetting);
       setTimeout(() => setSaved(false), 3000);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save settings");
@@ -410,6 +420,33 @@ export default function SettingsPage() {
               />
             </div>
           )}
+        </div>
+      </section>
+
+      {/* Language */}
+      <section className="rounded-2xl border border-border bg-card p-6">
+        <div className="flex items-center gap-2 mb-5">
+          <Globe className="h-5 w-5 text-muted-foreground" />
+          <h2 className="text-lg font-semibold">{t.settings_language}</h2>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          {LOCALES.map((loc) => (
+            <button
+              key={loc.id}
+              onClick={() => setLocaleSetting(loc.id)}
+              className={`flex items-center gap-3 rounded-xl border p-4 transition-all ${
+                localeSetting === loc.id
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "border-border hover:border-muted-foreground/30"
+              }`}
+            >
+              <span className="text-2xl">{loc.flag}</span>
+              <div className="text-left">
+                <p className="text-sm font-medium">{loc.nativeLabel}</p>
+                <p className="text-xs text-muted-foreground">{loc.label}</p>
+              </div>
+            </button>
+          ))}
         </div>
       </section>
 

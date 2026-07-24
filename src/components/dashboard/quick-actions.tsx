@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { CATEGORIES } from "@/lib/constants";
+import { useI18n } from "@/lib/i18n";
 import { ArrowRight } from "lucide-react";
 
 const CATEGORY_GRADIENTS: Record<string, string> = {
@@ -24,26 +25,38 @@ const CATEGORY_EMOJIS: Record<string, string> = {
   "emotional-intelligence": "🤝",
 };
 
-const CATEGORY_SLOGANS: Record<string, string> = {
-  memory: "Boost your recall power",
-  focus: "Sharpen concentration",
-  thinking: "Think clearer & faster",
-  learning: "Absorb knowledge quickly",
-  health: "Nurture your mind",
-  creativity: "Unlock imagination",
-  "emotional-intelligence": "Master your emotions",
-};
-
 export function QuickActions() {
+  const { t } = useI18n();
+
+  const CATEGORY_SLOGANS: Record<string, string> = {
+    memory: t.cat_memory_desc,
+    focus: t.cat_focus_desc,
+    thinking: t.cat_thinking_desc,
+    learning: t.cat_learning_desc,
+    health: t.cat_health_desc,
+    creativity: t.cat_creativity_desc,
+    "emotional-intelligence": t.cat_ei_desc,
+  };
+
+  const CATEGORY_LABELS: Record<string, string> = {
+    memory: t.cat_memory,
+    focus: t.cat_focus,
+    thinking: t.cat_thinking,
+    learning: t.cat_learning,
+    health: t.cat_health,
+    creativity: t.cat_creativity,
+    "emotional-intelligence": t.cat_ei,
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-semibold">Brain Training</h2>
+        <h2 className="font-semibold">{t.dashboard_brain_training}</h2>
         <Link
           href="/dashboard/library"
           className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
         >
-          View all <ArrowRight className="h-3 w-3" />
+          {t.dashboard_view_all} <ArrowRight className="h-3 w-3" />
         </Link>
       </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
@@ -58,7 +71,7 @@ export function QuickActions() {
             >
               <span className="text-xl">{CATEGORY_EMOJIS[cat.id]}</span>
             </div>
-            <p className="text-sm font-semibold">{cat.label}</p>
+            <p className="text-sm font-semibold">{CATEGORY_LABELS[cat.id]}</p>
             <p className="mt-0.5 text-xs text-muted-foreground">
               {CATEGORY_SLOGANS[cat.id]}
             </p>

@@ -4,27 +4,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-
-const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: "◉" },
-  { href: "/dashboard/library", label: "Activities", icon: "⊞" },
-  { href: "/dashboard/challenge", label: "Quick-Fire", icon: "⚡" },
-  { href: "/dashboard/coach", label: "AI Coach", icon: "🧠" },
-  { href: "/dashboard/progress", label: "Progress", icon: "▤" },
-  { href: "/dashboard/reports", label: "Reports", icon: "📊" },
-  { href: "/dashboard/history", label: "History", icon: "⏱" },
-  { href: "/dashboard/leaderboard", label: "Leaderboard", icon: "☰" },
-  { href: "/dashboard/missions", label: "Missions", icon: "★" },
-  { href: "/dashboard/challenges", label: "Challenges", icon: "🏆" },
-  { href: "/dashboard/journal", label: "Journal", icon: "📓" },
-  { href: "/dashboard/share", label: "Share Card", icon: "📤" },
-  { href: "/dashboard/decision-lab", label: "Decision Lab", icon: "⚖" },
-  { href: "/dashboard/settings", label: "Settings", icon: "⚙" },
-];
+import { useI18n } from "@/lib/i18n";
+import { LOCALES, type Locale } from "@/lib/i18n/types";
+import { Avatar } from "@/components/ui/avatar";
+import { Globe } from "lucide-react";
 
 export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   const pathname = usePathname();
-  const [profile, setProfile] = useState<{ name: string | null; username: string | null } | null>(null);
+  const { t, locale, setLocale } = useI18n();
+  const [profile, setProfile] = useState<{ name: string | null; username: string | null; avatar_url: string | null } | null>(null);
+  const [showLang, setShowLang] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -32,7 +21,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
       if (!user) return;
       supabase
         .from("profiles")
-        .select("name, username")
+        .select("name, username, avatar_url")
         .eq("user_id", user.id)
         .maybeSingle()
         .then(({ data }) => {
@@ -40,6 +29,23 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
         });
     });
   }, []);
+
+  const navItems = [
+    { href: "/dashboard", label: t.nav_dashboard, icon: "◉" },
+    { href: "/dashboard/library", label: t.nav_activities, icon: "⊞" },
+    { href: "/dashboard/challenge", label: t.nav_quick_fire, icon: "⚡" },
+    { href: "/dashboard/coach", label: t.nav_ai_coach, icon: "🧠" },
+    { href: "/dashboard/progress", label: t.nav_progress, icon: "▤" },
+    { href: "/dashboard/reports", label: t.nav_reports, icon: "📊" },
+    { href: "/dashboard/history", label: t.nav_history, icon: "⏱" },
+    { href: "/dashboard/leaderboard", label: t.nav_leaderboard, icon: "☰" },
+    { href: "/dashboard/missions", label: t.nav_missions, icon: "★" },
+    { href: "/dashboard/challenges", label: t.nav_challenges, icon: "🏆" },
+    { href: "/dashboard/journal", label: t.nav_journal, icon: "📓" },
+    { href: "/dashboard/share", label: t.nav_share_card, icon: "📤" },
+    { href: "/dashboard/decision-lab", label: t.nav_decision_lab, icon: "⚖" },
+    { href: "/dashboard/settings", label: t.nav_settings, icon: "⚙" },
+  ];
 
   return (
     <>
@@ -67,15 +73,18 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
         </div>
 
         {profile && (
-          <div className="border-b border-border px-4 py-3">
-            <p className="text-sm font-medium truncate">{profile.name || "User"}</p>
-            {profile.username && (
-              <p className="text-xs text-muted-foreground truncate">@{profile.username}</p>
-            )}
+          <div className="flex items-center gap-3 border-b border-border px-4 py-3">
+            <Avatar src={profile.avatar_url} name={profile.name || ""} size="sm" />
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium truncate">{profile.name || "User"}</p>
+              {profile.username && (
+                <p className="text-xs text-muted-foreground truncate">@{profile.username}</p>
+              )}
+            </div>
           </div>
         )}
 
-        <nav className="flex-1 space-y-1 p-3">
+        <nav className="flex-1 space-y-1 p-3 overflow-y-auto">
           {navItems.map((item) => {
             const active = pathname === item.href;
             return (
@@ -96,9 +105,41 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
           })}
         </nav>
 
-        <div className="border-t border-border p-4">
+        {/* Language switcher */}
+        <div className="relative border-t border-border p-3">
+          <button
+            onClick={() => setShowLang(!showLang)}
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+          >
+            <Globe className="h-4 w-4" />
+            <span>{LOCALES.find((l) => l.id === locale)?.nativeLabel ?? "English"}</span>
+          </button>
+          {showLang && (
+            <div className="absolute bottom-full left-3 right-3 mb-1 rounded-xl border border-border bg-card p-1.5 shadow-lg z-50">
+              {LOCALES.map((loc) => (
+                <button
+                  key={loc.id}
+                  onClick={() => {
+                    setLocale(loc.id);
+                    setShowLang(false);
+                  }}
+                  className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${
+                    locale === loc.id
+                      ? "bg-primary/10 text-primary font-medium"
+                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  }`}
+                >
+                  <span className="text-base">{loc.flag}</span>
+                  <span>{loc.nativeLabel}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="border-t border-border px-4 py-3">
           <p className="text-xs text-muted-foreground">
-            Train Your Brain For Real Life
+            {t.nav_tagline}
           </p>
         </div>
       </aside>

@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { Clock, Sparkles } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
+import { Sparkles } from "lucide-react";
 
 interface TrialInfo {
   status: string;
@@ -17,6 +18,7 @@ function getDaysRemaining(periodEnd: string): number {
 }
 
 export function TrialBanner() {
+  const { t } = useI18n();
   const [trial, setTrial] = useState<TrialInfo | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -53,10 +55,10 @@ export function TrialBanner() {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold">
-            Free Trial Active
+            {t.premium_trial_active}
           </p>
           <p className="text-xs text-muted-foreground">
-            You have <strong className="text-primary">{daysRemaining} {daysRemaining === 1 ? "day" : "days"}</strong> of premium access remaining
+            {daysRemaining} {t.general_days} {t.premium_trial_days}
           </p>
         </div>
         <a

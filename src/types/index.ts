@@ -168,6 +168,7 @@ export type UserSettings = {
   dark_mode: boolean;
   notifications_enabled: boolean;
   workout_reminder_time: string | null;
+  locale: string;
 };
 
 export type Profile = {

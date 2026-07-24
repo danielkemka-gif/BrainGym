@@ -5,6 +5,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { pickDailyActivities, calculateWorkoutXp, calculateWorkoutCoins } from "@/lib/workout";
 import { calculateStreakMultiplier } from "@/lib/scoring";
+import { useI18n } from "@/lib/i18n";
 import { AchievementNotification } from "@/components/achievements/achievement-notification";
 import type { AchievementId } from "@/components/achievements/achievements-grid";
 
@@ -33,6 +34,7 @@ interface DailyWorkout {
 }
 
 export function TodaysWorkoutSection() {
+  const { t } = useI18n();
   const [workout, setWorkout] = useState<DailyWorkout | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -72,7 +74,7 @@ export function TodaysWorkoutSection() {
         .eq("is_active", true);
 
       if (!pool || pool.length === 0) {
-        setError("No activities available. Check back later.");
+        setError(t.dashboard_no_activities);
         setLoading(false);
         return;
       }
@@ -319,13 +321,13 @@ export function TodaysWorkoutSection() {
         <span className="text-4xl">🏋️</span>
         <h2 className="mt-3 text-xl font-bold">Today&apos;s Workout</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          {itemCount} activities · ~{totalTime}s total
+          {itemCount} {t.general_of} {totalTime}s
         </p>
         <button
           onClick={startWorkout}
           className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-xl bg-primary px-6 text-sm font-medium text-primary-foreground hover:bg-primary/90"
         >
-          Start Workout
+          {t.dashboard_start_training}
         </button>
       </div>
     );
@@ -444,7 +446,7 @@ export function TodaysWorkoutSection() {
             {completing ? (
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
             ) : allDone ? (
-              "Complete Workout"
+              t.dashboard_complete_workout
             ) : (
               `${doneCount}/${workout.workout_items.length} done`
             )}

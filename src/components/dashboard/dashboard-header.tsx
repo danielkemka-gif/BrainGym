@@ -1,33 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { getLevelProgress } from "@/lib/scoring";
-import { CATEGORIES } from "@/lib/constants";
-import { Zap, Brain, Trophy, Sparkles } from "lucide-react";
-
-const CATEGORY_GRADIENTS: Record<string, string> = {
-  memory: "from-indigo-500 to-violet-600",
-  focus: "from-amber-400 to-orange-500",
-  thinking: "from-emerald-400 to-teal-600",
-  learning: "from-sky-400 to-blue-600",
-  health: "from-rose-400 to-red-500",
-  creativity: "from-pink-400 to-fuchsia-600",
-  "emotional-intelligence": "from-violet-400 to-purple-600",
-};
-
-const CATEGORY_ICONS: Record<string, React.ReactNode> = {
-  memory: <Brain className="h-6 w-6" />,
-  focus: <Zap className="h-6 w-6" />,
-  thinking: <Sparkles className="h-6 w-6" />,
-  learning: <Brain className="h-6 w-6" />,
-  health: <Sparkles className="h-6 w-6" />,
-  creativity: <Sparkles className="h-6 w-6" />,
-  "emotional-intelligence": <Trophy className="h-6 w-6" />,
-};
+import { useI18n } from "@/lib/i18n";
+import { Avatar } from "@/components/ui/avatar";
+import { Trophy } from "lucide-react";
 
 export function DashboardHeader() {
+  const { t } = useI18n();
   const [userName, setUserName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [totalXp, setTotalXp] = useState(0);
@@ -80,23 +61,13 @@ export function DashboardHeader() {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
-        {avatarUrl ? (
-          <img
-            src={avatarUrl}
-            alt={userName}
-            className="h-12 w-12 rounded-full object-cover ring-2 ring-primary/30"
-          />
-        ) : (
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary to-purple-600 text-lg font-bold text-white">
-            {userName ? userName.charAt(0).toUpperCase() : "?"}
-          </div>
-        )}
+        <Avatar src={avatarUrl} name={userName} size="lg" level={level.level} />
         <div>
           <h1 className="text-xl font-bold">
-            Hey {userName}! 👋
+            {t.dashboard_greeting} {userName}! 👋
           </h1>
           <p className="text-sm text-muted-foreground">
-            Let&apos;s train your brain today
+            {t.dashboard_subtitle}
           </p>
         </div>
       </div>
@@ -104,11 +75,11 @@ export function DashboardHeader() {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1.5">
             <span className="text-sm font-bold text-primary">{coins}</span>
-            <span className="text-xs text-muted-foreground">coins</span>
+            <span className="text-xs text-muted-foreground">{t.dashboard_coins}</span>
           </div>
           <div className="flex items-center gap-1.5 rounded-full bg-violet-500/10 px-3 py-1.5">
             <Trophy className="h-3.5 w-3.5 text-violet-400" />
-            <span className="text-sm font-bold text-violet-400">Lvl {level.level}</span>
+            <span className="text-sm font-bold text-violet-400">{t.dashboard_level} {level.level}</span>
           </div>
         </div>
       )}

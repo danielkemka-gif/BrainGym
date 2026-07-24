@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { PLANS } from "@/lib/paystack/plans";
-import { Clock } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 interface Props {
   children: React.ReactNode;
@@ -18,6 +18,7 @@ function getDaysRemaining(periodEnd: string): number {
 }
 
 export function PremiumGate({ children, feature }: Props) {
+  const { t } = useI18n();
   const [loading, setLoading] = useState(true);
   const [subscribed, setSubscribed] = useState(false);
   const [trialEnd, setTrialEnd] = useState<string | null>(null);
@@ -78,7 +79,7 @@ export function PremiumGate({ children, feature }: Props) {
         <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
           <span className="text-2xl">⭐</span>
         </div>
-        <h2 className="mb-2 text-xl font-bold">Premium Feature</h2>
+        <h2 className="mb-2 text-xl font-bold">{t.premium_title}</h2>
         <p className="mb-1 text-sm text-muted-foreground">
           {feature} is available exclusively to Premium members.
         </p>
@@ -105,7 +106,7 @@ export function PremiumGate({ children, feature }: Props) {
           disabled={checking}
           className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-primary px-6 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50"
         >
-          {checking ? "Redirecting..." : "Upgrade to Premium"}
+          {checking ? "Redirecting..." : t.premium_upgrade}
         </button>
 
         <p className="mt-3 text-xs text-muted-foreground">

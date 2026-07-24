@@ -41,6 +41,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
     { href: "/dashboard/leaderboard", label: t.nav_leaderboard, icon: "☰" },
     { href: "/dashboard/missions", label: t.nav_missions, icon: "★" },
     { href: "/dashboard/challenges", label: t.nav_challenges, icon: "🏆" },
+    { href: "/dashboard/chat", label: t.nav_chat, icon: "💬" },
     { href: "/dashboard/journal", label: t.nav_journal, icon: "📓" },
     { href: "/dashboard/share", label: t.nav_share_card, icon: "📤" },
     { href: "/dashboard/decision-lab", label: t.nav_decision_lab, icon: "⚖" },

@@ -16,6 +16,7 @@ export const pcm: TranslationKeys = {
   nav_share_card: "Share Card",
   nav_decision_lab: "Decision Lab",
   nav_settings: "Setting",
+  nav_chat: "Chat",
   nav_tagline: "Train Your Brain For Real Life",
 
   // Dashboard
@@ -102,6 +103,22 @@ export const pcm: TranslationKeys = {
   premium_upgrade: "Upgrade to Premium",
   premium_trial_active: "Free Trial Don Start",
   premium_trial_days: "days of premium access remain",
+
+  // Chat
+  chat_title: "Community Chat",
+  chat_subtitle: "Connect with other brain trainers",
+  chat_placeholder: "Write message...",
+  chat_send: "Send",
+  chat_empty: "No messages yet. Start the conversation!",
+  chat_online: "dey online",
+  chat_typing: "dey type...",
+  chat_delete: "Delete",
+  chat_reply: "Reply",
+  chat_premium_note: "Real-time chat na Premium feature",
+  chat_members: "members",
+  chat_just_now: "just now",
+  chat_minutes_ago: "m ago",
+  chat_hours_ago: "h ago",
 
   // General
   general_continue: "Continue",

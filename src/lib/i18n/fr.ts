@@ -16,6 +16,7 @@ export const fr: TranslationKeys = {
   nav_share_card: "Carte de Partage",
   nav_decision_lab: "Labo de Décision",
   nav_settings: "Paramètres",
+  nav_chat: "Chat",
   nav_tagline: "Entraîne ton cerveau pour la vraie vie",
 
   // Dashboard
@@ -102,6 +103,22 @@ export const fr: TranslationKeys = {
   premium_upgrade: "Passer à Premium",
   premium_trial_active: "Essai gratuit actif",
   premium_trial_days: "jours d'accès premium restants",
+
+  // Chat
+  chat_title: "Chat Communautaire",
+  chat_subtitle: "Connectez-vous avec d'autres entraîneurs cérébraux",
+  chat_placeholder: "Écrivez un message...",
+  chat_send: "Envoyer",
+  chat_empty: "Pas encore de messages. Lancez la conversation!",
+  chat_online: "en ligne",
+  chat_typing: "écrit...",
+  chat_delete: "Supprimer",
+  chat_reply: "Répondre",
+  chat_premium_note: "Le chat en temps réel est une fonctionnalité Premium",
+  chat_members: "membres",
+  chat_just_now: "à l'instant",
+  chat_minutes_ago: "m",
+  chat_hours_ago: "h",
 
   // General
   general_continue: "Continuer",

@@ -3,11 +3,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { BRAIN_QUESTIONS, type BrainQuestion } from "@/lib/brain-questions";
+import { getBrainQuestions, QUIZ_LANGUAGES, type BrainQuestion, type BrainQuestionLocale } from "@/lib/brain-questions";
 import { CATEGORIES, QUICK_FIRE_DURATIONS } from "@/lib/constants";
 import {
   ArrowLeft, Clock, Zap, Trophy, Coins, RotateCcw,
-  CheckCircle2, XCircle, Flame, Send, Lightbulb, Star, Target
+  CheckCircle2, XCircle, Flame, Send, Lightbulb, Star, Target, Globe
 } from "lucide-react";
 
 const CAT_EMOJI: Record<string, string> = {
@@ -15,25 +15,118 @@ const CAT_EMOJI: Record<string, string> = {
   health: "❤️", creativity: "🎨", "emotional-intelligence": "🤝",
 };
 
-const CORRECT_REACTIONS = [
-  "Sharp! You too sabi! 🎯",
-  "Oga, your brain no dey play! 💪",
-  "Chop knuckle! You don get am! ✊",
-  "Na you be the real Oga! 👑",
-  "Your brain dey fire on all cylinders! 🔥",
-  "Wahala! You too correct! ⚡",
-  "No wahala at all! You sabi! ✅",
-  "E choke! You nail am! 🎯",
-];
+const REACTIONS: Record<string, { correct: string[]; wrong: string[] }> = {
+  pcm: {
+    correct: [
+      "Sharp! You too sabi! 🎯",
+      "Oga, your brain no dey play! 💪",
+      "Chop knuckle! You don get am! ✊",
+      "Na you be the real Oga! 👑",
+      "Your brain dey fire on all cylinders! 🔥",
+      "Wahala! You too correct! ⚡",
+      "No wahala at all! You sabi! ✅",
+      "E choke! You nail am! 🎯",
+    ],
+    wrong: [
+      "No wahala, you go get the next one! 💪",
+      "E no go always easy — that na how we learn! 📚",
+      "No give up! Your brain dey grow with every question! 🧠",
+      "Hmmm, e happen! Try the next one! 🎯",
+      "Learning na the real win! Keep going! 🔥",
+      "Every mistake na step to being better! 💡",
+    ],
+  },
+  en: {
+    correct: [
+      "Sharp mind! Well done! 🎯",
+      "Your brain is absolutely on fire! 💪",
+      "Brilliant! You nailed it! ✊",
+      "Top-notch performance! 👑",
+      "Your neurons are firing perfectly! 🔥",
+      "Incredible! You're on a roll! ⚡",
+      "Perfect score! Keep it up! ✅",
+      "Absolutely smashing it! 🎯",
+    ],
+    wrong: [
+      "No worries, you'll get the next one! 💪",
+      "It's not always easy — that's how we learn! 📚",
+      "Don't give up! Your brain grows with every question! 🧠",
+      "Tricky one! Try the next! 🎯",
+      "Learning is the real win! Keep going! 🔥",
+      "Every mistake is a step towards mastery! 💡",
+    ],
+  },
+  "en-us": {
+    correct: [
+      "Nailed it! Sharp thinking! 🎯",
+      "Your brain is on another level! 💪",
+      "That was awesome! Great job! ✊",
+      "You're crushing it! Keep going! 👑",
+      "Lightning fast brain! 🔥",
+      "Unstoppable! You're on fire! ⚡",
+      "Perfect! You're a natural! ✅",
+      "Smashed it! Way to go! 🎯",
+    ],
+    wrong: [
+      "No sweat, you got the next one! 💪",
+      "It's tough sometimes — that's how you grow! 📚",
+      "Don't quit! Every question makes you smarter! 🧠",
+      "That was tricky! Try the next one! 🎯",
+      "Learning is the real victory! Keep at it! 🔥",
+      "Every miss is a lesson! You'll get it! 💡",
+    ],
+  },
+  fr: {
+    correct: [
+      "Brillant! Bien joué! 🎯",
+      "Votre cerveau est en feu! 💪",
+      "Magnifique! Vous y êtes! ✊",
+      "Performance exceptionnelle! 👑",
+      "Vos neurones fonctionnent parfaitement! 🔥",
+      "Incroyable! Vous êtes en pleine forme! ⚡",
+      "Score parfait! Continuez! ✅",
+      "Fantastique! Vous dominiez! 🎯",
+    ],
+    wrong: [
+      "Pas de souci, vous aurez la prochaine! 💪",
+      "Ce n'est pas toujours facile — c'est comme ça qu'on apprend! 📚",
+      "N'abandondez pas! Votre cerveau grandit à chaque question! 🧠",
+      "Difficile! Essayez la suivante! 🎯",
+      "Apprendre est la vraie victoire! Continuez! 🔥",
+      "Chaque erreur est un pas vers la maîtrise! 💡",
+    ],
+  },
+  pt: {
+    correct: [
+      "Esperto! Muito bem! 🎯",
+      "Seu cérebro está pegando fogo! 💪",
+      "Sensacional! Você acertou! ✊",
+      "Desempenho incrível! 👑",
+      "Seus neurônios estão funcionando perfeitamente! 🔥",
+      "Incrível! Você está arrasando! ⚡",
+      "Pontuação perfeita! Continue assim! ✅",
+      "Demais! Você está dominando! 🎯",
+    ],
+    wrong: [
+      "Sem problema, você acerta a próxima! 💪",
+      "Não é sempre fácil — é assim que aprendemos! 📚",
+      "Desista! Seu cérebro cresce a cada questão! 🧠",
+      "Difícil! Tente a próxima! 🎯",
+      "Aprender é a verdadeira vitória! Continue! 🔥",
+      "Cada erro é um passo para a maestria! 💡",
+    ],
+  },
+};
 
-const WRONG_REACTIONS = [
-  "No wahala, you go get the next one! 💪",
-  "E no go always easy — that na how we learn! 📚",
-  "No give up! Your brain dey grow with every question! 🧠",
-  "Hmmm, e happen! Try the next one! 🎯",
-  "Learning na the real win! Keep going! 🔥",
-  "Every mistake na step to being better! 💡",
-];
+function getCorrectReaction(lang: string): string {
+  const reactions = REACTIONS[lang]?.correct || REACTIONS.en.correct;
+  return reactions[Math.floor(Math.random() * reactions.length)];
+}
+
+function getWrongReaction(lang: string): string {
+  const reactions = REACTIONS[lang]?.wrong || REACTIONS.en.wrong;
+  return reactions[Math.floor(Math.random() * reactions.length)];
+}
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -49,6 +142,7 @@ type AnswerState = "unanswered" | "correct" | "wrong";
 
 export default function ChallengePage() {
   const [duration, setDuration] = useState(60);
+  const [quizLang, setQuizLang] = useState<BrainQuestionLocale>("en");
   const [phase, setPhase] = useState<Phase>("setup");
   const [countdownValue, setCountdownValue] = useState(3);
 
@@ -80,10 +174,11 @@ export default function ChallengePage() {
 
   // Pick questions on start
   const pickQuestions = useCallback(() => {
-    const shuffled = shuffle(BRAIN_QUESTIONS);
+    const allQuestions = getBrainQuestions(quizLang);
+    const shuffled = shuffle(allQuestions);
     const maxQ = duration <= 30 ? 8 : duration <= 60 ? 12 : 16;
     return shuffled.slice(0, Math.min(maxQ, shuffled.length));
-  }, [duration]);
+  }, [duration, quizLang]);
 
   // Start challenge
   const startChallenge = useCallback(() => {
@@ -227,16 +322,49 @@ export default function ChallengePage() {
 
           <div className="mt-6 rounded-xl border border-border bg-background p-4 text-left">
             <h3 className="mb-3 text-sm font-semibold flex items-center gap-2">
-              <Lightbulb className="h-4 w-4 text-yellow-500" /> How e dey work
+              <Lightbulb className="h-4 w-4 text-yellow-500" /> {quizLang === "pcm" ? "How e dey work" : quizLang === "fr" ? "Comment ça marche" : quizLang === "pt" ? "Como funciona" : quizLang === "en-us" ? "How it works" : "How it works"}
             </h3>
             <div className="space-y-3">
-              {[
-                "Pick your time — 30s (quick blast), 60s (sweet spot), or 90s (full brain workout)",
-                "Each question get multiple choice OR type-your-answer mode",
-                "Answer correct = XP + coins. Fast answer = MORE bonus!",
-                "Get consecutive answers correct = Streak combo = DOUBLE bonus! 🔥",
-                "If you no know, use the hint — but e go reduce your XP small",
-              ].map((text, i) => (
+              {(quizLang === "pcm"
+                ? [
+                    "Pick your time — 30s (quick blast), 60s (sweet spot), or 90s (full brain workout)",
+                    "Each question get multiple choice OR type-your-answer mode",
+                    "Answer correct = XP + coins. Fast answer = MORE bonus!",
+                    "Get consecutive answers correct = Streak combo = DOUBLE bonus! 🔥",
+                    "If you no know, use the hint — but e go reduce your XP small",
+                  ]
+                : quizLang === "fr"
+                ? [
+                    "Choisissez votre temps — 30s (rapide), 60s (idéal), ou 90s (défi complet)",
+                    "Chaque question est à choix multiple OU à réponse libre",
+                    "Bonne réponse = XP + coins. Réponse rapide = PLUS de bonus!",
+                    "Réponses consécutives correctes = combo streak = DOUBLE bonus! 🔥",
+                    "Si vous ne savez pas, utilisez l'indice — mais cela réduit votre XP",
+                  ]
+                : quizLang === "pt"
+                ? [
+                    "Escolha seu tempo — 30s (rápido), 60s (ideal), ou 90s (desafio completo)",
+                    "Cada questão é múltipla escolha OU resposta digitada",
+                    "Acertou = XP + coins. Resposta rápida = MAIS bônus!",
+                    "Acertos consecutivos = combo streak = DOBRO de bônus! 🔥",
+                    "Se não souber, use a dica — mas isso reduz seu XP",
+                  ]
+                : quizLang === "en-us"
+                ? [
+                    "Pick your time — 30s (quick blast), 60s (sweet spot), or 90s (full brain workout)",
+                    "Each question is multiple choice OR type-your-answer mode",
+                    "Answer correct = XP + coins. Fast answer = MORE bonus!",
+                    "Get consecutive answers correct = Streak combo = DOUBLE bonus! 🔥",
+                    "If you don't know, use the hint — but it'll reduce your XP a bit",
+                  ]
+                : [
+                    "Pick your time — 30s (quick blast), 60s (sweet spot), or 90s (full brain workout)",
+                    "Each question get multiple choice OR type-your-answer mode",
+                    "Answer correct = XP + coins. Fast answer = MORE bonus!",
+                    "Get consecutive answers correct = Streak combo = DOUBLE bonus! 🔥",
+                    "If you no know, use the hint — but e go reduce your XP small",
+                  ]
+              ).map((text, i) => (
                 <div key={i} className="flex items-start gap-3">
                   <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
                     {i + 1}
@@ -252,7 +380,7 @@ export default function ChallengePage() {
             <div className="flex flex-wrap justify-center gap-2">
               {CATEGORIES.map(c => (
                 <span key={c.id} className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-xs">
-                  {CAT_EMOJI[c.id] || "🧠"} {c.label}
+                  {CAT_EMOJI[c.slug] || "🧠"} {c.label}
                 </span>
               ))}
             </div>
@@ -274,12 +402,41 @@ export default function ChallengePage() {
             </div>
           </div>
 
+          <div className="mt-6">
+            <p className="mb-3 text-sm font-medium flex items-center gap-2">
+              <Globe className="h-4 w-4" /> Quiz language
+            </p>
+            <div className="grid grid-cols-1 gap-2">
+              {QUIZ_LANGUAGES.map(lang => (
+                <button key={lang.value} onClick={() => setQuizLang(lang.value)}
+                  className={`flex items-center gap-3 rounded-xl border px-4 py-3 text-left text-sm font-medium transition-all ${
+                    quizLang === lang.value
+                      ? "border-primary bg-primary/5 shadow-md shadow-primary/10"
+                      : "border-border hover:border-muted-foreground/50 hover:bg-accent/50"
+                  }`}>
+                  <span className="text-2xl">{lang.flag}</span>
+                  <div className="min-w-0">
+                    <p className={quizLang === lang.value ? "text-primary" : "text-foreground"}>
+                      {lang.nativeLabel}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{lang.label}</p>
+                  </div>
+                  {quizLang === lang.value && (
+                    <div className="ml-auto h-4 w-4 rounded-full bg-primary flex items-center justify-center">
+                      <CheckCircle2 className="h-3 w-3 text-primary-foreground" />
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
 
           <button onClick={startChallenge}
             className="mt-8 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-red-600 px-6 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-all hover:shadow-xl hover:shadow-orange-500/30 active:scale-[0.98]">
             <Zap className="h-4 w-4" />
-            Oya, Start! 🔥
+            {quizLang === "pcm" ? "Oya, Start! 🔥" : quizLang === "fr" ? "C'est parti! 🔥" : quizLang === "pt" ? "Vamos começar! 🔥" : quizLang === "en-us" ? "Let's Go! 🔥" : "Let's Go! 🔥"}
           </button>
         </div>
       </div>
@@ -288,7 +445,7 @@ export default function ChallengePage() {
 
   // ═══ COUNTDOWN ═══
   if (phase === "countdown") {
-    const phrases: Record<number, string> = { 3: "Get ready...", 2: "Set...", 1: "Oya GO! 🚀" };
+    const phrases: Record<number, string> = { 3: "Get ready...", 2: "Set...", 1: quizLang === "pcm" ? "Oya GO! 🚀" : quizLang === "fr" ? "C'est parti! 🚀" : quizLang === "pt" ? "Vamos lá! 🚀" : quizLang === "en-us" ? "Let's go! 🚀" : "Oya GO! 🚀" };
     return (
       <div className="mx-auto flex min-h-[60vh] items-center justify-center">
         <div className="text-center">
@@ -305,11 +462,16 @@ export default function ChallengePage() {
   if (phase === "finished") {
     const total = questions.length;
     const accuracy = total > 0 ? Math.round((correctCount / total) * 100) : 0;
-    const grade = accuracy >= 90 ? "Oga Level! 🏆" : accuracy >= 70 ? "You too sabi! 🔥"
-      : accuracy >= 50 ? "Not bad at all! 💪" : "Keep practicing, you go get there! 🧠";
+    const grade = accuracy >= 90
+      ? (quizLang === "pcm" ? "Oga Level! 🏆" : quizLang === "fr" ? "Niveau Oga! 🏆" : quizLang === "pt" ? "Nível Oga! 🏆" : quizLang === "en-us" ? "Champion Level! 🏆" : "Champion Level! 🏆")
+      : accuracy >= 70
+      ? (quizLang === "pcm" ? "You too sabi! 🔥" : quizLang === "fr" ? "Très bien! 🔥" : quizLang === "pt" ? "Muito bem! 🔥" : quizLang === "en-us" ? "Great work! 🔥" : "Great work! 🔥")
+      : accuracy >= 50
+      ? (quizLang === "pcm" ? "Not bad at all! 💪" : quizLang === "fr" ? "Pas mal du tout! 💪" : quizLang === "pt" ? "Nada mal! 💪" : "Not bad at all! 💪")
+      : (quizLang === "pcm" ? "Keep practicing, you go get there! 🧠" : quizLang === "fr" ? "Continuez, vous y arriverez! 🧠" : quizLang === "pt" ? "Continue praticando, você vai conseguir! 🧠" : "Keep practicing, you'll get there! 🧠");
     const reaction = accuracy >= 80
-      ? CORRECT_REACTIONS[Math.floor(Math.random() * CORRECT_REACTIONS.length)]
-      : "Every question na learning opportunity!";
+      ? getCorrectReaction(quizLang)
+      : "Every question is a learning opportunity!";
 
     return (
       <div className="mx-auto max-w-lg space-y-6">
@@ -564,8 +726,8 @@ export default function ChallengePage() {
             }`}>
               <p className="text-sm font-semibold mb-1">
                 {answerState === "correct"
-                  ? CORRECT_REACTIONS[Math.floor(Math.random() * CORRECT_REACTIONS.length)]
-                  : WRONG_REACTIONS[Math.floor(Math.random() * WRONG_REACTIONS.length)]}
+                  ? getCorrectReaction(quizLang)
+                  : getWrongReaction(quizLang)}
               </p>
               <p className="text-sm text-muted-foreground">{current.explanation}</p>
             </div>

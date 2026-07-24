@@ -30,6 +30,7 @@ export type TranslationKeys = {
   nav_share_card: string;
   nav_decision_lab: string;
   nav_settings: string;
+  nav_chat: string;
   nav_tagline: string;
 
   // Dashboard
@@ -104,6 +105,22 @@ export type TranslationKeys = {
   premium_upgrade: string;
   premium_trial_active: string;
   premium_trial_days: string;
+
+  // Chat
+  chat_title: string;
+  chat_subtitle: string;
+  chat_placeholder: string;
+  chat_send: string;
+  chat_empty: string;
+  chat_online: string;
+  chat_typing: string;
+  chat_delete: string;
+  chat_reply: string;
+  chat_premium_note: string;
+  chat_members: string;
+  chat_just_now: string;
+  chat_minutes_ago: string;
+  chat_hours_ago: string;
 
   // General
   general_continue: string;

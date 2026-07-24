@@ -16,6 +16,7 @@ export const pt: TranslationKeys = {
   nav_share_card: "Cartão de Compartilhamento",
   nav_decision_lab: "Laboratório de Decisões",
   nav_settings: "Configurações",
+  nav_chat: "Chat",
   nav_tagline: "Treine seu cérebro para a vida real",
 
   // Dashboard
@@ -102,6 +103,22 @@ export const pt: TranslationKeys = {
   premium_upgrade: "Fazer upgrade para Premium",
   premium_trial_active: "Período de teste ativo",
   premium_trial_days: "dias de acesso premium restantes",
+
+  // Chat
+  chat_title: "Chat da Comunidade",
+  chat_subtitle: "Conecte-se com outros treinadores cerebrais",
+  chat_placeholder: "Digite uma mensagem...",
+  chat_send: "Enviar",
+  chat_empty: "Nenhuma mensagem ainda. Comece a conversa!",
+  chat_online: "online",
+  chat_typing: "digitando...",
+  chat_delete: "Excluir",
+  chat_reply: "Responder",
+  chat_premium_note: "Chat ao vivo é um recurso Premium",
+  chat_members: "membros",
+  chat_just_now: "agora",
+  chat_minutes_ago: "m",
+  chat_hours_ago: "h",
 
   // General
   general_continue: "Continuar",

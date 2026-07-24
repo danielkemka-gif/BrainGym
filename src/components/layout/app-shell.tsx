@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { identifyUser } from "@/lib/analytics/events";
 import { Sidebar } from "./sidebar";
 import { Topbar } from "./topbar";
 
@@ -12,8 +13,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data }) => {
-      if (data.user?.user_metadata?.full_name) {
-        setUserName(data.user.user_metadata.full_name);
+      if (data.user) {
+        setUserName(data.user.user_metadata?.full_name || null);
+        identifyUser(data.user.id, {
+          email: data.user.email,
+          name: data.user.user_metadata?.full_name,
+          created_at: data.user.created_at,
+        });
       }
     });
   }, []);

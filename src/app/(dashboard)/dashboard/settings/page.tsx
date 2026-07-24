@@ -423,7 +423,11 @@ export default function SettingsPage() {
           </div>
           <div className="flex items-center justify-between rounded-lg bg-muted/50 px-4 py-3">
             <span className="text-sm">Status</span>
-            <span className="text-sm font-medium capitalize">{subStatus ?? "none"}</span>
+            <span className="text-sm font-medium capitalize">
+              {subStatus === "trialing"
+                ? `Free Trial (${Math.max(0, Math.ceil((new Date(subPeriodEnd ?? 0).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))} days left)`
+                : subStatus ?? "none"}
+            </span>
           </div>
           {subPeriodEnd && (
             <div className="flex items-center justify-between rounded-lg bg-muted/50 px-4 py-3">

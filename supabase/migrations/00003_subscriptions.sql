@@ -5,7 +5,7 @@ create table if not exists public.subscriptions (
   paystack_customer_code text,
   paystack_subscription_code text unique,
   plan_tier text not null default 'premium' check (plan_tier in ('premium')),
-  status text not null default 'incomplete' check (status in ('active', 'canceled', 'incomplete', 'past_due')),
+  status text not null default 'incomplete' check (status in ('active', 'canceled', 'incomplete', 'past_due', 'trialing')),
   current_period_start timestamptz,
   current_period_end timestamptz,
   canceled_at timestamptz,
@@ -30,12 +30,18 @@ create policy "Service role manages subscriptions"
   using (auth.role() = 'service_role')
   with check (auth.role() = 'service_role');
 
--- Auto-create subscription record on user signup (incomplete by default)
+-- Auto-create trial subscription record on user signup (14-day free trial)
 create or replace function public.handle_new_user_subscription()
 returns trigger as $$
 begin
-  insert into public.subscriptions (user_id, status)
-  values (new.id, 'incomplete')
+  insert into public.subscriptions (user_id, status, plan_tier, current_period_start, current_period_end)
+  values (
+    new.id,
+    'trialing',
+    'premium',
+    now(),
+    now() + interval '14 days'
+  )
   on conflict (user_id) do nothing;
   return new;
 end;

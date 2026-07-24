@@ -23,6 +23,26 @@ export async function GET(request: NextRequest) {
             .eq("user_id", user.id)
             .maybeSingle();
 
+          const { data: sub } = await supabase
+            .from("subscriptions")
+            .select("id, status")
+            .eq("user_id", user.id)
+            .maybeSingle();
+
+          if (sub && sub.status === "incomplete") {
+            const now = new Date();
+            const periodEnd = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+            await supabase
+              .from("subscriptions")
+              .update({
+                status: "trialing",
+                plan_tier: "premium",
+                current_period_start: now.toISOString(),
+                current_period_end: periodEnd.toISOString(),
+              })
+              .eq("id", sub.id);
+          }
+
           if (!profile) {
             return NextResponse.redirect(`${origin}/onboarding`);
           }

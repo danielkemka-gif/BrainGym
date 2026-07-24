@@ -3,15 +3,24 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { PLANS } from "@/lib/paystack/plans";
+import { Clock } from "lucide-react";
 
 interface Props {
   children: React.ReactNode;
   feature: string;
 }
 
+function getDaysRemaining(periodEnd: string): number {
+  const end = new Date(periodEnd).getTime();
+  const now = Date.now();
+  const diff = end - now;
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+}
+
 export function PremiumGate({ children, feature }: Props) {
   const [loading, setLoading] = useState(true);
   const [subscribed, setSubscribed] = useState(false);
+  const [trialEnd, setTrialEnd] = useState<string | null>(null);
   const [checking, setChecking] = useState(false);
 
   useEffect(() => {
@@ -20,11 +29,15 @@ export function PremiumGate({ children, feature }: Props) {
       if (!user) { setLoading(false); return; }
       supabase
         .from("subscriptions")
-        .select("status")
+        .select("status, current_period_end")
         .eq("user_id", user.id)
         .maybeSingle()
         .then(({ data }) => {
-          setSubscribed(data?.status === "active" || data?.status === "trialing");
+          const isActive = data?.status === "active" || data?.status === "trialing";
+          setSubscribed(isActive);
+          if (data?.status === "trialing" && data.current_period_end) {
+            setTrialEnd(data.current_period_end);
+          }
           setLoading(false);
         });
     });

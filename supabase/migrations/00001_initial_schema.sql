@@ -425,8 +425,8 @@ begin
   insert into public.user_levels (user_id)
   values (new.id);
 
-  insert into public.subscriptions (user_id)
-  values (new.id);
+  insert into public.subscriptions (user_id, status)
+  values (new.id, 'trialing');
 
   return new;
 end;

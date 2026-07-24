@@ -73,6 +73,14 @@ const CentralCTA = dynamic(
   { ssr: false }
 );
 
+const TrialBanner = dynamic(
+  () =>
+    import("@/components/premium/trial-banner").then(
+      (m) => ({ default: m.TrialBanner })
+    ),
+  { ssr: false }
+);
+
 export default function DashboardPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-6">
@@ -89,6 +97,11 @@ export default function DashboardPage() {
         }
       >
         <DashboardHeader />
+      </Suspense>
+
+      {/* Free trial banner */}
+      <Suspense fallback={null}>
+        <TrialBanner />
       </Suspense>
 
       {/* Onboarding prompt — only shows for new users */}

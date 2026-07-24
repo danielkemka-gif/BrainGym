@@ -58,7 +58,7 @@ export function AssessmentStep({ defaultValues, onNext, onBack }: Props) {
     setScores((prev) => ({ ...prev, [categoryId]: value }));
   }
 
-  const hasAll = CATEGORIES.every((c) => scores[c.id] !== undefined);
+  const hasAll = CATEGORIES.every((c) => scores[c.slug] !== undefined);
 
   return (
     <div className="space-y-6">
@@ -74,8 +74,8 @@ export function AssessmentStep({ defaultValues, onNext, onBack }: Props) {
           <CategorySlider
             key={c.id}
             label={c.label}
-            value={scores[c.id] ?? 50}
-            onChange={(v) => handleChange(c.id, v)}
+            value={scores[c.slug] ?? 50}
+            onChange={(v) => handleChange(c.slug, v)}
           />
         ))}
       </div>

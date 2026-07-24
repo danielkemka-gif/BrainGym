@@ -91,11 +91,11 @@ export function FilterBar({
             onClick={() => setCategory(category === cat.id ? "" : cat.id)}
             className={`shrink-0 rounded-xl border px-4 py-2 text-sm font-medium transition-all ${
               category === cat.id
-                ? `border-transparent bg-gradient-to-r ${CATEGORY_GRADIENTS[cat.id]} text-white shadow-md`
+                ? `border-transparent bg-gradient-to-r ${CATEGORY_GRADIENTS[cat.slug]} text-white shadow-md`
                 : "border-border bg-card text-muted-foreground hover:border-muted-foreground/50 hover:bg-accent"
             }`}
           >
-            {CATEGORY_EMOJIS[cat.id]} {cat.label}
+            {CATEGORY_EMOJIS[cat.slug]} {cat.label}
           </button>
         ))}
       </div>

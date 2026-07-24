@@ -5,14 +5,15 @@ export const WORKOUT_ACTIVITIES_PER_DAY = 5;
 export const WORKOUT_TARGET_MINUTES = 15;
 
 export const CATEGORIES = [
-  { id: "memory", label: "Memory", icon: "brain", color: "#6366f1" },
-  { id: "focus", label: "Focus", icon: "target", color: "#f59e0b" },
-  { id: "thinking", label: "Thinking", icon: "lightbulb", color: "#10b981" },
-  { id: "learning", label: "Learning", icon: "book", color: "#3b82f6" },
-  { id: "health", label: "Health", icon: "heart", color: "#ef4444" },
-  { id: "creativity", label: "Creativity", icon: "palette", color: "#ec4899" },
+  { id: "a0000000-0000-0000-0000-000000000001", slug: "memory", label: "Memory", icon: "brain", color: "#6366f1" },
+  { id: "a0000000-0000-0000-0000-000000000002", slug: "focus", label: "Focus", icon: "target", color: "#f59e0b" },
+  { id: "a0000000-0000-0000-0000-000000000003", slug: "thinking", label: "Thinking", icon: "lightbulb", color: "#10b981" },
+  { id: "a0000000-0000-0000-0000-000000000004", slug: "learning", label: "Learning", icon: "book", color: "#3b82f6" },
+  { id: "a0000000-0000-0000-0000-000000000005", slug: "health", label: "Health", icon: "heart", color: "#ef4444" },
+  { id: "a0000000-0000-0000-0000-000000000006", slug: "creativity", label: "Creativity", icon: "palette", color: "#ec4899" },
   {
-    id: "emotional-intelligence",
+    id: "a0000000-0000-0000-0000-000000000007",
+    slug: "emotional-intelligence",
     label: "Emotional Intelligence",
     icon: "users",
     color: "#8b5cf6",

@@ -44,8 +44,8 @@ interface Activity {
 export function ActivityCard({ activity, index = 0 }: { activity: Activity; index?: number }) {
   const category = CATEGORIES.find((c) => c.id === activity.category_id);
   const diff = DIFFICULTY_CONFIG[activity.difficulty] || DIFFICULTY_CONFIG.beginner;
-  const gradient = CATEGORY_GRADIENTS[activity.category_id] || "from-gray-500 to-gray-600";
-  const emoji = CATEGORY_EMOJIS[activity.category_id] || "🧠";
+  const gradient = CATEGORY_GRADIENTS[category?.slug || ""] || "from-gray-500 to-gray-600";
+  const emoji = CATEGORY_EMOJIS[category?.slug || ""] || "🧠";
 
   return (
     <Link

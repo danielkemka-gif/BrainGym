@@ -67,13 +67,13 @@ export function QuickActions() {
             className="group relative overflow-hidden rounded-2xl border border-border bg-card p-4 transition-all hover:border-transparent hover:shadow-lg hover:shadow-primary/5"
           >
             <div
-              className={`mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br text-white transition-transform group-hover:scale-110 ${CATEGORY_GRADIENTS[cat.id] || "from-gray-500 to-gray-600"}`}
+              className={`mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br text-white transition-transform group-hover:scale-110 ${CATEGORY_GRADIENTS[cat.slug] || "from-gray-500 to-gray-600"}`}
             >
-              <span className="text-xl">{CATEGORY_EMOJIS[cat.id]}</span>
+              <span className="text-xl">{CATEGORY_EMOJIS[cat.slug]}</span>
             </div>
-            <p className="text-sm font-semibold">{CATEGORY_LABELS[cat.id]}</p>
+            <p className="text-sm font-semibold">{CATEGORY_LABELS[cat.slug]}</p>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              {CATEGORY_SLOGANS[cat.id]}
+              {CATEGORY_SLOGANS[cat.slug]}
             </p>
             <ArrowRight className="absolute bottom-4 right-4 h-4 w-4 text-muted-foreground/50 transition-all group-hover:translate-x-0.5 group-hover:text-foreground" />
           </Link>

@@ -47,7 +47,7 @@ export function BrainScoreSection() {
       ) : (
         <div className="space-y-3">
           {CATEGORIES.map((cat) => {
-            const score = scores[cat.id] ?? 0;
+            const score = scores[cat.slug] ?? 0;
             return (
               <div key={cat.id} className="space-y-1">
                 <div className="flex items-center justify-between text-sm">

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { getLevelProgress } from "@/lib/scoring";
 import { LEVELS, CATEGORIES } from "@/lib/constants";
-import { Download, Share2, Trophy, Zap, Flame, Star, Target } from "lucide-react";
+import { Download, Share2, Trophy, Zap, Flame, Star, Target, Camera, X, ImagePlus } from "lucide-react";
 
 interface UserStats {
   name: string;
@@ -33,7 +33,7 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
   ctx.closePath();
 }
 
-function drawCard(ctx: CanvasRenderingContext2D, W: number, H: number, stats: UserStats) {
+function drawCard(ctx: CanvasRenderingContext2D, W: number, H: number, stats: UserStats, photo?: HTMLImageElement | null) {
   const bgGrad = ctx.createLinearGradient(0, 0, W, H);
   bgGrad.addColorStop(0, "#1a1a2e");
   bgGrad.addColorStop(0.5, "#16213e");
@@ -52,25 +52,56 @@ function drawCard(ctx: CanvasRenderingContext2D, W: number, H: number, stats: Us
   ctx.fill();
   ctx.globalAlpha = 1;
 
+  let yOffset = 0;
+  const photoSize = 220;
+  const photoRadius = photoSize / 2;
+
+  if (photo) {
+    yOffset = 60;
+    const cx = W / 2;
+    const cy = 80 + photoRadius;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, photoRadius + 6, 0, Math.PI * 2);
+    const ringGrad = ctx.createLinearGradient(cx - photoRadius, cy - photoRadius, cx + photoRadius, cy + photoRadius);
+    ringGrad.addColorStop(0, "#6366f1");
+    ringGrad.addColorStop(0.5, "#a855f7");
+    ringGrad.addColorStop(1, "#ec4899");
+    ctx.fillStyle = ringGrad;
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, photoRadius, 0, Math.PI * 2);
+    ctx.clip();
+    const imgAspect = photo.naturalWidth / photo.naturalHeight;
+    let sx = 0, sy = 0, sw = photo.naturalWidth, sh = photo.naturalHeight;
+    if (imgAspect > 1) { sx = (photo.naturalWidth - photo.naturalHeight) / 2; sw = photo.naturalHeight; }
+    else { sy = (photo.naturalHeight - photo.naturalWidth) / 2; sh = photo.naturalWidth; }
+    ctx.drawImage(photo, sx, sy, sw, sh, cx - photoRadius, cy - photoRadius, photoSize, photoSize);
+    ctx.restore();
+  }
+
   ctx.fillStyle = "rgba(255,255,255,0.1)";
-  roundRect(ctx, W / 2 - 280, 60, 560, 80, 40);
+  roundRect(ctx, W / 2 - 280, 60 + yOffset, 560, 80, 40);
   ctx.fill();
 
   ctx.font = "bold 28px system-ui, sans-serif";
   ctx.fillStyle = "#ffffff";
   ctx.textAlign = "center";
-  ctx.fillText("BrainGym", W / 2, 108);
+  ctx.fillText("BrainGym", W / 2, 108 + yOffset);
 
+  const nameY = photo ? 80 + photoSize + 80 + yOffset : 200;
   ctx.font = "bold 52px system-ui, sans-serif";
   ctx.fillStyle = "#ffffff";
-  ctx.fillText(stats.name, W / 2, 200);
+  ctx.fillText(stats.name, W / 2, nameY);
 
   ctx.font = "24px system-ui, sans-serif";
   ctx.fillStyle = "#a78bfa";
-  ctx.fillText(`${stats.levelTitle} — Level ${stats.level}`, W / 2, 245);
+  ctx.fillText(`${stats.levelTitle} — Level ${stats.level}`, W / 2, nameY + 45);
 
-  const gridY = 310;
-  const gridH = 400;
+  const gridY = nameY + 80;
+  const gridH = photo ? 340 : 400;
   ctx.fillStyle = "rgba(255,255,255,0.06)";
   roundRect(ctx, 80, gridY, W - 160, gridH, 24);
   ctx.fill();
@@ -138,6 +169,11 @@ export default function ShareCardPage() {
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
   const exportCanvasRef = useRef<HTMLCanvasElement>(null);
 
+  const [userPhoto, setUserPhoto] = useState<string | null>(null);
+  const [photoImage, setPhotoImage] = useState<HTMLImageElement | null>(null);
+  const [photoDragOver, setPhotoDragOver] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -190,6 +226,46 @@ export default function ShareCardPage() {
     });
   }, []);
 
+  function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) return;
+    if (file.size > 10 * 1024 * 1024) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      setUserPhoto(dataUrl);
+      const img = new Image();
+      img.onload = () => setPhotoImage(img);
+      img.src = dataUrl;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function handlePhotoDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setPhotoDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (!file || !file.type.startsWith("image/")) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      setUserPhoto(dataUrl);
+      const img = new Image();
+      img.onload = () => setPhotoImage(img);
+      img.src = dataUrl;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function handleRemovePhoto() {
+    setUserPhoto(null);
+    setPhotoImage(null);
+    if (photoInputRef.current) photoInputRef.current.value = "";
+  }
+
   const renderPreview = useCallback(() => {
     const canvas = previewCanvasRef.current;
     if (!canvas || !stats) return;
@@ -201,9 +277,9 @@ export default function ShareCardPage() {
     canvas.height = H;
     ctx.save();
     ctx.scale(W / 1080, H / 1080);
-    drawCard(ctx, 1080, 1080, stats);
+    drawCard(ctx, 1080, 1080, stats, photoImage);
     ctx.restore();
-  }, [stats]);
+  }, [stats, photoImage]);
 
   useEffect(() => {
     renderPreview();
@@ -220,7 +296,7 @@ export default function ShareCardPage() {
 
       canvas.width = 1080;
       canvas.height = 1080;
-      drawCard(ctx, 1080, 1080, stats);
+      drawCard(ctx, 1080, 1080, stats, photoImage);
 
       canvas.toBlob((blob) => {
         setGenerating(false);
@@ -300,7 +376,7 @@ export default function ShareCardPage() {
       <div>
         <h1 className="text-2xl font-bold">Share Your Progress</h1>
         <p className="text-sm text-muted-foreground">
-          Generate a beautiful card and share your brain training stats with friends
+          Upload a photo and share your brain training stats with friends
         </p>
       </div>
 
@@ -308,13 +384,102 @@ export default function ShareCardPage() {
         <div className="aspect-square max-w-md animate-pulse rounded-2xl bg-muted mx-auto" />
       ) : stats ? (
         <>
-          {/* Preview */}
-          <div className="mx-auto max-w-md overflow-hidden rounded-2xl border border-border">
-            <canvas
-              ref={previewCanvasRef}
-              className="w-full"
-              style={{ imageRendering: "auto" }}
+          {/* Photo Upload */}
+          <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600">
+                <Camera className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <h2 className="font-semibold">Add Activity Photo</h2>
+                <p className="text-xs text-muted-foreground">
+                  Upload a picture of you doing brain training — it&apos;ll appear on your share card
+                </p>
+              </div>
+            </div>
+
+            {userPhoto ? (
+              <div className="relative">
+                <div className="relative mx-auto max-w-xs overflow-hidden rounded-2xl border-2 border-primary/30">
+                  <img
+                    src={userPhoto}
+                    alt="Your activity photo"
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+                    <span className="text-xs font-medium text-white">Your activity photo</span>
+                    <button
+                      onClick={handleRemovePhoto}
+                      className="flex h-7 w-7 items-center justify-center rounded-full bg-red-500/80 text-white hover:bg-red-500 transition-colors"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+                <button
+                  onClick={() => photoInputRef.current?.click()}
+                  className="mt-3 w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:border-muted-foreground/30 transition-all"
+                >
+                  Change Photo
+                </button>
+              </div>
+            ) : (
+              <div
+                onDragOver={(e) => { e.preventDefault(); setPhotoDragOver(true); }}
+                onDragLeave={() => setPhotoDragOver(false)}
+                onDrop={handlePhotoDrop}
+                onClick={() => photoInputRef.current?.click()}
+                className={`relative cursor-pointer rounded-2xl border-2 border-dashed p-8 text-center transition-all ${
+                  photoDragOver
+                    ? "border-primary bg-primary/5 scale-[1.01]"
+                    : "border-border hover:border-muted-foreground/30 hover:bg-muted/30"
+                }`}
+              >
+                <div className="flex flex-col items-center gap-3">
+                  <div className={`flex h-16 w-16 items-center justify-center rounded-2xl transition-colors ${
+                    photoDragOver ? "bg-primary/20" : "bg-muted"
+                  }`}>
+                    <ImagePlus className={`h-8 w-8 ${photoDragOver ? "text-primary" : "text-muted-foreground"}`} />
+                  </div>
+                  <div>
+                    <p className="font-medium">
+                      {photoDragOver ? "Drop your photo here" : "Tap to upload a photo"}
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      or drag and drop — JPG, PNG, WebP (max 10MB)
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <input
+              ref={photoInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handlePhotoUpload}
+              className="hidden"
             />
+          </div>
+
+          {/* Preview */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <h2 className="font-semibold">Card Preview</h2>
+              {userPhoto && (
+                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Camera className="h-3 w-3" /> Photo included
+                </span>
+              )}
+            </div>
+            <div className="mx-auto max-w-md overflow-hidden rounded-2xl border border-border">
+              <canvas
+                ref={previewCanvasRef}
+                className="w-full"
+                style={{ imageRendering: "auto" }}
+              />
+            </div>
           </div>
 
           {/* Hidden canvas for generation */}

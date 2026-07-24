@@ -137,8 +137,8 @@ export default function ActivityDetailPage() {
 
   const category = CATEGORIES.find((c) => c.id === activity.category_id);
   const diff = DIFFICULTY_CONFIG[activity.difficulty] || DIFFICULTY_CONFIG.beginner;
-  const gradient = CATEGORY_GRADIENTS[activity.category_id] || "from-gray-500 to-gray-600";
-  const emoji = CATEGORY_EMOJIS[activity.category_id] || "🧠";
+  const gradient = CATEGORY_GRADIENTS[category?.slug || ""] || "from-gray-500 to-gray-600";
+  const emoji = CATEGORY_EMOJIS[category?.slug || ""] || "🧠";
 
   return (
     <div className="mx-auto max-w-2xl space-y-5">

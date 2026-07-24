@@ -26,7 +26,7 @@ export function RadarChart({ scores, size = 300 }: RadarChartProps) {
     )
     .map((pts) => pts.map((p) => `${p.x},${p.y}`).join(" "));
 
-  const dataPoints = CATEGORIES.map((c, i) => point(i, scores[c.id] ?? 0));
+  const dataPoints = CATEGORIES.map((c, i) => point(i, scores[c.slug] ?? 0));
   const dataPolygon = dataPoints.map((p) => `${p.x},${p.y}`).join(" ");
 
   return (
@@ -86,7 +86,7 @@ export function RadarChart({ scores, size = 300 }: RadarChartProps) {
       })}
 
       {CATEGORIES.map((c, i) => {
-        const p = point(i, scores[c.id] ?? 0);
+        const p = point(i, scores[c.slug] ?? 0);
         return (
           <text
             key={`label-${c.id}`}
@@ -98,7 +98,7 @@ export function RadarChart({ scores, size = 300 }: RadarChartProps) {
             fontSize={10}
             fontWeight={600}
           >
-            {scores[c.id] ?? "—"}
+            {scores[c.slug] ?? "—"}
           </text>
         );
       })}

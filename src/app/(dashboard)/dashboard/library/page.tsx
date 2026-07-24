@@ -134,8 +134,8 @@ export default function LibraryPage() {
               onClick={() => setCategory(cat.id)}
               className="group relative overflow-hidden rounded-2xl border border-border bg-card p-4 text-left transition-all hover:border-transparent hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5"
             >
-              <div className={`mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br text-2xl transition-transform group-hover:scale-110 ${CATEGORY_GRADIENTS[cat.id]}`}>
-                {CATEGORY_EMOJIS[cat.id]}
+              <div className={`mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br text-2xl transition-transform group-hover:scale-110 ${CATEGORY_GRADIENTS[cat.slug]}`}>
+                {CATEGORY_EMOJIS[cat.slug]}
               </div>
               <p className="text-sm font-semibold">{cat.label}</p>
               <p className="text-xs text-muted-foreground">{cat.count} exercises</p>

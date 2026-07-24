@@ -76,7 +76,7 @@ export function SummaryStep({
         <div className="space-y-1 text-sm text-muted-foreground">
           {CATEGORIES.map((c) => (
             <p key={c.id}>
-              {c.label}: <span className="text-foreground">{assessment.scores[c.id] ?? "—"}</span>/100
+              {c.label}: <span className="text-foreground">{assessment.scores[c.slug] ?? "—"}</span>/100
             </p>
           ))}
         </div>

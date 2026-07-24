@@ -73,13 +73,19 @@ export function TodaysWorkoutSection() {
         .select("id, title, estimated_time, difficulty, xp, coins, category_id")
         .eq("is_active", true);
 
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("age_group")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
       if (!pool || pool.length === 0) {
         setError(t.dashboard_no_activities);
         setLoading(false);
         return;
       }
 
-      const picked = pickDailyActivities(pool as Activity[]);
+      const picked = pickDailyActivities(pool as Activity[], undefined, profile?.age_group || undefined);
       const { data: newWorkout } = await supabase
         .from("daily_workouts")
         .insert({ user_id: user.id, date: today, status: "pending" })

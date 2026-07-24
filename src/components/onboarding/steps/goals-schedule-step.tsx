@@ -47,12 +47,13 @@ export function GoalsScheduleStep({ defaultValues, onNext, onBack }: Props) {
               key={g.value}
               type="button"
               onClick={() => setGoals(toggleItem(goals, g.value))}
-              className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
+              className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm transition-colors ${
                 goals.includes(g.value)
                   ? "border-primary bg-primary/10 text-primary"
                   : "border-border hover:border-muted-foreground"
               }`}
             >
+              <span className="text-sm">{g.icon}</span>
               {g.label}
             </button>
           ))}
@@ -72,12 +73,13 @@ export function GoalsScheduleStep({ defaultValues, onNext, onBack }: Props) {
               onClick={() =>
                 setChallenges(toggleItem(challenges, c.value))
               }
-              className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
+              className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm transition-colors ${
                 challenges.includes(c.value)
                   ? "border-destructive bg-destructive/10 text-destructive"
                   : "border-border hover:border-muted-foreground"
               }`}
             >
+              <span className="text-sm">{c.icon}</span>
               {c.label}
             </button>
           ))}

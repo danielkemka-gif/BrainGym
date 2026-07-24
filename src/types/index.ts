@@ -169,6 +169,7 @@ export type UserSettings = {
   notifications_enabled: boolean;
   workout_reminder_time: string | null;
   locale: string;
+  age_group: string;
 };
 
 export type Profile = {
@@ -177,8 +178,10 @@ export type Profile = {
   name: string | null;
   avatar_url: string | null;
   age: number | null;
+  age_group: string | null;
   occupation: string | null;
   goals: string[] | null;
+  challenges: string[] | null;
   preferred_workout_time: string | null;
   onboarding_complete: boolean;
   created_at: string;

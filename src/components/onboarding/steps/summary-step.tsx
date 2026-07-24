@@ -1,14 +1,16 @@
 "use client";
 
-import { CATEGORIES, GOALS, CHALLENGES, WORKOUT_TIMES } from "@/lib/constants";
+import { CATEGORIES, GOALS, CHALLENGES, WORKOUT_TIMES, AGE_GROUPS } from "@/lib/constants";
 import type { BasicInfoData } from "./basic-info-step";
 import type { GoalsScheduleData } from "./goals-schedule-step";
 import type { AssessmentData } from "./assessment-step";
+import type { AgeGroup } from "@/lib/constants";
 
 interface Props {
   basicInfo: BasicInfoData;
   goalsSchedule: GoalsScheduleData;
   assessment: AssessmentData;
+  ageGroup?: AgeGroup;
   onBack: () => void;
   onSubmit: () => Promise<void>;
   submitting: boolean;
@@ -19,6 +21,7 @@ export function SummaryStep({
   basicInfo,
   goalsSchedule,
   assessment,
+  ageGroup,
   onBack,
   onSubmit,
   submitting,
@@ -33,6 +36,7 @@ export function SummaryStep({
   const timeLabel = WORKOUT_TIMES.find(
     (t) => t.value === goalsSchedule.preferred_workout_time
   )?.label;
+  const ageGroupLabel = AGE_GROUPS.find((a) => a.value === ageGroup);
 
   return (
     <div className="space-y-6">
@@ -51,6 +55,12 @@ export function SummaryStep({
               {basicInfo.name}, {basicInfo.gender ? `${basicInfo.gender}, ` : ""}{basicInfo.age}
               {basicInfo.occupation ? ` — ${basicInfo.occupation}` : ""}
             </p>
+            {ageGroupLabel && (
+              <p className="flex items-center gap-1.5">
+                <span>{ageGroupLabel.icon}</span>
+                <span className="text-foreground font-medium">{ageGroupLabel.label}</span>
+              </p>
+            )}
           </div>
         </div>
       </div>

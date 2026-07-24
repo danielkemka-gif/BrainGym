@@ -4,15 +4,24 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { BasicInfoStep, type BasicInfoData } from "./steps/basic-info-step";
+import { AgeGroupStep } from "./steps/age-group-step";
 import {
   GoalsScheduleStep,
   type GoalsScheduleData,
 } from "./steps/goals-schedule-step";
 import { AssessmentStep, type AssessmentData } from "./steps/assessment-step";
 import { SummaryStep } from "./steps/summary-step";
+import type { AgeGroup } from "@/lib/constants";
 
-const TOTAL_STEPS = 4;
-const STEP_LABELS = ["About you", "Goals", "Assessment", "Review"];
+const TOTAL_STEPS = 5;
+const STEP_LABELS = ["About you", "Your group", "Goals", "Assessment", "Review"];
+
+function deriveAgeGroup(age: number): AgeGroup {
+  if (age <= 20) return "teen";
+  if (age <= 30) return "young_adult";
+  if (age <= 50) return "adult";
+  return "senior";
+}
 
 export function OnboardingWizard() {
   const router = useRouter();
@@ -24,6 +33,10 @@ export function OnboardingWizard() {
     gender: "",
     age: 25,
     occupation: "",
+  });
+
+  const [ageGroup, setAgeGroup] = useState<{ age_group: AgeGroup }>({
+    age_group: deriveAgeGroup(25),
   });
 
   const [goalsSchedule, setGoalsSchedule] = useState<GoalsScheduleData>({
@@ -54,46 +67,41 @@ export function OnboardingWizard() {
         return;
       }
 
-      // Try saving profile with all fields
       let saveOk = false;
 
-      // Attempt 1: full save
       const { error: err1 } = await supabase.from("profiles").upsert({
         user_id: user.id,
         name: basicInfo.name || "User",
         age: basicInfo.age,
+        age_group: ageGroup.age_group,
         onboarding_complete: true,
       });
       if (!err1) saveOk = true;
 
-      // Attempt 2: minimal save if attempt 1 failed
       if (!saveOk) {
         const { error: err2 } = await supabase
           .from("profiles")
-          .update({ onboarding_complete: true, name: basicInfo.name || "User" })
+          .update({ onboarding_complete: true, name: basicInfo.name || "User", age_group: ageGroup.age_group })
           .eq("user_id", user.id);
         if (!err2) saveOk = true;
       }
 
-      // Attempt 3: insert if no profile exists at all
       if (!saveOk) {
         const { error: err3 } = await supabase.from("profiles").insert({
           user_id: user.id,
           name: basicInfo.name || "User",
           onboarding_complete: true,
+          age_group: ageGroup.age_group,
         });
         if (!err3) saveOk = true;
       }
 
-      // Save optional fields separately (non-blocking)
-      // Gender
       if (basicInfo.gender) {
         supabase.auth.updateUser({
           data: { gender: basicInfo.gender, display_name: basicInfo.name },
         });
       }
 
-      // Goals + challenges
       if (goalsSchedule.goals.length > 0 || goalsSchedule.challenges.length > 0) {
         supabase.from("profiles").update({
           goals: goalsSchedule.goals,
@@ -102,14 +110,17 @@ export function OnboardingWizard() {
         }).eq("user_id", user.id);
       }
 
-      // Avatar
       if (basicInfo.avatar_url) {
         supabase.from("profiles").update({
           avatar_url: basicInfo.avatar_url,
         }).eq("user_id", user.id);
       }
 
-      // Assessment scores
+      supabase.from("user_settings").upsert({
+        user_id: user.id,
+        age_group: ageGroup.age_group,
+      }, { onConflict: "user_id" });
+
       const scores = Object.entries(assessment.scores);
       if (scores.length > 0) {
         const { data: cats } = await supabase.from("categories").select("id, slug");
@@ -129,11 +140,9 @@ export function OnboardingWizard() {
         }
       }
 
-      // Always go to dashboard
       router.push("/dashboard");
       router.refresh();
     } catch {
-      // Even on unexpected error, go to dashboard — user can fill profile later
       router.push("/dashboard");
       router.refresh();
     }
@@ -176,16 +185,17 @@ export function OnboardingWizard() {
             defaultValues={basicInfo}
             onNext={(data) => {
               setBasicInfo(data);
+              setAgeGroup({ age_group: deriveAgeGroup(data.age) });
               setStep(1);
             }}
           />
         )}
 
         {step === 1 && (
-          <GoalsScheduleStep
-            defaultValues={goalsSchedule}
+          <AgeGroupStep
+            defaultValues={ageGroup}
             onNext={(data) => {
-              setGoalsSchedule(data);
+              setAgeGroup(data);
               setStep(2);
             }}
             onBack={() => setStep(0)}
@@ -193,10 +203,10 @@ export function OnboardingWizard() {
         )}
 
         {step === 2 && (
-          <AssessmentStep
-            defaultValues={assessment}
+          <GoalsScheduleStep
+            defaultValues={goalsSchedule}
             onNext={(data) => {
-              setAssessment(data);
+              setGoalsSchedule(data);
               setStep(3);
             }}
             onBack={() => setStep(1)}
@@ -204,11 +214,22 @@ export function OnboardingWizard() {
         )}
 
         {step === 3 && (
+          <AssessmentStep
+            defaultValues={assessment}
+            onNext={(data) => {
+              setAssessment(data);
+              setStep(4);
+            }}
+            onBack={() => setStep(2)}
+          />
+        )}
+
+        {step === 4 && (
           <SummaryStep
             basicInfo={basicInfo}
             goalsSchedule={goalsSchedule}
             assessment={assessment}
-            onBack={() => setStep(2)}
+            onBack={() => setStep(3)}
             onSubmit={handleSubmit}
             submitting={submitting}
             submitError={submitError}

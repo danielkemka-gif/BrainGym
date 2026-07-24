@@ -22,6 +22,15 @@ export const CATEGORIES = [
 
 export const DIFFICULTIES = ["beginner", "intermediate", "advanced"] as const;
 
+export const AGE_GROUPS = [
+  { value: "teen", label: "Teen (14-20)", icon: "🎓", description: "Student life — exams, focus, and building habits" },
+  { value: "young_adult", label: "Young Adult (21-30)", icon: "🚀", description: "Career building — productivity, creativity, and growth" },
+  { value: "adult", label: "Adult (31-50)", icon: "💼", description: "Peak performance — leadership, memory, and balance" },
+  { value: "senior", label: "Senior (50+)", icon: "🌟", description: "Mental vitality — sharpness, clarity, and lifelong learning" },
+] as const;
+
+export type AgeGroup = typeof AGE_GROUPS[number]["value"];
+
 export const LEVELS = [
   { level: 1, title: "Bronze", xpRequired: 0, premium: false },
   { level: 2, title: "Silver", xpRequired: 500, premium: false },
@@ -65,25 +74,35 @@ export const STREAK = {
 export const MISSION_DURATIONS = [7, 14, 21, 30] as const;
 
 export const GOALS = [
-  { value: "improve_memory", label: "Improve memory" },
-  { value: "boost_focus", label: "Boost focus & concentration" },
-  { value: "think_faster", label: "Think faster" },
-  { value: "learn_better", label: "Learn new skills faster" },
-  { value: "reduce_stress", label: "Reduce stress" },
-  { value: "stay_sharp", label: "Stay mentally sharp with age" },
-  { value: "creative_thinking", label: "Think more creatively" },
-  { value: "emotional_control", label: "Improve emotional control" },
+  { value: "improve_memory", label: "Improve memory", icon: "🧠" },
+  { value: "boost_focus", label: "Boost focus & concentration", icon: "🎯" },
+  { value: "think_faster", label: "Think faster", icon: "⚡" },
+  { value: "learn_better", label: "Learn new skills faster", icon: "📚" },
+  { value: "reduce_stress", label: "Reduce stress", icon: "🧘" },
+  { value: "stay_sharp", label: "Stay mentally sharp", icon: "💎" },
+  { value: "creative_thinking", label: "Think more creatively", icon: "🎨" },
+  { value: "emotional_control", label: "Improve emotional control", icon: "💪" },
+  { value: "exam_prep", label: "Ace my exams", icon: "📝" },
+  { value: "career_growth", label: "Accelerate career growth", icon: "📈" },
+  { value: "better_decisions", label: "Make better decisions", icon: "🧭" },
+  { value: "social_skills", label: "Improve social skills", icon: "🤝" },
+  { value: "mental_health", label: "Support mental wellness", icon: "🌿" },
+  { value: "confidence", label: "Build confidence", icon: "🦁" },
 ] as const;
 
 export const CHALLENGES = [
-  { value: "forgetfulness", label: "Forgetfulness" },
-  { value: "distraction", label: "Easily distracted" },
-  { value: "brain_fog", label: "Brain fog / mental fatigue" },
-  { value: "slow_processing", label: "Slow information processing" },
-  { value: "procrastination", label: "Procrastination" },
-  { value: "anxiety", label: "Anxiety / overthinking" },
-  { value: "poor_sleep", label: "Poor sleep affecting cognition" },
-  { value: "language_struggle", label: "Word-finding / language difficulty" },
+  { value: "forgetfulness", label: "Forgetfulness", icon: "🧠" },
+  { value: "distraction", label: "Easily distracted", icon: "📱" },
+  { value: "brain_fog", label: "Brain fog / mental fatigue", icon: "☁️" },
+  { value: "slow_processing", label: "Slow information processing", icon: "🐌" },
+  { value: "procrastination", label: "Procrastination", icon: "⏰" },
+  { value: "anxiety", label: "Anxiety / overthinking", icon: "🌀" },
+  { value: "poor_sleep", label: "Poor sleep affecting cognition", icon: "😴" },
+  { value: "language_struggle", label: "Word-finding / language difficulty", icon: "💬" },
+  { value: "exam_pressure", label: "Exam pressure / test anxiety", icon: "📋" },
+  { value: "screen_fatigue", label: "Screen fatigue / digital overload", icon: "💻" },
+  { value: "motivation_dip", label: "Low motivation / burnout", icon: "🔋" },
+  { value: "decision_paralysis", label: "Decision paralysis", icon: "🤔" },
 ] as const;
 
 export const WORKOUT_TIMES = [

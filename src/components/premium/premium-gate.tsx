@@ -24,7 +24,7 @@ export function PremiumGate({ children, feature }: Props) {
         .eq("user_id", user.id)
         .maybeSingle()
         .then(({ data }) => {
-          setSubscribed(data?.status === "active");
+          setSubscribed(data?.status === "active" || data?.status === "trialing");
           setLoading(false);
         });
     });

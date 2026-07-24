@@ -104,7 +104,7 @@ export function SignupForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            minLength={18}
+            minLength={8}
             className="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 pr-10 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
           <button
@@ -117,7 +117,7 @@ export function SignupForm() {
           </button>
         </div>
         <p className="text-xs text-muted-foreground">
-          At least 18 characters — use any characters you like
+          At least 8 characters — mix letters, numbers, and symbols for best security
         </p>
       </div>
 

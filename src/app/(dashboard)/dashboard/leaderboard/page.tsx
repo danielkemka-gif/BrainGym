@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 interface LeaderboardEntry {
   user_id: string;
   total_xp: number;
-  display_name: string | null;
+  name: string | null;
   avatar_url: string | null;
 }
 
@@ -50,7 +50,7 @@ export default function LeaderboardPage() {
 
         supabase
           .from("profiles")
-          .select("user_id, display_name, avatar_url")
+          .select("user_id, name, avatar_url")
           .in(
             "user_id",
             sorted.map((e) => e.user_id)
@@ -62,7 +62,7 @@ export default function LeaderboardPage() {
             setEntries(
               sorted.map((e) => ({
                 ...e,
-                display_name: profileMap[e.user_id]?.display_name ?? null,
+                name: profileMap[e.user_id]?.name ?? null,
                 avatar_url: profileMap[e.user_id]?.avatar_url ?? null,
               }))
             );
@@ -124,11 +124,11 @@ export default function LeaderboardPage() {
                 {i + 1}
               </span>
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
-                {entry.display_name?.[0]?.toUpperCase() ?? "?"}
+                {entry.name?.[0]?.toUpperCase() ?? "?"}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="truncate text-sm font-medium">
-                  {entry.display_name ?? "Anonymous"}
+                  {entry.name ?? "Anonymous"}
                 </p>
               </div>
               <span className="shrink-0 text-sm font-bold">

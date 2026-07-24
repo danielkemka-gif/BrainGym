@@ -24,7 +24,7 @@ interface Participant {
   user_id: string;
   total_progress: number;
   joined_at: string;
-  profiles: { display_name: string | null } | null;
+  profiles: { name: string | null } | null;
 }
 
 interface DailyProgress {
@@ -80,7 +80,7 @@ export default function ChallengeDetailPage() {
 
             const { data: profiles } = await supabase
               .from("profiles")
-              .select("user_id, display_name")
+              .select("user_id, name")
               .in("user_id", userIds);
 
             const profileMap = Object.fromEntries(
@@ -328,7 +328,7 @@ export default function ChallengeDetailPage() {
                 </span>
                 <div className="flex-1 min-w-0">
                   <p className="truncate text-sm font-medium">
-                    {p.profiles?.display_name ?? "Anonymous"}
+                    {p.profiles?.name ?? "Anonymous"}
                   </p>
                 </div>
                 <span className="shrink-0 text-sm font-medium">

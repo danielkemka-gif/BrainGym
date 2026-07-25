@@ -32,12 +32,12 @@ export function Topbar({ onMenuClick, userName }: TopbarProps) {
       <div className="hidden lg:block" />
 
       <div className="flex items-center gap-3">
-        <span className="text-sm text-muted-foreground">
+        <span className="text-sm text-muted-foreground hidden sm:inline">
           {userName ?? "User"}
         </span>
         <button
           onClick={handleSignOut}
-          className="text-xs text-muted-foreground hover:text-foreground"
+          className="rounded-lg px-3 py-2 text-xs text-muted-foreground hover:bg-accent hover:text-foreground min-h-[44px]"
         >
           Sign out
         </button>

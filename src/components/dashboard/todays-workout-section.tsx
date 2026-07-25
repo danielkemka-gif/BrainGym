@@ -241,24 +241,33 @@ export function TodaysWorkoutSection() {
         reason: "workout_complete",
       });
 
-      // Update streak
+      // Update streak with freeze protection
+      const { calculateStreakWithFreeze } = await import("@/lib/streak-protection");
       const { data: existingStreak } = await supabase
         .from("streaks")
         .select("*")
         .eq("user_id", user.id)
         .maybeSingle();
 
-      if (existingStreak) {
-        const lastDate = existingStreak.last_workout_date;
-        const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
-        const isConsecutive = lastDate === yesterday || lastDate === today;
-        const newStreak = isConsecutive ? existingStreak.current_streak + 1 : 1;
+      const currentStreakVal = existingStreak?.current_streak ?? 0;
+      const lastDate = existingStreak?.last_workout_date ?? null;
 
+      const streakResult = await calculateStreakWithFreeze(
+        user.id,
+        currentStreakVal,
+        lastDate,
+        today
+      );
+
+      const newStreakVal = streakResult.newStreak;
+      const longestStreak = Math.max(existingStreak?.longest_streak ?? 0, newStreakVal);
+
+      if (existingStreak) {
         await supabase
           .from("streaks")
           .update({
-            current_streak: newStreak,
-            longest_streak: Math.max(existingStreak.longest_streak, newStreak),
+            current_streak: newStreakVal,
+            longest_streak: longestStreak,
             last_workout_date: today,
           })
           .eq("user_id", user.id);
@@ -280,6 +289,11 @@ export function TodaysWorkoutSection() {
       });
 
       if (unlocked.length > 0) setNewAchievements(unlocked);
+
+      // Recalculate brain scores based on recent activity
+      const { recalculateBrainScores } = await import("@/lib/brain-scores");
+      await recalculateBrainScores(user.id);
+
       setWorkout((prev) => (prev ? { ...prev, status: "completed" } : prev));
     } catch {
       // Workout completion failed

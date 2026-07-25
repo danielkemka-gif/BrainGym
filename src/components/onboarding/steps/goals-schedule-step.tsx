@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { GOALS, CHALLENGES, WORKOUT_TIMES } from "@/lib/constants";
+import { GOAL_ICONS, CHALLENGE_ICONS } from "@/lib/icons";
 
 export interface GoalsScheduleData {
   goals: string[];
@@ -53,7 +54,7 @@ export function GoalsScheduleStep({ defaultValues, onNext, onBack }: Props) {
                   : "border-border hover:border-muted-foreground"
               }`}
             >
-              <span className="text-sm">{g.icon}</span>
+              {(() => { const GoalIcon = GOAL_ICONS[g.iconKey]; return GoalIcon ? <GoalIcon className="h-4 w-4" /> : null; })()}
               {g.label}
             </button>
           ))}
@@ -79,7 +80,7 @@ export function GoalsScheduleStep({ defaultValues, onNext, onBack }: Props) {
                   : "border-border hover:border-muted-foreground"
               }`}
             >
-              <span className="text-sm">{c.icon}</span>
+              {(() => { const ChallengeIcon = CHALLENGE_ICONS[c.iconKey]; return ChallengeIcon ? <ChallengeIcon className="h-4 w-4" /> : null; })()}
               {c.label}
             </button>
           ))}

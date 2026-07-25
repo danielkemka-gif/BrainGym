@@ -1,6 +1,7 @@
 "use client";
 
 import { CATEGORIES, GOALS, CHALLENGES, WORKOUT_TIMES, AGE_GROUPS } from "@/lib/constants";
+import { AGE_GROUP_ICONS } from "@/lib/icons";
 import type { BasicInfoData } from "./basic-info-step";
 import type { GoalsScheduleData } from "./goals-schedule-step";
 import type { AssessmentData } from "./assessment-step";
@@ -57,7 +58,7 @@ export function SummaryStep({
             </p>
             {ageGroupLabel && (
               <p className="flex items-center gap-1.5">
-                <span>{ageGroupLabel.icon}</span>
+                {(() => { const AgeIcon = AGE_GROUP_ICONS[ageGroupLabel.iconKey]; return AgeIcon ? <AgeIcon className="h-4 w-4" /> : null; })()}
                 <span className="text-foreground font-medium">{ageGroupLabel.label}</span>
               </p>
             )}

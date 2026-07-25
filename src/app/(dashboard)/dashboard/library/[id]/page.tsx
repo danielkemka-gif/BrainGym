@@ -127,7 +127,7 @@ export default function ActivityDetailPage() {
         <p className="mt-4 text-lg font-medium">Activity not found</p>
         <button
           onClick={() => router.push("/dashboard/library")}
-          className="mt-4 text-sm text-primary hover:underline"
+          className="mt-4 rounded-lg px-4 py-2.5 text-sm font-medium text-primary hover:bg-primary/10 min-h-[44px]"
         >
           Back to library
         </button>
@@ -151,9 +151,9 @@ export default function ActivityDetailPage() {
         <div className="relative">
           <button
             onClick={() => router.back()}
-            className="mb-4 inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm hover:bg-white/20 transition-all"
+            className="mb-4 inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-4 py-2.5 text-sm font-medium text-white backdrop-blur-sm hover:bg-white/20 transition-all min-h-[44px]"
           >
-            <ArrowLeft className="h-3.5 w-3.5" />
+            <ArrowLeft className="h-4 w-4" />
             Back
           </button>
 
@@ -169,7 +169,7 @@ export default function ActivityDetailPage() {
                   {diff.label}
                 </span>
               </div>
-              <h1 className="text-2xl font-bold text-white">{activity.title}</h1>
+              <h1 className="text-xl font-bold text-white break-words sm:text-2xl">{activity.title}</h1>
             </div>
           </div>
 
@@ -253,9 +253,9 @@ export default function ActivityDetailPage() {
       {/* Action buttons */}
       <div className="flex gap-3">
         {completed ? (
-          <div className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-green-500/30 bg-green-500/5 py-3 text-sm font-medium text-green-500">
-            <CheckCircle2 className="h-4 w-4" />
-            Completed! +{activity.xp} XP +{activity.coins} coins
+          <div className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-green-500/30 bg-green-500/5 px-4 py-3 text-center text-xs font-medium text-green-500 sm:text-sm">
+            <CheckCircle2 className="h-4 w-4 flex-shrink-0" />
+            <span>Completed! +{activity.xp} XP +{activity.coins} coins</span>
           </div>
         ) : (
           <button

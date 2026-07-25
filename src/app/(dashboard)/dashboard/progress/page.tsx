@@ -6,30 +6,50 @@ import { RadarChart } from "@/components/progress/radar-chart";
 import { StreakCalendar } from "@/components/progress/streak-calendar";
 import { XpHistory } from "@/components/progress/xp-history";
 import { AchievementsGrid } from "@/components/achievements/achievements-grid";
+import { SkillTree } from "@/components/progress/skill-tree";
 
 export default function ProgressPage() {
   const [scores, setScores] = useState<Record<string, number>>({});
+  const [activityCounts, setActivityCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) return;
-      supabase
-        .from("brain_scores")
-        .select("category_id, score")
-        .eq("user_id", user.id)
-        .order("date", { ascending: false })
-        .limit(7)
-        .then(({ data }) => {
-          if (!data) return;
-          const latest: Record<string, number> = {};
-          for (const row of data) {
-            if (!latest[row.category_id]) {
-              latest[row.category_id] = row.score;
+
+      Promise.all([
+        supabase
+          .from("brain_scores")
+          .select("category_id, score")
+          .eq("user_id", user.id)
+          .order("date", { ascending: false })
+          .limit(7)
+          .then(({ data }) => {
+            if (!data) return {} as Record<string, number>;
+            const latest: Record<string, number> = {};
+            for (const row of data) {
+              if (!latest[row.category_id]) {
+                latest[row.category_id] = row.score;
+              }
             }
-          }
-          setScores(latest);
-        });
+            return latest;
+          }),
+        supabase
+          .from("activity_logs")
+          .select("category_id")
+          .eq("user_id", user.id)
+          .then(({ data }) => {
+            if (!data) return {} as Record<string, number>;
+            const counts: Record<string, number> = {};
+            for (const row of data) {
+              counts[row.category_id] = (counts[row.category_id] ?? 0) + 1;
+            }
+            return counts;
+          }),
+      ]).then(([scoresData, countsData]) => {
+        setScores(scoresData);
+        setActivityCounts(countsData);
+      });
     });
   }, []);
 
@@ -51,6 +71,11 @@ export default function ProgressPage() {
           <XpHistory />
           <StreakCalendar />
         </div>
+      </div>
+
+      <div className="rounded-2xl border border-border bg-card p-5">
+        <h2 className="mb-4 text-xl font-bold">Skill Tree</h2>
+        <SkillTree activityCounts={activityCounts} scores={scores} />
       </div>
 
       <div>

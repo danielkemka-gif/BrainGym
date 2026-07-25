@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { AMBIENT_SOUNDS } from "@/lib/constants";
+import { AMBIENT_ICONS } from "@/lib/icons";
 
 export function FocusPlayer() {
   const [active, setActive] = useState<string | null>(null);
@@ -26,7 +27,7 @@ export function FocusPlayer() {
                 : "border-border hover:border-muted-foreground"
             }`}
           >
-            <span>{sound.icon}</span>
+            <span>{(() => { const SoundIcon = AMBIENT_ICONS[sound.iconKey]; return SoundIcon ? <SoundIcon className="h-4 w-4" /> : null; })()}</span>
             <span>{sound.label}</span>
           </button>
         ))}

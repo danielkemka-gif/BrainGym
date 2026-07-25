@@ -23,10 +23,10 @@ export const CATEGORIES = [
 export const DIFFICULTIES = ["beginner", "intermediate", "advanced"] as const;
 
 export const AGE_GROUPS = [
-  { value: "teen", label: "Teen (14-20)", icon: "🎓", description: "Student life — exams, focus, and building habits" },
-  { value: "young_adult", label: "Young Adult (21-30)", icon: "🚀", description: "Career building — productivity, creativity, and growth" },
-  { value: "adult", label: "Adult (31-50)", icon: "💼", description: "Peak performance — leadership, memory, and balance" },
-  { value: "senior", label: "Senior (50+)", icon: "🌟", description: "Mental vitality — sharpness, clarity, and lifelong learning" },
+  { value: "teen", label: "Teen (14-20)", iconKey: "teen", description: "Student life — exams, focus, and building habits" },
+  { value: "young_adult", label: "Young Adult (21-30)", iconKey: "young_adult", description: "Career building — productivity, creativity, and growth" },
+  { value: "adult", label: "Adult (31-50)", iconKey: "adult", description: "Peak performance — leadership, memory, and balance" },
+  { value: "senior", label: "Senior (50+)", iconKey: "senior", description: "Mental vitality — sharpness, clarity, and lifelong learning" },
 ] as const;
 
 export type AgeGroup = typeof AGE_GROUPS[number]["value"];
@@ -74,35 +74,35 @@ export const STREAK = {
 export const MISSION_DURATIONS = [7, 14, 21, 30] as const;
 
 export const GOALS = [
-  { value: "improve_memory", label: "Improve memory", icon: "🧠" },
-  { value: "boost_focus", label: "Boost focus & concentration", icon: "🎯" },
-  { value: "think_faster", label: "Think faster", icon: "⚡" },
-  { value: "learn_better", label: "Learn new skills faster", icon: "📚" },
-  { value: "reduce_stress", label: "Reduce stress", icon: "🧘" },
-  { value: "stay_sharp", label: "Stay mentally sharp", icon: "💎" },
-  { value: "creative_thinking", label: "Think more creatively", icon: "🎨" },
-  { value: "emotional_control", label: "Improve emotional control", icon: "💪" },
-  { value: "exam_prep", label: "Ace my exams", icon: "📝" },
-  { value: "career_growth", label: "Accelerate career growth", icon: "📈" },
-  { value: "better_decisions", label: "Make better decisions", icon: "🧭" },
-  { value: "social_skills", label: "Improve social skills", icon: "🤝" },
-  { value: "mental_health", label: "Support mental wellness", icon: "🌿" },
-  { value: "confidence", label: "Build confidence", icon: "🦁" },
+  { value: "improve_memory", label: "Improve memory", iconKey: "improve_memory" },
+  { value: "boost_focus", label: "Boost focus & concentration", iconKey: "boost_focus" },
+  { value: "think_faster", label: "Think faster", iconKey: "think_faster" },
+  { value: "learn_better", label: "Learn new skills faster", iconKey: "learn_better" },
+  { value: "reduce_stress", label: "Reduce stress", iconKey: "reduce_stress" },
+  { value: "stay_sharp", label: "Stay mentally sharp", iconKey: "stay_sharp" },
+  { value: "creative_thinking", label: "Think more creatively", iconKey: "creative_thinking" },
+  { value: "emotional_control", label: "Improve emotional control", iconKey: "emotional_control" },
+  { value: "exam_prep", label: "Ace my exams", iconKey: "exam_prep" },
+  { value: "career_growth", label: "Accelerate career growth", iconKey: "career_growth" },
+  { value: "better_decisions", label: "Make better decisions", iconKey: "better_decisions" },
+  { value: "social_skills", label: "Improve social skills", iconKey: "social_skills" },
+  { value: "mental_health", label: "Support mental wellness", iconKey: "mental_health" },
+  { value: "confidence", label: "Build confidence", iconKey: "confidence" },
 ] as const;
 
 export const CHALLENGES = [
-  { value: "forgetfulness", label: "Forgetfulness", icon: "🧠" },
-  { value: "distraction", label: "Easily distracted", icon: "📱" },
-  { value: "brain_fog", label: "Brain fog / mental fatigue", icon: "☁️" },
-  { value: "slow_processing", label: "Slow information processing", icon: "🐌" },
-  { value: "procrastination", label: "Procrastination", icon: "⏰" },
-  { value: "anxiety", label: "Anxiety / overthinking", icon: "🌀" },
-  { value: "poor_sleep", label: "Poor sleep affecting cognition", icon: "😴" },
-  { value: "language_struggle", label: "Word-finding / language difficulty", icon: "💬" },
-  { value: "exam_pressure", label: "Exam pressure / test anxiety", icon: "📋" },
-  { value: "screen_fatigue", label: "Screen fatigue / digital overload", icon: "💻" },
-  { value: "motivation_dip", label: "Low motivation / burnout", icon: "🔋" },
-  { value: "decision_paralysis", label: "Decision paralysis", icon: "🤔" },
+  { value: "forgetfulness", label: "Forgetfulness", iconKey: "forgetfulness" },
+  { value: "distraction", label: "Easily distracted", iconKey: "distraction" },
+  { value: "brain_fog", label: "Brain fog / mental fatigue", iconKey: "brain_fog" },
+  { value: "slow_processing", label: "Slow information processing", iconKey: "slow_processing" },
+  { value: "procrastination", label: "Procrastination", iconKey: "procrastination" },
+  { value: "anxiety", label: "Anxiety / overthinking", iconKey: "anxiety" },
+  { value: "poor_sleep", label: "Poor sleep affecting cognition", iconKey: "poor_sleep" },
+  { value: "language_struggle", label: "Word-finding / language difficulty", iconKey: "language_struggle" },
+  { value: "exam_pressure", label: "Exam pressure / test anxiety", iconKey: "exam_pressure" },
+  { value: "screen_fatigue", label: "Screen fatigue / digital overload", iconKey: "screen_fatigue" },
+  { value: "motivation_dip", label: "Low motivation / burnout", iconKey: "motivation_dip" },
+  { value: "decision_paralysis", label: "Decision paralysis", iconKey: "decision_paralysis" },
 ] as const;
 
 export const WORKOUT_TIMES = [
@@ -117,32 +117,32 @@ export const WORKOUT_TIMES = [
 ] as const;
 
 export const ACHIEVEMENTS = [
-  { id: "first_workout", title: "First Steps", description: "Complete your first workout", icon: "🌱", xp: 50 },
-  { id: "week_streak", title: "Week Warrior", description: "7-day streak", icon: "🔥", xp: 100 },
-  { id: "month_streak", title: "Monthly Master", description: "30-day streak", icon: "💎", xp: 500 },
-  { id: "memory_whiz", title: "Memory Whiz", description: "Complete 10 memory activities", icon: "🧠", xp: 150 },
-  { id: "focus_fiend", title: "Focus Fiend", description: "Complete 10 focus activities", icon: "🎯", xp: 150 },
-  { id: "creative_spark", title: "Creative Spark", description: "Complete 10 creativity activities", icon: "✨", xp: 150 },
-  { id: "thinker", title: "Deep Thinker", description: "Complete 10 thinking activities", icon: "💡", xp: 150 },
-  { id: "scholar", title: "Scholar", description: "Complete 10 learning activities", icon: "📚", xp: 150 },
-  { id: "healthy_mind", title: "Healthy Mind", description: "Complete 10 health activities", icon: "❤️", xp: 150 },
-  { id: "empath", title: "Empath", description: "Complete 10 emotional intelligence activities", icon: "🤝", xp: 150 },
-  { id: "perfect_week", title: "Perfect Week", description: "Complete every daily workout for a week", icon: "⭐", xp: 300 },
-  { id: "night_owl", title: "Night Owl", description: "Complete a workout after 9 PM", icon: "🦉", xp: 75 },
-  { id: "early_bird", title: "Early Bird", description: "Complete a workout before 7 AM", icon: "🌅", xp: 75 },
-  { id: "speed_demon", title: "Speed Demon", description: "Complete a Quick-Fire challenge", icon: "⚡", xp: 100 },
-  { id: "all_categories", title: "Renaissance Mind", description: "Complete at least one activity in every category", icon: "🎭", xp: 250 },
-  { id: "ten_workouts", title: "Dedicated", description: "Complete 10 workouts", icon: "🏅", xp: 200 },
-  { id: "fifty_workouts", title: "Committed", description: "Complete 50 workouts", icon: "🏆", xp: 1000 },
-  { id: "hundred_workouts", title: "Brain Champion", description: "Complete 100 workouts", icon: "👑", xp: 2500 },
+  { id: "first_workout", title: "First Steps", description: "Complete your first workout", iconKey: "first_workout", xp: 50 },
+  { id: "week_streak", title: "Week Warrior", description: "7-day streak", iconKey: "week_streak", xp: 100 },
+  { id: "month_streak", title: "Monthly Master", description: "30-day streak", iconKey: "month_streak", xp: 500 },
+  { id: "memory_whiz", title: "Memory Whiz", description: "Complete 10 memory activities", iconKey: "memory_whiz", xp: 150 },
+  { id: "focus_fiend", title: "Focus Fiend", description: "Complete 10 focus activities", iconKey: "focus_fiend", xp: 150 },
+  { id: "creative_spark", title: "Creative Spark", description: "Complete 10 creativity activities", iconKey: "creative_spark", xp: 150 },
+  { id: "thinker", title: "Deep Thinker", description: "Complete 10 thinking activities", iconKey: "thinker", xp: 150 },
+  { id: "scholar", title: "Scholar", description: "Complete 10 learning activities", iconKey: "scholar", xp: 150 },
+  { id: "healthy_mind", title: "Healthy Mind", description: "Complete 10 health activities", iconKey: "healthy_mind", xp: 150 },
+  { id: "empath", title: "Empath", description: "Complete 10 emotional intelligence activities", iconKey: "empath", xp: 150 },
+  { id: "perfect_week", title: "Perfect Week", description: "Complete every daily workout for a week", iconKey: "perfect_week", xp: 300 },
+  { id: "night_owl", title: "Night Owl", description: "Complete a workout after 9 PM", iconKey: "night_owl", xp: 75 },
+  { id: "early_bird", title: "Early Bird", description: "Complete a workout before 7 AM", iconKey: "early_bird", xp: 75 },
+  { id: "speed_demon", title: "Speed Demon", description: "Complete a Quick-Fire challenge", iconKey: "speed_demon", xp: 100 },
+  { id: "all_categories", title: "Renaissance Mind", description: "Complete at least one activity in every category", iconKey: "all_categories", xp: 250 },
+  { id: "ten_workouts", title: "Dedicated", description: "Complete 10 workouts", iconKey: "ten_workouts", xp: 200 },
+  { id: "fifty_workouts", title: "Committed", description: "Complete 50 workouts", iconKey: "fifty_workouts", xp: 1000 },
+  { id: "hundred_workouts", title: "Brain Champion", description: "Complete 100 workouts", iconKey: "hundred_workouts", xp: 2500 },
 ] as const;
 
 export const AMBIENT_SOUNDS = [
-  { id: "none", label: "None", icon: "🔇" },
-  { id: "lofi", label: "Lo-Fi Beats", icon: "🎵" },
-  { id: "rain", label: "Rain", icon: "🌧️" },
-  { id: "forest", label: "Forest", icon: "🌲" },
-  { id: "white_noise", label: "White Noise", icon: "🌊" },
+  { id: "none", label: "None", iconKey: "none" },
+  { id: "lofi", label: "Lo-Fi Beats", iconKey: "lofi" },
+  { id: "rain", label: "Rain", iconKey: "rain" },
+  { id: "forest", label: "Forest", iconKey: "forest" },
+  { id: "white_noise", label: "White Noise", iconKey: "white_noise" },
 ] as const;
 
 export const QUICK_FIRE_DURATIONS = [30, 60, 90] as const;

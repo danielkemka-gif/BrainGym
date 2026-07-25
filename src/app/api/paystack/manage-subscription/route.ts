@@ -19,9 +19,8 @@ export async function POST() {
       return NextResponse.json({ error: "No active subscription" }, { status: 404 });
     }
 
-    // Disable the subscription via Paystack API
     const key = process.env.PAYSTACK_SECRET_KEY ?? "";
-    await fetch(
+    const res = await fetch(
       `https://api.paystack.co/subscription/${sub.paystack_subscription_code}/disable`,
       {
         method: "POST",
@@ -32,6 +31,15 @@ export async function POST() {
         body: JSON.stringify({ code: sub.paystack_subscription_code, token: "" }),
       }
     );
+
+    const paystackResponse = await res.json();
+
+    if (!paystackResponse.status) {
+      return NextResponse.json(
+        { error: paystackResponse.message ?? "Paystack cancellation failed" },
+        { status: 502 }
+      );
+    }
 
     await supabase
       .from("subscriptions")

@@ -112,20 +112,20 @@ export function DashboardHeader() {
   const { level } = getLevelProgress(totalXp);
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-3">
         <Avatar src={avatarUrl} name={userName} size="lg" level={level.level} />
-        <div>
-          <h1 className="text-xl font-bold">
+        <div className="min-w-0">
+          <h1 className="text-lg font-bold sm:text-xl truncate">
             {greeting || t.dashboard_greeting} {userName}! 👋
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground hidden sm:block">
             {subtitle || t.dashboard_subtitle}
           </p>
         </div>
       </div>
       {!loading && (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <div className="flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1.5">
             <span className="text-sm font-bold text-primary">{coins}</span>
             <span className="text-xs text-muted-foreground">{t.dashboard_coins}</span>

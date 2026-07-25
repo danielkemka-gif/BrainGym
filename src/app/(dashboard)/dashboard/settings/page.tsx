@@ -3,11 +3,12 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { GOALS, CHALLENGES, WORKOUT_TIMES } from "@/lib/constants";
+import { GOALS, CHALLENGES, WORKOUT_TIMES, STREAK } from "@/lib/constants";
 import { useI18n } from "@/lib/i18n";
 import { LOCALES, type Locale } from "@/lib/i18n/types";
 import { Avatar } from "@/components/ui/avatar";
-import { Camera, X, Globe } from "lucide-react";
+import { Camera, X, Globe, Sun, Moon, Monitor } from "lucide-react";
+import { useTheme } from "@/lib/theme-provider";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -30,6 +31,8 @@ export default function SettingsPage() {
   const [reminderTime, setReminderTime] = useState("08:00");
   const [darkMode, setDarkMode] = useState(true);
   const [localeSetting, setLocaleSetting] = useState<Locale>("en");
+
+  const [streakFreezesRemaining, setStreakFreezesRemaining] = useState(0);
 
   const [subStatus, setSubStatus] = useState<string | null>(null);
   const [subPlan, setSubPlan] = useState<string>("free");
@@ -63,6 +66,7 @@ export default function SettingsPage() {
           setChallenges(profile.challenges ?? []);
           setPreferredTime(profile.preferred_workout_time ?? "");
           setAvatarUrl(profile.avatar_url ?? null);
+          setStreakFreezesRemaining(profile.streak_freezes_remaining ?? 0);
         }
 
         const settings = settingsRes.data;
@@ -423,6 +427,35 @@ export default function SettingsPage() {
         </div>
       </section>
 
+      {/* Streak Protection */}
+      <section className="rounded-2xl border border-border bg-card p-6">
+        <h2 className="mb-5 text-lg font-semibold">Streak Protection</h2>
+        <div className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Streak freezes protect your streak when you miss a day. You earn a freeze for every 7-day streak.
+          </p>
+          <div className="flex items-center gap-1.5">
+            {Array.from({ length: STREAK.FREEZE_DAYS }).map((_, i) => (
+              <span
+                key={i}
+                className={`text-xl ${i < streakFreezesRemaining ? "opacity-100" : "opacity-25 grayscale"}`}
+              >
+                ❄️
+              </span>
+            ))}
+          </div>
+          {streakFreezesRemaining > 0 ? (
+            <p className="text-sm text-primary">
+              You have {streakFreezesRemaining} freeze{streakFreezesRemaining !== 1 ? "s" : ""} active — your streak is protected!
+            </p>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Complete a 7-day streak to earn your first freeze!
+            </p>
+          )}
+        </div>
+      </section>
+
       {/* Language */}
       <section className="rounded-2xl border border-border bg-card p-6">
         <div className="flex items-center gap-2 mb-5">
@@ -449,6 +482,9 @@ export default function SettingsPage() {
           ))}
         </div>
       </section>
+
+      {/* Theme */}
+      <ThemeSection />
 
       {/* Subscription */}
       <section className="rounded-2xl border border-border bg-card p-6">
@@ -533,5 +569,40 @@ export default function SettingsPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+function ThemeSection() {
+  const { theme, setTheme } = useTheme();
+  const options = [
+    { value: "dark" as const, label: "Dark", icon: Moon, desc: "Easy on the eyes" },
+    { value: "light" as const, label: "Light", icon: Sun, desc: "Bright and clean" },
+    { value: "system" as const, label: "System", icon: Monitor, desc: "Match your device" },
+  ];
+
+  return (
+    <section className="rounded-2xl border border-border bg-card p-6">
+      <div className="flex items-center gap-2 mb-5">
+        <Sun className="h-5 w-5 text-muted-foreground" />
+        <h2 className="text-lg font-semibold">Appearance</h2>
+      </div>
+      <div className="grid grid-cols-3 gap-3">
+        {options.map(({ value, label, icon: Icon, desc }) => (
+          <button
+            key={value}
+            onClick={() => setTheme(value)}
+            className={`flex flex-col items-center gap-2 rounded-xl border p-4 transition-all ${
+              theme === value
+                ? "border-primary bg-primary/10 text-primary"
+                : "border-border hover:border-muted-foreground/30"
+            }`}
+          >
+            <Icon className="h-6 w-6" />
+            <span className="text-sm font-medium">{label}</span>
+            <span className="text-[10px] text-muted-foreground">{desc}</span>
+          </button>
+        ))}
+      </div>
+    </section>
   );
 }

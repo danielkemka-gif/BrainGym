@@ -91,7 +91,7 @@ export default function LeaderboardPage() {
           <p className="text-sm text-destructive">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="mt-3 text-sm text-primary hover:underline"
+            className="mt-3 rounded-lg px-4 py-2.5 text-sm font-medium text-primary hover:bg-primary/10 min-h-[44px]"
           >
             Try again
           </button>

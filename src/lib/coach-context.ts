@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { CATEGORIES } from "@/lib/constants";
+import { getLevel } from "@/lib/scoring";
 
 interface ActivityRow {
   title: string;
@@ -91,7 +92,7 @@ export async function buildCoachContext(userId: string): Promise<CoachContext | 
       },
       recentActivities,
       totalWorkouts: new Set(logs.map((l) => l.date)).size,
-      level: 0,
+      level: getLevel(xpRes).level,
       totalXp: xpRes,
       activities,
     };

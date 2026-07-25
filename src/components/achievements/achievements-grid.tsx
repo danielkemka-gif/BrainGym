@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { ACHIEVEMENTS } from "@/lib/constants";
+import { ACHIEVEMENT_ICONS } from "@/lib/icons";
 
 export type AchievementId = (typeof ACHIEVEMENTS)[number]["id"];
 
@@ -27,6 +28,7 @@ export function AchievementsGrid() {
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
       {ACHIEVEMENTS.map((a) => {
         const isUnlocked = unlocked.has(a.id);
+        const Icon = ACHIEVEMENT_ICONS[a.id];
         return (
           <div
             key={a.id}
@@ -36,7 +38,13 @@ export function AchievementsGrid() {
                 : "border-border opacity-50 grayscale"
             }`}
           >
-            <div className="mb-2 text-2xl">{a.icon}</div>
+            <div className="mb-2 flex justify-center">
+              <div className={`flex h-10 w-10 items-center justify-center rounded-full ${
+                isUnlocked ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
+              }`}>
+                {Icon ? <Icon className="h-5 w-5" /> : <span className="text-lg">🏆</span>}
+              </div>
+            </div>
             <p className="text-sm font-medium">{a.title}</p>
             <p className="mt-0.5 text-xs text-muted-foreground">
               {a.description}

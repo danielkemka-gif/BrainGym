@@ -4,6 +4,7 @@ import Link from "next/link";
 import { CATEGORIES } from "@/lib/constants";
 import { useI18n } from "@/lib/i18n";
 import { ArrowRight } from "lucide-react";
+import { CATEGORY_ICONS } from "@/lib/icons";
 
 const CATEGORY_GRADIENTS: Record<string, string> = {
   memory: "from-indigo-500 to-violet-600",
@@ -13,16 +14,6 @@ const CATEGORY_GRADIENTS: Record<string, string> = {
   health: "from-rose-400 to-red-500",
   creativity: "from-pink-400 to-fuchsia-600",
   "emotional-intelligence": "from-violet-400 to-purple-600",
-};
-
-const CATEGORY_EMOJIS: Record<string, string> = {
-  memory: "🧠",
-  focus: "🎯",
-  thinking: "💡",
-  learning: "📚",
-  health: "❤️",
-  creativity: "🎨",
-  "emotional-intelligence": "🤝",
 };
 
 export function QuickActions() {
@@ -54,30 +45,33 @@ export function QuickActions() {
         <h2 className="font-semibold">{t.dashboard_brain_training}</h2>
         <Link
           href="/dashboard/library"
-          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+          className="flex items-center gap-1 rounded-lg py-2 px-2 -mr-2 text-xs text-muted-foreground hover:text-foreground min-h-[44px]"
         >
           {t.dashboard_view_all} <ArrowRight className="h-3 w-3" />
         </Link>
       </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-        {CATEGORIES.map((cat) => (
-          <Link
-            key={cat.id}
-            href={`/dashboard/library?category=${cat.id}`}
-            className="group relative overflow-hidden rounded-2xl border border-border bg-card p-4 transition-all hover:border-transparent hover:shadow-lg hover:shadow-primary/5"
-          >
-            <div
-              className={`mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br text-white transition-transform group-hover:scale-110 ${CATEGORY_GRADIENTS[cat.slug] || "from-gray-500 to-gray-600"}`}
+        {CATEGORIES.map((cat) => {
+          const Icon = CATEGORY_ICONS[cat.slug];
+          return (
+            <Link
+              key={cat.id}
+              href={`/dashboard/library?category=${cat.id}`}
+              className="group relative overflow-hidden rounded-2xl border border-border bg-card p-4 transition-all hover:border-transparent hover:shadow-lg hover:shadow-primary/5"
             >
-              <span className="text-xl">{CATEGORY_EMOJIS[cat.slug]}</span>
-            </div>
-            <p className="text-sm font-semibold">{CATEGORY_LABELS[cat.slug]}</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              {CATEGORY_SLOGANS[cat.slug]}
-            </p>
-            <ArrowRight className="absolute bottom-4 right-4 h-4 w-4 text-muted-foreground/50 transition-all group-hover:translate-x-0.5 group-hover:text-foreground" />
-          </Link>
-        ))}
+              <div
+                className={`mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br text-white transition-transform group-hover:scale-110 ${CATEGORY_GRADIENTS[cat.slug] || "from-gray-500 to-gray-600"}`}
+              >
+                {Icon && <Icon className="h-5 w-5" />}
+              </div>
+              <p className="text-sm font-semibold">{CATEGORY_LABELS[cat.slug]}</p>
+              <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
+                {CATEGORY_SLOGANS[cat.slug]}
+              </p>
+              <ArrowRight className="absolute bottom-4 right-4 h-4 w-4 text-muted-foreground/50 transition-all group-hover:translate-x-0.5 group-hover:text-foreground" />
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

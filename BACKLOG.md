@@ -53,7 +53,7 @@
 ## Phase E: Dashboard & Workouts
 
 - [x] Dashboard layout — AppShell with collapsible Sidebar + TopBar
-- [x] Dashboard page — Today's Workout, Brain Score, XP bar, Streak, Missions
+- [x] Dashboard page — Today's Workout, Brain Score, XP bar, Streak, Missions   
 - [x] Today's Workout component — 5 activity cards with toggle checkoff + complete button
 - [x] Workout completion flow — creates daily workout, submits logs, awards XP/coins
 - [x] Activity Library — grid with category filter, difficulty filter, search

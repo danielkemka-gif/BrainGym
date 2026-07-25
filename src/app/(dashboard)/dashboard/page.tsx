@@ -30,6 +30,14 @@ const OnboardingPrompt = dynamic(
   { ssr: false }
 );
 
+const HabitNudges = dynamic(
+  () =>
+    import("@/components/dashboard/habit-nudges").then(
+      (m) => ({ default: m.HabitNudges })
+    ),
+  { ssr: false }
+);
+
 const QuickActions = dynamic(
   () =>
     import("@/components/dashboard/quick-actions").then(
@@ -81,10 +89,18 @@ const TrialBanner = dynamic(
   { ssr: false }
 );
 
+const BrainJourney = dynamic(
+  () =>
+    import("@/components/dashboard/brain-journey").then(
+      (m) => ({ default: m.BrainJourney })
+    ),
+  { ssr: false }
+);
+
 export default function DashboardPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-6">
-      {/* User avatar + greeting + coins/level */}
+      {/* Header: greeting + coins + level */}
       <Suspense
         fallback={
           <div className="flex items-center gap-3">
@@ -109,7 +125,12 @@ export default function DashboardPage() {
         <OnboardingPrompt />
       </Suspense>
 
-      {/* BIG central Start Training button */}
+      {/* Habit nudge — smart encouragement */}
+      <Suspense fallback={null}>
+        <HabitNudges />
+      </Suspense>
+
+      {/* Today's Workout — prominent CTA */}
       <Suspense
         fallback={
           <div className="h-44 animate-pulse rounded-2xl bg-muted" />
@@ -118,15 +139,15 @@ export default function DashboardPage() {
         <CentralCTA />
       </Suspense>
 
-      {/* Today's Workout + XP/Streak/Coins */}
+      {/* Brain Score + Skill Tree / XP/Streak — 2-column on desktop */}
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 space-y-6">
           <Suspense
             fallback={
-              <div className="h-80 animate-pulse rounded-2xl bg-muted" />
+              <div className="h-64 animate-pulse rounded-2xl bg-muted" />
             }
           >
-            <TodaysWorkoutSection />
+            <BrainScoreSection />
           </Suspense>
         </div>
         <div className="space-y-6">
@@ -137,10 +158,17 @@ export default function DashboardPage() {
           >
             <XpStreakSection />
           </Suspense>
+          <Suspense
+            fallback={
+              <div className="h-32 animate-pulse rounded-2xl bg-muted" />
+            }
+          >
+            <TodaysWorkoutSection />
+          </Suspense>
         </div>
       </div>
 
-      {/* Brain Training quick actions */}
+      {/* Quick actions grid — 7 categories */}
       <Suspense
         fallback={
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
@@ -156,27 +184,23 @@ export default function DashboardPage() {
         <QuickActions />
       </Suspense>
 
-      {/* Brain Scores + Missions */}
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <Suspense
-            fallback={
-              <div className="h-64 animate-pulse rounded-2xl bg-muted" />
-            }
-          >
-            <BrainScoreSection />
-          </Suspense>
-        </div>
-        <div>
-          <Suspense
-            fallback={
-              <div className="h-32 animate-pulse rounded-2xl bg-muted" />
-            }
-          >
-            <MissionsSection />
-          </Suspense>
-        </div>
-      </div>
+      {/* Brain Journey timeline */}
+      <Suspense
+        fallback={
+          <div className="h-48 animate-pulse rounded-2xl bg-muted" />
+        }
+      >
+        <BrainJourney />
+      </Suspense>
+
+      {/* Weekly missions preview */}
+      <Suspense
+        fallback={
+          <div className="h-32 animate-pulse rounded-2xl bg-muted" />
+        }
+      >
+        <MissionsSection />
+      </Suspense>
     </div>
   );
 }

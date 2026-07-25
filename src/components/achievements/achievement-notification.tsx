@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ACHIEVEMENTS } from "@/lib/constants";
+import { ACHIEVEMENT_ICONS } from "@/lib/icons";
 import type { AchievementId } from "./achievements-grid";
 
 export function AchievementNotification({
@@ -34,10 +35,14 @@ export function AchievementNotification({
 
   if (!current) return null;
 
+  const Icon = current ? ACHIEVEMENT_ICONS[current.id] : null;
+
   return (
     <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-right-2 fade-in rounded-2xl border border-primary/30 bg-card px-5 py-4 shadow-lg">
       <div className="flex items-center gap-3">
-        <span className="text-3xl">{current.icon}</span>
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+          {Icon ? <Icon className="h-6 w-6 text-primary" /> : <span className="text-2xl">🏆</span>}
+        </div>
         <div>
           <p className="text-xs text-muted-foreground">Achievement unlocked!</p>
           <p className="font-semibold">{current.title}</p>

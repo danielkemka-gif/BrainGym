@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useI18n } from "@/lib/i18n";
-import { Zap, Brain } from "lucide-react";
+import { Zap, Brain, CheckCircle, Sparkles } from "lucide-react";
 
 export function CentralCTA() {
   const { t } = useI18n();
@@ -48,11 +48,11 @@ export function CentralCTA() {
       <div className="relative px-6 py-8 text-center">
         {hasWorkout ? (
           <>
-            <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-500/10 text-3xl">
-              🎉
+            <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-500/10">
+              <CheckCircle className="h-8 w-8 text-green-500" />
             </div>
             <h2 className="text-xl font-bold">
-              {t.dashboard_greeting}{userName ? `, ${userName}` : ""}! 🎉
+              {t.dashboard_greeting}{userName ? `, ${userName}` : ""}!
             </h2>
             <div className="mt-5 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
               <Link
@@ -73,11 +73,11 @@ export function CentralCTA() {
           </>
         ) : (
           <>
-            <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-3xl">
-              ⚡
+            <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
+              <Sparkles className="h-8 w-8 text-primary" />
             </div>
             <h2 className="text-xl font-bold">
-              {userName ? `${t.dashboard_greeting}, ${userName}! 👋` : `${t.dashboard_greeting}! 👋`}
+              {userName ? `${t.dashboard_greeting}, ${userName}!` : `${t.dashboard_greeting}!`}
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
               {t.dashboard_subtitle}

@@ -31,6 +31,8 @@ export type TranslationKeys = {
   nav_decision_lab: string;
   nav_settings: string;
   nav_chat: string;
+  nav_games: string;
+  nav_workout: string;
   nav_tagline: string;
 
   // Dashboard

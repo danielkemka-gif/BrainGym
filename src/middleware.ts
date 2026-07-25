@@ -20,17 +20,15 @@ const dashboardPattern = /^\/dashboard(\/|$)/;
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const publicApiPaths = ["/api/paystack/webhook"];
+  const apiWhitelist = ["/api/paystack/webhook", "/api/health"];
 
   if (pathname.startsWith("/api/")) {
-    if (publicApiPaths.some((path) => pathname.startsWith(path))) {
+    if (apiWhitelist.some((p) => pathname.startsWith(p))) {
       return NextResponse.next();
     }
 
-    const { supabaseResponse, user } = await updateSession(request);
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    // For all other API routes, refresh session but don't redirect
+    const { supabaseResponse } = await updateSession(request);
     return supabaseResponse;
   }
 

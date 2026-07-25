@@ -11,48 +11,48 @@ const PROMPTS = [
     gradient: "from-emerald-500/20 via-teal-500/10 to-cyan-500/20",
     border: "border-emerald-500/20",
     icon: <Zap className="h-6 w-6 text-emerald-400" />,
+    avatarIcon: <Zap className="h-7 w-7 text-emerald-400" />,
     title: "Kick off your first workout!",
     description:
       "It only takes 5 minutes. Complete it and earn coins, XP, and build your streak.",
     href: "/dashboard/challenge",
     cta: "Start Workout",
-    emoji: "⚡",
   },
   {
     id: "browse-activities",
     gradient: "from-indigo-500/20 via-violet-500/10 to-purple-500/20",
     border: "border-indigo-500/20",
     icon: <Brain className="h-6 w-6 text-indigo-400" />,
+    avatarIcon: <Brain className="h-7 w-7 text-indigo-400" />,
     title: "Explore 177+ brain exercises",
     description:
       "Memory, Focus, Thinking, Learning, Creativity — pick what excites you.",
     href: "/dashboard/library",
     cta: "Browse Activities",
-    emoji: "🧠",
   },
   {
     id: "ai-coach",
     gradient: "from-amber-500/20 via-orange-500/10 to-yellow-500/20",
     border: "border-amber-500/20",
     icon: <Target className="h-6 w-6 text-amber-400" />,
+    avatarIcon: <Target className="h-7 w-7 text-amber-400" />,
     title: "Meet your AI Coach",
     description:
       "Get personalized tips and a custom training plan tailored to your goals.",
     href: "/dashboard/coach",
     cta: "Talk to Coach",
-    emoji: "🤖",
   },
   {
     id: "leaderboard",
     gradient: "from-pink-500/20 via-rose-500/10 to-red-500/20",
     border: "border-pink-500/20",
     icon: <Trophy className="h-6 w-6 text-pink-400" />,
+    avatarIcon: <Trophy className="h-7 w-7 text-pink-400" />,
     title: "See the leaderboard",
     description:
       "Compare your progress with other BrainGym members and climb the ranks.",
     href: "/dashboard/leaderboard",
     cta: "View Rankings",
-    emoji: "🏆",
   },
 ];
 
@@ -141,8 +141,8 @@ export function OnboardingPrompt() {
             className="h-14 w-14 rounded-full object-cover ring-2 ring-white/10"
           />
         ) : (
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/10 text-2xl">
-            {prompt.emoji}
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/10">
+            {prompt.avatarIcon}
           </div>
         )}
         <div className="min-w-0 flex-1">

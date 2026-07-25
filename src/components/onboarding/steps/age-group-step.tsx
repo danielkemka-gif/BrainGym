@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { AGE_GROUPS } from "@/lib/constants";
+import { AGE_GROUP_ICONS } from "@/lib/icons";
 import type { AgeGroup } from "@/lib/constants";
 
 interface Props {
@@ -41,8 +42,8 @@ export function AgeGroupStep({ defaultValues, onNext, onBack }: Props) {
                 : "border-border bg-card hover:border-muted-foreground/30 hover:bg-accent/50"
             }`}
           >
-            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 text-3xl">
-              {group.icon}
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/10 to-primary/5">
+              {(() => { const GroupIcon = AGE_GROUP_ICONS[group.iconKey]; return GroupIcon ? <GroupIcon className="h-6 w-6 text-primary" /> : null; })()}
             </span>
             <div className="min-w-0">
               <p className={`text-sm font-semibold ${

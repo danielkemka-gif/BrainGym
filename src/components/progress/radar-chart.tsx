@@ -31,10 +31,8 @@ export function RadarChart({ scores, size = 300 }: RadarChartProps) {
 
   return (
     <svg
-      width={size}
-      height={size}
       viewBox={`0 0 ${size} ${size}`}
-      className="mx-auto"
+      className="mx-auto w-full max-w-[280px] sm:max-w-[300px]"
     >
       {topPoints.map((poly, li) => (
         <polygon

@@ -2,16 +2,7 @@
 
 import { CATEGORIES } from "@/lib/constants";
 import { Search, X } from "lucide-react";
-
-const CATEGORY_EMOJIS: Record<string, string> = {
-  memory: "🧠",
-  focus: "🎯",
-  thinking: "💡",
-  learning: "📚",
-  health: "❤️",
-  creativity: "🎨",
-  "emotional-intelligence": "🤝",
-};
+import { CATEGORY_ICONS } from "@/lib/icons";
 
 const CATEGORY_GRADIENTS: Record<string, string> = {
   memory: "from-indigo-500 to-violet-600",
@@ -83,21 +74,25 @@ export function FilterBar({
               : "border-border bg-card text-muted-foreground hover:border-muted-foreground/50 hover:bg-accent"
           }`}
         >
-          All 🌟
+          All
         </button>
-        {CATEGORIES.map((cat) => (
-          <button
-            key={cat.id}
-            onClick={() => setCategory(category === cat.id ? "" : cat.id)}
-            className={`shrink-0 rounded-xl border px-4 py-2 text-sm font-medium transition-all ${
-              category === cat.id
-                ? `border-transparent bg-gradient-to-r ${CATEGORY_GRADIENTS[cat.slug]} text-white shadow-md`
-                : "border-border bg-card text-muted-foreground hover:border-muted-foreground/50 hover:bg-accent"
-            }`}
-          >
-            {CATEGORY_EMOJIS[cat.slug]} {cat.label}
-          </button>
-        ))}
+        {CATEGORIES.map((cat) => {
+          const Icon = CATEGORY_ICONS[cat.slug];
+          return (
+            <button
+              key={cat.id}
+              onClick={() => setCategory(category === cat.id ? "" : cat.id)}
+              className={`shrink-0 inline-flex items-center gap-1.5 rounded-xl border px-4 py-2 text-sm font-medium transition-all ${
+                category === cat.id
+                  ? `border-transparent bg-gradient-to-r ${CATEGORY_GRADIENTS[cat.slug]} text-white shadow-md`
+                  : "border-border bg-card text-muted-foreground hover:border-muted-foreground/50 hover:bg-accent"
+              }`}
+            >
+              {Icon && <Icon className="h-3.5 w-3.5" />}
+              {cat.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* Difficulty pills + result count */}

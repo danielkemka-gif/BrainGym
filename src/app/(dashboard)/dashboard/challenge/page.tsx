@@ -5,6 +5,8 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { getBrainQuestions, QUIZ_LANGUAGES, type BrainQuestion, type BrainQuestionLocale } from "@/lib/brain-questions";
 import { CATEGORIES, QUICK_FIRE_DURATIONS } from "@/lib/constants";
+import { updateCategoryScore } from "@/lib/brain-scores";
+import { unlockSpeedDemon } from "@/lib/achievements";
 import {
   ArrowLeft, Clock, Zap, Trophy, Coins, RotateCcw,
   CheckCircle2, XCircle, Flame, Send, Lightbulb, Star, Target, Globe
@@ -169,6 +171,7 @@ export default function ChallengePage() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const qTimerRef = useRef<NodeJS.Timeout | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const persistedRef = useRef(false);
 
   const current = questions[currentIndex];
 
@@ -191,6 +194,7 @@ export default function ChallengePage() {
     setTotalXp(0); setTotalCoins(0); setQuestionLog([]);
     setPhase("countdown");
     setCountdownValue(3);
+    persistedRef.current = false;
   }, [duration, pickQuestions]);
 
   // Countdown
@@ -241,6 +245,66 @@ export default function ChallengePage() {
       setTimeout(() => inputRef.current?.focus(), 300);
     }
   }, [phase, current, answerState, currentIndex]);
+
+  // Persist quiz results when finished
+  useEffect(() => {
+    if (phase !== "finished" || persistedRef.current || questions.length === 0) return;
+    persistedRef.current = true;
+
+    const persistResults = async () => {
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        // Persist XP to ledger
+        if (totalXp > 0) {
+          await supabase.from("xp_ledger").insert({
+            user_id: user.id,
+            amount: totalXp,
+            reason: "quick_fire_quiz",
+          });
+        }
+
+        // Persist coins to ledger
+        if (totalCoins > 0) {
+          await supabase.from("coins_ledger").insert({
+            user_id: user.id,
+            amount: totalCoins,
+            reason: "quick_fire_quiz",
+          });
+        }
+
+        // Update brain scores per category based on quiz performance
+        const categoryResults: Record<string, { correct: number; total: number }> = {};
+        for (const log of questionLog) {
+          if (!categoryResults[log.category]) {
+            categoryResults[log.category] = { correct: 0, total: 0 };
+          }
+          categoryResults[log.category].total++;
+          if (log.correct) categoryResults[log.category].correct++;
+        }
+
+        for (const [catSlug, result] of Object.entries(categoryResults)) {
+          const cat = CATEGORIES.find((c) => c.slug === catSlug);
+          if (cat) {
+            const accuracy = result.correct / result.total;
+            await updateCategoryScore(user.id, cat.id, accuracy > 0.5, accuracy > 0.8 ? "advanced" : accuracy > 0.5 ? "intermediate" : "beginner");
+          }
+        }
+
+        // Unlock Speed Demon achievement
+        const unlocked = await unlockSpeedDemon(user.id);
+        if (unlocked.length > 0) {
+          // Achievement unlocked — could show notification
+        }
+      } catch {
+        // Silently fail
+      }
+    };
+
+    persistResults();
+  }, [phase, totalXp, totalCoins, questionLog, questions.length]);
 
   function isCorrect(answer: string): boolean {
     if (!current) return false;

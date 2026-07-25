@@ -9,13 +9,22 @@ export async function POST() {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user || !isAdmin(user)) {
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { data: adminRecord } = await supabase
+      .from("admins")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (!adminRecord) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const adminSupabase = createAdminClient();
 
-    // Create avatars bucket if it doesn't exist
     const { error: bucketError } = await adminSupabase.storage.createBucket("avatars", {
       public: true,
       fileSizeLimit: 5 * 1024 * 1024,
@@ -26,7 +35,6 @@ export async function POST() {
       return NextResponse.json({ error: bucketError.message }, { status: 500 });
     }
 
-    // Try to update bucket to be public
     await adminSupabase.storage.updateBucket("avatars", { public: true });
 
     return NextResponse.json({ success: true, message: "Avatars bucket ready" });
@@ -36,11 +44,4 @@ export async function POST() {
       { status: 500 }
     );
   }
-}
-
-function isAdmin(user: any) {
-  return (
-    user?.app_metadata?.role === "admin" ||
-    user?.user_metadata?.role === "admin"
-  );
 }

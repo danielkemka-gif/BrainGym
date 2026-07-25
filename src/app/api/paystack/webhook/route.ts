@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import crypto from "crypto";
 
 export async function POST(request: Request) {
@@ -10,66 +10,66 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "No signature" }, { status: 400 });
   }
 
-  // Verify webhook signature
   const hash = crypto
     .createHmac("sha512", process.env.PAYSTACK_SECRET_KEY ?? "")
     .update(body)
     .digest("hex");
 
-  if (hash !== signature) {
+  const sigBuf = Buffer.from(hash, "hex");
+  const sigHeader = Buffer.from(signature, "hex");
+
+  if (sigBuf.length !== sigHeader.length || !crypto.timingSafeEqual(sigBuf, sigHeader)) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
-  const event = JSON.parse(body);
-  const supabase = await createClient();
+  let event: Record<string, unknown>;
+  try {
+    event = JSON.parse(body);
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  const supabase = createAdminClient();
 
   switch (event.event) {
     case "charge.success": {
-      const charge = event.data;
-      const customerEmail = charge.customer?.email;
-      const customerCode = charge.customer?.customer_code;
-      const subscriptionCode = charge.subscription?.subscription_code;
+      const charge = event.data as Record<string, unknown>;
+      const customer = charge.customer as Record<string, unknown> | undefined;
+      const subscription = charge.subscription as Record<string, unknown> | undefined;
+      const customerCode = customer?.customer_code as string | undefined;
+      const subscriptionCode = subscription?.subscription_code as string | undefined;
+      const customerEmail = customer?.email as string | undefined;
 
-      if (customerEmail) {
-        // Find user by email
-        const { data: user } = await supabase
-          .from("auth.users")
-          .select("id")
-          .eq("email", customerEmail)
-          .maybeSingle()
-          .throwOnError();
+      if (!customerCode) break;
 
-        // Actually, we can't query auth.users from the client. Let's use the subscriptions table.
-        // We'll look up by paystack_customer_code or email
-        const { data: existing } = await supabase
-          .from("subscriptions")
-          .select("user_id")
-          .eq("paystack_customer_code", customerCode)
-          .maybeSingle();
+      const { data: existing } = await supabase
+        .from("subscriptions")
+        .select("user_id, status")
+        .eq("paystack_customer_code", customerCode)
+        .maybeSingle();
 
-        if (existing) {
-          const updateData: Record<string, unknown> = {
-            status: "active",
-            plan_tier: "premium",
-          };
-          if (subscriptionCode) updateData.paystack_subscription_code = subscriptionCode;
-          await supabase.from("subscriptions").update(updateData).eq("user_id", existing.user_id);
-        }
+      if (existing && existing.status !== "active") {
+        const updateData: Record<string, unknown> = { status: "active", plan_tier: "premium" };
+        if (subscriptionCode) updateData.paystack_subscription_code = subscriptionCode;
+        if (customerEmail) updateData.user_email = customerEmail;
+        await supabase.from("subscriptions").update(updateData).eq("user_id", existing.user_id);
       }
       break;
     }
 
     case "subscription.disable": {
-      const subData = event.data;
-      const subCode = subData.subscription_code;
+      const subData = event.data as Record<string, unknown>;
+      const subCode = subData.subscription_code as string | undefined;
+
+      if (!subCode) break;
 
       const { data: existing } = await supabase
         .from("subscriptions")
-        .select("user_id")
+        .select("user_id, status")
         .eq("paystack_subscription_code", subCode)
         .maybeSingle();
 
-      if (existing) {
+      if (existing && existing.status !== "canceled") {
         await supabase
           .from("subscriptions")
           .update({ status: "canceled" })
@@ -80,20 +80,23 @@ export async function POST(request: Request) {
 
     case "invoice.update":
     case "invoice.create": {
-      const invoice = event.data;
-      if (invoice.subscription?.subscription_code) {
-        const { data: existing } = await supabase
-          .from("subscriptions")
-          .select("user_id")
-          .eq("paystack_subscription_code", invoice.subscription.subscription_code)
-          .maybeSingle();
+      const invoice = event.data as Record<string, unknown>;
+      const invoiceSub = invoice.subscription as Record<string, unknown> | undefined;
+      const subCode = invoiceSub?.subscription_code as string | undefined;
 
-        if (existing && invoice.status === "paid") {
-          await supabase
-            .from("subscriptions")
-            .update({ status: "active" })
-            .eq("user_id", existing.user_id);
-        }
+      if (!subCode) break;
+
+      const { data: existing } = await supabase
+        .from("subscriptions")
+        .select("user_id, status")
+        .eq("paystack_subscription_code", subCode)
+        .maybeSingle();
+
+      if (existing && invoice.status === "paid" && existing.status !== "active") {
+        await supabase
+          .from("subscriptions")
+          .update({ status: "active" })
+          .eq("user_id", existing.user_id);
       }
       break;
     }

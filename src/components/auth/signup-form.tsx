@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { signupSchema } from "@/lib/validations/auth";
 import { Eye, EyeOff } from "lucide-react";
 
 export function SignupForm() {
@@ -19,6 +20,13 @@ export function SignupForm() {
     e.preventDefault();
     setError(null);
     setLoading(true);
+
+    const result = signupSchema.safeParse({ email, password, confirmPassword: password });
+    if (!result.success) {
+      setError(result.error.errors[0].message);
+      setLoading(false);
+      return;
+    }
 
     const supabase = createClient();
     const { error: authError } = await supabase.auth.signUp({

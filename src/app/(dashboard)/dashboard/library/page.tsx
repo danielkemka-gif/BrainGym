@@ -108,7 +108,7 @@ export default function LibraryPage() {
             177+ brain training exercises across 7 categories
           </p>
           {/* Stats */}
-          <div className="mt-4 flex gap-4">
+          <div className="mt-4 flex flex-wrap gap-2 sm:gap-4">
             <div className="flex items-center gap-2 rounded-lg bg-background/50 px-3 py-1.5">
               <Sparkles className="h-3.5 w-3.5 text-primary" />
               <span className="text-xs font-medium">{activities.length} exercises</span>
@@ -147,7 +147,7 @@ export default function LibraryPage() {
                       style={{ width: `${Math.min((cat.completed / cat.count) * 100, 100)}%` }}
                     />
                   </div>
-                  <p className="mt-1 text-[10px] text-muted-foreground">{cat.completed} completed</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{cat.completed} completed</p>
                 </div>
               )}
             </button>

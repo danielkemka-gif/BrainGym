@@ -17,6 +17,8 @@ export const pcm: TranslationKeys = {
   nav_decision_lab: "Decision Lab",
   nav_settings: "Setting",
   nav_chat: "Chat",
+  nav_games: "Games",
+  nav_workout: "Workout",
   nav_tagline: "Train Your Brain For Real Life",
 
   // Dashboard

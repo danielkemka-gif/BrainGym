@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { X, Zap, Brain, Target, Trophy } from "lucide-react";
+import { X, Zap, Brain, Target, Trophy, Hand } from "lucide-react";
 
 interface GuideStep {
   id: string;
@@ -112,12 +112,12 @@ export function WelcomeGuide() {
       </button>
 
       <div className="mb-4 flex items-start gap-4">
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-3xl">
-          🧠
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10">
+          <Brain className="h-7 w-7 text-primary" />
         </div>
         <div className="min-w-0">
           <h3 className="text-lg font-bold">
-            Hey {userName}! Welcome to BrainGym 💪
+            Hey {userName}! Welcome to BrainGym
           </h3>
           <p className="text-sm text-muted-foreground">
             Let&apos;s get your brain training started. Here&apos;s what to do first:

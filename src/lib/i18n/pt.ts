@@ -17,6 +17,8 @@ export const pt: TranslationKeys = {
   nav_decision_lab: "Laboratório de Decisões",
   nav_settings: "Configurações",
   nav_chat: "Chat",
+  nav_games: "Jogos",
+  nav_workout: "Treino",
   nav_tagline: "Treine seu cérebro para a vida real",
 
   // Dashboard

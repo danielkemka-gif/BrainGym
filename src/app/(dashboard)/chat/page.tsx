@@ -461,7 +461,7 @@ function ChatContent() {
   // ─── Send message ──────────────────────────────────────────────────────
   const handleSend = async () => {
     const content = input.trim();
-    if (!content || sending) return;
+    if (!content || sending || content.length > 2000) return;
     setSending(true);
     setInput("");
     setReplyTo(null);
@@ -860,6 +860,7 @@ function ChatContent() {
               onKeyDown={handleKeyDown}
               placeholder={t.chat_placeholder}
               rows={1}
+              maxLength={2000}
               className="flex-1 resize-none rounded-2xl border border-border bg-muted/50 px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500/30 max-h-32 transition-all"
               style={{ minHeight: "42px" }}
               onInput={(e) => {
@@ -880,6 +881,13 @@ function ChatContent() {
                 <Send className="h-4 w-4" />
               )}
             </button>
+          </div>
+
+          {/* Character count */}
+          <div className="flex justify-end mt-1">
+            <span className={`text-[10px] ${input.length > 1800 ? "text-destructive" : "text-muted-foreground"}`}>
+              {input.length}/2000
+            </span>
           </div>
 
           {/* Quick emoji bar */}

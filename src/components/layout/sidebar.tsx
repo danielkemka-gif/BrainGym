@@ -8,6 +8,8 @@ import { useI18n } from "@/lib/i18n";
 import { LOCALES, type Locale } from "@/lib/i18n/types";
 import { Avatar } from "@/components/ui/avatar";
 import { Globe } from "lucide-react";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { SIDEBAR_ICONS } from "@/lib/icons";
 
 export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   const pathname = usePathname();
@@ -31,21 +33,23 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
   }, []);
 
   const navItems = [
-    { href: "/dashboard", label: t.nav_dashboard, icon: "◉" },
-    { href: "/dashboard/library", label: t.nav_activities, icon: "⊞" },
-    { href: "/dashboard/challenge", label: t.nav_quick_fire, icon: "⚡" },
-    { href: "/dashboard/coach", label: t.nav_ai_coach, icon: "🧠" },
-    { href: "/dashboard/progress", label: t.nav_progress, icon: "▤" },
-    { href: "/dashboard/reports", label: t.nav_reports, icon: "📊" },
-    { href: "/dashboard/history", label: t.nav_history, icon: "⏱" },
-    { href: "/dashboard/leaderboard", label: t.nav_leaderboard, icon: "☰" },
-    { href: "/dashboard/missions", label: t.nav_missions, icon: "★" },
-    { href: "/dashboard/challenges", label: t.nav_challenges, icon: "🏆" },
-    { href: "/dashboard/chat", label: t.nav_chat, icon: "💬" },
-    { href: "/dashboard/journal", label: t.nav_journal, icon: "📓" },
-    { href: "/dashboard/share", label: t.nav_share_card, icon: "📤" },
-    { href: "/dashboard/decision-lab", label: t.nav_decision_lab, icon: "⚖" },
-    { href: "/dashboard/settings", label: t.nav_settings, icon: "⚙" },
+    { href: "/dashboard", label: t.nav_dashboard, iconKey: "dashboard" },
+    { href: "/dashboard/workout", label: t.nav_workout ?? "Workout", iconKey: "workout" },
+    { href: "/dashboard/library", label: t.nav_activities, iconKey: "library" },
+    { href: "/dashboard/challenge", label: t.nav_quick_fire, iconKey: "challenge" },
+    { href: "/dashboard/games", label: t.nav_games ?? "Games", iconKey: "games" },
+    { href: "/dashboard/coach", label: t.nav_ai_coach, iconKey: "coach" },
+    { href: "/dashboard/progress", label: t.nav_progress, iconKey: "progress" },
+    { href: "/dashboard/reports", label: t.nav_reports, iconKey: "reports" },
+    { href: "/dashboard/history", label: t.nav_history, iconKey: "history" },
+    { href: "/dashboard/leaderboard", label: t.nav_leaderboard, iconKey: "leaderboard" },
+    { href: "/dashboard/missions", label: t.nav_missions, iconKey: "missions" },
+    { href: "/dashboard/challenges", label: t.nav_challenges, iconKey: "challenges" },
+    { href: "/dashboard/chat", label: t.nav_chat, iconKey: "chat" },
+    { href: "/dashboard/journal", label: t.nav_journal, iconKey: "journal" },
+    { href: "/dashboard/share", label: t.nav_share_card, iconKey: "share" },
+    { href: "/dashboard/decision-lab", label: t.nav_decision_lab, iconKey: "decision-lab" },
+    { href: "/dashboard/settings", label: t.nav_settings, iconKey: "settings" },
   ];
 
   return (
@@ -88,6 +92,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
         <nav className="flex-1 space-y-1 p-3 overflow-y-auto">
           {navItems.map((item) => {
             const active = pathname === item.href;
+            const Icon = SIDEBAR_ICONS[item.iconKey];
             return (
               <Link
                 key={item.href}
@@ -99,22 +104,25 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
                     : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                 }`}
               >
-                <span className="text-lg">{item.icon}</span>
+                {Icon && <Icon className="h-4 w-4 shrink-0" />}
                 {item.label}
               </Link>
             );
           })}
         </nav>
 
-        {/* Language switcher */}
+        {/* Language & Theme */}
         <div className="relative border-t border-border p-3">
-          <button
-            onClick={() => setShowLang(!showLang)}
-            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-          >
-            <Globe className="h-4 w-4" />
-            <span>{LOCALES.find((l) => l.id === locale)?.nativeLabel ?? "English"}</span>
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setShowLang(!showLang)}
+              className="flex flex-1 items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+            >
+              <Globe className="h-4 w-4" />
+              <span>{LOCALES.find((l) => l.id === locale)?.nativeLabel ?? "English"}</span>
+            </button>
+            <ThemeToggle size="sm" />
+          </div>
           {showLang && (
             <div className="absolute bottom-full left-3 right-3 mb-1 rounded-xl border border-border bg-card p-1.5 shadow-lg z-50">
               {LOCALES.map((loc) => (

@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { getLevelProgress } from "@/lib/scoring";
 import { PLANS } from "@/lib/paystack/plans";
 
 interface Message {
@@ -19,24 +21,65 @@ const SUGGESTIONS = [
 ];
 
 export function ChatUI() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "welcome",
-      role: "coach",
-      content:
-        "Hi! I'm your BrainGym AI Coach. I can recommend activities, answer questions about brain training, and help you reach your cognitive goals. What would you like to explore?",
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [checkingUpgrade, setCheckingUpgrade] = useState(false);
+  const [loadingHistory, setLoadingHistory] = useState(true);
+  const [userLevel, setUserLevel] = useState<number | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const loadedRef = useRef(false);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Load conversation history and user level on mount
+  useEffect(() => {
+    if (loadedRef.current) return;
+    loadedRef.current = true;
+
+    const supabase = createClient();
+
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) {
+        setLoadingHistory(false);
+        return;
+      }
+
+      // Fetch user level
+      const { data: xpRows } = await supabase
+        .from("xp_ledger")
+        .select("amount")
+        .eq("user_id", user.id);
+      const totalXp = xpRows?.reduce((s, l) => s + l.amount, 0) ?? 0;
+      const { level } = getLevelProgress(totalXp);
+      setUserLevel(level.level);
+
+      // Fetch conversation history (last 20 messages)
+      const { data: historyRows } = await supabase
+        .from("ai_feedback")
+        .select("id, message, metadata, created_at")
+        .eq("user_id", user.id)
+        .eq("feedback_type", "coach_message")
+        .order("created_at", { ascending: false })
+        .limit(20);
+
+      if (historyRows && historyRows.length > 0) {
+        const reversed = [...historyRows].reverse();
+        const historyMessages: Message[] = reversed.map((row) => ({
+          id: row.id,
+          role: (row.metadata as Record<string, unknown>)?.role === "coach" ? "coach" : "user",
+          content: row.message,
+        }));
+        setMessages(historyMessages);
+      }
+
+      setLoadingHistory(false);
+    });
+  }, []);
 
   async function sendMessage(content: string) {
     if (!content.trim() || sending) return;
@@ -88,10 +131,65 @@ export function ChatUI() {
     }
   }
 
+  const showSuggestions = messages.length === 0 && !showUpgrade && !loadingHistory;
+
   return (
     <div className="mx-auto flex max-w-3xl flex-col space-y-4">
+      {/* Chat header with level */}
+      {userLevel !== null && (
+        <div className="flex items-center justify-between rounded-2xl border border-border bg-card px-4 py-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm">
+              🧠
+            </div>
+            <div>
+              <p className="text-sm font-semibold">AI Coach</p>
+              <p className="text-xs text-muted-foreground">Your personal brain trainer</p>
+            </div>
+          </div>
+          <div className="rounded-full border border-border bg-background px-3 py-1">
+            <span className="text-xs font-medium text-muted-foreground">Level </span>
+            <span className="text-xs font-bold text-primary">{userLevel}</span>
+          </div>
+        </div>
+      )}
+
       {/* Messages */}
       <div className="flex-1 space-y-4 overflow-y-auto">
+        {loadingHistory && (
+          <div className="flex justify-start">
+            <div className="max-w-[85%] rounded-2xl border border-border bg-card px-4 py-3">
+              <div className="mb-1.5 flex items-center gap-2">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs">
+                  🧠
+                </div>
+                <span className="text-xs font-medium text-primary">AI Coach</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground" style={{ animationDelay: "0ms" }} />
+                <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground" style={{ animationDelay: "150ms" }} />
+                <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground" style={{ animationDelay: "300ms" }} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {!loadingHistory && messages.length === 0 && (
+          <div className="flex justify-start">
+            <div className="max-w-[85%] rounded-2xl border border-border bg-card px-4 py-3 text-sm leading-relaxed">
+              <div className="mb-1.5 flex items-center gap-2">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs">
+                  🧠
+                </div>
+                <span className="text-xs font-medium text-primary">AI Coach</span>
+              </div>
+              <div className="whitespace-pre-wrap">
+                Hi! I&apos;m your BrainGym AI Coach. I can recommend activities, answer questions about brain training, and help you reach your cognitive goals. What would you like to explore?
+              </div>
+            </div>
+          </div>
+        )}
+
         {messages.map((msg) => (
           <div
             key={msg.id}
@@ -178,7 +276,7 @@ export function ChatUI() {
         </div>
       )}
 
-      {messages.length === 1 && !showUpgrade && (
+      {showSuggestions && (
         <div className="flex flex-wrap gap-2">
           {SUGGESTIONS.map((s) => (
             <button

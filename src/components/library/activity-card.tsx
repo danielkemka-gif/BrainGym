@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { CATEGORIES } from "@/lib/constants";
 import { Clock, Zap, Coins } from "lucide-react";
+import { CATEGORY_ICONS } from "@/lib/icons";
 
 const CATEGORY_GRADIENTS: Record<string, string> = {
   memory: "from-indigo-500 to-violet-600",
@@ -12,16 +13,6 @@ const CATEGORY_GRADIENTS: Record<string, string> = {
   health: "from-rose-400 to-red-500",
   creativity: "from-pink-400 to-fuchsia-600",
   "emotional-intelligence": "from-violet-400 to-purple-600",
-};
-
-const CATEGORY_EMOJIS: Record<string, string> = {
-  memory: "🧠",
-  focus: "🎯",
-  thinking: "💡",
-  learning: "📚",
-  health: "❤️",
-  creativity: "🎨",
-  "emotional-intelligence": "🤝",
 };
 
 const DIFFICULTY_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
@@ -45,7 +36,7 @@ export function ActivityCard({ activity, index = 0 }: { activity: Activity; inde
   const category = CATEGORIES.find((c) => c.id === activity.category_id);
   const diff = DIFFICULTY_CONFIG[activity.difficulty] || DIFFICULTY_CONFIG.beginner;
   const gradient = CATEGORY_GRADIENTS[category?.slug || ""] || "from-gray-500 to-gray-600";
-  const emoji = CATEGORY_EMOJIS[category?.slug || ""] || "🧠";
+  const Icon = CATEGORY_ICONS[category?.slug || ""] || CATEGORY_ICONS.memory;
 
   return (
     <Link
@@ -57,7 +48,9 @@ export function ActivityCard({ activity, index = 0 }: { activity: Activity; inde
       <div className={`relative h-24 bg-gradient-to-br ${gradient} p-4`}>
         <div className="absolute inset-0 bg-black/10" />
         <div className="relative flex items-start justify-between">
-          <span className="text-3xl drop-shadow-lg">{emoji}</span>
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/20 text-white drop-shadow-lg">
+            <Icon className="h-4 w-4" />
+          </div>
           <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${diff.bg} ${diff.color}`}>
             {diff.label}
           </span>

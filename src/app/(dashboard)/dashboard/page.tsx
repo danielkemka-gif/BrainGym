@@ -97,6 +97,22 @@ const BrainJourney = dynamic(
   { ssr: false }
 );
 
+const StreakCalendar = dynamic(
+  () =>
+    import("@/components/dashboard/streak-calendar").then(
+      (m) => ({ default: m.StreakCalendar })
+    ),
+  { ssr: false }
+);
+
+const BrainAgeSection = dynamic(
+  () =>
+    import("@/components/dashboard/brain-age-section").then(
+      (m) => ({ default: m.BrainAgeSection })
+    ),
+  { ssr: false }
+);
+
 export default function DashboardPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-6">
@@ -139,15 +155,15 @@ export default function DashboardPage() {
         <CentralCTA />
       </Suspense>
 
-      {/* Brain Score + Skill Tree / XP/Streak — 2-column on desktop */}
+      {/* Brain Age + XP/Streak — hero row */}
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2">
           <Suspense
             fallback={
-              <div className="h-64 animate-pulse rounded-2xl bg-muted" />
+              <div className="h-72 animate-pulse rounded-2xl bg-muted" />
             }
           >
-            <BrainScoreSection />
+            <BrainAgeSection />
           </Suspense>
         </div>
         <div className="space-y-6">
@@ -164,6 +180,28 @@ export default function DashboardPage() {
             }
           >
             <TodaysWorkoutSection />
+          </Suspense>
+        </div>
+      </div>
+
+      {/* Streak Calendar + Brain Scores — 2-column on desktop */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <Suspense
+            fallback={
+              <div className="h-40 animate-pulse rounded-2xl bg-muted" />
+            }
+          >
+            <StreakCalendar />
+          </Suspense>
+        </div>
+        <div>
+          <Suspense
+            fallback={
+              <div className="h-64 animate-pulse rounded-2xl bg-muted" />
+            }
+          >
+            <BrainScoreSection />
           </Suspense>
         </div>
       </div>

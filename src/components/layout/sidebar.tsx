@@ -5,17 +5,44 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useI18n } from "@/lib/i18n";
-import { LOCALES, type Locale } from "@/lib/i18n/types";
+import { LOCALES } from "@/lib/i18n/types";
 import { Avatar } from "@/components/ui/avatar";
-import { Globe } from "lucide-react";
+import { Globe, ChevronDown, MoreHorizontal } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { SIDEBAR_ICONS } from "@/lib/icons";
+
+const PRIMARY_NAV = [
+  { href: "/dashboard", labelKey: "nav_dashboard", iconKey: "dashboard" },
+  { href: "/dashboard/workout", labelKey: "nav_workout", iconKey: "workout" },
+  { href: "/dashboard/games", labelKey: "nav_games", iconKey: "games" },
+  { href: "/dashboard/challenge", labelKey: "nav_quick_fire", iconKey: "challenge" },
+  { href: "/dashboard/coach", labelKey: "nav_ai_coach", iconKey: "coach" },
+  { href: "/dashboard/progress", labelKey: "nav_progress", iconKey: "progress" },
+] as const;
+
+const MORE_NAV = [
+  { href: "/dashboard/library", labelKey: "nav_activities", iconKey: "library" },
+  { href: "/dashboard/missions", labelKey: "nav_missions", iconKey: "missions" },
+  { href: "/dashboard/challenges", labelKey: "nav_challenges", iconKey: "challenges" },
+  { href: "/dashboard/leaderboard", labelKey: "nav_leaderboard", iconKey: "leaderboard" },
+  { href: "/dashboard/history", labelKey: "nav_history", iconKey: "history" },
+  { href: "/dashboard/reports", labelKey: "nav_reports", iconKey: "reports" },
+  { href: "/dashboard/chat", labelKey: "nav_chat", iconKey: "chat" },
+  { href: "/dashboard/journal", labelKey: "nav_journal", iconKey: "journal" },
+  { href: "/dashboard/share", labelKey: "nav_share_card", iconKey: "share" },
+  { href: "/dashboard/decision-lab", labelKey: "nav_decision_lab", iconKey: "decision-lab" },
+] as const;
+
+const SETTINGS_NAV = { href: "/dashboard/settings", labelKey: "nav_settings", iconKey: "settings" } as const;
 
 export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   const pathname = usePathname();
   const { t, locale, setLocale } = useI18n();
   const [profile, setProfile] = useState<{ name: string | null; username: string | null; avatar_url: string | null } | null>(null);
   const [showLang, setShowLang] = useState(false);
+  const [showMore, setShowMore] = useState(false);
+
+  const isMoreActive = MORE_NAV.some((item) => pathname === item.href);
 
   useEffect(() => {
     const supabase = createClient();
@@ -32,25 +59,26 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
     });
   }, []);
 
-  const navItems = [
-    { href: "/dashboard", label: t.nav_dashboard, iconKey: "dashboard" },
-    { href: "/dashboard/workout", label: t.nav_workout ?? "Workout", iconKey: "workout" },
-    { href: "/dashboard/library", label: t.nav_activities, iconKey: "library" },
-    { href: "/dashboard/challenge", label: t.nav_quick_fire, iconKey: "challenge" },
-    { href: "/dashboard/games", label: t.nav_games ?? "Games", iconKey: "games" },
-    { href: "/dashboard/coach", label: t.nav_ai_coach, iconKey: "coach" },
-    { href: "/dashboard/progress", label: t.nav_progress, iconKey: "progress" },
-    { href: "/dashboard/reports", label: t.nav_reports, iconKey: "reports" },
-    { href: "/dashboard/history", label: t.nav_history, iconKey: "history" },
-    { href: "/dashboard/leaderboard", label: t.nav_leaderboard, iconKey: "leaderboard" },
-    { href: "/dashboard/missions", label: t.nav_missions, iconKey: "missions" },
-    { href: "/dashboard/challenges", label: t.nav_challenges, iconKey: "challenges" },
-    { href: "/dashboard/chat", label: t.nav_chat, iconKey: "chat" },
-    { href: "/dashboard/journal", label: t.nav_journal, iconKey: "journal" },
-    { href: "/dashboard/share", label: t.nav_share_card, iconKey: "share" },
-    { href: "/dashboard/decision-lab", label: t.nav_decision_lab, iconKey: "decision-lab" },
-    { href: "/dashboard/settings", label: t.nav_settings, iconKey: "settings" },
-  ];
+  function renderNavItem(item: { href: string; labelKey: string; iconKey: string }) {
+    const active = pathname === item.href;
+    const Icon = SIDEBAR_ICONS[item.iconKey];
+    const label = (t as unknown as Record<string, string>)[item.labelKey] ?? item.labelKey;
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        onClick={onClose}
+        className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+          active
+            ? "bg-primary/10 text-primary font-medium"
+            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+        }`}
+      >
+        {Icon && <Icon className="h-4 w-4 shrink-0" />}
+        {label}
+      </Link>
+    );
+  }
 
   return (
     <>
@@ -66,6 +94,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
+        {/* Logo */}
         <div className="flex h-14 items-center gap-2.5 border-b border-border px-4">
           <img
             src="/logo.png"
@@ -77,6 +106,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
           </Link>
         </div>
 
+        {/* Profile */}
         {profile && (
           <div className="flex items-center gap-3 border-b border-border px-4 py-3">
             <Avatar src={profile.avatar_url} name={profile.name || ""} size="sm" />
@@ -89,31 +119,41 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
           </div>
         )}
 
+        {/* Primary nav — 6 core items */}
         <nav className="flex-1 space-y-1 p-3 overflow-y-auto">
-          {navItems.map((item) => {
-            const active = pathname === item.href;
-            const Icon = SIDEBAR_ICONS[item.iconKey];
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={onClose}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
-                  active
-                    ? "bg-primary/10 text-primary font-medium"
-                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+          {PRIMARY_NAV.map((item) => renderNavItem(item))}
+
+          {/* More dropdown */}
+          <div>
+            <button
+              onClick={() => setShowMore(!showMore)}
+              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+                isMoreActive || showMore
+                  ? "bg-primary/10 text-primary font-medium"
+                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              }`}
+            >
+              <MoreHorizontal className="h-4 w-4 shrink-0" />
+              More
+              <ChevronDown
+                className={`ml-auto h-3.5 w-3.5 transition-transform ${
+                  showMore ? "rotate-180" : ""
                 }`}
-              >
-                {Icon && <Icon className="h-4 w-4 shrink-0" />}
-                {item.label}
-              </Link>
-            );
-          })}
+              />
+            </button>
+            {showMore && (
+              <div className="mt-0.5 space-y-0.5 pl-2">
+                {MORE_NAV.map((item) => renderNavItem(item))}
+              </div>
+            )}
+          </div>
         </nav>
 
-        {/* Language & Theme */}
-        <div className="relative border-t border-border p-3">
-          <div className="flex items-center gap-1">
+        {/* Bottom: Settings + Language + Theme */}
+        <div className="border-t border-border p-3 space-y-2">
+          {renderNavItem(SETTINGS_NAV)}
+
+          <div className="relative flex items-center gap-1">
             <button
               onClick={() => setShowLang(!showLang)}
               className="flex flex-1 items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"

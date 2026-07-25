@@ -20,9 +20,18 @@ const dashboardPattern = /^\/dashboard(\/|$)/;
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Allow all API routes through without auth
+  const publicApiPaths = ["/api/paystack/webhook"];
+
   if (pathname.startsWith("/api/")) {
-    return NextResponse.next();
+    if (publicApiPaths.some((path) => pathname.startsWith(path))) {
+      return NextResponse.next();
+    }
+
+    const { supabaseResponse, user } = await updateSession(request);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    return supabaseResponse;
   }
 
   const { supabaseResponse, user } = await updateSession(request);

@@ -11,8 +11,12 @@ import { checkAndUnlockAchievements } from "@/lib/achievements";
 import { calculateStreakWithFreeze } from "@/lib/streak-protection";
 import {
   ArrowLeft, CheckCircle2, Clock, Zap, Trophy, Coins,
-  ChevronRight, ChevronLeft, Pause, Play, SkipForward, Star
+  ChevronRight, ChevronLeft, Pause, Play, SkipForward, Star, Sparkles
 } from "lucide-react";
+import { Confetti } from "@/components/ui/confetti";
+import { LevelUpModal } from "@/components/ui/level-up-modal";
+import { getLevelProgress } from "@/lib/scoring";
+import { LEVELS } from "@/lib/constants";
 
 interface Activity {
   id: string;
@@ -52,7 +56,11 @@ export default function GuidedWorkoutPage() {
   const [sessionXp, setSessionXp] = useState(0);
   const [sessionCoins, setSessionCoins] = useState(0);
   const [completedCount, setCompletedCount] = useState(0);
+  const [totalXp, setTotalXp] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showLevelUp, setShowLevelUp] = useState(false);
+  const [levelFrom, setLevelFrom] = useState(1);
+  const [levelTo, setLevelTo] = useState(1);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const sortedItems = workout
@@ -78,6 +86,14 @@ export default function GuidedWorkoutPage() {
         .eq("user_id", user.id)
         .eq("date", today)
         .maybeSingle();
+
+      // Fetch current total XP for level-up detection
+      const { data: xpData } = await supabase
+        .from("xp_ledger")
+        .select("amount")
+        .eq("user_id", user.id);
+      const currentTotalXp = xpData ? xpData.reduce((s, r) => s + r.amount, 0) : 0;
+      setTotalXp(currentTotalXp);
 
       if (existing) {
         const w = existing as unknown as DailyWorkout;
@@ -333,6 +349,16 @@ export default function GuidedWorkoutPage() {
       completedAt: now,
     });
 
+    // Check for level-up
+    const prevLevel = getLevelProgress(totalXp);
+    const newTotalXp = totalXp + bonusXp;
+    const newLevel = getLevelProgress(newTotalXp);
+    if (newLevel.level.level > prevLevel.level.level) {
+      setLevelFrom(prevLevel.level.level);
+      setLevelTo(newLevel.level.level);
+      setShowLevelUp(true);
+    }
+
     setShowConfetti(true);
     setTimeout(() => setShowConfetti(false), 5000);
   }
@@ -382,27 +408,16 @@ export default function GuidedWorkoutPage() {
         </Link>
 
         <div className="rounded-2xl border border-border bg-card p-8 text-center relative overflow-hidden">
-          {showConfetti && (
-            <div className="absolute inset-0 pointer-events-none">
-              {Array.from({ length: 30 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="absolute animate-bounce"
-                  style={{
-                    left: `${Math.random() * 100}%`,
-                    top: `${Math.random() * 100}%`,
-                    animationDelay: `${Math.random() * 2}s`,
-                    fontSize: `${12 + Math.random() * 16}px`,
-                  }}
-                >
-                  {["🎉", "⭐", "🔥", "💪", "🧠", "✨"][i % 6]}
-                </div>
-              ))}
-            </div>
-          )}
+          <Confetti active={showConfetti} />
+          <LevelUpModal
+            show={showLevelUp}
+            fromLevel={levelFrom}
+            toLevel={levelTo}
+            onDismiss={() => setShowLevelUp(false)}
+          />
 
-          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 text-4xl shadow-lg shadow-green-500/20">
-            🎉
+          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg shadow-green-500/20">
+            <Sparkles className="h-10 w-10 text-white" />
           </div>
           <h1 className="text-2xl font-bold">Workout Complete!</h1>
           <p className="mt-2 text-sm text-muted-foreground">
@@ -627,8 +642,8 @@ export default function GuidedWorkoutPage() {
     return (
       <div className="mx-auto max-w-2xl space-y-6">
         <div className="rounded-2xl border border-green-500/20 bg-green-500/5 p-8 text-center">
-          <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-green-500/10 text-3xl">
-            ⭐
+          <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-green-500/10">
+            <Star className="h-8 w-8 text-green-500" />
           </div>
           <h2 className="text-xl font-bold text-green-500">Nice work!</h2>
           <p className="mt-1 text-sm text-muted-foreground">

@@ -57,7 +57,8 @@ export function HabitNudges() {
         supabase.from("streaks").select("current_streak").eq("user_id", user.id).maybeSingle(),
         supabase.from("profiles").select("preferred_workout_time").eq("user_id", user.id).maybeSingle(),
         supabase.from("brain_scores").select("score, category_id").eq("user_id", user.id).order("date", { ascending: false }),
-      ]).then(([todayWorkout, yesterdayWorkout, streak, profile, scores]) => {
+        supabase.from("daily_workouts").select("id").eq("user_id", user.id).limit(1),
+      ]).then(([todayWorkout, yesterdayWorkout, streak, profile, scores, hasHistory]) => {
         const todayDone = todayWorkout.data?.status === "completed";
         if (todayDone) { setLoading(false); return; }
 
@@ -85,11 +86,15 @@ export function HabitNudges() {
           return;
         }
 
-        // Priority 2: Missed day nudge
-        if (missedYesterday && currentStreak > 0) {
+        // Priority 2: Missed day nudge — show for streak holders AND returning users
+        const hasWorkoutHistory = (hasHistory.data?.length ?? 0) > 0;
+        if (missedYesterday && (currentStreak > 0 || hasWorkoutHistory)) {
+          const message = currentStreak > 0
+            ? "Welcome back! A quick session keeps your streak alive."
+            : "We missed you! Even 5 minutes keeps your progress going.";
           setNudge({
             type: "missed",
-            message: "Welcome back! A quick session keeps your streak alive.",
+            message,
             actionLabel: "Quick 5-min workout",
             actionHref: "/dashboard/workout",
           });

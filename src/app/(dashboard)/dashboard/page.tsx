@@ -113,6 +113,14 @@ const BrainAgeSection = dynamic(
   { ssr: false }
 );
 
+const CoachNudge = dynamic(
+  () =>
+    import("@/components/dashboard/coach-nudge").then(
+      (m) => ({ default: m.CoachNudge })
+    ),
+  { ssr: false }
+);
+
 export default function DashboardPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-6">
@@ -144,6 +152,11 @@ export default function DashboardPage() {
       {/* Habit nudge — smart encouragement */}
       <Suspense fallback={null}>
         <HabitNudges />
+      </Suspense>
+
+      {/* AI Coach proactive tip */}
+      <Suspense fallback={null}>
+        <CoachNudge />
       </Suspense>
 
       {/* Today's Workout — prominent CTA */}

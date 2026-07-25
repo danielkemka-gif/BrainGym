@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { CATEGORIES } from "@/lib/constants";
 import { useI18n } from "@/lib/i18n";
-import { ArrowRight } from "lucide-react";
-import { CATEGORY_ICONS } from "@/lib/icons";
+import { ArrowRight, Zap, ShoppingCart } from "lucide-react";
+import { CATEGORY_ICONS, SIDEBAR_ICONS } from "@/lib/icons";
 
 const CATEGORY_GRADIENTS: Record<string, string> = {
   memory: "from-indigo-500 to-violet-600",
@@ -15,6 +15,23 @@ const CATEGORY_GRADIENTS: Record<string, string> = {
   creativity: "from-pink-400 to-fuchsia-600",
   "emotional-intelligence": "from-violet-400 to-purple-600",
 };
+
+const FEATURE_LINKS = [
+  {
+    href: "/dashboard/daily-challenge",
+    label: "Daily Challenge",
+    description: "Play 3 games, get your brain age",
+    icon: Zap,
+    gradient: "from-primary to-violet-600",
+  },
+  {
+    href: "/dashboard/shop",
+    label: "Coin Shop",
+    description: "Spend coins on power-ups",
+    icon: ShoppingCart,
+    gradient: "from-amber-500 to-orange-600",
+  },
+];
 
 export function QuickActions() {
   const { t } = useI18n();
@@ -41,6 +58,25 @@ export function QuickActions() {
 
   return (
     <div className="space-y-4">
+      {/* Feature quick links */}
+      <div className="grid grid-cols-2 gap-3">
+        {FEATURE_LINKS.map((feature) => (
+          <Link
+            key={feature.href}
+            href={feature.href}
+            className="group relative overflow-hidden rounded-2xl border border-border bg-card p-4 transition-all hover:border-transparent hover:shadow-lg hover:shadow-primary/5"
+          >
+            <div className={`mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br text-white transition-transform group-hover:scale-110 ${feature.gradient}`}>
+              <feature.icon className="h-5 w-5" />
+            </div>
+            <p className="text-sm font-semibold">{feature.label}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">{feature.description}</p>
+            <ArrowRight className="absolute bottom-4 right-4 h-4 w-4 text-muted-foreground/50 transition-all group-hover:translate-x-0.5 group-hover:text-foreground" />
+          </Link>
+        ))}
+      </div>
+
+      {/* Category training links */}
       <div className="flex items-center justify-between">
         <h2 className="font-semibold">{t.dashboard_brain_training}</h2>
         <Link

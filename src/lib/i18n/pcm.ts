@@ -19,6 +19,8 @@ export const pcm: TranslationKeys = {
   nav_chat: "Chat",
   nav_games: "Games",
   nav_workout: "Workout",
+  nav_shop: "Shop",
+  nav_daily_challenge: "Daily Challenge",
   nav_tagline: "Train Your Brain For Real Life",
 
   // Dashboard

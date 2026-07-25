@@ -56,6 +56,7 @@ import {
   Briefcase,
   AlertTriangle,
   Snowflake,
+  ShoppingCart,
 } from "lucide-react";
 
 /* ── Sidebar Nav ──────────────────────────────────────────────── */
@@ -77,6 +78,7 @@ export const SIDEBAR_ICONS: Record<string, LucideIcon> = {
   share: Share2,
   "decision-lab": Scale,
   settings: Settings,
+  shop: ShoppingCart,
 };
 
 /* ── Category Icons ───────────────────────────────────────────── */

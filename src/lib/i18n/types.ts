@@ -33,6 +33,8 @@ export type TranslationKeys = {
   nav_chat: string;
   nav_games: string;
   nav_workout: string;
+  nav_shop: string;
+  nav_daily_challenge: string;
   nav_tagline: string;
 
   // Dashboard

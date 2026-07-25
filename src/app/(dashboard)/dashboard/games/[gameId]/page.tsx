@@ -243,6 +243,24 @@ export default function MemoryMatchPage() {
         best_time_ms: won ? Math.min(timeLeft * 1000, existing?.best_time_ms || Infinity) : existing?.best_time_ms,
       }, { onConflict: "user_id,game_id,level_number" });
 
+      // Credit XP and coins to main economy
+      if (xp > 0) {
+        await supabase.from("xp_ledger").insert({
+          user_id: userId,
+          amount: xp,
+          reason: `game_${gameId}_complete`,
+          reference_type: "game",
+        });
+      }
+      if (coins > 0) {
+        await supabase.from("coins_ledger").insert({
+          user_id: userId,
+          amount: coins,
+          reason: `game_${gameId}_complete`,
+          reference_type: "game",
+        });
+      }
+
       // Update local progress
       setProgress((prev) => {
         const filtered = prev.filter((p) => p.level_number !== selectedLevel);
@@ -292,6 +310,24 @@ export default function MemoryMatchPage() {
         score: Math.max(finalScore, existing?.score || 0),
         best_time_ms: timeLeftMs > 0 ? Math.min(timeLeftMs, existing?.best_time_ms || Infinity) : existing?.best_time_ms,
       }, { onConflict: "user_id,game_id,level_number" });
+
+      // Credit XP and coins to main economy
+      if (xp > 0) {
+        await supabase.from("xp_ledger").insert({
+          user_id: userId,
+          amount: xp,
+          reason: `game_${gameId}_complete`,
+          reference_type: "game",
+        });
+      }
+      if (coins > 0) {
+        await supabase.from("coins_ledger").insert({
+          user_id: userId,
+          amount: coins,
+          reason: `game_${gameId}_complete`,
+          reference_type: "game",
+        });
+      }
 
       setProgress((prev) => {
         const filtered = prev.filter((p) => p.level_number !== selectedLevel);

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { ALL_GAMES, type GameProgress } from "@/lib/games/config";
 import { GAME_ICONS } from "@/lib/icons";
-import { Star, Lock } from "lucide-react";
+import { Star, Lock, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 
 function DifficultyBadge({ d }: { d: string }) {
@@ -84,6 +84,27 @@ export default function GamesHubPage() {
           <p className="text-xs text-muted-foreground">Games Played</p>
         </div>
       </div>
+
+      {/* Daily Challenge — prominent CTA */}
+      <Link
+        href="/dashboard/daily-challenge"
+        className="group block overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 to-violet-500/5 transition-all hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10"
+      >
+        <div className="flex items-center gap-4 p-5">
+          <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-violet-600 shadow-lg shadow-primary/25">
+            <Zap className="h-7 w-7 text-white" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-base font-bold">Daily Brain Age Challenge</h3>
+            <p className="text-sm text-muted-foreground">
+              Play 3 quick games — discover your brain age for today
+            </p>
+          </div>
+          <span className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary">
+            NEW
+          </span>
+        </div>
+      </Link>
 
       {/* Game cards */}
       <div className="grid gap-4 sm:grid-cols-2">

@@ -1,6 +1,13 @@
 import type { LucideIcon } from "lucide-react";
 import {
   Brain,
+  BrainCircuit,
+  ScanEye,
+  Orbit,
+  GraduationCap,
+  HeartPulse,
+  WandSparkles,
+  Handshake,
   Target,
   Lightbulb,
   BookOpen,
@@ -28,7 +35,6 @@ import {
   Flame,
   Diamond,
   Sparkles,
-  GraduationCap,
   HeartHandshake,
   Moon,
   Sun,
@@ -57,6 +63,7 @@ import {
   AlertTriangle,
   Snowflake,
   ShoppingCart,
+  Globe,
 } from "lucide-react";
 
 /* ── Sidebar Nav ──────────────────────────────────────────────── */
@@ -83,13 +90,13 @@ export const SIDEBAR_ICONS: Record<string, LucideIcon> = {
 
 /* ── Category Icons ───────────────────────────────────────────── */
 export const CATEGORY_ICONS: Record<string, LucideIcon> = {
-  memory: Brain,
-  focus: Target,
-  thinking: Lightbulb,
-  learning: BookOpen,
-  health: Heart,
-  creativity: Palette,
-  "emotional-intelligence": Users,
+  memory: BrainCircuit,
+  focus: ScanEye,
+  thinking: Orbit,
+  learning: GraduationCap,
+  health: HeartPulse,
+  creativity: WandSparkles,
+  "emotional-intelligence": Handshake,
 };
 
 /* ── Achievement Icons ────────────────────────────────────────── */
@@ -182,8 +189,6 @@ export const NUDGE_ICONS: Record<string, LucideIcon> = {
   progress: TrendingUp,
   social: Globe,
 };
-
-import { Globe } from "lucide-react";
 
 /* ── Milestone Icons ──────────────────────────────────────────── */
 export const MILESTONE_ICONS: Record<string, LucideIcon> = {

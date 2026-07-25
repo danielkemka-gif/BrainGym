@@ -4,16 +4,51 @@ import Link from "next/link";
 import { CATEGORIES } from "@/lib/constants";
 import { useI18n } from "@/lib/i18n";
 import { ArrowRight, Zap, ShoppingCart } from "lucide-react";
-import { CATEGORY_ICONS, SIDEBAR_ICONS } from "@/lib/icons";
+import { CATEGORY_ICONS } from "@/lib/icons";
 
-const CATEGORY_GRADIENTS: Record<string, string> = {
-  memory: "from-indigo-500 to-violet-600",
-  focus: "from-amber-400 to-orange-500",
-  thinking: "from-emerald-400 to-teal-600",
-  learning: "from-sky-400 to-blue-600",
-  health: "from-rose-400 to-red-500",
-  creativity: "from-pink-400 to-fuchsia-600",
-  "emotional-intelligence": "from-violet-400 to-purple-600",
+const CATEGORY_THEMES: Record<string, { gradient: string; glow: string; ring: string; bg: string }> = {
+  memory: {
+    gradient: "from-indigo-500 to-violet-600",
+    glow: "group-hover:shadow-indigo-500/25",
+    ring: "ring-indigo-500/20",
+    bg: "bg-indigo-500/5",
+  },
+  focus: {
+    gradient: "from-amber-400 to-orange-500",
+    glow: "group-hover:shadow-amber-500/25",
+    ring: "ring-amber-500/20",
+    bg: "bg-amber-500/5",
+  },
+  thinking: {
+    gradient: "from-emerald-400 to-teal-600",
+    glow: "group-hover:shadow-emerald-500/25",
+    ring: "ring-emerald-500/20",
+    bg: "bg-emerald-500/5",
+  },
+  learning: {
+    gradient: "from-sky-400 to-blue-600",
+    glow: "group-hover:shadow-sky-500/25",
+    ring: "ring-sky-500/20",
+    bg: "bg-sky-500/5",
+  },
+  health: {
+    gradient: "from-rose-400 to-red-500",
+    glow: "group-hover:shadow-rose-500/25",
+    ring: "ring-rose-500/20",
+    bg: "bg-rose-500/5",
+  },
+  creativity: {
+    gradient: "from-pink-400 to-fuchsia-600",
+    glow: "group-hover:shadow-pink-500/25",
+    ring: "ring-pink-500/20",
+    bg: "bg-pink-500/5",
+  },
+  "emotional-intelligence": {
+    gradient: "from-violet-400 to-purple-600",
+    glow: "group-hover:shadow-violet-500/25",
+    ring: "ring-violet-500/20",
+    bg: "bg-violet-500/5",
+  },
 };
 
 const FEATURE_LINKS = [
@@ -23,6 +58,7 @@ const FEATURE_LINKS = [
     description: "Play 3 games, get your brain age",
     icon: Zap,
     gradient: "from-primary to-violet-600",
+    glow: "group-hover:shadow-primary/25",
   },
   {
     href: "/dashboard/shop",
@@ -30,6 +66,7 @@ const FEATURE_LINKS = [
     description: "Spend coins on power-ups",
     icon: ShoppingCart,
     gradient: "from-amber-500 to-orange-600",
+    glow: "group-hover:shadow-amber-500/25",
   },
 ];
 
@@ -57,21 +94,22 @@ export function QuickActions() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Feature quick links */}
       <div className="grid grid-cols-2 gap-3">
         {FEATURE_LINKS.map((feature) => (
           <Link
             key={feature.href}
             href={feature.href}
-            className="group relative overflow-hidden rounded-2xl border border-border bg-card p-4 transition-all hover:border-transparent hover:shadow-lg hover:shadow-primary/5"
+            className={`group relative overflow-hidden rounded-2xl border border-border bg-card p-4 transition-all duration-300 hover:border-transparent hover:shadow-xl ${feature.glow}`}
           >
-            <div className={`mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br text-white transition-transform group-hover:scale-110 ${feature.gradient}`}>
+            <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-gradient-to-br opacity-[0.07] blur-2xl transition-opacity group-hover:opacity-[0.15]" />
+            <div className={`mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 ${feature.gradient}`}>
               <feature.icon className="h-5 w-5" />
             </div>
             <p className="text-sm font-semibold">{feature.label}</p>
             <p className="mt-0.5 text-xs text-muted-foreground">{feature.description}</p>
-            <ArrowRight className="absolute bottom-4 right-4 h-4 w-4 text-muted-foreground/50 transition-all group-hover:translate-x-0.5 group-hover:text-foreground" />
+            <ArrowRight className="absolute bottom-4 right-4 h-4 w-4 text-muted-foreground/50 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-foreground" />
           </Link>
         ))}
       </div>
@@ -86,25 +124,35 @@ export function QuickActions() {
           {t.dashboard_view_all} <ArrowRight className="h-3 w-3" />
         </Link>
       </div>
+
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {CATEGORIES.map((cat) => {
           const Icon = CATEGORY_ICONS[cat.slug];
+          const theme = CATEGORY_THEMES[cat.slug];
+          if (!Icon || !theme) return null;
           return (
             <Link
               key={cat.id}
               href={`/dashboard/library?category=${cat.id}`}
-              className="group relative overflow-hidden rounded-2xl border border-border bg-card p-4 transition-all hover:border-transparent hover:shadow-lg hover:shadow-primary/5"
+              className={`group relative overflow-hidden rounded-2xl border border-border bg-card p-4 transition-all duration-300 hover:border-transparent hover:shadow-xl hover:-translate-y-0.5 ${theme.glow}`}
             >
-              <div
-                className={`mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br text-white transition-transform group-hover:scale-110 ${CATEGORY_GRADIENTS[cat.slug] || "from-gray-500 to-gray-600"}`}
-              >
-                {Icon && <Icon className="h-5 w-5" />}
+              {/* Decorative glow blob */}
+              <div className={`absolute -right-4 -top-4 h-24 w-24 rounded-full bg-gradient-to-br opacity-[0.07] blur-2xl transition-opacity group-hover:opacity-[0.15] ${theme.gradient}`} />
+
+              {/* Icon with decorative ring */}
+              <div className="relative mb-3">
+                <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 ${theme.gradient}`}>
+                  <Icon className="h-5 w-5" />
+                </div>
+                {/* Decorative orbit ring */}
+                <div className={`absolute -inset-1 rounded-xl ring-1 opacity-0 transition-opacity duration-300 group-hover:opacity-100 ${theme.ring}`} />
               </div>
+
               <p className="text-sm font-semibold">{CATEGORY_LABELS[cat.slug]}</p>
               <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
                 {CATEGORY_SLOGANS[cat.slug]}
               </p>
-              <ArrowRight className="absolute bottom-4 right-4 h-4 w-4 text-muted-foreground/50 transition-all group-hover:translate-x-0.5 group-hover:text-foreground" />
+              <ArrowRight className="absolute bottom-4 right-4 h-4 w-4 text-muted-foreground/50 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-foreground" />
             </Link>
           );
         })}

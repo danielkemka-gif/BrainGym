@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Confetti } from "@/components/ui/confetti";
 import { LevelUpModal } from "@/components/ui/level-up-modal";
+import { StreakMilestoneModal, getStreakMilestone } from "@/components/ui/streak-milestone-modal";
 import { getLevelProgress } from "@/lib/scoring";
 import { LEVELS } from "@/lib/constants";
 
@@ -61,6 +62,8 @@ export default function GuidedWorkoutPage() {
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [levelFrom, setLevelFrom] = useState(1);
   const [levelTo, setLevelTo] = useState(1);
+  const [showStreakMilestone, setShowStreakMilestone] = useState(false);
+  const [streakMilestoneDays, setStreakMilestoneDays] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const sortedItems = workout
@@ -339,6 +342,28 @@ export default function GuidedWorkoutPage() {
       });
     }
 
+    // Check for streak milestone
+    const milestone = getStreakMilestone(streakResult.newStreak);
+    if (milestone) {
+      // Credit milestone rewards
+      if (milestone.xp > 0) {
+        await supabase.from("xp_ledger").insert({
+          user_id: user.id,
+          amount: milestone.xp,
+          reason: `streak_milestone_${milestone.days}d`,
+        });
+      }
+      if (milestone.coins > 0) {
+        await supabase.from("coins_ledger").insert({
+          user_id: user.id,
+          amount: milestone.coins,
+          reason: `streak_milestone_${milestone.days}d`,
+        });
+      }
+      setStreakMilestoneDays(streakResult.newStreak);
+      setShowStreakMilestone(true);
+    }
+
     // Recalculate brain scores
     await recalculateBrainScores(user.id);
 
@@ -414,6 +439,11 @@ export default function GuidedWorkoutPage() {
             fromLevel={levelFrom}
             toLevel={levelTo}
             onDismiss={() => setShowLevelUp(false)}
+          />
+          <StreakMilestoneModal
+            show={showStreakMilestone}
+            streakDays={streakMilestoneDays}
+            onDismiss={() => setShowStreakMilestone(false)}
           />
 
           <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg shadow-green-500/20">

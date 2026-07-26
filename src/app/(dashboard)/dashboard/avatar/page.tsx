@@ -242,18 +242,20 @@ export default function AvatarPage() {
       >
         <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
           {AVATAR_PARTS[activeCategory].map((part) => {
-            const isActive = avatar[activeCategory === "skin" ? "skin_tone" : activeCategory === "outfit" ? "outfit_id" : activeCategory === "background" ? "background_id" : activeCategory === "frame" ? "frame_id" : activeCategory === "accessory" ? "accessory_id" : activeCategory] === part.id;
+            const stateKey: keyof AvatarState = activeCategory === "skin" ? "skin_tone" : activeCategory === "outfit" ? "outfit_id" : activeCategory === "background" ? "background_id" : activeCategory === "frame" ? "frame_id" : activeCategory === "accessory" ? "accessory_id" : activeCategory === "hair" ? "hair_style" : activeCategory as keyof AvatarState;
+            const isActive = avatar[stateKey] === part.id;
 
             return (
               <button
                 key={part.id}
                 onClick={() => {
-                  const key = activeCategory === "skin" ? "skin_tone"
+                  const key: keyof AvatarState = activeCategory === "skin" ? "skin_tone"
                     : activeCategory === "outfit" ? "outfit_id"
                     : activeCategory === "background" ? "background_id"
                     : activeCategory === "frame" ? "frame_id"
                     : activeCategory === "accessory" ? "accessory_id"
-                    : activeCategory;
+                    : activeCategory === "hair" ? "hair_style"
+                    : activeCategory as keyof AvatarState;
                   setAvatar((prev) => ({ ...prev, [key]: part.id }));
                 }}
                 className={`flex flex-col items-center gap-1.5 rounded-xl p-3 text-center transition-all ${
@@ -266,13 +268,13 @@ export default function AvatarPage() {
                   {activeCategory === "expression" ? (
                     <span>{part.id === "happy" ? "😊" : part.id === "focus" ? "🤔" : part.id === "fire" ? "🔥" : part.id === "star" ? "⭐" : "🌌"}</span>
                   ) : activeCategory === "skin" ? (
-                    <div className="h-8 w-8 rounded-full" style={{ backgroundColor: AVATAR_COLORS.skin[part.id] ?? "#ccc" }} />
+                    <div className="h-8 w-8 rounded-full" style={{ backgroundColor: (AVATAR_COLORS.skin as Record<string, string>)[part.id] ?? "#ccc" }} />
                   ) : activeCategory === "hair" ? (
-                    <div className="h-6 w-8 rounded-full" style={{ backgroundColor: AVATAR_COLORS.hair[part.id] ?? "#4a3728" }} />
+                    <div className="h-6 w-8 rounded-full" style={{ backgroundColor: (AVATAR_COLORS.hair as Record<string, string>)[part.id] ?? "#4a3728" }} />
                   ) : activeCategory === "outfit" ? (
-                    <div className="h-6 w-8 rounded-lg" style={{ backgroundColor: AVATAR_COLORS.outfit[part.id] ?? "#3b82f6" }} />
+                    <div className="h-6 w-8 rounded-lg" style={{ backgroundColor: (AVATAR_COLORS.outfit as Record<string, string>)[part.id] ?? "#3b82f6" }} />
                   ) : activeCategory === "background" ? (
-                    <div className="h-8 w-8 rounded-lg" style={{ backgroundColor: AVATAR_COLORS.bg[part.id] ?? "#f8fafc" }} />
+                    <div className="h-8 w-8 rounded-lg" style={{ backgroundColor: (AVATAR_COLORS.bg as Record<string, string>)[part.id] ?? "#f8fafc" }} />
                   ) : (
                     <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center text-sm">
                       {part.id === "none" ? "—" : part.id === "glasses" ? "🤓" : part.id === "headphones" ? "🎧" : part.id === "crown" ? "👑" : "—"}

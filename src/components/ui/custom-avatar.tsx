@@ -72,10 +72,10 @@ export function CustomAvatar({
   showStage = false,
 }: CustomAvatarProps) {
   const s = SIZE_MAP[size];
-  const skinColor = AVATAR_COLORS.skin[skinTone as keyof typeof AVATAR_COLORS.skin] ?? AVATAR_COLORS.skin.warm;
-  const hair = hairColor ?? AVATAR_COLORS.hair[hairStyle as keyof typeof AVATAR_COLORS.hair] ?? AVATAR_COLORS.hair.short;
-  const outfitColor = AVATAR_COLORS.outfit[outfitId as keyof typeof AVATAR_COLORS.outfit] ?? AVATAR_COLORS.outfit.basic;
-  const bgColor = AVATAR_COLORS.bg[backgroundId as keyof typeof AVATAR_COLORS.bg] ?? AVATAR_COLORS.bg.default;
+  const skinColor = (AVATAR_COLORS.skin as Record<string, string>)[skinTone] ?? "#d4a574";
+  const hair = hairColor ?? (AVATAR_COLORS.hair as Record<string, string>)[hairStyle] ?? "#4a3728";
+  const outfitColor = (AVATAR_COLORS.outfit as Record<string, string>)[outfitId] ?? "#3b82f6";
+  const bgColor = (AVATAR_COLORS.bg as Record<string, string>)[backgroundId] ?? "#f8fafc";
   const frameClass = showFrame ? (FRAME_COLORS[frameId] ?? "") : "";
   const stageInfo = AVATAR_EVOLUTION_STAGES.find((st) => st.id === evolutionStage);
 

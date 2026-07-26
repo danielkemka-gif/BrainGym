@@ -5,6 +5,7 @@ import { CATEGORIES } from "@/lib/constants";
 import { useI18n } from "@/lib/i18n";
 import { ArrowRight, Zap, ShoppingCart } from "lucide-react";
 import { CATEGORY_ICONS } from "@/lib/icons";
+import { CATEGORY_ILLUSTRATIONS } from "@/components/brain-illustrations";
 
 const CATEGORY_THEMES: Record<string, { gradient: string; glow: string; ring: string; bg: string }> = {
   memory: {
@@ -141,8 +142,8 @@ export function QuickActions() {
 
               {/* Icon with decorative ring */}
               <div className="relative mb-3">
-                <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 ${theme.gradient}`}>
-                  <Icon className="h-5 w-5" />
+                <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 ${theme.gradient} overflow-hidden`}>
+                  {(() => { const Illust = CATEGORY_ILLUSTRATIONS[cat.slug]; return Illust ? <Illust className="h-9 w-9" /> : <Icon className="h-5 w-5" />; })()}
                 </div>
                 {/* Decorative orbit ring */}
                 <div className={`absolute -inset-1 rounded-xl ring-1 opacity-0 transition-opacity duration-300 group-hover:opacity-100 ${theme.ring}`} />

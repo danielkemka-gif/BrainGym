@@ -11,6 +11,7 @@ import {
   type GameConfig,
 } from "@/lib/games/config";
 import { GAME_ICONS } from "@/lib/icons";
+import { GAME_ILLUSTRATIONS } from "@/components/brain-illustrations";
 import {
   ArrowLeft,
   Trophy,
@@ -765,6 +766,7 @@ export default function DailyChallengePage() {
         <div className="space-y-3">
           <h3 className="text-sm font-semibold text-muted-foreground">Today&apos;s Games</h3>
           {todayGames.map((game, i) => {
+            const Illust = GAME_ILLUSTRATIONS[game.iconKey];
             const Icon = GAME_ICONS[game.iconKey];
             return (
               <motion.div
@@ -774,8 +776,8 @@ export default function DailyChallengePage() {
                 transition={{ delay: i * 0.1 }}
                 className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4"
               >
-                <div className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${game.gradient} text-white`}>
-                  {Icon && <Icon className="h-6 w-6" />}
+                <div className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${game.gradient} text-white overflow-hidden`}>
+                  {Illust ? <Illust className="h-9 w-9" /> : Icon ? <Icon className="h-6 w-6" /> : null}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold">{game.title}</p>
@@ -806,6 +808,7 @@ export default function DailyChallengePage() {
   if (phase === "playing") {
     const game = todayGames[currentGameIndex];
     const MiniGame = game ? miniGameComponents[game.id] : null;
+    const Illust = game ? GAME_ILLUSTRATIONS[game.iconKey] : null;
     const Icon = game ? GAME_ICONS[game.iconKey] : null;
     const progress = ((currentGameIndex) / todayGames.length) * 100;
 
@@ -851,9 +854,9 @@ export default function DailyChallengePage() {
             className="rounded-2xl border border-border bg-card p-6"
           >
             <div className="mb-4 flex items-center gap-3">
-              {Icon && (
-                <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${game.gradient} text-white`}>
-                  <Icon className="h-5 w-5" />
+              {(Illust || Icon) && (
+                <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${game.gradient} text-white overflow-hidden`}>
+                  {Illust ? <Illust className="h-8 w-8" /> : Icon ? <Icon className="h-5 w-5" /> : null}
                 </div>
               )}
               <div>
@@ -949,6 +952,7 @@ export default function DailyChallengePage() {
             {gameResults.map((result, i) => {
               const game = todayGames[i];
               if (!game) return null;
+              const Illust = GAME_ILLUSTRATIONS[game.iconKey];
               const Icon = GAME_ICONS[game.iconKey];
               return (
                 <motion.div
@@ -958,8 +962,8 @@ export default function DailyChallengePage() {
                   transition={{ delay: 0.2 + i * 0.1 }}
                   className="flex items-center gap-3 rounded-xl border border-border bg-background p-3"
                 >
-                  <div className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ${game.gradient} text-white`}>
-                    {Icon && <Icon className="h-4 w-4" />}
+                  <div className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ${game.gradient} text-white overflow-hidden`}>
+                    {Illust ? <Illust className="h-6 w-6" /> : Icon ? <Icon className="h-4 w-4" /> : null}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{game.title}</p>

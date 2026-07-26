@@ -14,6 +14,7 @@ import {
 import { BrainTaskPlayer } from "@/components/games/brain-task-player";
 import { DailyReminder, checkAndShowReminder } from "@/components/games/daily-reminder";
 import { pickBrainTasks, type BrainTask } from "@/lib/brain-tasks";
+import { CATEGORY_ILLUSTRATIONS } from "@/components/brain-illustrations";
 
 const CAT_EMOJI: Record<string, string> = {
   memory: "🧠", focus: "🎯", thinking: "💡", learning: "📚",
@@ -500,9 +501,9 @@ export default function ChallengePage() {
             <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Brain categories</p>
             <div className="flex flex-wrap justify-center gap-2">
               {CATEGORIES.map(c => (
-                <span key={c.id} className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-xs">
-                  {CAT_EMOJI[c.slug] || "🧠"} {c.label}
-                </span>
+                  <span key={c.id} className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-xs">
+                    {(() => { const Illust = CATEGORY_ILLUSTRATIONS[c.slug]; return Illust ? <Illust className="h-4 w-4" /> : <span>{CAT_EMOJI[c.slug] || "🧠"}</span>; })()} {c.label}
+                  </span>
               ))}
             </div>
           </div>
@@ -778,7 +779,7 @@ export default function ChallengePage() {
         <div className="rounded-2xl border border-border bg-card overflow-hidden">
           <div className="flex items-center justify-between border-b border-border px-5 py-3">
             <div className="flex items-center gap-2">
-              <span className="text-lg">{CAT_EMOJI[currentTrivia.category] || "🧠"}</span>
+              {(() => { const Illust = CATEGORY_ILLUSTRATIONS[currentTrivia.category]; return Illust ? <Illust className="h-5 w-5" /> : <span className="text-lg">{CAT_EMOJI[currentTrivia.category] || "🧠"}</span>; })()}
               <span className="text-sm text-muted-foreground">{category?.label}</span>
             </div>
             <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${

@@ -301,6 +301,11 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* Invite friends — prominent, right after hero */}
+      <Suspense fallback={null}>
+        <InviteFriendsCard />
+      </Suspense>
+
       {/* Brain Momentum — high-visibility score */}
       <Suspense
         fallback={
@@ -446,11 +451,6 @@ export default function DashboardPage() {
         }
       >
         <MissionsSection />
-      </Suspense>
-
-      {/* Invite friends */}
-      <Suspense fallback={null}>
-        <InviteFriendsCard />
       </Suspense>
 
       {/* Accountability partner */}

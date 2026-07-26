@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { CATEGORIES } from "@/lib/constants";
 import { ArrowLeft, Clock, Zap, Coins, CheckCircle2, Share2, BookOpen, Lightbulb, Star } from "lucide-react";
+import { CATEGORY_ILLUSTRATIONS } from "@/components/brain-illustrations";
 import { WhyThisMatters } from "@/components/ui/why-this-matters";
 import { ActivityCelebration } from "@/components/ui/activity-celebration";
 
@@ -164,8 +165,8 @@ export default function ActivityDetailPage() {
           </button>
 
           <div className="flex items-start gap-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15 text-3xl backdrop-blur-sm">
-              {emoji}
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15 text-3xl backdrop-blur-sm overflow-hidden">
+              {(() => { const Illust = CATEGORY_ILLUSTRATIONS[category?.slug || ""]; return Illust ? <Illust className="h-12 w-12" /> : emoji; })()}
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">

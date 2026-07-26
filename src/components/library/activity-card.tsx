@@ -4,6 +4,7 @@ import Link from "next/link";
 import { CATEGORIES } from "@/lib/constants";
 import { Clock, Zap, Coins } from "lucide-react";
 import { CATEGORY_ICONS } from "@/lib/icons";
+import { CATEGORY_ILLUSTRATIONS } from "@/components/brain-illustrations";
 import { WhyThisMatters } from "@/components/ui/why-this-matters";
 
 const CATEGORY_GRADIENTS: Record<string, string> = {
@@ -50,8 +51,8 @@ export function ActivityCard({ activity, index = 0 }: { activity: Activity; inde
         <div className="absolute inset-0 bg-black/10" />
         <div className="absolute -right-4 -top-4 h-20 w-20 rounded-full bg-white/10 blur-xl" />
         <div className="relative flex items-start justify-between">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20 text-white drop-shadow-lg backdrop-blur-sm transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
-            <Icon className="h-4.5 w-4.5" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20 text-white drop-shadow-lg backdrop-blur-sm transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 overflow-hidden">
+            {(() => { const Illust = CATEGORY_ILLUSTRATIONS[category?.slug || ""]; return Illust ? <Illust className="h-7 w-7" /> : <Icon className="h-4.5 w-4.5" />; })()}
           </div>
           <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${diff.bg} ${diff.color}`}>
             {diff.label}

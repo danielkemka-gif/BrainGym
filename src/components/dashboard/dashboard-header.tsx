@@ -5,7 +5,8 @@ import { createClient } from "@/lib/supabase/client";
 import { getLevelProgress } from "@/lib/scoring";
 import { useI18n } from "@/lib/i18n";
 import { Avatar } from "@/components/ui/avatar";
-import { Trophy } from "lucide-react";
+import { Trophy, Share2 } from "lucide-react";
+import Link from "next/link";
 
 const GREETINGS: Record<string, string[]> = {
   teen: ["Hey", "Yo", "What's up", "Ready to level up"],
@@ -126,6 +127,13 @@ export function DashboardHeader() {
       </div>
       {!loading && (
         <div className="flex items-center gap-2 sm:gap-3">
+          <Link
+            href="/dashboard/share"
+            className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 px-3 py-1.5 text-white shadow-lg shadow-emerald-500/20 transition-all hover:shadow-xl hover:shadow-emerald-500/30 hover:scale-105 active:scale-95"
+          >
+            <Share2 className="h-3.5 w-3.5" />
+            <span className="text-xs font-bold hidden sm:inline">Share</span>
+          </Link>
           <div className="flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1.5">
             <span className="text-sm font-bold text-primary">{coins}</span>
             <span className="text-xs text-muted-foreground">{t.dashboard_coins}</span>

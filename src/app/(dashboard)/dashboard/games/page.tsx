@@ -5,6 +5,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { ALL_GAMES, type GameProgress } from "@/lib/games/config";
 import { GAME_ICONS } from "@/lib/icons";
+import { GAME_ILLUSTRATIONS } from "@/components/brain-illustrations";
 import { Star, Lock, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -129,7 +130,7 @@ export default function GamesHubPage() {
                   <div className="absolute -bottom-8 -left-8 h-24 w-24 rounded-full bg-black/10 blur-2xl" />
                   <div className="relative flex items-center gap-3 sm:gap-4">
                     <div className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-white/20 text-white">
-                      {(() => { const GameIcon = GAME_ICONS[game.iconKey]; return GameIcon ? <GameIcon className="h-6 w-6 sm:h-7 sm:w-7" /> : null; })()}
+                      {(() => { const Illust = GAME_ILLUSTRATIONS[game.iconKey]; return Illust ? <Illust className="h-10 w-10 sm:h-12 sm:w-12" /> : (() => { const GameIcon = GAME_ICONS[game.iconKey]; return GameIcon ? <GameIcon className="h-6 w-6 sm:h-7 sm:w-7" /> : null; })(); })()}
                     </div>
                     <div>
                       <h3 className="text-lg font-bold text-white">{game.title}</h3>

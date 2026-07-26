@@ -163,6 +163,69 @@ export const en: TranslationKeys = {
   forecast_every_day: "Every day",
   forecast_warning: "Training less than 50% of days causes momentum to decline",
 
+  // Missed Day Simulator
+  missed_title: "What If You Miss?",
+  missed_subtitle: "See how missing days affects your momentum",
+  missed_today: "Today",
+  missed_in_7_days: "In 7 days (no training)",
+  missed_drop: "You'd lose",
+  missed_motivation_low: "Your momentum is resilient! Keep training to maintain it.",
+  missed_motivation_mid: "A few missed days add up. Try to squeeze in at least one session.",
+  missed_motivation_high: "That's a significant drop. Even a quick 5-minute session can keep your momentum going!",
+
+  // Brain Health
+  health_title: "Brain Health",
+  health_subtitle: "Weekly cognitive health summary",
+  health_excellent: "Excellent",
+  health_good: "Good",
+  health_fair: "Fair",
+  health_needs_attention: "Needs Attention",
+  health_strongest: "Strongest",
+  health_focus_area: "Focus Area",
+  health_vs_last_week: "vs last week",
+
+  // Adaptive Habits
+  habits_title: "Adaptive Habits",
+  habits_subtitle: "Your personalized training rhythm",
+  habits_building: "Building",
+  habits_strong: "Strong",
+  habits_needs_care: "Needs Care",
+  habits_optimal: "optimal",
+  habits_current: "now",
+  habits_consistency: "Consistency Score",
+  habits_best_day: "Best day",
+  habits_best_time: "Best time",
+
+  // Smart Reminders
+  reminders_title: "Smart Reminders",
+  reminders_subtitle: "Personalized notifications based on your patterns",
+  reminders_missed_workout: "Don't break your streak!",
+  reminders_streak_risk: "Your streak is at risk!",
+  reminders_streak_milestone: "Milestone approaching!",
+  reminders_comeback: "We miss you!",
+  reminders_weekly_summary: "Check your weekly report!",
+
+  // Streak Protection
+  protection_title: "Streak Protection",
+  protection_subtitle: "Freeze your streak before it melts",
+  protection_freezes_left: "Freezes left",
+  protection_buy: "Buy 1 Freeze — 50 Coins",
+  protection_max_reached: "Maximum freezes reached",
+  protection_not_enough: "Not enough coins (need 50)",
+  protection_each_freeze: "Each freeze protects your streak for 1 day. Max 5 at a time.",
+
+  // 365-Day Journey
+  journey_title: "Your Brain Journey",
+  journey_subtitle: "days of training",
+  journey_milestones: "milestones",
+  journey_achieved: "achieved",
+  journey_day1: "Day 1",
+  journey_7streak: "7-Day Streak",
+  journey_30streak: "30-Day Streak",
+  journey_100workouts: "100 Workouts",
+  journey_score80: "Brain Score 80+",
+  journey_1000xp: "1000 XP",
+
   // General
   general_continue: "Continue",
   general_back: "Back",

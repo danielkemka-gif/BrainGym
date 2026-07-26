@@ -206,4 +206,34 @@ export const fr: TranslationKeys = {
   habits_consistency: "Score de régularité",
   habits_best_day: "Meilleur jour",
   habits_best_time: "Meilleur moment",
+
+  // Smart Reminders
+  reminders_title: "Rappels Intelligents",
+  reminders_subtitle: "Notifications personnalisées basées sur vos habitudes",
+  reminders_missed_workout: "Ne brisez pas votre série!",
+  reminders_streak_risk: "Votre série est en danger!",
+  reminders_streak_milestone: "Palier à atteindre!",
+  reminders_comeback: "Vous nous manquez!",
+  reminders_weekly_summary: "Consultez votre rapport hebdomadaire!",
+
+  // Streak Protection
+  protection_title: "Protection de Série",
+  protection_subtitle: "Gélérez votre série avant qu'elle ne fonde",
+  protection_freezes_left: "Gels restants",
+  protection_buy: "Acheter 1 Gel — 50 Coins",
+  protection_max_reached: "Gels maximum atteints",
+  protection_not_enough: "Pas assez de coins (50 nécessaires)",
+  protection_each_freeze: "Chaque gel protège votre série pendant 1 jour. Max 5 à la fois.",
+
+  // 365-Day Journey
+  journey_title: "Votre Parcours Cérébral",
+  journey_subtitle: "jours d'entraînement",
+  journey_milestones: "paliers",
+  journey_achieved: "atteints",
+  journey_day1: "Jour 1",
+  journey_7streak: "Série de 7 jours",
+  journey_30streak: "Série de 30 jours",
+  journey_100workouts: "100 Entraînements",
+  journey_score80: "Score Cérébral 80+",
+  journey_1000xp: "1000 XP",
 };

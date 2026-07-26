@@ -208,4 +208,34 @@ export type TranslationKeys = {
   habits_consistency: string;
   habits_best_day: string;
   habits_best_time: string;
+
+  // Smart Reminders
+  reminders_title: string;
+  reminders_subtitle: string;
+  reminders_missed_workout: string;
+  reminders_streak_risk: string;
+  reminders_streak_milestone: string;
+  reminders_comeback: string;
+  reminders_weekly_summary: string;
+
+  // Streak Protection
+  protection_title: string;
+  protection_subtitle: string;
+  protection_freezes_left: string;
+  protection_buy: string;
+  protection_max_reached: string;
+  protection_not_enough: string;
+  protection_each_freeze: string;
+
+  // 365-Day Journey
+  journey_title: string;
+  journey_subtitle: string;
+  journey_milestones: string;
+  journey_achieved: string;
+  journey_day1: string;
+  journey_7streak: string;
+  journey_30streak: string;
+  journey_100workouts: string;
+  journey_score80: string;
+  journey_1000xp: string;
 };

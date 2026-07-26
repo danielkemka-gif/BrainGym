@@ -206,4 +206,34 @@ export const pcm: TranslationKeys = {
   habits_consistency: "Consistency score",
   habits_best_day: "Best day",
   habits_best_time: "Best time",
+
+  // Smart Reminders
+  reminders_title: "Smart Reminders",
+  reminders_subtitle: "Personal notifications based on how you dey train",
+  reminders_missed_workout: "No break your streak!",
+  reminders_streak_risk: "Your streak dey for danger!",
+  reminders_streak_milestone: "Milestone dey come!",
+  reminders_comeback: "We miss you!",
+  reminders_weekly_summary: "Check your weekly report!",
+
+  // Streak Protection
+  protection_title: "Streak Protection",
+  protection_subtitle: "Freeze your streak before e melt",
+  protection_freezes_left: "Freezes wey remain",
+  protection_buy: "Buy 1 Freeze — 50 Coins",
+  protection_max_reached: "You don reach maximum freezes",
+  protection_not_enough: "No get enough coins (need 50)",
+  protection_each_freeze: "Each freeze go protect your streak for 1 day. Max 5 at a time.",
+
+  // 365-Day Journey
+  journey_title: "Your Brain Journey",
+  journey_subtitle: "days wey you don train",
+  journey_milestones: "milestones",
+  journey_achieved: "don achieve",
+  journey_day1: "Day 1",
+  journey_7streak: "7-Day Streak",
+  journey_30streak: "30-Day Streak",
+  journey_100workouts: "100 Workouts",
+  journey_score80: "Brain Score 80+",
+  journey_1000xp: "1000 XP",
 };

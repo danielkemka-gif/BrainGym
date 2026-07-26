@@ -193,6 +193,30 @@ const AdaptiveHabitIntelligence = dynamic(
   { ssr: false }
 );
 
+const SmartRemindersSection = dynamic(
+  () =>
+    import("@/components/dashboard/smart-reminders-section").then(
+      (m) => ({ default: m.SmartRemindersSection })
+    ),
+  { ssr: false }
+);
+
+const StreakProtectionCard = dynamic(
+  () =>
+    import("@/components/dashboard/streak-protection-card").then(
+      (m) => ({ default: m.StreakProtectionCard })
+    ),
+  { ssr: false }
+);
+
+const ThreeSixFiveJourney = dynamic(
+  () =>
+    import("@/components/dashboard/three-six-five-journey").then(
+      (m) => ({ default: m.ThreeSixFiveJourney })
+    ),
+  { ssr: false }
+);
+
 export default function DashboardPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-6">
@@ -381,6 +405,29 @@ export default function DashboardPage() {
           }
         >
           <AdaptiveHabitIntelligence />
+        </Suspense>
+      </div>
+
+      {/* Smart Reminders */}
+      <Suspense fallback={null}>
+        <SmartRemindersSection />
+      </Suspense>
+
+      {/* Streak Protection + 365-Day Journey — 2-column on desktop */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Suspense
+          fallback={
+            <div className="h-64 animate-pulse rounded-2xl bg-muted" />
+          }
+        >
+          <StreakProtectionCard />
+        </Suspense>
+        <Suspense
+          fallback={
+            <div className="h-64 animate-pulse rounded-2xl bg-muted" />
+          }
+        >
+          <ThreeSixFiveJourney />
         </Suspense>
       </div>
 

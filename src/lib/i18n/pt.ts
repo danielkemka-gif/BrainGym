@@ -206,4 +206,34 @@ export const pt: TranslationKeys = {
   habits_consistency: "Pontuação de consistência",
   habits_best_day: "Melhor dia",
   habits_best_time: "Melhor horário",
+
+  // Smart Reminders
+  reminders_title: "Lembretes Inteligentes",
+  reminders_subtitle: "Notificações personalizadas baseadas nos seus padrões",
+  reminders_missed_workout: "Não quebre sua sequência!",
+  reminders_streak_risk: "Sua sequência está em risco!",
+  reminders_streak_milestone: "Marco se aproximando!",
+  reminders_comeback: "Sentimos sua falta!",
+  reminders_weekly_summary: "Confira seu relatório semanal!",
+
+  // Streak Protection
+  protection_title: "Proteção de Sequência",
+  protection_subtitle: "Congele sua sequência antes que derreta",
+  protection_freezes_left: "Congelamentos restantes",
+  protection_buy: "Comprar 1 Congelamento — 50 Moedas",
+  protection_max_reached: "Congelamentos máximos atingidos",
+  protection_not_enough: "Moedas insuficientes (precisa de 50)",
+  protection_each_freeze: "Cada congelamento protege sua sequência por 1 dia. Máx 5 por vez.",
+
+  // 365-Day Journey
+  journey_title: "Sua Jornada Cerebral",
+  journey_subtitle: "dias de treino",
+  journey_milestones: "marcos",
+  journey_achieved: "alcançados",
+  journey_day1: "Dia 1",
+  journey_7streak: "Sequência de 7 dias",
+  journey_30streak: "Sequência de 30 dias",
+  journey_100workouts: "100 Treinos",
+  journey_score80: "Score Cerebral 80+",
+  journey_1000xp: "1000 XP",
 };

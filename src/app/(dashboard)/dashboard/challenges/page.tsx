@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { CATEGORIES, DIFFICULTIES } from "@/lib/constants";
+import { FriendDuelSection } from "@/components/challenges/friend-duel-section";
 
 interface Challenge {
   id: string;
@@ -273,6 +274,9 @@ export default function ChallengesPage() {
           </button>
         </form>
       )}
+
+      {/* Friend Duels */}
+      <FriendDuelSection />
 
       {/* Filter */}
       <div className="flex gap-2">

@@ -86,6 +86,7 @@ export const SIDEBAR_ICONS: Record<string, LucideIcon> = {
   "decision-lab": Scale,
   settings: Settings,
   shop: ShoppingCart,
+  avatar: Brain,
 };
 
 /* ── Category Icons ───────────────────────────────────────────── */

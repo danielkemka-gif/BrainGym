@@ -137,6 +137,38 @@ const AccountabilityPartner = dynamic(
   { ssr: false }
 );
 
+const BrainMomentumCard = dynamic(
+  () =>
+    import("@/components/dashboard/brain-momentum-card").then(
+      (m) => ({ default: m.BrainMomentumCard })
+    ),
+  { ssr: false }
+);
+
+const DailyQuestsSection = dynamic(
+  () =>
+    import("@/components/dashboard/daily-quests-section").then(
+      (m) => ({ default: m.DailyQuestsSection })
+    ),
+  { ssr: false }
+);
+
+const CognitiveIdentityCard = dynamic(
+  () =>
+    import("@/components/dashboard/cognitive-identity-card").then(
+      (m) => ({ default: m.CognitiveIdentityCard })
+    ),
+  { ssr: false }
+);
+
+const MomentumRecovery = dynamic(
+  () =>
+    import("@/components/dashboard/momentum-recovery").then(
+      (m) => ({ default: m.MomentumRecovery })
+    ),
+  { ssr: false }
+);
+
 export default function DashboardPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-6">
@@ -213,6 +245,15 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* Brain Momentum — high-visibility score */}
+      <Suspense
+        fallback={
+          <div className="h-48 animate-pulse rounded-2xl bg-muted" />
+        }
+      >
+        <BrainMomentumCard />
+      </Suspense>
+
       {/* Streak Calendar + Brain Scores — 2-column on desktop */}
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
@@ -256,6 +297,15 @@ export default function DashboardPage() {
         <PersonalizedPlan />
       </Suspense>
 
+      {/* Daily Brain Quests — daily engagement hook */}
+      <Suspense
+        fallback={
+          <div className="h-48 animate-pulse rounded-2xl bg-muted" />
+        }
+      >
+        <DailyQuestsSection />
+      </Suspense>
+
       {/* Brain Journey timeline */}
       <Suspense
         fallback={
@@ -264,6 +314,24 @@ export default function DashboardPage() {
       >
         <BrainJourney />
       </Suspense>
+
+      {/* Cognitive Identity + Consistency Forecast — 2-column on desktop */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Suspense
+          fallback={
+            <div className="h-64 animate-pulse rounded-2xl bg-muted" />
+          }
+        >
+          <CognitiveIdentityCard />
+        </Suspense>
+        <Suspense
+          fallback={
+            <div className="h-64 animate-pulse rounded-2xl bg-muted" />
+          }
+        >
+          <MomentumRecovery />
+        </Suspense>
+      </div>
 
       {/* Weekly missions preview */}
       <Suspense

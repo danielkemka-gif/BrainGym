@@ -146,3 +146,114 @@ export const AMBIENT_SOUNDS = [
 ] as const;
 
 export const QUICK_FIRE_DURATIONS = [30, 60, 90] as const;
+
+export const LEAGUES = [
+  { id: "bronze", label: "Bronze", minXP: 0, color: "#cd7f32", emoji: "🥉", gradient: "from-amber-700 to-yellow-600" },
+  { id: "silver", label: "Silver", minXP: 300, color: "#c0c0c0", emoji: "🥈", gradient: "from-slate-300 to-slate-400" },
+  { id: "gold", label: "Gold", minXP: 600, color: "#ffd700", emoji: "🥇", gradient: "from-yellow-400 to-amber-500" },
+  { id: "platinum", label: "Platinum", minXP: 1000, color: "#e5e4e2", emoji: "💎", gradient: "from-cyan-300 to-sky-500" },
+  { id: "diamond", label: "Diamond", minXP: 1500, color: "#b9f2ff", emoji: "💠", gradient: "from-blue-400 to-indigo-500" },
+  { id: "mastermind", label: "Mastermind", minXP: 2000, color: "#a855f7", emoji: "🧠", gradient: "from-purple-400 to-violet-600" },
+] as const;
+
+export type LeagueId = typeof LEAGUES[number]["id"];
+
+export const AVATAR_EVOLUTION_STAGES = [
+  { id: "egg", label: "Egg", minLevel: 1, emoji: "🥚", description: "Your brain avatar is hatching..." },
+  { id: "hatchling", label: "Hatchling", minLevel: 3, emoji: "🐣", description: "A curious little mind emerges" },
+  { id: "sapling", label: "Sapling", minLevel: 5, emoji: "🌱", description: "Growing stronger every day" },
+  { id: "guardian", label: "Guardian", minLevel: 7, emoji: "🛡️", description: "A protector of cognitive health" },
+  { id: "brain_lord", label: "Brain Lord", minLevel: 10, emoji: "🧠", description: "Master of mental prowess" },
+] as const;
+
+export type AvatarStage = typeof AVATAR_EVOLUTION_STAGES[number]["id"];
+
+export const AVATAR_PARTS = {
+  body: [
+    { id: "round", label: "Round", rarity: "common" as const },
+    { id: "square", label: "Square", rarity: "uncommon" as const },
+    { id: "tall", label: "Tall", rarity: "rare" as const },
+  ],
+  skin: [
+    { id: "light", label: "Light", rarity: "common" as const },
+    { id: "warm", label: "Warm", rarity: "common" as const },
+    { id: "medium", label: "Medium", rarity: "common" as const },
+    { id: "tan", label: "Tan", rarity: "uncommon" as const },
+    { id: "deep", label: "Deep", rarity: "uncommon" as const },
+    { id: "dark", label: "Dark", rarity: "uncommon" as const },
+  ],
+  hair: [
+    { id: "short", label: "Short", rarity: "common" as const },
+    { id: "long", label: "Long", rarity: "common" as const },
+    { id: "curly", label: "Curly", rarity: "uncommon" as const },
+    { id: "mohawk", label: "Mohawk", rarity: "rare" as const },
+    { id: "afro", label: "Afro", rarity: "rare" as const },
+    { id: "spiky", label: "Spiky", rarity: "epic" as const },
+    { id: "crown", label: "Brain Crown", rarity: "legendary" as const },
+  ],
+  outfit: [
+    { id: "basic", label: "Basic Tee", rarity: "common" as const },
+    { id: "hoodie", label: "Brain Hoodie", rarity: "uncommon" as const },
+    { id: "labcoat", label: "Lab Coat", rarity: "rare" as const },
+    { id: "robe", label: "Wisdom Robe", rarity: "epic" as const },
+    { id: "cosmic", label: "Cosmic Armor", rarity: "legendary" as const },
+  ],
+  background: [
+    { id: "default", label: "Default", rarity: "common" as const },
+    { id: "gym", label: "Brain Gym", rarity: "uncommon" as const },
+    { id: "space", label: "Deep Space", rarity: "rare" as const },
+    { id: "nature", label: "Zen Garden", rarity: "epic" as const },
+  ],
+  frame: [
+    { id: "none", label: "No Frame", rarity: "common" as const },
+    { id: "gold", label: "Gold Frame", rarity: "rare" as const },
+    { id: "neon", label: "Neon Frame", rarity: "epic" as const },
+    { id: "brain", label: "Brain Frame", rarity: "legendary" as const },
+  ],
+  accessory: [
+    { id: "none", label: "None", rarity: "common" as const },
+    { id: "glasses", label: "Smart Glasses", rarity: "uncommon" as const },
+    { id: "headphones", label: "Focus Headphones", rarity: "rare" as const },
+    { id: "crown", label: "Brain Crown", rarity: "legendary" as const },
+  ],
+  expression: [
+    { id: "happy", label: "Happy", rarity: "common" as const },
+    { id: "focus", label: "Focused", rarity: "common" as const },
+    { id: "fire", label: "On Fire", rarity: "uncommon" as const },
+    { id: "star", label: "Star Power", rarity: "rare" as const },
+    { id: "cosmic", label: "Cosmic", rarity: "legendary" as const },
+  ],
+} as const;
+
+export const AVATAR_COLORS: Record<string, { skin: Record<string, string>; hair: Record<string, string>; outfit: Record<string, string>; bg: Record<string, string> }> = {
+  skin: {
+    light: "#fde68a",
+    warm: "#f5d0a9",
+    medium: "#c4956a",
+    tan: "#a0784c",
+    deep: "#7c5332",
+    dark: "#5a3a22",
+  },
+  hair: {
+    short: "#4a3728",
+    long: "#4a3728",
+    curly: "#4a3728",
+    mohawk: "#ef4444",
+    afro: "#4a3728",
+    spiky: "#f59e0b",
+    crown: "#fbbf24",
+  },
+  outfit: {
+    basic: "#3b82f6",
+    hoodie: "#8b5cf6",
+    labcoat: "#f8fafc",
+    robe: "#fbbf24",
+    cosmic: "#6366f1",
+  },
+  bg: {
+    default: "#f8fafc",
+    gym: "#dbeafe",
+    space: "#1e1b4b",
+    nature: "#ecfdf5",
+  },
+};

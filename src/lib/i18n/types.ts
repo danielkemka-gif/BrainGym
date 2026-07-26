@@ -35,6 +35,7 @@ export type TranslationKeys = {
   nav_workout: string;
   nav_shop: string;
   nav_daily_challenge: string;
+  nav_avatar: string;
   nav_tagline: string;
 
   // Dashboard
@@ -136,4 +137,42 @@ export type TranslationKeys = {
   general_streak: string;
   general_days: string;
   general_of: string;
+
+  // Brain Momentum
+  momentum_title: string;
+  momentum_subtitle: string;
+  momentum_streak: string;
+  momentum_consistency: string;
+  momentum_growth: string;
+  momentum_engagement: string;
+  momentum_unstoppable: string;
+  momentum_soaring: string;
+  momentum_building: string;
+  momentum_warming_up: string;
+  momentum_recovering: string;
+  momentum_getting_started: string;
+
+  // Daily Quests
+  quests_title: string;
+  quests_subtitle: string;
+  quests_generate: string;
+  quests_completed: string;
+  quests_claim: string;
+  quests_celebration: string;
+
+  // Cognitive Identity
+  identity_title: string;
+  identity_subtitle: string;
+  identity_view_all: string;
+  identity_discover: string;
+
+  // Consistency Forecast
+  forecast_title: string;
+  forecast_subtitle: string;
+  forecast_frequency: string;
+  forecast_of_days: string;
+  forecast_rarely: string;
+  forecast_most_days: string;
+  forecast_every_day: string;
+  forecast_warning: string;
 };

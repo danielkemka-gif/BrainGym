@@ -186,3 +186,85 @@ export type Profile = {
   onboarding_complete: boolean;
   created_at: string;
 };
+
+export type LeagueTier = "bronze" | "silver" | "gold" | "platinum" | "diamond" | "mastermind";
+
+export type UserLeague = {
+  id: string;
+  user_id: string;
+  league: LeagueTier;
+  week_start: string;
+  weekly_xp: number;
+  promoted: boolean;
+  relegated: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type LeagueSnapshot = {
+  id: string;
+  week_start: string;
+  league: LeagueTier;
+  user_id: string;
+  weekly_xp: number;
+  final_rank: number;
+  promoted: boolean;
+  relegated: boolean;
+  created_at: string;
+};
+
+export type AvatarStage = "egg" | "hatchling" | "sapling" | "guardian" | "brain_lord";
+
+export type UserAvatar = {
+  id: string;
+  user_id: string;
+  body_type: string;
+  skin_tone: string;
+  hair_style: string;
+  hair_color: string;
+  outfit_id: string;
+  background_id: string;
+  frame_id: string;
+  accessory_id: string;
+  expression: string;
+  evolution_stage: AvatarStage;
+  evolved_at: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type AvatarPart = {
+  id: string;
+  slug: string;
+  name: string;
+  category: string;
+  rarity: "common" | "uncommon" | "rare" | "epic" | "legendary";
+  unlock_type: string;
+  unlock_value: number;
+  preview_emoji: string | null;
+  preview_colors: Record<string, string>;
+  is_active: boolean;
+  created_at: string;
+};
+
+export type UserAvatarPart = {
+  id: string;
+  user_id: string;
+  part_id: string;
+  unlocked_at: string;
+};
+
+export type MonthlyReport = {
+  id: string;
+  user_id: string;
+  month: string;
+  avg_score: number;
+  score_change: number;
+  activities_completed: number;
+  streak_days: number;
+  top_category: string;
+  weakest_category: string;
+  improvement_pct: number;
+  narrative: string;
+  created_at: string;
+};

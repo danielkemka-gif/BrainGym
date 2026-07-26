@@ -21,6 +21,7 @@ export const pt: TranslationKeys = {
   nav_workout: "Treino",
   nav_shop: "Loja",
   nav_daily_challenge: "Desafio Diário",
+  nav_avatar: "Avatar Cerebral",
   nav_tagline: "Treine seu cérebro para a vida real",
 
   // Dashboard
@@ -134,4 +135,42 @@ export const pt: TranslationKeys = {
   general_streak: "Sequência",
   general_days: "dias",
   general_of: "de",
+
+  // Brain Momentum
+  momentum_title: "Momentum Cerebral",
+  momentum_subtitle: "Sua velocidade de crescimento cognitivo",
+  momentum_streak: "Sequência",
+  momentum_consistency: "Consistência",
+  momentum_growth: "Crescimento",
+  momentum_engagement: "Engajamento",
+  momentum_unstoppable: "Imparável",
+  momentum_soaring: "Voando alto",
+  momentum_building: "Construindo",
+  momentum_warming_up: "Aquecendo",
+  momentum_recovering: "Recuperando",
+  momentum_getting_started: "Começando",
+
+  // Daily Quests
+  quests_title: "Missões Cerebrais Diárias",
+  quests_subtitle: "Complete missões para ganhar XP bônus",
+  quests_generate: "Gerar Missões de Hoje",
+  quests_completed: "concluídas",
+  quests_claim: "Resgatar Recompensa",
+  quests_celebration: "Todas as missões concluídas! Seu cérebro está em chamas!",
+
+  // Cognitive Identity
+  identity_title: "Identidade Cognitiva",
+  identity_subtitle: "Seu arquétipo cerebral em evolução",
+  identity_view_all: "Ver Tudo",
+  identity_discover: "identidades para descobrir",
+
+  // Consistency Forecast
+  forecast_title: "Previsão de Consistência",
+  forecast_subtitle: "Veja como seu treino afeta o momentum",
+  forecast_frequency: "Frequência de Treino",
+  forecast_of_days: "dos dias",
+  forecast_rarely: "Raramente",
+  forecast_most_days: "A maioria dos dias",
+  forecast_every_day: "Todos os dias",
+  forecast_warning: "Treinar menos de 50% dos dias faz o momentum diminuir",
 };

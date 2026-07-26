@@ -21,6 +21,7 @@ export const pcm: TranslationKeys = {
   nav_workout: "Workout",
   nav_shop: "Shop",
   nav_daily_challenge: "Daily Challenge",
+  nav_avatar: "Brain Avatar",
   nav_tagline: "Train Your Brain For Real Life",
 
   // Dashboard
@@ -134,4 +135,42 @@ export const pcm: TranslationKeys = {
   general_streak: "Streak",
   general_days: "days",
   general_of: "of",
+
+  // Brain Momentum
+  momentum_title: "Brain Momentum",
+  momentum_subtitle: "How your brain dey grow",
+  momentum_streak: "Streak",
+  momentum_consistency: "How you dey show up",
+  momentum_growth: "Growth",
+  momentum_engagement: "Engagement",
+  momentum_unstoppable: "No go fit stop you",
+  momentum_soaring: "You dey fly",
+  momentum_building: "You dey build",
+  momentum_warming_up: "Warming up",
+  momentum_recovering: "You dey recover",
+  momentum_getting_started: "You just dey start",
+
+  // Daily Quests
+  quests_title: "Daily Brain Quests",
+  quests_subtitle: "Do quest make you collect bonus XP",
+  quests_generate: "Generate Today Quests",
+  quests_completed: "don finish",
+  quests_claim: "Collect Reward",
+  quests_celebration: "All quests don finish! Your brain dey fire!",
+
+  // Cognitive Identity
+  identity_title: "Brain Identity",
+  identity_subtitle: "Your brain identity wey dey grow",
+  identity_view_all: "See All",
+  identity_discover: "more identities to discover",
+
+  // Consistency Forecast
+  forecast_title: "Consistency Forecast",
+  forecast_subtitle: "See how your training dey affect momentum",
+  forecast_frequency: "How often you dey train",
+  forecast_of_days: "of days",
+  forecast_rarely: "Rarely",
+  forecast_most_days: "Most days",
+  forecast_every_day: "Every day",
+  forecast_warning: "If you train less than half of days, your momentum go dey drop",
 };

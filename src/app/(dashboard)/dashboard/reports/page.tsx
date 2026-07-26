@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { CATEGORIES, DIFFICULTIES, LEVELS } from "@/lib/constants";
 import { getLevelProgress } from "@/lib/scoring";
 import { WeeklyReportCard } from "@/components/reports/weekly-report-card";
+import { MonthlyReportCard } from "@/components/reports/monthly-report-card";
 
 type TimeRange = "7" | "30" | "all";
 
@@ -31,6 +32,7 @@ export default function ReportsPage() {
   const [brainScores, setBrainScores] = useState<BrainScoreRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<TimeRange>("30");
+  const [reportView, setReportView] = useState<"weekly" | "monthly">("weekly");
 
   useEffect(() => {
     const supabase = createClient();
@@ -291,7 +293,7 @@ export default function ReportsPage() {
       </div>
 
       {/* Weekly Insight Banner */}
-      {insightSentences.length > 0 && (
+      {insightSentences.length > 0 && reportView === "weekly" && (
         <div className="rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 p-5">
           <div className="mb-2 flex items-center gap-2">
             <span className="text-lg">✨</span>
@@ -308,7 +310,32 @@ export default function ReportsPage() {
       )}
 
       {/* Detailed Weekly Report Card */}
-      <WeeklyReportCard />
+      <div className="flex items-center gap-2 mb-2">
+        <div className="flex rounded-lg border border-border bg-card p-0.5">
+          <button
+            onClick={() => setReportView("weekly")}
+            className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+              reportView === "weekly"
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Weekly
+          </button>
+          <button
+            onClick={() => setReportView("monthly")}
+            className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+              reportView === "monthly"
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Monthly
+          </button>
+        </div>
+      </div>
+
+      {reportView === "weekly" ? <WeeklyReportCard /> : <MonthlyReportCard />}
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">

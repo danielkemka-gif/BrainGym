@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LEVELS } from "@/lib/constants";
+import { LEVELS, AVATAR_EVOLUTION_STAGES } from "@/lib/constants";
 
 interface LevelUpModalProps {
   show: boolean;
@@ -17,9 +17,30 @@ function randomBetween(min: number, max: number) {
   return Math.random() * (max - min) + min;
 }
 
+function getEvolutionStage(level: number): string {
+  if (level >= 10) return "brain_lord";
+  if (level >= 7) return "guardian";
+  if (level >= 5) return "sapling";
+  if (level >= 3) return "hatchling";
+  return "egg";
+}
+
+function getPreviousStage(level: number): string {
+  if (level >= 10) return "guardian";
+  if (level >= 7) return "sapling";
+  if (level >= 5) return "hatchling";
+  if (level >= 3) return "egg";
+  return "egg";
+}
+
 export function LevelUpModal({ show, fromLevel, toLevel, onDismiss }: LevelUpModalProps) {
   const fromTitle = LEVELS.find((l) => l.level === fromLevel)?.title ?? "Unknown";
   const toTitle = LEVELS.find((l) => l.level === toLevel)?.title ?? "Unknown";
+
+  const newStage = getEvolutionStage(toLevel);
+  const oldStage = getPreviousStage(toLevel);
+  const hasEvolved = newStage !== oldStage && toLevel > fromLevel;
+  const stageInfo = AVATAR_EVOLUTION_STAGES.find((s) => s.id === newStage);
 
   const particles = useMemo(
     () =>
@@ -39,9 +60,9 @@ export function LevelUpModal({ show, fromLevel, toLevel, onDismiss }: LevelUpMod
 
   useEffect(() => {
     if (!show) return;
-    const timer = setTimeout(dismiss, 5000);
+    const timer = setTimeout(dismiss, hasEvolved ? 7000 : 5000);
     return () => clearTimeout(timer);
-  }, [show, dismiss]);
+  }, [show, dismiss, hasEvolved]);
 
   return (
     <AnimatePresence>
@@ -88,11 +109,54 @@ export function LevelUpModal({ show, fromLevel, toLevel, onDismiss }: LevelUpMod
               ))}
             </div>
 
+            {/* Evolution Banner (if evolved) */}
+            {hasEvolved && stageInfo && (
+              <motion.div
+                initial={{ scale: 0, rotate: -10 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: "spring", damping: 10, stiffness: 200, delay: 0.5 }}
+                className="mb-4 rounded-xl bg-gradient-to-r from-purple-500/20 to-amber-500/20 p-4"
+              >
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.8 }}
+                  className="text-xs font-bold text-purple-500 uppercase tracking-wider"
+                >
+                  Avatar Evolved!
+                </motion.p>
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", delay: 1 }}
+                  className="my-2 text-4xl"
+                >
+                  {stageInfo.emoji}
+                </motion.div>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1.2 }}
+                  className="text-sm font-semibold"
+                >
+                  {stageInfo.label}
+                </motion.p>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1.4 }}
+                  className="text-xs text-muted-foreground"
+                >
+                  {stageInfo.description}
+                </motion.p>
+              </motion.div>
+            )}
+
             {/* Level Up text */}
             <motion.p
               initial={{ y: 10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
+              transition={{ delay: hasEvolved ? 1.6 : 0.2 }}
               className="bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 bg-clip-text text-lg font-bold text-transparent"
             >
               Level Up!
@@ -102,7 +166,7 @@ export function LevelUpModal({ show, fromLevel, toLevel, onDismiss }: LevelUpMod
             <motion.div
               initial={{ scale: 0.3, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring", damping: 10, stiffness: 200, delay: 0.3 }}
+              transition={{ type: "spring", damping: 10, stiffness: 200, delay: hasEvolved ? 1.8 : 0.3 }}
               className="relative my-4 inline-flex items-center justify-center"
             >
               <span
@@ -116,7 +180,7 @@ export function LevelUpModal({ show, fromLevel, toLevel, onDismiss }: LevelUpMod
             <motion.div
               initial={{ y: 10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.5 }}
+              transition={{ delay: hasEvolved ? 2 : 0.5 }}
               className="mt-2 flex items-center justify-center gap-3"
             >
               <span className="text-sm text-muted-foreground">{fromTitle}</span>
@@ -128,7 +192,7 @@ export function LevelUpModal({ show, fromLevel, toLevel, onDismiss }: LevelUpMod
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 1.5 }}
+              transition={{ delay: hasEvolved ? 2.5 : 1.5 }}
               className="mt-6 text-xs text-muted-foreground"
             >
               Tap anywhere to dismiss

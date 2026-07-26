@@ -9,8 +9,11 @@ import { updateCategoryScore } from "@/lib/brain-scores";
 import { unlockSpeedDemon } from "@/lib/achievements";
 import {
   ArrowLeft, Clock, Zap, Trophy, Coins, RotateCcw,
-  CheckCircle2, XCircle, Flame, Send, Lightbulb, Star, Target, Globe
+  CheckCircle2, XCircle, Flame, Send, Lightbulb, Star, Target, Globe, Brain
 } from "lucide-react";
+import { BrainTaskPlayer } from "@/components/games/brain-task-player";
+import { DailyReminder, checkAndShowReminder } from "@/components/games/daily-reminder";
+import { pickBrainTasks, type BrainTask } from "@/lib/brain-tasks";
 
 const CAT_EMOJI: Record<string, string> = {
   memory: "🧠", focus: "🎯", thinking: "💡", learning: "📚",
@@ -142,6 +145,10 @@ function shuffle<T>(arr: T[]): T[] {
 type Phase = "setup" | "countdown" | "active" | "feedback" | "finished";
 type AnswerState = "unanswered" | "correct" | "wrong";
 
+type SessionItem =
+  | { kind: "trivia"; question: BrainQuestion }
+  | { kind: "brain_task"; task: BrainTask };
+
 export default function ChallengePage() {
   const [duration, setDuration] = useState(60);
   const [quizLang, setQuizLang] = useState<BrainQuestionLocale>("en");
@@ -173,13 +180,18 @@ export default function ChallengePage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const persistedRef = useRef(false);
 
-  const current = questions[currentIndex];
+  const [sessionItems, setSessionItems] = useState<SessionItem[]>([]);
+  const [brainTaskScores, setBrainTaskScores] = useState<{ task: BrainTask; score: number }[]>([]);
+  const [brainTaskPhase, setBrainTaskPhase] = useState<"idle" | "active" | "done">("idle");
+
+  const currentTrivia = questions[currentIndex];
+  const currentItem = sessionItems[currentIndex];
 
   // Pick questions on start
   const pickQuestions = useCallback(() => {
     const allQuestions = getBrainQuestions(quizLang);
     const shuffled = shuffle(allQuestions);
-    const maxQ = duration <= 30 ? 8 : duration <= 60 ? 12 : 16;
+    const maxQ = duration <= 30 ? 6 : duration <= 60 ? 9 : 12;
     return shuffled.slice(0, Math.min(maxQ, shuffled.length));
   }, [duration, quizLang]);
 
@@ -187,11 +199,35 @@ export default function ChallengePage() {
   const startChallenge = useCallback(() => {
     const picked = pickQuestions();
     if (picked.length === 0) { setError("No questions available."); return; }
+
+    const brainTasks = pickBrainTasks(duration <= 30 ? 2 : duration <= 60 ? 3 : 4, Date.now());
+
+    const items: SessionItem[] = [];
+    let bIdx = 0;
+    let qIdx = 0;
+    const totalSlots = picked.length + brainTasks.length;
+    const spacing = Math.max(2, Math.floor(totalSlots / (brainTasks.length + 1)));
+
+    for (let i = 0; i < totalSlots; i++) {
+      if (bIdx < brainTasks.length && (i + 1) % spacing === 0 && qIdx >= 1) {
+        items.push({ kind: "brain_task", task: brainTasks[bIdx] });
+        bIdx++;
+      } else if (qIdx < picked.length) {
+        items.push({ kind: "trivia", question: picked[qIdx] });
+        qIdx++;
+      }
+    }
+    while (qIdx < picked.length) { items.push({ kind: "trivia", question: picked[qIdx] }); qIdx++; }
+    while (bIdx < brainTasks.length) { items.push({ kind: "brain_task", task: brainTasks[bIdx] }); bIdx++; }
+
+    setSessionItems(items);
     setQuestions(picked);
     setCurrentIndex(0);
     setTimeLeft(duration);
     setStreak(0); setBestStreak(0); setCorrectCount(0);
     setTotalXp(0); setTotalCoins(0); setQuestionLog([]);
+    setBrainTaskScores([]);
+    setBrainTaskPhase("idle");
     setPhase("countdown");
     setCountdownValue(3);
     persistedRef.current = false;
@@ -223,8 +259,8 @@ export default function ChallengePage() {
 
   // Per-question timer
   useEffect(() => {
-    if (phase !== "active" || answerState !== "unanswered" || !current) return;
-    const qTime = current.difficulty === "beginner" ? 20 : current.difficulty === "intermediate" ? 25 : 30;
+    if (phase !== "active" || answerState !== "unanswered" || !currentTrivia || currentItem?.kind === "brain_task") return;
+    const qTime = currentTrivia.difficulty === "beginner" ? 20 : currentTrivia.difficulty === "intermediate" ? 25 : 30;
     setQuestionTimeLeft(qTime);
     qTimerRef.current = setInterval(() => {
       setQuestionTimeLeft(prev => {
@@ -237,14 +273,14 @@ export default function ChallengePage() {
       });
     }, 1000);
     return () => { if (qTimerRef.current) clearInterval(qTimerRef.current); };
-  }, [phase, currentIndex, answerState, current]);
+  }, [phase, currentIndex, answerState, currentTrivia, currentItem]);
 
   // Focus input on text questions
   useEffect(() => {
-    if (phase === "active" && current?.type === "text-input" && answerState === "unanswered") {
+    if (phase === "active" && currentItem?.kind === "trivia" && currentTrivia?.type === "text-input" && answerState === "unanswered") {
       setTimeout(() => inputRef.current?.focus(), 300);
     }
-  }, [phase, current, answerState, currentIndex]);
+  }, [phase, currentTrivia, answerState, currentIndex, currentItem]);
 
   // Persist quiz results when finished
   useEffect(() => {
@@ -307,30 +343,30 @@ export default function ChallengePage() {
   }, [phase, totalXp, totalCoins, questionLog, questions.length]);
 
   function isCorrect(answer: string): boolean {
-    if (!current) return false;
+    if (!currentTrivia) return false;
     const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "").trim();
-    if (current.type === "text-input") {
-      return norm(answer) === norm(current.correctAnswer);
+    if (currentTrivia.type === "text-input") {
+      return norm(answer) === norm(currentTrivia.correctAnswer);
     }
-    return answer === current.correctAnswer;
+    return answer === currentTrivia.correctAnswer;
   }
 
   const handleSubmit = useCallback((timedOut = false) => {
-    if (answerState !== "unanswered" || !current) return;
+    if (answerState !== "unanswered" || !currentTrivia) return;
     if (qTimerRef.current) clearInterval(qTimerRef.current);
 
     let correct = false;
     if (!timedOut) {
-      if (current.type === "multiple-choice" && selectedOption) {
+      if (currentTrivia.type === "multiple-choice" && selectedOption) {
         correct = isCorrect(selectedOption);
-      } else if (current.type === "text-input" && textInput.trim()) {
+      } else if (currentTrivia.type === "text-input" && textInput.trim()) {
         correct = isCorrect(textInput);
       }
     }
 
     const streakBonus = correct ? Math.min(streak + 1, 5) : 0;
-    const xp = correct ? (current.xp + streakBonus * 3) : 0;
-    const coins = correct ? current.coins : 0;
+    const xp = correct ? (currentTrivia.xp + streakBonus * 3) : 0;
+    const coins = correct ? currentTrivia.coins : 0;
 
     if (correct) {
       const newStreak = streak + 1;
@@ -343,23 +379,39 @@ export default function ChallengePage() {
     setTotalXp(x => x + xp);
     setTotalCoins(c => c + coins);
     setQuestionLog(log => [...log, {
-      question: current.question.substring(0, 50) + "...",
-      correct, xp, coins, category: current.category,
+      question: currentTrivia.question.substring(0, 50) + "...",
+      correct, xp, coins, category: currentTrivia.category,
     }]);
     setAnswerState(correct ? "correct" : "wrong");
-  }, [answerState, current, selectedOption, textInput, streak, bestStreak]);
+  }, [answerState, currentTrivia, selectedOption, textInput, streak, bestStreak]);
 
   function nextQuestion() {
-    if (currentIndex < questions.length - 1) {
+    if (currentIndex < sessionItems.length - 1) {
       setCurrentIndex(i => i + 1);
       setSelectedOption(null);
       setTextInput("");
       setShowHint(false);
       setAnswerState("unanswered");
+      setBrainTaskPhase("idle");
     } else {
       if (timerRef.current) clearInterval(timerRef.current);
       setPhase("finished");
     }
+  }
+
+  function handleBrainTaskComplete(score: number) {
+    if (!currentItem || currentItem.kind !== "brain_task") return;
+    setBrainTaskScores(prev => [...prev, { task: currentItem.task, score }]);
+    setTotalXp(x => x + currentItem.task.xpReward);
+    setTotalCoins(c => c + currentItem.task.coinReward);
+    setQuestionLog(log => [...log, {
+      question: `[Brain Task] ${currentItem.task.title}`,
+      correct: score > 0,
+      xp: currentItem.task.xpReward,
+      coins: currentItem.task.coinReward,
+      category: currentItem.task.category,
+    }]);
+    setBrainTaskPhase("done");
   }
 
   function formatTime(s: number) {
@@ -381,7 +433,7 @@ export default function ChallengePage() {
           <h1 className="text-2xl font-bold">Quick-Fire Brain Quiz</h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Test your brain with fun questions across Memory, Focus, Thinking, and more!
-            Race against the clock — faster answers earn more XP!
+            Plus real-life brain tasks to train everyday cognitive skills! 🧠
           </p>
 
           <div className="mt-6 rounded-xl border border-border bg-background p-4 text-left">
@@ -396,37 +448,42 @@ export default function ChallengePage() {
                     "Answer correct = XP + coins. Fast answer = MORE bonus!",
                     "Get consecutive answers correct = Streak combo = DOUBLE bonus! 🔥",
                     "If you no know, use the hint — but e go reduce your XP small",
+                    "Set a daily reminder so you no go miss your brain workout!",
                   ]
                 : quizLang === "fr"
                 ? [
                     "Choisissez votre temps — 30s (rapide), 60s (idéal), ou 90s (défi complet)",
                     "Chaque question est à choix multiple OU à réponse libre",
+                    "Des tâches cérébrales réelles sont mélangées — comptez, souvenez-vous, respirez! 🧠",
                     "Bonne réponse = XP + coins. Réponse rapide = PLUS de bonus!",
                     "Réponses consécutives correctes = combo streak = DOUBLE bonus! 🔥",
-                    "Si vous ne savez pas, utilisez l'indice — mais cela réduit votre XP",
+                    "Réglez un rappel quotidien pour ne jamais manquer votre entraînement!",
                   ]
                 : quizLang === "pt"
                 ? [
                     "Escolha seu tempo — 30s (rápido), 60s (ideal), ou 90s (desafio completo)",
                     "Cada questão é múltipla escolha OU resposta digitada",
+                    "Tarefas cerebrais reais são misturadas — conte, lembre-se, respire! 🧠",
                     "Acertou = XP + coins. Resposta rápida = MAIS bônus!",
                     "Acertos consecutivos = combo streak = DOBRO de bônus! 🔥",
-                    "Se não souber, use a dica — mas isso reduz seu XP",
+                    "Defina um lembrete diário para nunca perder seu treino cerebral!",
                   ]
                 : quizLang === "en-us"
                 ? [
                     "Pick your time — 30s (quick blast), 60s (sweet spot), or 90s (full brain workout)",
                     "Each question is multiple choice OR type-your-answer mode",
+                    "Real-life brain tasks mixed in — count things, recall memories, breathe! 🧠",
                     "Answer correct = XP + coins. Fast answer = MORE bonus!",
                     "Get consecutive answers correct = Streak combo = DOUBLE bonus! 🔥",
-                    "If you don't know, use the hint — but it'll reduce your XP a bit",
+                    "Set a daily reminder so you never miss your brain workout!",
                   ]
                 : [
                     "Pick your time — 30s (quick blast), 60s (sweet spot), or 90s (full brain workout)",
                     "Each question get multiple choice OR type-your-answer mode",
+                    "Real-life brain tasks dey mixed in — count things, recall memories, breathe! 🧠",
                     "Answer correct = XP + coins. Fast answer = MORE bonus!",
                     "Get consecutive answers correct = Streak combo = DOUBLE bonus! 🔥",
-                    "If you no know, use the hint — but e go reduce your XP small",
+                    "Set a daily reminder so you no go miss your brain workout!",
                   ]
               ).map((text, i) => (
                 <div key={i} className="flex items-start gap-3">
@@ -497,6 +554,10 @@ export default function ChallengePage() {
 
           {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
 
+          <div className="mt-6">
+            <DailyReminder />
+          </div>
+
           <button onClick={startChallenge}
             className="mt-8 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-red-600 px-6 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-all hover:shadow-xl hover:shadow-orange-500/30 active:scale-[0.98]">
             <Zap className="h-4 w-4" />
@@ -524,16 +585,20 @@ export default function ChallengePage() {
 
   // ═══ FINISHED ═══
   if (phase === "finished") {
-    const total = questions.length;
-    const accuracy = total > 0 ? Math.round((correctCount / total) * 100) : 0;
-    const grade = accuracy >= 90
+    const triviaTotal = questions.length;
+    const total = sessionItems.length;
+    const triviaAccuracy = triviaTotal > 0 ? Math.round((correctCount / triviaTotal) * 100) : 0;
+    const accuracy = total > 0 ? Math.round((correctCount / triviaTotal) * 100) : 0;
+    const brainTasksDone = brainTaskScores.length;
+    const brainTotalScore = brainTaskScores.reduce((sum, b) => sum + b.score, 0);
+    const grade = triviaAccuracy >= 90
       ? (quizLang === "pcm" ? "Oga Level! 🏆" : quizLang === "fr" ? "Niveau Oga! 🏆" : quizLang === "pt" ? "Nível Oga! 🏆" : quizLang === "en-us" ? "Champion Level! 🏆" : "Champion Level! 🏆")
-      : accuracy >= 70
+      : triviaAccuracy >= 70
       ? (quizLang === "pcm" ? "You too sabi! 🔥" : quizLang === "fr" ? "Très bien! 🔥" : quizLang === "pt" ? "Muito bem! 🔥" : quizLang === "en-us" ? "Great work! 🔥" : "Great work! 🔥")
-      : accuracy >= 50
+      : triviaAccuracy >= 50
       ? (quizLang === "pcm" ? "Not bad at all! 💪" : quizLang === "fr" ? "Pas mal du tout! 💪" : quizLang === "pt" ? "Nada mal! 💪" : "Not bad at all! 💪")
       : (quizLang === "pcm" ? "Keep practicing, you go get there! 🧠" : quizLang === "fr" ? "Continuez, vous y arriverez! 🧠" : quizLang === "pt" ? "Continue praticando, você vai conseguir! 🧠" : "Keep practicing, you'll get there! 🧠");
-    const reaction = accuracy >= 80
+    const reaction = triviaAccuracy >= 80
       ? getCorrectReaction(quizLang)
       : "Every question is a learning opportunity!";
 
@@ -580,6 +645,23 @@ export default function ChallengePage() {
             </div>
           </div>
 
+          {brainTasksDone > 0 && (
+            <div className="mt-3 rounded-xl bg-primary/5 border border-primary/10 p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Brain className="h-4 w-4 text-primary" />
+                <span className="text-sm font-semibold">Brain Tasks: {brainTasksDone}</span>
+              </div>
+              <div className="space-y-1">
+                {brainTaskScores.map((bt, i) => (
+                  <div key={i} className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground truncate flex-1">{bt.task.title}</span>
+                    <span className="font-bold text-primary ml-2">+{bt.score} pts</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="mt-4 rounded-xl bg-muted/50 p-3">
             <p className="text-sm font-medium">Accuracy: <span className="text-primary font-bold">{accuracy}%</span></p>
             <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
@@ -624,12 +706,13 @@ export default function ChallengePage() {
   }
 
   // ═══ ACTIVE / FEEDBACK ═══
-  if (!current) { setPhase("finished"); return null; }
-  const category = CATEGORIES.find(c => c.id === current.category);
-  const progress = questions.length > 0 ? (currentIndex + 1) / questions.length : 0;
+  if (!currentItem) { setPhase("finished"); return null; }
+  const isBrainTask = currentItem.kind === "brain_task";
+  const category = !isBrainTask && currentTrivia ? CATEGORIES.find(c => c.id === currentTrivia.category) : null;
+  const progress = sessionItems.length > 0 ? (currentIndex + 1) / sessionItems.length : 0;
   const timePercent = duration > 0 ? (timeLeft / duration) * 100 : 0;
   const isUrgent = timeLeft <= 10;
-  const qTimePercent = current.difficulty === "beginner" ? 20 : current.difficulty === "intermediate" ? 25 : 30;
+  const qTimePercent = !isBrainTask && currentTrivia ? (currentTrivia.difficulty === "beginner" ? 20 : currentTrivia.difficulty === "intermediate" ? 25 : 30) : 25;
   const qTimeVisual = (questionTimeLeft / qTimePercent) * 100;
 
   return (
@@ -652,7 +735,7 @@ export default function ChallengePage() {
           </div>
         </div>
         <div className="text-xs text-muted-foreground font-medium">
-          {currentIndex + 1}/{questions.length}
+          {currentIndex + 1}/{sessionItems.length}
         </div>
       </div>
 
@@ -676,146 +759,155 @@ export default function ChallengePage() {
         <div className="h-full rounded-full bg-violet-500 transition-all" style={{ width: `${progress * 100}%` }} />
       </div>
 
-      {/* Question card */}
-      <div className="rounded-2xl border border-border bg-card overflow-hidden">
-        {/* Category + Difficulty */}
-        <div className="flex items-center justify-between border-b border-border px-5 py-3">
-          <div className="flex items-center gap-2">
-            <span className="text-lg">{CAT_EMOJI[current.category] || "🧠"}</span>
-            <span className="text-sm text-muted-foreground">{category?.label}</span>
-          </div>
-          <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${
-            current.difficulty === "beginner" ? "text-green-500 bg-green-500/10"
-              : current.difficulty === "intermediate" ? "text-yellow-500 bg-yellow-500/10"
-              : "text-red-500 bg-red-500/10"
-          }`}>{current.difficulty}</span>
-        </div>
-
-        <div className="p-5 space-y-4">
-          {/* Question text */}
-          <h2 className="text-lg font-bold leading-relaxed">{current.question}</h2>
-
-          {/* Multiple Choice */}
-          {current.type === "multiple-choice" && current.options && (
-            <div className="space-y-2">
-              {current.options.map((opt, i) => {
-                const isSelected = selectedOption === opt;
-                const isCorrectOpt = answerState !== "unanswered" && opt === current.correctAnswer;
-                const isWrongSelected = answerState === "wrong" && isSelected && opt !== current.correctAnswer;
-                return (
-                  <button key={i} onClick={() => { if (answerState === "unanswered") setSelectedOption(opt); }}
-                    disabled={answerState !== "unanswered"}
-                    className={`w-full rounded-xl border p-4 text-left text-sm font-medium transition-all ${
-                      isCorrectOpt
-                        ? "border-green-500 bg-green-500/10 text-green-500"
-                        : isWrongSelected
-                        ? "border-red-500 bg-red-500/10 text-red-500"
-                        : isSelected
-                        ? "border-primary bg-primary/10 text-primary"
-                        : "border-border hover:border-muted-foreground/50 hover:bg-muted/50"
-                    }`}>
-                    <div className="flex items-center gap-3">
-                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-current/20 text-xs font-bold">
-                        {String.fromCharCode(65 + i)}
-                      </span>
-                      {opt}
-                      {isCorrectOpt && <CheckCircle2 className="ml-auto h-4 w-4 text-green-500" />}
-                      {isWrongSelected && <XCircle className="ml-auto h-4 w-4 text-red-500" />}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
+      {/* Question card or Brain Task */}
+      {isBrainTask ? (
+        <div className="rounded-2xl border border-border bg-card overflow-hidden p-5">
+          <BrainTaskPlayer
+            key={`bt-${currentIndex}`}
+            task={currentItem.task}
+            onComplete={handleBrainTaskComplete}
+          />
+          {brainTaskPhase === "done" && (
+            <button onClick={nextQuestion}
+              className="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-red-600 px-6 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-all hover:shadow-xl active:scale-[0.98]">
+              {currentIndex < sessionItems.length - 1 ? "Next Challenge →" : "See Results 🎉"}
+            </button>
           )}
+        </div>
+      ) : currentTrivia ? (
+        <div className="rounded-2xl border border-border bg-card overflow-hidden">
+          <div className="flex items-center justify-between border-b border-border px-5 py-3">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">{CAT_EMOJI[currentTrivia.category] || "🧠"}</span>
+              <span className="text-sm text-muted-foreground">{category?.label}</span>
+            </div>
+            <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${
+              currentTrivia.difficulty === "beginner" ? "text-green-500 bg-green-500/10"
+                : currentTrivia.difficulty === "intermediate" ? "text-yellow-500 bg-yellow-500/10"
+                : "text-red-500 bg-red-500/10"
+            }`}>{currentTrivia.difficulty}</span>
+          </div>
 
-          {/* Text Input */}
-          {current.type === "text-input" && (
-            <div className="space-y-3">
-              <div className="flex gap-2">
-                <input ref={inputRef} type="text" value={textInput}
-                  onChange={e => setTextInput(e.target.value)}
-                  onKeyDown={e => { if (e.key === "Enter" && textInput.trim() && answerState === "unanswered") handleSubmit(); }}
-                  disabled={answerState !== "unanswered"}
-                  placeholder="Type your answer here..."
-                  className="flex-1 rounded-xl border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50" />
-                {answerState === "unanswered" && (
-                  <button onClick={() => handleSubmit()} disabled={!textInput.trim()}
-                    className="inline-flex h-12 items-center justify-center rounded-xl bg-primary px-4 text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
-                    <Send className="h-4 w-4" />
-                  </button>
+          <div className="p-5 space-y-4">
+            <h2 className="text-lg font-bold leading-relaxed">{currentTrivia.question}</h2>
+
+            {currentTrivia.type === "multiple-choice" && currentTrivia.options && (
+              <div className="space-y-2">
+                {currentTrivia.options.map((opt, i) => {
+                  const isSelected = selectedOption === opt;
+                  const isCorrectOpt = answerState !== "unanswered" && opt === currentTrivia.correctAnswer;
+                  const isWrongSelected = answerState === "wrong" && isSelected && opt !== currentTrivia.correctAnswer;
+                  return (
+                    <button key={i} onClick={() => { if (answerState === "unanswered") setSelectedOption(opt); }}
+                      disabled={answerState !== "unanswered"}
+                      className={`w-full rounded-xl border p-4 text-left text-sm font-medium transition-all ${
+                        isCorrectOpt
+                          ? "border-green-500 bg-green-500/10 text-green-500"
+                          : isWrongSelected
+                          ? "border-red-500 bg-red-500/10 text-red-500"
+                          : isSelected
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-border hover:border-muted-foreground/50 hover:bg-muted/50"
+                      }`}>
+                      <div className="flex items-center gap-3">
+                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-current/20 text-xs font-bold">
+                          {String.fromCharCode(65 + i)}
+                        </span>
+                        {opt}
+                        {isCorrectOpt && <CheckCircle2 className="ml-auto h-4 w-4 text-green-500" />}
+                        {isWrongSelected && <XCircle className="ml-auto h-4 w-4 text-red-500" />}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {currentTrivia.type === "text-input" && (
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <input ref={inputRef} type="text" value={textInput}
+                    onChange={e => setTextInput(e.target.value)}
+                    onKeyDown={e => { if (e.key === "Enter" && textInput.trim() && answerState === "unanswered") handleSubmit(); }}
+                    disabled={answerState !== "unanswered"}
+                    placeholder="Type your answer here..."
+                    className="flex-1 rounded-xl border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50" />
+                  {answerState === "unanswered" && (
+                    <button onClick={() => handleSubmit()} disabled={!textInput.trim()}
+                      className="inline-flex h-12 items-center justify-center rounded-xl bg-primary px-4 text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
+                      <Send className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+                {answerState !== "unanswered" && (
+                  <p className={`text-sm font-medium ${answerState === "correct" ? "text-green-500" : "text-red-500"}`}>
+                    Correct answer: <span className="font-bold">{currentTrivia.correctAnswer}</span>
+                  </p>
                 )}
               </div>
-              {answerState !== "unanswered" && (
-                <p className={`text-sm font-medium ${answerState === "correct" ? "text-green-500" : "text-red-500"}`}>
-                  Correct answer: <span className="font-bold">{current.correctAnswer}</span>
+            )}
+
+            {currentTrivia.hint && answerState === "unanswered" && (
+              <div>
+                {!showHint ? (
+                  <button onClick={() => setShowHint(true)}
+                    className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
+                    <Lightbulb className="h-3 w-3" /> Need a hint? (-2 XP)
+                  </button>
+                ) : (
+                  <div className="rounded-lg bg-yellow-500/5 border border-yellow-500/10 p-3">
+                    <p className="text-xs text-yellow-600 dark:text-yellow-400">💡 {currentTrivia.hint}</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5 rounded-lg bg-violet-500/10 px-3 py-1.5">
+                <Trophy className="h-3.5 w-3.5 text-violet-400" />
+                <span className="text-xs font-bold text-violet-400">+{currentTrivia.xp + (streak > 0 ? streak * 3 : 0)} XP</span>
+              </div>
+              <div className="flex items-center gap-1.5 rounded-lg bg-amber-500/10 px-3 py-1.5">
+                <Coins className="h-3.5 w-3.5 text-amber-500" />
+                <span className="text-xs font-bold text-amber-500">+{currentTrivia.coins} coins</span>
+              </div>
+            </div>
+
+            {answerState !== "unanswered" && (
+              <div className={`rounded-xl p-4 border ${
+                answerState === "correct"
+                  ? "bg-green-500/5 border-green-500/10"
+                  : "bg-red-500/5 border-red-500/10"
+              }`}>
+                <p className="text-sm font-semibold mb-1">
+                  {answerState === "correct"
+                    ? getCorrectReaction(quizLang)
+                    : getWrongReaction(quizLang)}
                 </p>
-              )}
-            </div>
-          )}
-
-          {/* Hint */}
-          {current.hint && answerState === "unanswered" && (
-            <div>
-              {!showHint ? (
-                <button onClick={() => setShowHint(true)}
-                  className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
-                  <Lightbulb className="h-3 w-3" /> Need a hint? (-2 XP)
-                </button>
-              ) : (
-                <div className="rounded-lg bg-yellow-500/5 border border-yellow-500/10 p-3">
-                  <p className="text-xs text-yellow-600 dark:text-yellow-400">💡 {current.hint}</p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* XP + Coins */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 rounded-lg bg-violet-500/10 px-3 py-1.5">
-              <Trophy className="h-3.5 w-3.5 text-violet-400" />
-              <span className="text-xs font-bold text-violet-400">+{current.xp + (streak > 0 ? streak * 3 : 0)} XP</span>
-            </div>
-            <div className="flex items-center gap-1.5 rounded-lg bg-amber-500/10 px-3 py-1.5">
-              <Coins className="h-3.5 w-3.5 text-amber-500" />
-              <span className="text-xs font-bold text-amber-500">+{current.coins} coins</span>
-            </div>
+                <p className="text-sm text-muted-foreground">{currentTrivia.explanation}</p>
+              </div>
+            )}
           </div>
-
-          {/* Feedback */}
-          {answerState !== "unanswered" && (
-            <div className={`rounded-xl p-4 border ${
-              answerState === "correct"
-                ? "bg-green-500/5 border-green-500/10"
-                : "bg-red-500/5 border-red-500/10"
-            }`}>
-              <p className="text-sm font-semibold mb-1">
-                {answerState === "correct"
-                  ? getCorrectReaction(quizLang)
-                  : getWrongReaction(quizLang)}
-              </p>
-              <p className="text-sm text-muted-foreground">{current.explanation}</p>
-            </div>
-          )}
         </div>
-      </div>
+      ) : null}
 
-      {/* Actions */}
-      <div className="flex gap-3">
-        {answerState === "unanswered" ? (
-          <>
+      {/* Actions — trivia only */}
+      {!isBrainTask && currentTrivia && (
+        <div className="flex gap-3">
+          {answerState === "unanswered" ? (
             <button onClick={() => handleSubmit()}
-              disabled={current.type === "multiple-choice" ? !selectedOption : !textInput.trim()}
+              disabled={currentTrivia.type === "multiple-choice" ? !selectedOption : !textInput.trim()}
               className="inline-flex h-12 flex-[2] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-6 text-sm font-bold text-white shadow-lg shadow-green-500/25 transition-all hover:shadow-xl active:scale-[0.98] disabled:opacity-50">
               Submit Answer
             </button>
-          </>
-        ) : (
-          <button onClick={nextQuestion}
-            className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-red-600 px-6 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-all hover:shadow-xl active:scale-[0.98]">
-            {currentIndex < questions.length - 1 ? "Next Question →" : "See Results 🎉"}
-          </button>
-        )}
-      </div>
+          ) : (
+            <button onClick={nextQuestion}
+              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-red-600 px-6 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-all hover:shadow-xl active:scale-[0.98]">
+              {currentIndex < sessionItems.length - 1 ? "Next Challenge →" : "See Results 🎉"}
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

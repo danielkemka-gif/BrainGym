@@ -432,7 +432,7 @@ export default function GuidedWorkoutPage() {
           <ArrowLeft className="h-4 w-4" /> Back to Dashboard
         </Link>
 
-        <div className="rounded-2xl border border-border bg-card p-8 text-center relative overflow-hidden">
+        <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 text-center relative overflow-hidden">
           <Confetti active={showConfetti} />
           <LevelUpModal
             show={showLevelUp}
@@ -617,9 +617,9 @@ export default function GuidedWorkoutPage() {
         </div>
 
         {/* Timer circle */}
-        <div className="flex flex-col items-center py-8">
-          <div className="relative h-48 w-48">
-            <svg className="h-48 w-48 -rotate-90" viewBox="0 0 200 200">
+        <div className="flex flex-col items-center py-4 sm:py-8">
+          <div className="relative h-40 w-40 sm:h-48 sm:w-48">
+            <svg className="h-40 w-40 sm:h-48 sm:w-48 -rotate-90" viewBox="0 0 200 200">
               <circle cx="100" cy="100" r="90" fill="none" stroke="currentColor"
                 className="stroke-muted" strokeWidth="8" />
               <circle cx="100" cy="100" r="90" fill="none" stroke="currentColor"
@@ -629,7 +629,7 @@ export default function GuidedWorkoutPage() {
                 strokeDashoffset={`${2 * Math.PI * 90 * (1 - timePercent / 100)}`} />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <p className="text-4xl font-bold tabular-nums">{formatTime(timerSeconds)}</p>
+              <p className="text-3xl sm:text-4xl font-bold tabular-nums">{formatTime(timerSeconds)}</p>
               <p className="text-xs text-muted-foreground mt-1">{category?.label}</p>
             </div>
           </div>

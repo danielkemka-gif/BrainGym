@@ -487,7 +487,7 @@ export default function MemoryMatchPage() {
             className="rounded-lg p-2 hover:bg-accent min-h-[44px] flex items-center justify-center">
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {combo >= 2 && (
               <div className="flex items-center gap-1 rounded-full bg-orange-500/10 px-2.5 py-1 text-xs font-bold text-orange-500 animate-pulse">
                 <Zap className="h-3 w-3" /> {combo}x
@@ -523,7 +523,7 @@ export default function MemoryMatchPage() {
               key={card.id}
               onClick={() => handleCardClick(card.id)}
               whileTap={{ scale: 0.95 }}
-              className={`aspect-square rounded-xl text-2xl font-bold transition-all duration-200 ${
+              className={`aspect-square rounded-lg sm:rounded-xl text-lg sm:text-2xl font-bold transition-all duration-200 ${
                 card.matched
                   ? "bg-gradient-to-br from-green-500/20 to-emerald-500/20 border-2 border-green-500/30 scale-95 opacity-70"
                   : card.flipped
@@ -606,7 +606,7 @@ export default function MemoryMatchPage() {
       </div>
 
       {/* Actions */}
-      <div className="flex gap-3 justify-center">
+      <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <button
           onClick={() => startLevel(selectedLevel!)}
           className="flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90 min-h-[48px]"

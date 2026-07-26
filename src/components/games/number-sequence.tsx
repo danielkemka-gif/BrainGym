@@ -138,7 +138,7 @@ export function NumberSequenceGame({ level, config, gradient, onComplete, onExit
       {phase === "show" && (
         <div className="flex flex-col items-center gap-6 py-8">
           <p className="text-sm text-muted-foreground">Memorize the sequence</p>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 justify-center">
             {sequence.map((num, i) => (
               <motion.div
                 key={i}
@@ -147,7 +147,7 @@ export function NumberSequenceGame({ level, config, gradient, onComplete, onExit
                   scale: i === showingIndex ? 1.2 : 0.8,
                   opacity: i === showingIndex ? 1 : 0.3,
                 }}
-                className={`flex h-14 w-14 items-center justify-center rounded-xl text-xl font-bold ${
+                className={`flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-xl text-lg sm:text-xl font-bold ${
                   i === showingIndex ? `bg-gradient-to-br ${gradient} text-white shadow-lg` : "bg-muted text-muted-foreground"
                 }`}
               >
@@ -166,11 +166,11 @@ export function NumberSequenceGame({ level, config, gradient, onComplete, onExit
           </p>
 
           {/* User input display */}
-          <div className="flex gap-2 min-h-[56px] items-center">
+          <div className="flex flex-wrap gap-2 min-h-[48px] sm:min-h-[56px] items-center justify-center">
             {sequence.map((_, i) => (
               <div
                 key={i}
-                className={`flex h-12 w-12 items-center justify-center rounded-xl text-lg font-bold ${
+                className={`flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl text-base sm:text-lg font-bold ${
                   i < userInput.length
                     ? userInput[i] === sequence[i]
                       ? "bg-green-500/20 text-green-500"
@@ -184,13 +184,13 @@ export function NumberSequenceGame({ level, config, gradient, onComplete, onExit
           </div>
 
           {/* Number pad */}
-          <div className="grid grid-cols-3 gap-2 w-full max-w-[240px]">
+          <div className="grid grid-cols-3 gap-2 w-full max-w-[200px] sm:max-w-[240px]">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
               <motion.button
                 key={num}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => handleNumberClick(num)}
-                className="flex h-14 items-center justify-center rounded-xl bg-card border-2 border-border text-xl font-bold hover:border-primary/30 hover:bg-accent transition-all"
+                className="flex h-12 sm:h-14 items-center justify-center rounded-xl bg-card border-2 border-border text-lg sm:text-xl font-bold hover:border-primary/30 hover:bg-accent transition-all"
               >
                 {num}
               </motion.button>

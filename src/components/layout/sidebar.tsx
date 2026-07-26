@@ -107,6 +107,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
         className={`fixed left-0 top-0 z-40 flex h-full w-60 flex-col border-r border-border bg-background transition-transform duration-200 lg:static lg:translate-x-0 ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
+        style={{ paddingTop: 'env(safe-area-inset-top)' }}
       >
         {/* Logo */}
         <div className="flex h-14 items-center gap-2.5 border-b border-border px-4">

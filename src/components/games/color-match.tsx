@@ -172,7 +172,7 @@ export function ColorMatchGame({ level, config, gradient, onComplete, onExit }: 
             className="text-center"
           >
             <span
-              className="text-6xl font-bold tracking-tight"
+              className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight"
               style={{ color: textColor.value }}
             >
               {wordColor.name}

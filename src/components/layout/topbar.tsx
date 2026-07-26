@@ -19,7 +19,7 @@ export function Topbar({ onMenuClick, userName }: TopbarProps) {
   }
 
   return (
-      <header role="banner" className="flex h-14 items-center justify-between border-b border-border bg-background px-4">
+      <header role="banner" className="flex h-14 items-center justify-between border-b border-border bg-background px-4" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
       <button
         onClick={onMenuClick}
         aria-label="Toggle navigation menu"

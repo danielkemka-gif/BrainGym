@@ -54,7 +54,7 @@ export default function GamesHubPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="mx-auto max-w-4xl space-y-4 sm:space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold">Brain Games</h1>
@@ -90,9 +90,9 @@ export default function GamesHubPage() {
         href="/dashboard/daily-challenge"
         className="group block overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 to-violet-500/5 transition-all hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10"
       >
-        <div className="flex items-center gap-4 p-5">
-          <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-violet-600 shadow-lg shadow-primary/25">
-            <Zap className="h-7 w-7 text-white" />
+        <div className="flex items-center gap-3 sm:gap-4 p-4 sm:p-5">
+          <div className="flex h-12 w-12 sm:h-14 sm:w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-violet-600 shadow-lg shadow-primary/25">
+            <Zap className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
           </div>
           <div className="flex-1">
             <h3 className="text-base font-bold">Daily Brain Age Challenge</h3>
@@ -124,12 +124,12 @@ export default function GamesHubPage() {
                 className="group block overflow-hidden rounded-2xl border border-border bg-card transition-all hover:border-transparent hover:shadow-xl hover:shadow-primary/5"
               >
                 {/* Gradient header */}
-                <div className={`relative overflow-hidden bg-gradient-to-br ${game.gradient} p-6`}>
+                <div className={`relative overflow-hidden bg-gradient-to-br ${game.gradient} p-4 sm:p-6`}>
                   <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-white/10 blur-2xl" />
                   <div className="absolute -bottom-8 -left-8 h-24 w-24 rounded-full bg-black/10 blur-2xl" />
-                  <div className="relative flex items-center gap-4">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 text-white">
-                      {(() => { const GameIcon = GAME_ICONS[game.iconKey]; return GameIcon ? <GameIcon className="h-7 w-7" /> : null; })()}
+                  <div className="relative flex items-center gap-3 sm:gap-4">
+                    <div className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-white/20 text-white">
+                      {(() => { const GameIcon = GAME_ICONS[game.iconKey]; return GameIcon ? <GameIcon className="h-6 w-6 sm:h-7 sm:w-7" /> : null; })()}
                     </div>
                     <div>
                       <h3 className="text-lg font-bold text-white">{game.title}</h3>
@@ -158,7 +158,7 @@ export default function GamesHubPage() {
                   </div>
 
                   {/* Level badges */}
-                  <div className="mt-3 flex gap-1">
+                  <div className="mt-3 flex gap-1 overflow-x-auto pb-1">
                     {Array.from({ length: 10 }, (_, lvl) => {
                       const p = progress.find(
                         (pr) => pr.game_id === game.id && pr.level_number === lvl + 1

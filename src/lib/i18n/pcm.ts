@@ -173,4 +173,37 @@ export const pcm: TranslationKeys = {
   forecast_most_days: "Most days",
   forecast_every_day: "Every day",
   forecast_warning: "If you train less than half of days, your momentum go dey drop",
+
+  // Missed Day Simulator
+  missed_title: "Wetin happen if you miss?",
+  missed_subtitle: "See how missing days dey affect your momentum",
+  missed_today: "Today",
+  missed_in_7_days: "In 7 days",
+  missed_drop: "You go lose",
+  missed_motivation_low: "Your momentum dey strong! Keep training.",
+  missed_motivation_mid: "A few missed days dey add up. Try at least one session.",
+  missed_motivation_high: "Na big drop. Even 5 minutes fit help!",
+
+  // Brain Health
+  health_title: "Brain Health",
+  health_subtitle: "Weekly brain health summary",
+  health_excellent: "Excellent",
+  health_good: "Good",
+  health_fair: "Fair",
+  health_needs_attention: "E dey need attention",
+  health_strongest: "Your strong point",
+  health_focus_area: "Area wey need work",
+  health_vs_last_week: "vs last week",
+
+  // Adaptive Habits
+  habits_title: "Adaptive Habits",
+  habits_subtitle: "Your personal training rhythm",
+  habits_building: "You dey build",
+  habits_strong: "Strong",
+  habits_needs_care: "Need care",
+  habits_optimal: "optimal",
+  habits_current: "now",
+  habits_consistency: "Consistency score",
+  habits_best_day: "Best day",
+  habits_best_time: "Best time",
 };

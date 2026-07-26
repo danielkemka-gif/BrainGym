@@ -173,4 +173,37 @@ export const fr: TranslationKeys = {
   forecast_most_days: "La plupart des jours",
   forecast_every_day: "Tous les jours",
   forecast_warning: "S'entraîner moins de 50% des jours fait diminuer le momentum",
+
+  // Missed Day Simulator
+  missed_title: "Et si vous率tez?",
+  missed_subtitle: "Voyez l'impact de jours sans entraînement",
+  missed_today: "Aujourd'hui",
+  missed_in_7_days: "Dans 7 jours",
+  missed_drop: "Vous perdriez",
+  missed_motivation_low: "Votre momentum est résilient ! Continuez à vous entraîner.",
+  missed_motivation_mid: "Quelques jours manqués s'additionnent. Essayez au moins une session.",
+  missed_motivation_high: "C'est une baisse significative. Même 5 minutes peuvent aider !",
+
+  // Brain Health
+  health_title: "Santé Cérébrale",
+  health_subtitle: "Résumé hebdomadaire de santé cognitive",
+  health_excellent: "Excellent",
+  health_good: "Bien",
+  health_fair: "Passable",
+  health_needs_attention: "Nécessite attention",
+  health_strongest: "Point fort",
+  health_focus_area: "À améliorer",
+  health_vs_last_week: "vs semaine dernière",
+
+  // Adaptive Habits
+  habits_title: "Habitudes Adaptatives",
+  habits_subtitle: "Votre rythme d'entraînement personnalisé",
+  habits_building: "En construction",
+  habits_strong: "Solide",
+  habits_needs_care: "À entretenir",
+  habits_optimal: "optimal",
+  habits_current: "maintenant",
+  habits_consistency: "Score de régularité",
+  habits_best_day: "Meilleur jour",
+  habits_best_time: "Meilleur moment",
 };

@@ -26,19 +26,26 @@ export interface CoachContext {
   level: number;
   totalXp: number;
   activities: { title: string; category: string; difficulty: string; xp: number; time: number }[];
+  momentum: { score: number; trend: string; label: string } | null;
+  quests: { completed: number; total: number; category: string }[];
+  cognitiveIdentity: string | null;
+  brainHealth: { overall: number; best: string; weakest: string } | null;
 }
 
 export async function buildCoachContext(userId: string): Promise<CoachContext | null> {
   try {
     const supabase = await createClient();
 
-    const [profileRes, scoresRes, streakRes, logsRes, xpRes, activitiesRes] = await Promise.all([
+    const [profileRes, scoresRes, streakRes, logsRes, xpRes, activitiesRes, momentumRes, questsRes, identityRes] = await Promise.all([
       supabase.from("profiles").select("*").eq("user_id", userId).maybeSingle(),
       supabase.from("brain_scores").select("category_id, score").eq("user_id", userId).order("date", { ascending: false }).limit(50),
       supabase.from("streaks").select("current_streak, longest_streak").eq("user_id", userId).maybeSingle(),
       supabase.from("activity_logs").select("date, activity_id, activities!inner(title, category_id)").eq("user_id", userId).order("date", { ascending: false }).limit(20),
       supabase.from("xp_ledger").select("amount").eq("user_id", userId).then((r) => r.data?.reduce((s, l) => s + l.amount, 0) ?? 0),
       supabase.from("activities").select("title, category_id, difficulty, xp, estimated_time").eq("is_active", true),
+      supabase.from("brain_momentum").select("score").eq("user_id", userId).order("calculated_at", { ascending: false }).limit(2),
+      supabase.from("daily_quests").select("category, completed, quest_date").eq("user_id", userId).eq("quest_date", new Date().toISOString().split("T")[0]),
+      supabase.from("user_identities").select("identity:cognitive_identities(name)").eq("user_id", userId).eq("is_active", true).maybeSingle(),
     ]);
 
     const profile = profileRes.data;
@@ -76,6 +83,36 @@ export async function buildCoachContext(userId: string): Promise<CoachContext | 
       time: a.estimated_time,
     }));
 
+    // Momentum
+    const momentumData = momentumRes.data ?? [];
+    const momentumScore = momentumData[0]?.score ?? 50;
+    const momentumPrev = momentumData[1]?.score ?? momentumScore;
+    const momentumDelta = momentumScore - momentumPrev;
+    const momentumTrend = momentumDelta > 5 ? 'improving' : momentumDelta < -5 ? 'declining' : 'stable';
+    const momentumLabel = momentumScore >= 90 ? 'Unstoppable' : momentumScore >= 75 ? 'Soaring' : momentumScore >= 60 ? 'Building' : momentumScore >= 40 ? 'Warming Up' : 'Recovering';
+
+    // Today's quests
+    const questsToday = questsRes.data ?? [];
+    const questsCompleted = questsToday.filter(q => q.completed).length;
+
+    // Cognitive identity
+    const identityRaw = identityRes.data?.identity as unknown;
+    const identity = identityRaw && typeof identityRaw === 'object' && 'name' in identityRaw
+      ? (identityRaw as { name: string }).name
+      : null;
+
+    // Brain health (simple avg from latest scores - reuse existing latestScores map)
+    const allScores = Array.from(latestScores.values());
+    const brainHealthOverall = allScores.length > 0 ? Math.round(allScores.reduce((a, b) => a + b, 0) / allScores.length) : 50;
+    const catMapHealth = Object.fromEntries(CATEGORIES.map((c) => [c.id, c.label]));
+    let bestCat = { name: 'N/A', score: 0 };
+    let weakCat = { name: 'N/A', score: 100 };
+    for (const [cat, score] of latestScores) {
+      const name = catMapHealth[cat] ?? cat;
+      if (score > bestCat.score) bestCat = { name, score };
+      if (score < weakCat.score) weakCat = { name, score };
+    }
+
     return {
       profile: {
         name: profile.name ?? null,
@@ -95,6 +132,22 @@ export async function buildCoachContext(userId: string): Promise<CoachContext | 
       level: getLevel(xpRes).level,
       totalXp: xpRes,
       activities,
+      momentum: {
+        score: momentumScore,
+        trend: momentumTrend,
+        label: momentumLabel,
+      },
+      quests: questsToday.map(q => ({
+        completed: q.completed ? 1 : 0,
+        total: 1,
+        category: q.category,
+      })),
+      cognitiveIdentity: identity,
+      brainHealth: {
+        overall: brainHealthOverall,
+        best: bestCat.name,
+        weakest: weakCat.name,
+      },
     };
   } catch {
     return null;
@@ -132,9 +185,21 @@ You have deep knowledge of neuroscience, cognitive science, habit formation, pro
 - Goals: ${goalsText}
 - Challenges: ${challengesText}
 - Preferred workout time: ${ctx.profile.preferred_workout_time ?? "Not specified"}
+- Cognitive Identity: ${ctx.cognitiveIdentity ?? "Brain Explorer (new user)"}
 
 ## Brain Scores
 ${scoreText}
+
+## Brain Momentum: ${ctx.momentum?.score ?? 50}/100 (${ctx.momentum?.label ?? "Unknown"})
+- Trend: ${ctx.momentum?.trend ?? "stable"}
+
+## Brain Health
+- Overall: ${ctx.brainHealth?.overall ?? 50}/100
+- Strongest area: ${ctx.brainHealth?.best ?? "N/A"}
+- Needs focus: ${ctx.brainHealth?.weakest ?? "N/A"}
+
+## Today's Quests
+${ctx.quests.length > 0 ? ctx.quests.map(q => `- ${q.category}: ${q.completed ? "Completed ✓" : "In progress"}`).join("\n") : "No quests generated yet"}
 
 ## Current Stats
 - Total workouts completed: ${ctx.totalWorkouts}
@@ -154,9 +219,10 @@ ${activityCatalog}
 3. Answer questions about brain training, cognitive science, memory techniques, focus strategies, etc.
 4. Keep the user motivated and celebrate their progress.
 5. Suggest daily workout adjustments based on what the user has been doing.
-6. Be concise but warm — aim for 2-4 paragraphs unless the user asks for more detail.
-7. If the user asks about a specific activity from the library, explain its benefits and how to do it effectively.
-8. Never give medical advice — remind users to consult professionals for health concerns.
+6. Reference their Brain Momentum score and encourage consistency.
+7. Be concise but warm — aim for 2-4 paragraphs unless the user asks for more detail.
+8. If the user asks about a specific activity from the library, explain its benefits and how to do it effectively.
+9. Never give medical advice — remind users to consult professionals for health concerns.
 
 Always reference the user's actual data when giving recommendations. Be specific about which activities to try and why.`;
 }

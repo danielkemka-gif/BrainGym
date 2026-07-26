@@ -175,4 +175,37 @@ export type TranslationKeys = {
   forecast_most_days: string;
   forecast_every_day: string;
   forecast_warning: string;
+
+  // Missed Day Simulator
+  missed_title: string;
+  missed_subtitle: string;
+  missed_today: string;
+  missed_in_7_days: string;
+  missed_drop: string;
+  missed_motivation_low: string;
+  missed_motivation_mid: string;
+  missed_motivation_high: string;
+
+  // Brain Health
+  health_title: string;
+  health_subtitle: string;
+  health_excellent: string;
+  health_good: string;
+  health_fair: string;
+  health_needs_attention: string;
+  health_strongest: string;
+  health_focus_area: string;
+  health_vs_last_week: string;
+
+  // Adaptive Habits
+  habits_title: string;
+  habits_subtitle: string;
+  habits_building: string;
+  habits_strong: string;
+  habits_needs_care: string;
+  habits_optimal: string;
+  habits_current: string;
+  habits_consistency: string;
+  habits_best_day: string;
+  habits_best_time: string;
 };

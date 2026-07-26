@@ -173,4 +173,37 @@ export const pt: TranslationKeys = {
   forecast_most_days: "A maioria dos dias",
   forecast_every_day: "Todos os dias",
   forecast_warning: "Treinar menos de 50% dos dias faz o momentum diminuir",
+
+  // Missed Day Simulator
+  missed_title: "E se você perder?",
+  missed_subtitle: "Veja o impacto de dias sem treino",
+  missed_today: "Hoje",
+  missed_in_7_days: "Em 7 dias",
+  missed_drop: "Você perderia",
+  missed_motivation_low: "Seu momentum é resiliente! Continue treinando.",
+  missed_motivation_mid: "Alguns dias perdidos se acumulam. Tente pelo menos uma sessão.",
+  missed_motivation_high: "É uma queda significativa. Até 5 minutos podem ajudar!",
+
+  // Brain Health
+  health_title: "Saúde Cerebral",
+  health_subtitle: "Resumo semanal de saúde cognitiva",
+  health_excellent: "Excelente",
+  health_good: "Bom",
+  health_fair: "Regular",
+  health_needs_attention: "Precisa de atenção",
+  health_strongest: "Ponto forte",
+  health_focus_area: "Área de foco",
+  health_vs_last_week: "vs semana passada",
+
+  // Adaptive Habits
+  habits_title: "Hábitos Adaptativos",
+  habits_subtitle: "Seu ritmo de treino personalizado",
+  habits_building: "Construindo",
+  habits_strong: "Forte",
+  habits_needs_care: "Precisa de cuidado",
+  habits_optimal: "ideal",
+  habits_current: "agora",
+  habits_consistency: "Pontuação de consistência",
+  habits_best_day: "Melhor dia",
+  habits_best_time: "Melhor horário",
 };

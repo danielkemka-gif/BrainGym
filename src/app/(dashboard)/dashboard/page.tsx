@@ -169,6 +169,30 @@ const MomentumRecovery = dynamic(
   { ssr: false }
 );
 
+const MissedDaySimulator = dynamic(
+  () =>
+    import("@/components/dashboard/missed-day-simulator").then(
+      (m) => ({ default: m.MissedDaySimulator })
+    ),
+  { ssr: false }
+);
+
+const BrainHealthInsights = dynamic(
+  () =>
+    import("@/components/dashboard/brain-health-insights").then(
+      (m) => ({ default: m.BrainHealthInsights })
+    ),
+  { ssr: false }
+);
+
+const AdaptiveHabitIntelligence = dynamic(
+  () =>
+    import("@/components/dashboard/adaptive-habit-intelligence").then(
+      (m) => ({ default: m.AdaptiveHabitIntelligence })
+    ),
+  { ssr: false }
+);
+
 export default function DashboardPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-6">
@@ -330,6 +354,33 @@ export default function DashboardPage() {
           }
         >
           <MomentumRecovery />
+        </Suspense>
+      </div>
+
+      {/* Missed Day Simulator — shows impact of missing training */}
+      <Suspense
+        fallback={
+          <div className="h-48 animate-pulse rounded-2xl bg-muted" />
+        }
+      >
+        <MissedDaySimulator />
+      </Suspense>
+
+      {/* Brain Health + Adaptive Habits — 2-column on desktop */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Suspense
+          fallback={
+            <div className="h-64 animate-pulse rounded-2xl bg-muted" />
+          }
+        >
+          <BrainHealthInsights />
+        </Suspense>
+        <Suspense
+          fallback={
+            <div className="h-64 animate-pulse rounded-2xl bg-muted" />
+          }
+        >
+          <AdaptiveHabitIntelligence />
         </Suspense>
       </div>
 

@@ -129,6 +129,14 @@ const PersonalizedPlan = dynamic(
   { ssr: false }
 );
 
+const InviteFriendsCard = dynamic(
+  () =>
+    import("@/components/dashboard/invite-friends-card").then(
+      (m) => ({ default: m.InviteFriendsCard })
+    ),
+  { ssr: false }
+);
+
 const AccountabilityPartner = dynamic(
   () =>
     import("@/components/dashboard/accountability-partner").then(
@@ -438,6 +446,11 @@ export default function DashboardPage() {
         }
       >
         <MissionsSection />
+      </Suspense>
+
+      {/* Invite friends */}
+      <Suspense fallback={null}>
+        <InviteFriendsCard />
       </Suspense>
 
       {/* Accountability partner */}

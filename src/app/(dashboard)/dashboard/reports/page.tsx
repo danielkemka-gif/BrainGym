@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { CATEGORIES, DIFFICULTIES, LEVELS } from "@/lib/constants";
 import { getLevelProgress } from "@/lib/scoring";
+import { WeeklyReportCard } from "@/components/reports/weekly-report-card";
 
 type TimeRange = "7" | "30" | "all";
 
@@ -305,6 +306,9 @@ export default function ReportsPage() {
           </div>
         </div>
       )}
+
+      {/* Detailed Weekly Report Card */}
+      <WeeklyReportCard />
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">

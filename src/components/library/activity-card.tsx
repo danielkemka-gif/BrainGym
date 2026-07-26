@@ -4,6 +4,7 @@ import Link from "next/link";
 import { CATEGORIES } from "@/lib/constants";
 import { Clock, Zap, Coins } from "lucide-react";
 import { CATEGORY_ICONS } from "@/lib/icons";
+import { WhyThisMatters } from "@/components/ui/why-this-matters";
 
 const CATEGORY_GRADIENTS: Record<string, string> = {
   memory: "from-indigo-500 to-violet-600",
@@ -68,6 +69,9 @@ export function ActivityCard({ activity, index = 0 }: { activity: Activity; inde
             {activity.description}
           </p>
         )}
+        <div className="mb-3">
+          <WhyThisMatters categorySlug={category?.slug || ""} />
+        </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
             <Clock className="h-3 w-3" />

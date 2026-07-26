@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { CATEGORIES } from "@/lib/constants";
 import { ArrowLeft, Clock, Zap, Coins, CheckCircle2, Share2, BookOpen, Lightbulb, Star } from "lucide-react";
+import { WhyThisMatters } from "@/components/ui/why-this-matters";
+import { ActivityCelebration } from "@/components/ui/activity-celebration";
 
 interface Activity {
   id: string;
@@ -53,6 +55,9 @@ export default function ActivityDetailPage() {
   const [loading, setLoading] = useState(true);
   const [completed, setCompleted] = useState(false);
   const [completing, setCompleting] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+
+  const dismissCelebration = useCallback(() => setShowCelebration(false), []);
 
   useEffect(() => {
     const supabase = createClient();
@@ -103,6 +108,7 @@ export default function ActivityDetailPage() {
       });
 
       setCompleted(true);
+      setShowCelebration(true);
     } catch {
       // silent
     } finally {
@@ -195,6 +201,9 @@ export default function ActivityDetailPage() {
       {activity.description && (
         <div className="rounded-2xl border border-border bg-card p-5">
           <p className="text-sm leading-relaxed text-muted-foreground">{activity.description}</p>
+          <div className="mt-3">
+            <WhyThisMatters categorySlug={category?.slug || ""} />
+          </div>
         </div>
       )}
 
@@ -280,6 +289,15 @@ export default function ActivityDetailPage() {
           Browse More
         </button>
       </div>
+
+      {/* Celebration overlay */}
+      <ActivityCelebration
+        show={showCelebration}
+        xp={activity.xp}
+        coins={activity.coins}
+        title={activity.title}
+        onDismiss={dismissCelebration}
+      />
     </div>
   );
 }

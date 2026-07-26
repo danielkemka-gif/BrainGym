@@ -9,6 +9,7 @@ import { LOCALES, type Locale } from "@/lib/i18n/types";
 import { Avatar } from "@/components/ui/avatar";
 import { Camera, X, Globe, Sun, Moon, Monitor } from "lucide-react";
 import { useTheme } from "@/lib/theme-provider";
+import { ReferralSection } from "@/components/settings/referral-section";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -531,6 +532,9 @@ export default function SettingsPage() {
           </div>
         </div>
       </section>
+
+      {/* Referral */}
+      <ReferralSection />
 
       {/* Account */}
       <section className="rounded-2xl border border-border bg-card p-6">

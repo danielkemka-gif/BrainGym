@@ -121,6 +121,22 @@ const CoachNudge = dynamic(
   { ssr: false }
 );
 
+const PersonalizedPlan = dynamic(
+  () =>
+    import("@/components/dashboard/personalized-plan").then(
+      (m) => ({ default: m.PersonalizedPlan })
+    ),
+  { ssr: false }
+);
+
+const AccountabilityPartner = dynamic(
+  () =>
+    import("@/components/dashboard/accountability-partner").then(
+      (m) => ({ default: m.AccountabilityPartner })
+    ),
+  { ssr: false }
+);
+
 export default function DashboardPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-6">
@@ -235,6 +251,11 @@ export default function DashboardPage() {
         <QuickActions />
       </Suspense>
 
+      {/* Personalized training plan */}
+      <Suspense fallback={null}>
+        <PersonalizedPlan />
+      </Suspense>
+
       {/* Brain Journey timeline */}
       <Suspense
         fallback={
@@ -251,6 +272,11 @@ export default function DashboardPage() {
         }
       >
         <MissionsSection />
+      </Suspense>
+
+      {/* Accountability partner */}
+      <Suspense fallback={null}>
+        <AccountabilityPartner />
       </Suspense>
     </div>
   );

@@ -110,6 +110,12 @@ export function OnboardingWizard() {
         }).eq("user_id", user.id);
       }
 
+      if (assessment.overallLevel) {
+        supabase.from("profiles").update({
+          preferred_difficulty: assessment.overallLevel,
+        }).eq("user_id", user.id);
+      }
+
       if (basicInfo.avatar_url) {
         supabase.from("profiles").update({
           avatar_url: basicInfo.avatar_url,

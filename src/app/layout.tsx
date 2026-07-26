@@ -12,9 +12,11 @@ export const metadata: Metadata = {
   title: "BrainGym — Train Your Brain For Real Life",
   description:
     "BrainGym helps you improve memory, focus, thinking, and emotional intelligence through daily real-life brain workouts.",
+  manifest: "/manifest.json",
   icons: {
     icon: "/favicon.png",
     apple: "/logo.png",
+    appleStartup: "/logo.png",
   },
   openGraph: {
     title: "BrainGym — Train Your Brain For Real Life",
@@ -40,6 +42,9 @@ export const metadata: Metadata = {
   },
   other: {
     "msapplication-TileImage": "/logo.png",
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "black-translucent",
+    "apple-mobile-web-app-title": "BrainGym",
   },
 };
 
@@ -57,8 +62,11 @@ export default function RootLayout({
       <head>
         <link rel="icon" type="image/png" href="/favicon.png" />
         <link rel="apple-touch-icon" href="/logo.png" />
+        <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)" />
         <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         <a

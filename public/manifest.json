@@ -1,0 +1,52 @@
+{
+  "name": "BrainGym — Train Your Brain For Real Life",
+  "short_name": "BrainGym",
+  "description": "Improve memory, focus, thinking, and emotional intelligence through daily brain workouts.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#0f0f23",
+  "theme_color": "#1a1a2e",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["education", "health", "fitness"],
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Start Workout",
+      "short_name": "Workout",
+      "url": "/dashboard/workout"
+    },
+    {
+      "name": "Daily Challenge",
+      "short_name": "Challenge",
+      "url": "/dashboard/daily-challenge"
+    },
+    {
+      "name": "AI Coach",
+      "short_name": "Coach",
+      "url": "/dashboard/ai-coach"
+    }
+  ]
+}

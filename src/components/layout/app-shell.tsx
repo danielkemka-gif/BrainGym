@@ -32,7 +32,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           onMenuClick={() => setSidebarOpen((p) => !p)}
           userName={userName}
         />
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
+        <main id="main-content" className="flex-1 overflow-y-auto p-4 lg:p-6" tabIndex={-1}>
           {children}
         </main>
       </div>

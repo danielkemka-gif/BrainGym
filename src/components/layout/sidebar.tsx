@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { LOCALES } from "@/lib/i18n/types";
 import { Avatar } from "@/components/ui/avatar";
-import { Globe, ChevronDown, MoreHorizontal } from "lucide-react";
+import { Globe, ChevronDown, MoreHorizontal, Shield } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { SIDEBAR_ICONS } from "@/lib/icons";
 
@@ -43,6 +43,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
   const [profile, setProfile] = useState<{ name: string | null; username: string | null; avatar_url: string | null } | null>(null);
   const [showLang, setShowLang] = useState(false);
   const [showMore, setShowMore] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const isMoreActive = MORE_NAV.some((item) => pathname === item.href);
 
@@ -58,6 +59,14 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
         .then(({ data }) => {
           if (data) setProfile(data);
         });
+      supabase
+        .from("admins")
+        .select("user_id")
+        .eq("user_id", user.id)
+        .maybeSingle()
+        .then(({ data }) => {
+          setIsAdmin(!!data);
+        });
     });
   }, []);
 
@@ -70,7 +79,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
         key={item.href}
         href={item.href}
         onClick={onClose}
-        className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+        className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring ${
           active
             ? "bg-primary/10 text-primary font-medium"
             : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
@@ -92,6 +101,8 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
       )}
 
       <aside
+        role="navigation"
+        aria-label="Main navigation"
         className={`fixed left-0 top-0 z-40 flex h-full w-60 flex-col border-r border-border bg-background transition-transform duration-200 lg:static lg:translate-x-0 ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
@@ -129,7 +140,8 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
           <div>
             <button
               onClick={() => setShowMore(!showMore)}
-              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+              aria-expanded={showMore}
+              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring ${
                 isMoreActive || showMore
                   ? "bg-primary/10 text-primary font-medium"
                   : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
@@ -155,10 +167,27 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
         <div className="border-t border-border p-3 space-y-2">
           {renderNavItem(SETTINGS_NAV)}
 
+          {isAdmin && (
+            <Link
+              href="/admin"
+              onClick={onClose}
+              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring ${
+                pathname.startsWith("/admin")
+                  ? "bg-violet-500/10 text-violet-500 font-medium"
+                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              }`}
+            >
+              <Shield className="h-4 w-4 shrink-0" />
+              Admin Panel
+            </Link>
+          )}
+
           <div className="relative flex items-center gap-1">
             <button
               onClick={() => setShowLang(!showLang)}
-              className="flex flex-1 items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+              aria-expanded={showLang}
+              aria-label="Change language"
+              className="flex flex-1 items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors focus-visible:ring-2 focus-visible:ring-ring"
             >
               <Globe className="h-4 w-4" />
               <span>{LOCALES.find((l) => l.id === locale)?.nativeLabel ?? "English"}</span>

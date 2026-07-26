@@ -5,7 +5,8 @@ import { createClient } from "@/lib/supabase/client";
 import { FilterBar } from "@/components/library/filter-bar";
 import { ActivityCard } from "@/components/library/activity-card";
 import { CATEGORIES } from "@/lib/constants";
-import { Sparkles, Target, Zap } from "lucide-react";
+import { EmptyState } from "@/components/shared";
+import { Search, Sparkles, Target, Zap } from "lucide-react";
 
 interface Activity {
   id: string;
@@ -174,19 +175,19 @@ export default function LibraryPage() {
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-card py-16 text-center">
-          <span className="text-5xl">🔍</span>
-          <p className="mt-4 text-lg font-medium">No activities found</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Try adjusting your search or filters
-          </p>
-          <button
-            onClick={() => { setSearch(""); setCategory(""); setDifficulty(""); }}
-            className="mt-4 rounded-lg bg-primary/10 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/20"
-          >
-            Clear filters
-          </button>
-        </div>
+        <EmptyState
+          icon={Search}
+          title="No activities found"
+          description="Try adjusting your search or filters"
+          action={
+            <button
+              onClick={() => { setSearch(""); setCategory(""); setDifficulty(""); }}
+              className="mt-2 rounded-lg bg-primary/10 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/20"
+            >
+              Clear filters
+            </button>
+          }
+        />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((a, i) => (

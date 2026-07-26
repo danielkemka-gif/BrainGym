@@ -1,0 +1,36 @@
+"use client";
+
+import { useEffect } from "react";
+import { AlertTriangle } from "lucide-react";
+
+export default function AuthError({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  useEffect(() => {
+    console.error("Auth error:", error);
+  }, [error]);
+
+  return (
+    <div className="flex min-h-screen items-center justify-center p-6">
+      <div className="max-w-md text-center">
+        <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-red-500/10">
+          <AlertTriangle className="h-8 w-8 text-red-500" />
+        </div>
+        <h2 className="mb-2 text-xl font-bold">Authentication Error</h2>
+        <p className="mb-6 text-sm text-muted-foreground">
+          {error.message || "Something went wrong during authentication. Please try again."}
+        </p>
+        <button
+          onClick={reset}
+          className="inline-flex h-11 items-center justify-center rounded-xl bg-primary px-6 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+        >
+          Try again
+        </button>
+      </div>
+    </div>
+  );
+}

@@ -13,7 +13,8 @@ import {
   getDaysRemaining,
 } from "@/lib/missions";
 import { MISSION_ICONS } from "@/lib/icons";
-import { Check } from "lucide-react";
+import { EmptyState } from "@/components/shared";
+import { Check, Target } from "lucide-react";
 
 function ProgressBar({ current, target }: { current: number; target: number }) {
   const pct = Math.min(100, (current / target) * 100);
@@ -213,31 +214,27 @@ export default function MissionsPage() {
           ))}
         </div>
       ) : missions.length === 0 ? (
-        /* Empty state */
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10 text-4xl">
-            🎯
-          </div>
-          <p className="text-lg font-semibold">No missions this week</p>
-          <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-            Generate a fresh set of weekly missions tailored to your level and
-            start earning rewards
-          </p>
-          <button
-            onClick={handleGenerate}
-            disabled={generating}
-            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-primary to-emerald-400 px-6 py-3 font-bold text-white shadow-lg shadow-primary/20 transition-all hover:shadow-xl hover:shadow-primary/30 disabled:opacity-50"
-          >
-            {generating ? (
-              <>
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                Generating...
-              </>
-            ) : (
-              "🎯 Generate Missions"
-            )}
-          </button>
-        </div>
+        <EmptyState
+          icon={Target}
+          title="No missions this week"
+          description="Generate a fresh set of weekly missions tailored to your level and start earning rewards"
+          action={
+            <button
+              onClick={handleGenerate}
+              disabled={generating}
+              className="mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-primary to-emerald-400 px-6 py-3 font-bold text-white shadow-lg shadow-primary/20 transition-all hover:shadow-xl hover:shadow-primary/30 disabled:opacity-50"
+            >
+              {generating ? (
+                <>
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  Generating...
+                </>
+              ) : (
+                "Generate Missions"
+              )}
+            </button>
+          }
+        />
       ) : (
         <>
           {/* Summary cards */}

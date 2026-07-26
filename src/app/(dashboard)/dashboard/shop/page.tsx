@@ -13,6 +13,7 @@ import {
   Check,
   AlertCircle,
 } from "lucide-react";
+import { EmptyState } from "@/components/shared";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
@@ -257,13 +258,11 @@ export default function CoinShopPage() {
           ))}
         </div>
       ) : filteredItems.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <ShoppingCart className="mb-4 h-12 w-12 text-muted-foreground/40" />
-          <p className="text-lg font-medium">No items available</p>
-          <p className="text-sm text-muted-foreground">
-            Check back later for new items
-          </p>
-        </div>
+        <EmptyState
+          icon={ShoppingCart}
+          title="No items available"
+          description="Check back later for new items"
+        />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filteredItems.map((item, index) => {

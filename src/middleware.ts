@@ -16,6 +16,7 @@ const publicPaths = [
 const authPaths = ["/login", "/signup", "/forgot-password"];
 const onboardingPath = "/onboarding";
 const dashboardPattern = /^\/dashboard(\/|$)/;
+const adminPattern = /^\/admin(\/|$)/;
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -42,6 +43,30 @@ export async function middleware(request: NextRequest) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);
+  }
+
+  // Admin guard — non-admins redirected to dashboard
+  if (user && adminPattern.test(pathname)) {
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() { return request.cookies.getAll(); },
+          setAll() {},
+        },
+      }
+    );
+
+    const { data: adminRow } = await supabase
+      .from("admins")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (!adminRow) {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
   }
 
   // Onboarding guard — check profile only if needed

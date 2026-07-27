@@ -225,7 +225,7 @@ export const AVATAR_PARTS = {
   ],
 } as const;
 
-export const AVATAR_COLORS: Record<string, { skin: Record<string, string>; hair: Record<string, string>; outfit: Record<string, string>; bg: Record<string, string> }> = {
+export const AVATAR_COLORS: { skin: Record<string, string>; hair: Record<string, string>; outfit: Record<string, string>; bg: Record<string, string> } = {
   skin: {
     light: "#fde68a",
     warm: "#f5d0a9",

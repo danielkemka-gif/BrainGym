@@ -16,7 +16,6 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.png",
     apple: "/logo.png",
-    appleStartup: "/logo.png",
   },
   openGraph: {
     title: "BrainGym — Train Your Brain For Real Life",

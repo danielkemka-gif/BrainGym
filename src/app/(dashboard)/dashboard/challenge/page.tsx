@@ -9,12 +9,13 @@ import { updateCategoryScore } from "@/lib/brain-scores";
 import { unlockSpeedDemon } from "@/lib/achievements";
 import {
   ArrowLeft, Clock, Zap, Trophy, Coins, RotateCcw,
-  CheckCircle2, XCircle, Flame, Send, Lightbulb, Star, Target, Globe, Brain
+  CheckCircle2, XCircle, Flame, Send, Lightbulb, Star, Target, Globe, Brain, Lock, Crown, Sparkles
 } from "lucide-react";
 import { BrainTaskPlayer } from "@/components/games/brain-task-player";
 import { DailyReminder, checkAndShowReminder } from "@/components/games/daily-reminder";
 import { pickBrainTasks, type BrainTask } from "@/lib/brain-tasks";
 import { CATEGORY_ILLUSTRATIONS } from "@/components/brain-illustrations";
+import { pickPremiumScenarios, type PremiumScenario } from "@/lib/premium-scenarios";
 
 const CAT_EMOJI: Record<string, string> = {
   memory: "🧠", focus: "🎯", thinking: "💡", learning: "📚",
@@ -148,7 +149,8 @@ type AnswerState = "unanswered" | "correct" | "wrong";
 
 type SessionItem =
   | { kind: "trivia"; question: BrainQuestion }
-  | { kind: "brain_task"; task: BrainTask };
+  | { kind: "brain_task"; task: BrainTask }
+  | { kind: "premium_preview"; scenario: PremiumScenario };
 
 export default function ChallengePage() {
   const [duration, setDuration] = useState(60);
@@ -184,9 +186,28 @@ export default function ChallengePage() {
   const [sessionItems, setSessionItems] = useState<SessionItem[]>([]);
   const [brainTaskScores, setBrainTaskScores] = useState<{ task: BrainTask; score: number }[]>([]);
   const [brainTaskPhase, setBrainTaskPhase] = useState<"idle" | "active" | "done">("idle");
+  const [isPremium, setIsPremium] = useState<boolean | null>(null);
+  const [premiumAnswered, setPremiumAnswered] = useState<Record<number, { correct: boolean; skipped: boolean }>>({});
 
   const currentTrivia = questions[currentIndex];
   const currentItem = sessionItems[currentIndex];
+
+  // Check premium status on mount
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) { setIsPremium(false); return; }
+      supabase
+        .from("subscriptions")
+        .select("status, current_period_end")
+        .eq("user_id", user.id)
+        .maybeSingle()
+        .then(({ data }) => {
+          const active = data?.status === "active" || (data?.status === "trialing" && data.current_period_end && new Date(data.current_period_end) > new Date());
+          setIsPremium(!!active);
+        });
+    });
+  }, []);
 
   // Pick questions on start
   const pickQuestions = useCallback(() => {
@@ -202,15 +223,22 @@ export default function ChallengePage() {
     if (picked.length === 0) { setError("No questions available."); return; }
 
     const brainTasks = pickBrainTasks(duration <= 30 ? 2 : duration <= 60 ? 3 : 4, Date.now());
+    const premiumScenarios = pickPremiumScenarios(duration <= 30 ? 1 : 2, Date.now());
 
     const items: SessionItem[] = [];
     let bIdx = 0;
     let qIdx = 0;
-    const totalSlots = picked.length + brainTasks.length;
+    let pIdx = 0;
+    const totalSlots = picked.length + brainTasks.length + premiumScenarios.length;
     const spacing = Math.max(2, Math.floor(totalSlots / (brainTasks.length + 1)));
+    const premiumSlot1 = Math.floor(totalSlots * 0.3);
+    const premiumSlot2 = Math.floor(totalSlots * 0.7);
 
     for (let i = 0; i < totalSlots; i++) {
-      if (bIdx < brainTasks.length && (i + 1) % spacing === 0 && qIdx >= 1) {
+      if (pIdx < premiumScenarios.length && (i === premiumSlot1 || i === premiumSlot2)) {
+        items.push({ kind: "premium_preview", scenario: premiumScenarios[pIdx] });
+        pIdx++;
+      } else if (bIdx < brainTasks.length && (i + 1) % spacing === 0 && qIdx >= 1) {
         items.push({ kind: "brain_task", task: brainTasks[bIdx] });
         bIdx++;
       } else if (qIdx < picked.length) {
@@ -229,6 +257,7 @@ export default function ChallengePage() {
     setTotalXp(0); setTotalCoins(0); setQuestionLog([]);
     setBrainTaskScores([]);
     setBrainTaskPhase("idle");
+    setPremiumAnswered({});
     setPhase("countdown");
     setCountdownValue(3);
     persistedRef.current = false;
@@ -260,7 +289,7 @@ export default function ChallengePage() {
 
   // Per-question timer
   useEffect(() => {
-    if (phase !== "active" || answerState !== "unanswered" || !currentTrivia || currentItem?.kind === "brain_task") return;
+    if (phase !== "active" || answerState !== "unanswered" || !currentTrivia || currentItem?.kind === "brain_task" || currentItem?.kind === "premium_preview") return;
     const qTime = currentTrivia.difficulty === "beginner" ? 20 : currentTrivia.difficulty === "intermediate" ? 25 : 30;
     setQuestionTimeLeft(qTime);
     qTimerRef.current = setInterval(() => {
@@ -415,6 +444,41 @@ export default function ChallengePage() {
     setBrainTaskPhase("done");
   }
 
+  function handlePremiumAnswer(answer: string) {
+    if (!currentItem || currentItem.kind !== "premium_preview") return;
+    if (qTimerRef.current) clearInterval(qTimerRef.current);
+    const correct = answer === currentItem.scenario.correctAnswer;
+    const xp = correct ? currentItem.scenario.xp : 0;
+    const coins = correct ? currentItem.scenario.coins : 0;
+    if (correct) {
+      const newStreak = streak + 1;
+      setStreak(newStreak);
+      if (newStreak > bestStreak) setBestStreak(newStreak);
+      setCorrectCount(c => c + 1);
+    } else {
+      setStreak(0);
+    }
+    setTotalXp(x => x + xp);
+    setTotalCoins(c => c + coins);
+    setQuestionLog(log => [...log, {
+      question: `[Premium] ${currentItem.scenario.title}`,
+      correct, xp, coins, category: currentItem.scenario.category,
+    }]);
+    setPremiumAnswered(prev => ({ ...prev, [currentIndex]: { correct, skipped: false } }));
+    setAnswerState(correct ? "correct" : "wrong");
+  }
+
+  function handlePremiumSkip() {
+    if (!currentItem || currentItem.kind !== "premium_preview") return;
+    if (qTimerRef.current) clearInterval(qTimerRef.current);
+    setPremiumAnswered(prev => ({ ...prev, [currentIndex]: { correct: false, skipped: true } }));
+    setQuestionLog(log => [...log, {
+      question: `[Premium] ${currentItem.scenario.title}`,
+      correct: false, xp: 0, coins: 0, category: currentItem.scenario.category,
+    }]);
+    setAnswerState("wrong");
+  }
+
   function formatTime(s: number) {
     return `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
   }
@@ -484,7 +548,7 @@ export default function ChallengePage() {
                     "Real-life brain tasks are mixed in — count things, recall memories, breathe! 🧠",
                     "Answer correct = XP + coins. Fast answer = MORE bonus!",
                     "Get consecutive answers correct = Streak combo = DOUBLE bonus! 🔥",
-                    "Set a daily reminder so you never miss your brain workout!",
+                    "Premium questions give you a taste of AI Coach & Decision Lab — unlock to answer! 👑",
                   ]
               ).map((text, i) => (
                 <div key={i} className="flex items-start gap-3">
@@ -709,7 +773,8 @@ export default function ChallengePage() {
   // ═══ ACTIVE / FEEDBACK ═══
   if (!currentItem) { setPhase("finished"); return null; }
   const isBrainTask = currentItem.kind === "brain_task";
-  const category = !isBrainTask && currentTrivia ? CATEGORIES.find(c => c.id === currentTrivia.category) : null;
+  const isPremiumPreview = currentItem.kind === "premium_preview";
+  const category = !isBrainTask && !isPremiumPreview && currentTrivia ? CATEGORIES.find(c => c.id === currentTrivia.category) : null;
   const progress = sessionItems.length > 0 ? (currentIndex + 1) / sessionItems.length : 0;
   const timePercent = duration > 0 ? (timeLeft / duration) * 100 : 0;
   const isUrgent = timeLeft <= 10;
@@ -760,7 +825,7 @@ export default function ChallengePage() {
         <div className="h-full rounded-full bg-violet-500 transition-all" style={{ width: `${progress * 100}%` }} />
       </div>
 
-      {/* Question card or Brain Task */}
+      {/* Question card, Brain Task, or Premium Preview */}
       {isBrainTask ? (
         <div className="rounded-2xl border border-border bg-card overflow-hidden p-5">
           <BrainTaskPlayer
@@ -774,6 +839,105 @@ export default function ChallengePage() {
               {currentIndex < sessionItems.length - 1 ? "Next Challenge →" : "See Results 🎉"}
             </button>
           )}
+        </div>
+      ) : isPremiumPreview ? (
+        <div className="rounded-2xl border-2 border-amber-400/50 bg-gradient-to-br from-amber-500/5 via-card to-orange-500/5 overflow-hidden">
+          {/* Premium badge */}
+          <div className="flex items-center justify-between border-b border-amber-400/20 px-5 py-3 bg-amber-500/5">
+            <div className="flex items-center gap-2">
+              <Crown className="h-4 w-4 text-amber-500" />
+              <span className="text-sm font-semibold text-amber-600 dark:text-amber-400">{currentItem.scenario.title}</span>
+            </div>
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-bold text-amber-600 dark:text-amber-400">
+              <Sparkles className="h-3 w-3" /> Premium
+            </span>
+          </div>
+
+          <div className="p-5 space-y-4">
+            {/* Scenario */}
+            <p className="text-lg font-bold leading-relaxed">{currentItem.scenario.scenario}</p>
+
+            {isPremium ? (
+              <>
+                {/* Premium users: answer normally */}
+                <div className="space-y-2">
+                  {currentItem.scenario.options.map((opt, i) => {
+                    const isSelected = selectedOption === opt;
+                    const isCorrectOpt = answerState !== "unanswered" && opt === currentItem.scenario.correctAnswer;
+                    const isWrongSelected = answerState === "wrong" && isSelected && opt !== currentItem.scenario.correctAnswer;
+                    return (
+                      <button key={i} onClick={() => { if (answerState === "unanswered") setSelectedOption(opt); }}
+                        disabled={answerState !== "unanswered"}
+                        className={`w-full rounded-xl border p-4 text-left text-sm font-medium transition-all ${
+                          isCorrectOpt ? "border-green-500 bg-green-500/10 text-green-500"
+                          : isWrongSelected ? "border-red-500 bg-red-500/10 text-red-500"
+                          : isSelected ? "border-primary bg-primary/10 text-primary"
+                          : "border-border hover:border-muted-foreground/50 hover:bg-muted/50"
+                        }`}>
+                        <div className="flex items-center gap-3">
+                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-current/20 text-xs font-bold">
+                            {String.fromCharCode(65 + i)}
+                          </span>
+                          {opt}
+                          {isCorrectOpt && <CheckCircle2 className="ml-auto h-4 w-4 text-green-500" />}
+                          {isWrongSelected && <XCircle className="ml-auto h-4 w-4 text-red-500" />}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {answerState !== "unanswered" && (
+                  <div className={`rounded-xl p-4 border ${answerState === "correct" ? "bg-green-500/5 border-green-500/10" : "bg-red-500/5 border-red-500/10"}`}>
+                    <p className="text-sm font-semibold mb-1">
+                      {answerState === "correct" ? getCorrectReaction(quizLang) : getWrongReaction(quizLang)}
+                    </p>
+                    <p className="text-sm text-muted-foreground">{currentItem.scenario.explanation}</p>
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                {/* Free users: show teaser + upgrade CTA */}
+                <div className="relative">
+                  <div className="space-y-2 opacity-40 blur-[2px] pointer-events-none select-none">
+                    {currentItem.scenario.options.map((opt, i) => (
+                      <div key={i} className="w-full rounded-xl border border-border p-4 text-left text-sm font-medium">
+                        <div className="flex items-center gap-3">
+                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-current/20 text-xs font-bold">
+                            {String.fromCharCode(65 + i)}
+                          </span>
+                          {opt}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="rounded-xl bg-card/95 backdrop-blur-sm border border-amber-400/30 p-6 text-center max-w-xs shadow-xl">
+                      <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/10">
+                        <Lock className="h-6 w-6 text-amber-500" />
+                      </div>
+                      <p className="text-sm font-bold mb-1">Premium Question</p>
+                      <p className="text-xs text-muted-foreground mb-3">
+                        {currentItem.scenario.featureIcon} {currentItem.scenario.featureDescription}
+                      </p>
+                      <Link href="/dashboard/settings"
+                        className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-amber-500/25 transition-all hover:shadow-xl active:scale-[0.98]">
+                        <Crown className="h-3 w-3" /> Unlock Premium — ₦3,500/mo
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Skip button for free users */}
+                <button onClick={handlePremiumSkip}
+                  className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-border px-6 text-sm font-medium hover:bg-accent transition-all">
+                  {currentIndex < sessionItems.length - 1 ? "Skip — Next Challenge →" : "Skip — See Results 🎉"}
+                </button>
+              </>
+            )}
+          </div>
         </div>
       ) : currentTrivia ? (
         <div className="rounded-2xl border border-border bg-card overflow-hidden">
@@ -892,14 +1056,32 @@ export default function ChallengePage() {
         </div>
       ) : null}
 
-      {/* Actions — trivia only */}
-      {!isBrainTask && currentTrivia && (
+      {/* Actions — trivia and premium only */}
+      {!isBrainTask && !isPremiumPreview && currentTrivia && (
         <div className="flex gap-3">
           {answerState === "unanswered" ? (
             <button onClick={() => handleSubmit()}
               disabled={currentTrivia.type === "multiple-choice" ? !selectedOption : !textInput.trim()}
               className="inline-flex h-12 flex-[2] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-6 text-sm font-bold text-white shadow-lg shadow-green-500/25 transition-all hover:shadow-xl active:scale-[0.98] disabled:opacity-50">
               Submit Answer
+            </button>
+          ) : (
+            <button onClick={nextQuestion}
+              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-red-600 px-6 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-all hover:shadow-xl active:scale-[0.98]">
+              {currentIndex < sessionItems.length - 1 ? "Next Challenge →" : "See Results 🎉"}
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Actions — premium preview (premium users only) */}
+      {isPremiumPreview && isPremium && (
+        <div className="flex gap-3">
+          {answerState === "unanswered" ? (
+            <button onClick={() => handlePremiumAnswer(selectedOption || "")}
+              disabled={!selectedOption}
+              className="inline-flex h-12 flex-[2] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-6 text-sm font-bold text-white shadow-lg shadow-green-500/25 transition-all hover:shadow-xl active:scale-[0.98] disabled:opacity-50">
+              <Crown className="h-4 w-4" /> Submit Premium Answer
             </button>
           ) : (
             <button onClick={nextQuestion}

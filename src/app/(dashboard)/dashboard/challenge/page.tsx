@@ -480,11 +480,11 @@ export default function ChallengePage() {
                   ]
                 : [
                     "Pick your time — 30s (quick blast), 60s (sweet spot), or 90s (full brain workout)",
-                    "Each question get multiple choice OR type-your-answer mode",
-                    "Real-life brain tasks dey mixed in — count things, recall memories, breathe! 🧠",
+                    "Each question is multiple choice OR type-your-answer mode",
+                    "Real-life brain tasks are mixed in — count things, recall memories, breathe! 🧠",
                     "Answer correct = XP + coins. Fast answer = MORE bonus!",
                     "Get consecutive answers correct = Streak combo = DOUBLE bonus! 🔥",
-                    "Set a daily reminder so you no go miss your brain workout!",
+                    "Set a daily reminder so you never miss your brain workout!",
                   ]
               ).map((text, i) => (
                 <div key={i} className="flex items-start gap-3">
@@ -571,7 +571,7 @@ export default function ChallengePage() {
 
   // ═══ COUNTDOWN ═══
   if (phase === "countdown") {
-    const phrases: Record<number, string> = { 3: "Get ready...", 2: "Set...", 1: quizLang === "pcm" ? "Oya GO! 🚀" : quizLang === "fr" ? "C'est parti! 🚀" : quizLang === "pt" ? "Vamos lá! 🚀" : quizLang === "en-us" ? "Let's go! 🚀" : "Oya GO! 🚀" };
+    const phrases: Record<number, string> = { 3: "Get ready...", 2: "Set...", 1: quizLang === "pcm" ? "Oya GO! 🚀" : quizLang === "fr" ? "C'est parti! 🚀" : quizLang === "pt" ? "Vamos lá! 🚀" : "Let's rock it! 🚀" };
     return (
       <div className="mx-auto flex min-h-[60vh] items-center justify-center">
         <div className="text-center">

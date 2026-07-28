@@ -152,7 +152,7 @@ export default function AvatarPage() {
     <div className="mx-auto max-w-2xl space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2">
+        <h1 className="text-xl font-bold sm:text-2xl flex items-center gap-2">
           <Palette className="h-6 w-6 text-pink-500" />
           Brain Avatar
         </h1>

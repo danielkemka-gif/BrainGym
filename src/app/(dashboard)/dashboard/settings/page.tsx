@@ -229,7 +229,7 @@ export default function SettingsPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <div>
-        <h1 className="text-2xl font-bold">Settings</h1>
+        <h1 className="text-xl font-bold sm:text-2xl">Settings</h1>
         <p className="text-sm text-muted-foreground">Manage your profile and preferences</p>
       </div>
 
@@ -345,7 +345,7 @@ export default function SettingsPage() {
               <button
                 key={g.value}
                 onClick={() => toggleGoal(g.value)}
-                className={`rounded-full border px-3 py-1.5 text-xs transition-colors ${
+                className={`rounded-full border px-3 py-2 text-xs transition-colors min-h-[44px] ${
                   goals.includes(g.value)
                     ? "border-primary bg-primary/10 text-primary"
                     : "border-border hover:border-muted-foreground"
@@ -364,7 +364,7 @@ export default function SettingsPage() {
               <button
                 key={c.value}
                 onClick={() => toggleChallenge(c.value)}
-                className={`rounded-full border px-3 py-1.5 text-xs transition-colors ${
+                className={`rounded-full border px-3 py-2 text-xs transition-colors min-h-[44px] ${
                   challenges.includes(c.value)
                     ? "border-primary bg-primary/10 text-primary"
                     : "border-border hover:border-muted-foreground"
@@ -402,12 +402,12 @@ export default function SettingsPage() {
             </div>
             <button
               onClick={() => setNotificationsEnabled((p) => !p)}
-              className={`relative h-6 w-11 rounded-full transition-colors ${
+              className={`relative h-7 w-12 rounded-full transition-colors ${
                 notificationsEnabled ? "bg-primary" : "bg-muted"
               }`}
             >
               <span
-                className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-background transition-transform ${
+                className={`absolute left-1 top-1 h-5 w-5 rounded-full bg-background transition-transform ${
                   notificationsEnabled ? "translate-x-5" : "translate-x-0"
                 }`}
               />
@@ -468,7 +468,7 @@ export default function SettingsPage() {
             <button
               key={loc.id}
               onClick={() => setLocaleSetting(loc.id)}
-              className={`flex items-center gap-3 rounded-xl border p-4 transition-all ${
+              className={`flex items-center gap-3 rounded-xl border p-3 transition-all min-h-[44px] ${
                 localeSetting === loc.id
                   ? "border-primary bg-primary/10 text-primary"
                   : "border-border hover:border-muted-foreground/30"
@@ -516,7 +516,7 @@ export default function SettingsPage() {
               <button
                 onClick={handleManageSubscription}
                 disabled={loadingPortal}
-                className="w-full rounded-lg border border-border px-4 py-2.5 text-sm hover:bg-muted/50 disabled:opacity-50"
+                className="w-full rounded-lg border border-border px-4 py-3 text-sm hover:bg-muted/50 disabled:opacity-50 min-h-[44px]"
               >
                 {loadingPortal ? "Loading..." : "Manage subscription"}
               </button>
@@ -524,7 +524,7 @@ export default function SettingsPage() {
               <button
                 onClick={handleUpgrade}
                 disabled={loadingPortal}
-                className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 min-h-[44px]"
               >
                 {loadingPortal ? "Redirecting..." : "Upgrade to Premium — ₦3,500/month"}
               </button>
@@ -546,7 +546,7 @@ export default function SettingsPage() {
           </div>
           <button
             onClick={handleSignOut}
-            className="w-full rounded-lg border border-destructive/30 px-4 py-2.5 text-sm text-destructive hover:bg-destructive/10"
+            className="w-full rounded-lg border border-destructive/30 px-4 py-3 text-sm text-destructive hover:bg-destructive/10 min-h-[44px]"
           >
             Sign out
           </button>
@@ -560,7 +560,7 @@ export default function SettingsPage() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50"
+          className="inline-flex h-11 items-center gap-2 rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50 min-h-[44px]"
         >
           {saving ? (
             <>

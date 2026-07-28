@@ -105,7 +105,7 @@ export default function DecisionLabPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-8">
       <div>
-        <h1 className="text-2xl font-bold">Decision Lab</h1>
+        <h1 className="text-xl font-bold sm:text-2xl">Decision Lab</h1>
         <p className="text-sm text-muted-foreground">
           Analyze real decisions with AI-powered thinking frameworks
         </p>

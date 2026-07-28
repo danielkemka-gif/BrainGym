@@ -164,7 +164,7 @@ export default function ChallengesPage() {
     <div className="mx-auto max-w-6xl space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Community Challenges</h1>
+          <h1 className="text-xl font-bold sm:text-2xl">Community Challenges</h1>
           <p className="text-sm text-muted-foreground">
             Join group challenges and train together
           </p>

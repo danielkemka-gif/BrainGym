@@ -106,12 +106,12 @@ export function DailyReminder() {
         </div>
         <button
           onClick={toggleEnabled}
-          className={`relative h-6 w-11 rounded-full transition-colors ${
+          className={`relative h-7 w-12 rounded-full transition-colors ${
             settings.enabled ? "bg-primary" : "bg-muted"
           }`}
         >
-          <div className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${
-            settings.enabled ? "left-[22px]" : "left-0.5"
+          <div className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition-all ${
+            settings.enabled ? "left-[24px]" : "left-1"
           }`} />
         </button>
       </div>
@@ -149,7 +149,7 @@ export function DailyReminder() {
               <button
                 key={i}
                 onClick={() => toggleDay(i)}
-                className={`flex h-8 w-8 items-center justify-center rounded-lg text-[10px] font-bold transition-all ${
+                className={`flex h-10 w-10 items-center justify-center rounded-lg text-[10px] font-bold transition-all ${
                   settings.days.includes(i)
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted text-muted-foreground hover:bg-muted/80"

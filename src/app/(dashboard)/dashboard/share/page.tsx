@@ -374,7 +374,7 @@ export default function ShareCardPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Share Your Progress</h1>
+        <h1 className="text-xl font-bold sm:text-2xl">Share Your Progress</h1>
         <p className="text-sm text-muted-foreground">
           Upload a photo and share your brain training stats with friends
         </p>

@@ -133,7 +133,7 @@ export default function LeaderboardPage() {
     <div className="mx-auto max-w-4xl space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2">
+        <h1 className="text-xl font-bold sm:text-2xl flex items-center gap-2">
           <Trophy className="h-6 w-6 text-amber-500" />
           Leaderboard
         </h1>

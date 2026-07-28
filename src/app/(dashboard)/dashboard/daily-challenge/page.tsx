@@ -723,7 +723,7 @@ export default function DailyChallengePage() {
           <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 text-4xl shadow-lg shadow-violet-500/20">
             ⚡
           </div>
-          <h1 className="text-2xl font-bold">Daily Brain Age Challenge</h1>
+          <h1 className="text-xl font-bold sm:text-2xl">Daily Brain Age Challenge</h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Play 3 quick brain games and discover your Brain Age for today.
             Compete on the leaderboard!
@@ -902,7 +902,7 @@ export default function DailyChallengePage() {
       <div className="mx-auto max-w-lg space-y-6">
         <Confetti active={showConfetti} duration={5000} />
 
-        <div className="rounded-2xl border border-border bg-card p-8 text-center">
+        <div className="rounded-2xl border border-border bg-card p-5 text-center sm:p-8">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
@@ -913,7 +913,7 @@ export default function DailyChallengePage() {
             </div>
           </motion.div>
 
-          <h2 className="text-2xl font-bold">Your Brain Age</h2>
+          <h2 className="text-xl font-bold sm:text-2xl">Your Brain Age</h2>
           <p className={`text-sm font-semibold ${getBrainAgeColor(brainAge)}`}>
             {getBrainAgeLabel(brainAge)}
           </p>
@@ -1011,7 +1011,7 @@ export default function DailyChallengePage() {
           <ArrowLeft className="h-5 w-5" />
         </button>
         <div>
-          <h1 className="text-2xl font-bold">Daily Leaderboard</h1>
+          <h1 className="text-xl font-bold sm:text-2xl">Daily Leaderboard</h1>
           <p className="text-sm text-muted-foreground">
             {new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
           </p>
@@ -1039,7 +1039,7 @@ export default function DailyChallengePage() {
           ))}
         </div>
       ) : leaderboard.length === 0 ? (
-        <div className="rounded-2xl border border-border bg-card p-8 text-center">
+        <div className="rounded-2xl border border-border bg-card p-5 text-center sm:p-8">
           <Medal className="mx-auto h-10 w-10 text-muted-foreground/50" />
           <p className="mt-3 text-sm text-muted-foreground">
             No entries yet today. Be the first!

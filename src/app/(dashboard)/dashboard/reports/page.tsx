@@ -265,7 +265,7 @@ export default function ReportsPage() {
     <div className="mx-auto max-w-6xl space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Reports & Analytics</h1>
+          <h1 className="text-xl font-bold sm:text-2xl">Reports & Analytics</h1>
           <p className="text-sm text-muted-foreground">
             Deep insights into your brain training journey
           </p>

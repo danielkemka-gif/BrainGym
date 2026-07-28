@@ -142,7 +142,7 @@ export default function JournalPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Brain Journal</h1>
+          <h1 className="text-xl font-bold sm:text-2xl">Brain Journal</h1>
           <p className="text-sm text-muted-foreground">
             Write about your brain training journey
           </p>

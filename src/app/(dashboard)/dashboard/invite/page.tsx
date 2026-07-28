@@ -15,7 +15,7 @@ export default function InvitePage() {
       </Link>
 
       <div>
-        <h1 className="text-2xl font-bold">Invite Friends</h1>
+        <h1 className="text-xl font-bold sm:text-2xl">Invite Friends</h1>
         <p className="text-sm text-muted-foreground">
           Share your invite link and earn 100 coins for each friend who joins!
         </p>

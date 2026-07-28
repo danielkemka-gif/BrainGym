@@ -193,12 +193,12 @@ export default function CoinShopPage() {
       <div className="flex items-center gap-4">
         <Link
           href="/dashboard"
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card transition-colors hover:bg-muted"
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card transition-colors hover:bg-muted min-h-[44px] min-w-[44px]"
         >
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <div className="flex-1">
-          <h1 className="text-2xl font-bold">Coin Shop</h1>
+              <h1 className="text-xl font-bold sm:text-2xl">Coin Shop</h1>
           <p className="text-sm text-muted-foreground">
             Spend your coins on power-ups, cosmetics, and protections
           </p>
@@ -302,7 +302,7 @@ export default function CoinShopPage() {
                     <button
                       onClick={() => handlePurchase(item)}
                       disabled={!canAfford || purchasing === item.id}
-                      className="flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50"
+                      className="flex items-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50 min-h-[44px]"
                     >
                       {purchasing === item.id ? (
                         <span className="h-3 w-3 animate-spin rounded-full border-2 border-background border-t-transparent" />

@@ -80,7 +80,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
         key={item.href}
         href={item.href}
         onClick={onClose}
-        className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring ${
+        className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors min-h-[44px] focus-visible:ring-2 focus-visible:ring-ring ${
           active
             ? "bg-primary/10 text-primary font-medium"
             : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
@@ -143,7 +143,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
             <button
               onClick={() => setShowMore(!showMore)}
               aria-expanded={showMore}
-              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring ${
+              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors min-h-[44px] focus-visible:ring-2 focus-visible:ring-ring ${
                 isMoreActive || showMore
                   ? "bg-primary/10 text-primary font-medium"
                   : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
@@ -173,7 +173,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
             <Link
               href="/admin"
               onClick={onClose}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring ${
+              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors min-h-[44px] focus-visible:ring-2 focus-visible:ring-ring ${
                 pathname.startsWith("/admin")
                   ? "bg-violet-500/10 text-violet-500 font-medium"
                   : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
@@ -189,7 +189,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
               onClick={() => setShowLang(!showLang)}
               aria-expanded={showLang}
               aria-label="Change language"
-              className="flex flex-1 items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors focus-visible:ring-2 focus-visible:ring-ring"
+              className="flex flex-1 items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors min-h-[44px] focus-visible:ring-2 focus-visible:ring-ring"
             >
               <Globe className="h-4 w-4" />
               <span>{LOCALES.find((l) => l.id === locale)?.nativeLabel ?? "English"}</span>
@@ -205,7 +205,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
                     setLocale(loc.id);
                     setShowLang(false);
                   }}
-                  className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${
+                  className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors min-h-[44px] ${
                     locale === loc.id
                       ? "bg-primary/10 text-primary font-medium"
                       : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"

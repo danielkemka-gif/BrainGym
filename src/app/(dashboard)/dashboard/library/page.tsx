@@ -104,7 +104,7 @@ export default function LibraryPage() {
         <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-primary/10 blur-3xl" />
         <div className="absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-purple-500/10 blur-3xl" />
         <div className="relative">
-          <h1 className="text-2xl font-bold">Activity Library</h1>
+          <h1 className="text-xl font-bold sm:text-2xl">Activity Library</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             177+ brain training exercises across 7 categories
           </p>

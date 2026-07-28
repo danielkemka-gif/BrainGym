@@ -19,11 +19,11 @@ export function Topbar({ onMenuClick, userName }: TopbarProps) {
   }
 
   return (
-      <header role="banner" className="flex h-14 items-center justify-between border-b border-border bg-background px-4" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+      <header role="banner" className="flex min-h-14 items-center justify-between border-b border-border bg-background px-4" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
       <button
         onClick={onMenuClick}
         aria-label="Toggle navigation menu"
-        className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring lg:hidden"
+        className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-muted-foreground hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring lg:hidden"
       >
         <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
@@ -38,7 +38,7 @@ export function Topbar({ onMenuClick, userName }: TopbarProps) {
         </span>
         <button
           onClick={handleSignOut}
-          className="rounded-lg px-3 py-2 text-xs text-muted-foreground hover:bg-accent hover:text-foreground min-h-[44px]"
+          className="rounded-lg px-3 py-2 text-xs text-muted-foreground hover:bg-accent hover:text-foreground min-h-[44px] min-w-[44px]"
         >
           Sign out
         </button>

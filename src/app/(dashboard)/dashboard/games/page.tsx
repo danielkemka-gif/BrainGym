@@ -58,7 +58,7 @@ export default function GamesHubPage() {
     <div className="mx-auto max-w-4xl space-y-4 sm:space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold">Brain Games</h1>
+        <h1 className="text-xl font-bold sm:text-2xl">Brain Games</h1>
         <p className="text-sm text-muted-foreground">
           Train your brain with addictive mini-games. Earn stars, unlock levels, become a master!
         </p>

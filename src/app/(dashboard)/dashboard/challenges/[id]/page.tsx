@@ -200,7 +200,7 @@ export default function ChallengeDetailPage() {
                 </>
               )}
             </div>
-            <h1 className="text-2xl font-bold">{challenge.title}</h1>
+            <h1 className="text-xl font-bold sm:text-2xl">{challenge.title}</h1>
             {challenge.description && (
               <p className="mt-2 text-muted-foreground">{challenge.description}</p>
             )}

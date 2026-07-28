@@ -400,7 +400,7 @@ export default function MemoryMatchPage() {
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2">
+            <h1 className="text-xl font-bold sm:text-2xl flex items-center gap-2">
               {(() => { const GameIcon = GAME_ICONS[game.iconKey]; return GameIcon ? <GameIcon className="h-7 w-7 text-primary" /> : null; })()} {game.title}
             </h1>
             <p className="text-sm text-muted-foreground">{game.description}</p>

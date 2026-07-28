@@ -491,11 +491,11 @@ export default function ChallengePage() {
           <ArrowLeft className="h-4 w-4" /> Back
         </Link>
 
-        <div className="rounded-2xl border border-border bg-card p-8 text-center">
+        <div className="rounded-2xl border border-border bg-card p-5 text-center sm:p-8">
           <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-red-600 text-4xl shadow-lg shadow-orange-500/20">
             ⚡
           </div>
-          <h1 className="text-2xl font-bold">Quick-Fire Brain Quiz</h1>
+          <h1 className="text-xl font-bold sm:text-2xl">Quick-Fire Brain Quiz</h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Test your brain with fun questions across Memory, Focus, Thinking, and more!
             Plus real-life brain tasks to train everyday cognitive skills! 🧠
@@ -639,7 +639,7 @@ export default function ChallengePage() {
     return (
       <div className="mx-auto flex min-h-[60vh] items-center justify-center">
         <div className="text-center">
-          <div className="mb-6 text-8xl font-bold text-primary animate-bounce">
+          <div className="mb-6 text-7xl font-bold text-primary animate-bounce sm:text-8xl">
             {countdownValue || "GO!"}
           </div>
           <p className="text-lg text-muted-foreground font-medium">{phrases[countdownValue] || "Go!"}</p>
@@ -669,11 +669,11 @@ export default function ChallengePage() {
 
     return (
       <div className="mx-auto max-w-lg space-y-6">
-        <div className="rounded-2xl border border-border bg-card p-8 text-center">
+        <div className="rounded-2xl border border-border bg-card p-5 text-center sm:p-8">
           <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 text-4xl shadow-lg shadow-green-500/20">
             🎉
           </div>
-          <h2 className="text-2xl font-bold">{grade}</h2>
+          <h2 className="text-xl font-bold sm:text-2xl">{grade}</h2>
           <p className="mt-1 text-sm text-muted-foreground">{reaction}</p>
 
           <div className="mt-6 grid grid-cols-2 gap-3">

@@ -79,7 +79,7 @@ export default function HistoryPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Workout History</h1>
+        <h1 className="text-xl font-bold sm:text-2xl">Workout History</h1>
         <p className="text-sm text-muted-foreground">
           Review your past brain training sessions
         </p>

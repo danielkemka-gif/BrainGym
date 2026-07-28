@@ -92,7 +92,7 @@ export function BrainAgeSection() {
   const trendAbs = Math.abs(trend);
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-5">
+    <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
       <div className="mb-4 flex items-center gap-2">
         <Sparkles className="h-4 w-4 text-amber-400" />
         <h3 className="text-sm font-semibold">Brain Age</h3>
@@ -111,7 +111,7 @@ export function BrainAgeSection() {
         <>
           {/* Big brain age number */}
           <div className="mb-4 text-center">
-            <div className={`text-5xl font-bold tabular-nums ${getAgeColor(data.brainAge)}`}>
+            <div className={`text-4xl sm:text-5xl font-bold tabular-nums ${getAgeColor(data.brainAge)}`}>
               {data.brainAge}
             </div>
             <p className="mt-1 text-sm text-muted-foreground">

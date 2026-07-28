@@ -45,7 +45,7 @@ export function ThreeSixFiveJourney() {
 
   if (loading) {
     return (
-      <div className="rounded-2xl bg-white/50 dark:bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-gray-800 p-6">
+      <div className="rounded-2xl bg-white/50 dark:bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-gray-800 p-4 sm:p-6">
         <div className="animate-pulse space-y-4">
           <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
           <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded" />
@@ -72,13 +72,13 @@ export function ThreeSixFiveJourney() {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-2xl bg-white/50 dark:bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-gray-800 p-6"
+      className="rounded-2xl bg-white/50 dark:bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-gray-800 p-4 sm:p-6"
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
-            <Calendar className="w-5 h-5 text-white" />
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+            <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
           </div>
           <div>
             <h3 className="font-semibold text-gray-900 dark:text-white">Your Brain Journey</h3>
@@ -92,7 +92,7 @@ export function ThreeSixFiveJourney() {
       </div>
 
       {/* Milestone progress ring */}
-      <div className="flex items-center justify-center mb-6">
+      <div className="flex items-center justify-center mb-4 sm:mb-6">
         <div className="relative w-24 h-24">
           <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
             <circle
@@ -127,7 +127,7 @@ export function ThreeSixFiveJourney() {
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6">
         <div className="text-center">
           <div className="text-lg font-bold text-gray-900 dark:text-white">{stats.totalXp.toLocaleString()}</div>
           <div className="text-xs text-gray-500 dark:text-gray-400">Total XP</div>

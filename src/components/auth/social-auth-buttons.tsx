@@ -42,7 +42,7 @@ export function SocialAuthButtons({
       <button
         onClick={() => handleOAuth("google")}
         disabled={loading["google"]}
-        className="inline-flex h-12 w-full items-center justify-center gap-3 rounded-lg border border-border bg-background px-4 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-50"
+        className="inline-flex h-12 w-full items-center justify-center gap-3 rounded-lg border border-border bg-background px-4 text-sm font-semibold transition-colors hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-50"
       >
         {loading["google"] ? (
           <span className="h-5 w-5 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />

@@ -36,8 +36,8 @@ export function BrainScoreSection() {
   }, []);
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-5">
-      <h2 className="mb-4 font-semibold">Brain Scores</h2>
+    <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
+      <h2 className="mb-3 sm:mb-4 font-semibold">Brain Scores</h2>
       {loading ? (
         <div className="space-y-3">
           {CATEGORIES.map((c) => (

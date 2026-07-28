@@ -44,7 +44,7 @@ export function BrainHealthInsights() {
 
   if (loading) {
     return (
-      <div className="rounded-2xl bg-white/50 dark:bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-gray-800 p-6">
+      <div className="rounded-2xl bg-white/50 dark:bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-gray-800 p-4 sm:p-6">
         <div className="animate-pulse space-y-4">
           <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
           <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded" />
@@ -71,12 +71,12 @@ export function BrainHealthInsights() {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-2xl bg-white/50 dark:bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-gray-800 p-6"
+      className="rounded-2xl bg-white/50 dark:bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-gray-800 p-4 sm:p-6"
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center">
             <Heart className="w-5 h-5 text-white" />
           </div>
           <div>
@@ -95,7 +95,7 @@ export function BrainHealthInsights() {
       </div>
 
       {/* Trend + Weekly stats */}
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-3 mb-4 sm:mb-6">
         <div className="flex items-center gap-1.5 text-sm">
           {trendIcon}
           <span className={`font-medium ${
@@ -113,7 +113,7 @@ export function BrainHealthInsights() {
       </div>
 
       {/* Domain scores radar (simplified bar chart) */}
-      <div className="space-y-3 mb-6">
+      <div className="space-y-3 mb-4 sm:mb-6">
         {domains.map((d) => (
           <div key={d.label} className="flex items-center gap-3">
             <div className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 w-16">

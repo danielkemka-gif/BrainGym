@@ -71,9 +71,9 @@ export function XpStreakSection() {
     new Date().getHours() >= STREAK.WARNING_AT_HOUR;
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-5">
+    <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
       {/* Level */}
-      <div className="mb-4">
+      <div className="mb-3 sm:mb-4">
         <div className="flex items-center gap-2">
           <p className="text-lg font-bold">{level.title}</p>
           {level.premium && <span className="text-xs font-medium text-amber-400">PREMIUM</span>}
@@ -82,7 +82,7 @@ export function XpStreakSection() {
       </div>
 
       {/* XP Bar */}
-      <div className="mb-4">
+      <div className="mb-3 sm:mb-4">
         <div className="mb-1 flex items-center justify-between text-xs text-muted-foreground">
           <span>{totalXp.toLocaleString()} XP</span>
           {nextLevel && (
@@ -106,13 +106,13 @@ export function XpStreakSection() {
       </div>
 
       {/* Coins + Stats */}
-      <div className="grid grid-cols-3 gap-2 text-center sm:gap-3">
-        <div className="rounded-lg bg-primary/10 p-2">
-          <p className="text-lg font-bold text-primary">{coins}</p>
+      <div className="grid grid-cols-3 gap-1.5 text-center sm:gap-2 sm:gap-3">
+        <div className="rounded-lg bg-primary/10 p-1.5 sm:p-2">
+          <p className="text-base sm:text-lg font-bold text-primary">{coins}</p>
           <p className="text-[11px] text-muted-foreground sm:text-xs">Coins</p>
         </div>
-        <div className="rounded-lg bg-muted/50 p-2">
-          <p className="text-lg font-bold">
+        <div className="rounded-lg bg-muted/50 p-1.5 sm:p-2">
+          <p className="text-base sm:text-lg font-bold">
             {streak.current}
             {streakFreezesRemaining > 0 && (
               <span className="ml-1 inline-flex items-center gap-0.5 text-xs font-medium text-blue-400">
@@ -122,8 +122,8 @@ export function XpStreakSection() {
           </p>
           <p className="text-[11px] text-muted-foreground sm:text-xs">Streak</p>
         </div>
-        <div className="rounded-lg bg-muted/50 p-2">
-          <p className="text-lg font-bold">{streak.longest}</p>
+        <div className="rounded-lg bg-muted/50 p-1.5 sm:p-2">
+          <p className="text-base sm:text-lg font-bold">{streak.longest}</p>
           <p className="text-[11px] text-muted-foreground sm:text-xs">Best</p>
         </div>
       </div>

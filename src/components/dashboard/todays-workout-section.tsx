@@ -337,9 +337,9 @@ export function TodaysWorkoutSection() {
       0
     );
     return (
-      <div className="rounded-2xl border border-border bg-card p-6 text-center">
-        <span className="text-4xl">🏋️</span>
-        <h2 className="mt-3 text-xl font-bold">Today&apos;s Workout</h2>
+      <div className="rounded-2xl border border-border bg-card p-4 sm:p-6 text-center">
+        <span className="text-3xl sm:text-4xl">🏋️</span>
+        <h2 className="mt-2 sm:mt-3 text-lg sm:text-xl font-bold">Today&apos;s Workout</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           {itemCount} {t.general_of} {totalTime}s
         </p>
@@ -365,9 +365,9 @@ export function TodaysWorkoutSection() {
   if (workout?.status === "completed") {
     return (
       <>
-        <div className="rounded-2xl border border-border bg-card p-6 text-center">
-          <span className="text-4xl">🎉</span>
-          <h2 className="mt-3 text-xl font-bold">Workout Complete!</h2>
+        <div className="rounded-2xl border border-border bg-card p-4 sm:p-6 text-center">
+          <span className="text-3xl sm:text-4xl">🎉</span>
+          <h2 className="mt-2 sm:mt-3 text-lg sm:text-xl font-bold">Workout Complete!</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Great job today — keep the streak alive!
           </p>

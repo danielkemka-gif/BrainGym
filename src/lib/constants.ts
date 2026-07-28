@@ -130,7 +130,7 @@ export const ACHIEVEMENTS = [
   { id: "perfect_week", title: "Perfect Week", description: "Complete every daily workout for a week", iconKey: "perfect_week", xp: 300 },
   { id: "night_owl", title: "Night Owl", description: "Complete a workout after 9 PM", iconKey: "night_owl", xp: 75 },
   { id: "early_bird", title: "Early Bird", description: "Complete a workout before 7 AM", iconKey: "early_bird", xp: 75 },
-  { id: "speed_demon", title: "Speed Demon", description: "Complete a Quick-Fire challenge", iconKey: "speed_demon", xp: 100 },
+  { id: "speed_demon", title: "Lightning Reflexes", description: "Complete a Quick-Fire challenge", iconKey: "speed_demon", xp: 100 },
   { id: "all_categories", title: "Renaissance Mind", description: "Complete at least one activity in every category", iconKey: "all_categories", xp: 250 },
   { id: "ten_workouts", title: "Dedicated", description: "Complete 10 workouts", iconKey: "ten_workouts", xp: 200 },
   { id: "fifty_workouts", title: "Committed", description: "Complete 50 workouts", iconKey: "fifty_workouts", xp: 1000 },

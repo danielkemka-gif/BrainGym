@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function LoginPage() {
   return (
-    <div className="w-full max-w-sm space-y-6">
+    <div className="w-full max-w-sm space-y-5">
       <div className="space-y-2 text-center">
         <h1 className="text-2xl font-bold">Welcome back</h1>
         <p className="text-sm text-muted-foreground">
@@ -26,7 +26,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <MagicLinkForm />
+      <LoginForm />
 
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
@@ -34,17 +34,17 @@ export default function LoginPage() {
         </div>
         <div className="relative flex justify-center text-xs uppercase">
           <span className="bg-background px-2 text-muted-foreground">
-            Or use password
+            Or use magic link
           </span>
         </div>
       </div>
 
-      <LoginForm />
+      <MagicLinkForm />
 
       <p className="text-center text-sm text-muted-foreground">
         Don&apos;t have an account?{" "}
-        <Link href="/signup" className="text-primary hover:underline">
-          Sign up
+        <Link href="/signup" className="text-primary font-medium hover:underline">
+          Sign up free
         </Link>
       </p>
     </div>

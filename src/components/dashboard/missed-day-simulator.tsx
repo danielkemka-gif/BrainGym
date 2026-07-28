@@ -51,7 +51,7 @@ export function MissedDaySimulator() {
 
   if (loading) {
     return (
-      <div className="rounded-2xl bg-white/50 dark:bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-gray-800 p-6">
+      <div className="rounded-2xl bg-white/50 dark:bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-gray-800 p-4 sm:p-6">
         <div className="animate-pulse space-y-4">
           <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
           <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded" />
@@ -72,7 +72,7 @@ export function MissedDaySimulator() {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`rounded-2xl backdrop-blur-sm border p-6 ${
+      className={`rounded-2xl backdrop-blur-sm border p-4 sm:p-6 ${
         willDropBelow40
           ? 'bg-red-50/50 dark:bg-red-900/10 border-red-200 dark:border-red-800'
           : willDropBelow60
@@ -83,7 +83,7 @@ export function MissedDaySimulator() {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+          <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center ${
             willDropBelow40
               ? 'bg-gradient-to-br from-red-500 to-red-600'
               : 'bg-gradient-to-br from-orange-500 to-amber-600'

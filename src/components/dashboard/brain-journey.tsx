@@ -105,7 +105,7 @@ export function BrainJourney() {
 
   if (loading || !stats) {
     return (
-      <div className="rounded-2xl border border-border bg-card p-6">
+      <div className="rounded-2xl border border-border bg-card p-4 sm:p-6">
         <div className="h-5 w-36 animate-pulse rounded bg-muted mb-4" />
         <div className="h-20 animate-pulse rounded-xl bg-muted" />
       </div>
@@ -117,8 +117,8 @@ export function BrainJourney() {
   const message = getMotivationalMessage(unlocked.length);
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-6 overflow-hidden">
-      <h3 className="font-semibold mb-4">Your Brain Journey</h3>
+    <div className="rounded-2xl border border-border bg-card p-4 sm:p-6 overflow-hidden">
+      <h3 className="font-semibold mb-3 sm:mb-4">Your Brain Journey</h3>
 
       {/* Timeline */}
       <div className="relative overflow-x-auto pb-2 -mx-1 px-1">
@@ -174,7 +174,7 @@ export function BrainJourney() {
       </div>
 
       {/* Motivational message */}
-      <div className="mt-14 rounded-xl bg-gradient-to-r from-primary/10 via-purple-500/10 to-pink-500/10 px-4 py-3 text-center">
+      <div className="mt-10 sm:mt-14 rounded-xl bg-gradient-to-r from-primary/10 via-purple-500/10 to-pink-500/10 px-3 sm:px-4 py-2.5 sm:py-3 text-center">
         <p className="text-sm font-medium">{message}</p>
         <p className="mt-0.5 text-xs text-muted-foreground">
           {unlocked.length} / {MILESTONES.length} milestones unlocked

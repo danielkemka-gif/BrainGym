@@ -43,7 +43,7 @@ export function BrainMomentumCard() {
 
   if (loading) {
     return (
-      <div className="rounded-2xl bg-white/50 dark:bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-gray-800 p-6">
+      <div className="rounded-2xl bg-white/50 dark:bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-gray-800 p-4 sm:p-6">
         <div className="animate-pulse space-y-4">
           <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
           <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded" />
@@ -63,12 +63,12 @@ export function BrainMomentumCard() {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-2xl bg-white/50 dark:bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-gray-800 p-6"
+      className="rounded-2xl bg-white/50 dark:bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-gray-800 p-4 sm:p-6"
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center">
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center">
             <Zap className="w-5 h-5 text-white" />
           </div>
           <div>
@@ -77,7 +77,7 @@ export function BrainMomentumCard() {
           </div>
         </div>
         <div className="text-right">
-          <div className="text-3xl font-bold text-gray-900 dark:text-white">{momentum.score}</div>
+          <div className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{momentum.score}</div>
           <div className={`flex items-center gap-1 text-xs font-medium ${color}`}>
             {emoji} {label}
           </div>
@@ -103,7 +103,7 @@ export function BrainMomentumCard() {
 
       {/* Mini sparkline chart */}
       {trendData.length > 1 && (
-        <div className="mb-6 h-20">
+        <div className="mb-4 sm:mb-6 h-20">
           <svg viewBox={`0 0 ${trendData.length * 10} 80`} className="w-full h-full">
             <defs>
               <linearGradient id="momentumGradient" x1="0" y1="0" x2="0" y2="1">
@@ -134,7 +134,7 @@ export function BrainMomentumCard() {
       )}
 
       {/* Factor breakdown */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2 sm:gap-3">
         <FactorBar icon={<Flame className="w-3.5 h-3.5" />} label="Streak" value={momentum.streak_factor} max={30} color="from-orange-500 to-red-500" />
         <FactorBar icon={<Calendar className="w-3.5 h-3.5" />} label="Consistency" value={momentum.consistency_factor} max={25} color="from-blue-500 to-cyan-500" />
         <FactorBar icon={<TrendingUp className="w-3.5 h-3.5" />} label="Growth" value={momentum.growth_factor} max={25} color="from-green-500 to-emerald-500" />

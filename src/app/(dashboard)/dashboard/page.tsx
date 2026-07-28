@@ -227,7 +227,7 @@ const ThreeSixFiveJourney = dynamic(
 
 export default function DashboardPage() {
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
+    <div className="mx-auto max-w-6xl space-y-3 sm:space-y-4 lg:space-y-6">
       {/* Header: greeting + coins + level */}
       <Suspense
         fallback={
@@ -273,7 +273,7 @@ export default function DashboardPage() {
       </Suspense>
 
       {/* Brain Age + XP/Streak — hero row */}
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-3 lg:gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <Suspense
             fallback={
@@ -283,7 +283,7 @@ export default function DashboardPage() {
             <BrainAgeSection />
           </Suspense>
         </div>
-        <div className="space-y-6">
+        <div className="space-y-3 lg:space-y-6">
           <Suspense
             fallback={
               <div className="h-48 animate-pulse rounded-2xl bg-muted" />
@@ -316,7 +316,7 @@ export default function DashboardPage() {
       </Suspense>
 
       {/* Streak Calendar + Brain Scores — 2-column on desktop */}
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-3 lg:gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <Suspense
             fallback={
@@ -377,7 +377,7 @@ export default function DashboardPage() {
       </Suspense>
 
       {/* Cognitive Identity + Consistency Forecast — 2-column on desktop */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-3 lg:gap-6 lg:grid-cols-2">
         <Suspense
           fallback={
             <div className="h-64 animate-pulse rounded-2xl bg-muted" />
@@ -404,7 +404,7 @@ export default function DashboardPage() {
       </Suspense>
 
       {/* Brain Health + Adaptive Habits — 2-column on desktop */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-3 lg:gap-6 lg:grid-cols-2">
         <Suspense
           fallback={
             <div className="h-64 animate-pulse rounded-2xl bg-muted" />
@@ -427,7 +427,7 @@ export default function DashboardPage() {
       </Suspense>
 
       {/* Streak Protection + 365-Day Journey — 2-column on desktop */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-3 lg:gap-6 lg:grid-cols-2">
         <Suspense
           fallback={
             <div className="h-64 animate-pulse rounded-2xl bg-muted" />

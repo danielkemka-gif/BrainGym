@@ -45,56 +45,56 @@ export function CentralCTA() {
       <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
       <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-purple-500/10 blur-3xl" />
 
-      <div className="relative px-6 py-8 text-center">
+      <div className="relative px-4 py-6 text-center sm:px-6 sm:py-8">
         {hasWorkout ? (
           <>
-            <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-500/10">
-              <CheckCircle className="h-8 w-8 text-green-500" />
+            <div className="mx-auto mb-3 flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-green-500/10">
+              <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-green-500" />
             </div>
-            <h2 className="text-xl font-bold">
+            <h2 className="text-lg sm:text-xl font-bold">
               {t.dashboard_greeting}{userName ? `, ${userName}` : ""}!
             </h2>
-            <div className="mt-5 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <div className="mt-4 flex flex-col items-center gap-2.5 sm:mt-5 sm:flex-row sm:justify-center sm:gap-3">
               <Link
                 href="/dashboard/challenge"
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary/10 px-8 text-sm font-medium text-primary hover:bg-primary/20 transition-all sm:w-auto"
+                className="inline-flex h-11 sm:h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary/10 px-6 sm:px-8 text-sm font-medium text-primary hover:bg-primary/20 transition-all sm:w-auto"
               >
-                <Zap className="h-5 w-5" />
+                <Zap className="h-4 w-4 sm:h-5 sm:w-5" />
                 {t.nav_quick_fire}
               </Link>
               <Link
                 href="/dashboard/library"
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-8 text-sm font-medium hover:bg-accent transition-all sm:w-auto"
+                className="inline-flex h-11 sm:h-12 w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-6 sm:px-8 text-sm font-medium hover:bg-accent transition-all sm:w-auto"
               >
-                <Brain className="h-5 w-5" />
+                <Brain className="h-4 w-4 sm:h-5 sm:w-5" />
                 {t.nav_activities}
               </Link>
             </div>
           </>
         ) : (
           <>
-            <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
-              <Sparkles className="h-8 w-8 text-primary" />
+            <div className="mx-auto mb-3 flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-primary/10">
+              <Sparkles className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
             </div>
-            <h2 className="text-xl font-bold">
+            <h2 className="text-lg sm:text-xl font-bold">
               {userName ? `${t.dashboard_greeting}, ${userName}!` : `${t.dashboard_greeting}!`}
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
               {t.dashboard_subtitle}
             </p>
-            <div className="mt-5 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <div className="mt-4 flex flex-col items-center gap-2.5 sm:mt-5 sm:flex-row sm:justify-center sm:gap-3">
               <Link
                 href="/dashboard/challenge"
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-red-600 px-8 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-all hover:shadow-xl hover:shadow-orange-500/30 hover:scale-[1.02] sm:w-auto"
+                className="inline-flex h-11 sm:h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-red-600 px-6 sm:px-8 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-all hover:shadow-xl hover:shadow-orange-500/30 hover:scale-[1.02] sm:w-auto"
               >
-                <Zap className="h-5 w-5" />
+                <Zap className="h-4 w-4 sm:h-5 sm:w-5" />
                 {t.dashboard_start_training}
               </Link>
               <Link
                 href="/dashboard/library"
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-8 text-sm font-medium hover:bg-accent transition-all sm:w-auto"
+                className="inline-flex h-11 sm:h-12 w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-6 sm:px-8 text-sm font-medium hover:bg-accent transition-all sm:w-auto"
               >
-                <Brain className="h-5 w-5" />
+                <Brain className="h-4 w-4 sm:h-5 sm:w-5" />
                 {t.nav_activities}
               </Link>
             </div>

@@ -1,15 +1,14 @@
 import { SignupForm } from "@/components/auth/signup-form";
-import { MagicLinkForm } from "@/components/auth/magic-link-form";
 import { SocialAuthButtons } from "@/components/auth/social-auth-buttons";
 import Link from "next/link";
 
 export default function SignupPage() {
   return (
-    <div className="w-full max-w-sm space-y-6">
+    <div className="w-full max-w-sm space-y-5">
       <div className="space-y-2 text-center">
-        <h1 className="text-2xl font-bold">Create your account</h1>
+        <h1 className="text-2xl font-bold">Join BrainGym</h1>
         <p className="text-sm text-muted-foreground">
-          Start training your brain today
+          Train your brain in 5 minutes a day
         </p>
       </div>
 
@@ -21,29 +20,27 @@ export default function SignupPage() {
         </div>
         <div className="relative flex justify-center text-xs uppercase">
           <span className="bg-background px-2 text-muted-foreground">
-            Or continue with email
+            Or use email
           </span>
         </div>
       </div>
 
       <SignupForm />
 
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or sign in with magic link
-          </span>
-        </div>
-      </div>
-
-      <MagicLinkForm />
+      <p className="text-center text-xs text-muted-foreground">
+        By signing up you agree to our{" "}
+        <Link href="/terms" className="underline hover:text-foreground">
+          Terms
+        </Link>{" "}
+        and{" "}
+        <Link href="/privacy" className="underline hover:text-foreground">
+          Privacy Policy
+        </Link>
+      </p>
 
       <p className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}
-        <Link href="/login" className="text-primary hover:underline">
+        <Link href="/login" className="text-primary font-medium hover:underline">
           Sign in
         </Link>
       </p>

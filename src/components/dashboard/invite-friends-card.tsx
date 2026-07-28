@@ -128,7 +128,7 @@ export function InviteFriendsCard() {
 
   if (loading) {
     return (
-      <div className="rounded-2xl bg-white/50 dark:bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-gray-800 p-6">
+      <div className="rounded-2xl bg-white/50 dark:bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-gray-800 p-4 sm:p-6">
         <div className="animate-pulse space-y-4">
           <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
           <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded" />
@@ -143,12 +143,12 @@ export function InviteFriendsCard() {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-2xl bg-gradient-to-br from-violet-500/10 via-purple-500/10 to-fuchsia-500/10 dark:from-violet-500/5 dark:via-purple-500/5 dark:to-fuchsia-500/5 backdrop-blur-sm border border-violet-200 dark:border-violet-800/50 p-6"
+      className="rounded-2xl bg-gradient-to-br from-violet-500/10 via-purple-500/10 to-fuchsia-500/10 dark:from-violet-500/5 dark:via-purple-500/5 dark:to-fuchsia-500/5 backdrop-blur-sm border border-violet-200 dark:border-violet-800/50 p-4 sm:p-6"
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center">
             <Share2 className="w-5 h-5 text-white" />
           </div>
           <div>
@@ -169,7 +169,7 @@ export function InviteFriendsCard() {
       </div>
 
       {/* Referral code display */}
-      <div className="mb-4 p-3 rounded-xl bg-white/60 dark:bg-white/5 border border-violet-200/50 dark:border-violet-800/30">
+      <div className="mb-3 sm:mb-4 p-3 rounded-xl bg-white/60 dark:bg-white/5 border border-violet-200/50 dark:border-violet-800/30">
         <div className="text-center">
           <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
             Your Invite Code
@@ -197,7 +197,7 @@ export function InviteFriendsCard() {
       </button>
 
       {/* Platform share buttons */}
-      <div className="grid grid-cols-4 gap-2 mb-4">
+      <div className="grid grid-cols-4 gap-2 mb-3 sm:mb-4">
         <ShareButton
           icon={<MessageCircle className="w-4 h-4" />}
           label="WhatsApp"

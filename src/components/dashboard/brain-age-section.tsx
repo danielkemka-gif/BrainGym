@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/lib/auth";
 import { CATEGORIES } from "@/lib/constants";
 import { TrendingUp, TrendingDown, Minus, Sparkles } from "lucide-react";
 
@@ -34,59 +34,57 @@ function getAgeColor(brainAge: number): string {
 }
 
 export function BrainAgeSection() {
+  const { user, supabase } = useAuth();
   const [data, setData] = useState<BrainAgeData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) return;
+    if (!user) return;
 
-      const today = new Date().toISOString().split("T")[0];
-      const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().split("T")[0];
+    const today = new Date().toISOString().split("T")[0];
+    const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().split("T")[0];
 
-      Promise.all(
-        CATEGORIES.map(async (cat) => {
-          const [{ data: current }, { data: weekAgoData }] = await Promise.all([
-            supabase
-              .from("brain_scores")
-              .select("score")
-              .eq("user_id", user.id)
-              .eq("category_id", cat.id)
-              .lte("date", today)
-              .order("date", { ascending: false })
-              .limit(1)
-              .maybeSingle(),
-            supabase
-              .from("brain_scores")
-              .select("score")
-              .eq("user_id", user.id)
-              .eq("category_id", cat.id)
-              .lte("date", weekAgo)
-              .order("date", { ascending: false })
-              .limit(1)
-              .maybeSingle(),
-          ]);
-          return {
-            name: cat.label,
-            score: current?.score ?? 50,
-            weekAgoScore: weekAgoData?.score ?? 50,
-            color: cat.color,
-          };
-        })
-      ).then((results) => {
-        const currentAvg = results.reduce((s, r) => s + r.score, 0) / results.length;
-        const weekAgoAvg = results.reduce((s, r) => s + r.weekAgoScore, 0) / results.length;
-        setData({
-          currentScore: Math.round(currentAvg),
-          weekAgoScore: Math.round(weekAgoAvg),
-          categoryScores: results.map((r) => ({ name: r.name, score: r.score, color: r.color })),
-          brainAge: scoreToBrainAge(currentAvg),
-        });
-        setLoading(false);
+    Promise.all(
+      CATEGORIES.map(async (cat) => {
+        const [{ data: current }, { data: weekAgoData }] = await Promise.all([
+          supabase
+            .from("brain_scores")
+            .select("score")
+            .eq("user_id", user.id)
+            .eq("category_id", cat.id)
+            .lte("date", today)
+            .order("date", { ascending: false })
+            .limit(1)
+            .maybeSingle(),
+          supabase
+            .from("brain_scores")
+            .select("score")
+            .eq("user_id", user.id)
+            .eq("category_id", cat.id)
+            .lte("date", weekAgo)
+            .order("date", { ascending: false })
+            .limit(1)
+            .maybeSingle(),
+        ]);
+        return {
+          name: cat.label,
+          score: current?.score ?? 50,
+          weekAgoScore: weekAgoData?.score ?? 50,
+          color: cat.color,
+        };
+      })
+    ).then((results) => {
+      const currentAvg = results.reduce((s, r) => s + r.score, 0) / results.length;
+      const weekAgoAvg = results.reduce((s, r) => s + r.weekAgoScore, 0) / results.length;
+      setData({
+        currentScore: Math.round(currentAvg),
+        weekAgoScore: Math.round(weekAgoAvg),
+        categoryScores: results.map((r) => ({ name: r.name, score: r.score, color: r.color })),
+        brainAge: scoreToBrainAge(currentAvg),
       });
+      setLoading(false);
     });
-  }, []);
+  }, [user, supabase]);
 
   const trend = data ? data.currentScore - data.weekAgoScore : 0;
   const trendAbs = Math.abs(trend);

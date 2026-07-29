@@ -3,19 +3,18 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { simulateMomentum, getMomentumLabel, type MomentumProjection } from '@/lib/momentum';
-import { createClient } from '@/lib/supabase/client';
+import { useAuth } from '@/lib/auth';
 import { Calendar, TrendingDown, TrendingUp, AlertTriangle, Zap } from 'lucide-react';
 
 export function MissedDaySimulator() {
+  const { user, supabase } = useAuth();
   const [projections, setProjections] = useState<MomentumProjection[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentScore, setCurrentScore] = useState(50);
-  const supabase = createClient();
 
   const loadSimulations = useCallback(async () => {
+    if (!user) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
 
       // Get current score
       const { data: momentum } = await supabase
@@ -43,7 +42,7 @@ export function MissedDaySimulator() {
     } finally {
       setLoading(false);
     }
-  }, [supabase]);
+  }, [user, supabase]);
 
   useEffect(() => {
     loadSimulations();

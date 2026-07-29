@@ -7,20 +7,18 @@ import {
   getMomentumLabel,
   type MomentumProjection,
 } from '@/lib/momentum';
-import { createClient } from '@/lib/supabase/client';
+import { useAuth } from '@/lib/auth';
 import { TrendingUp, Calendar, Zap, AlertTriangle } from 'lucide-react';
 
 export function MomentumRecovery() {
+  const { user, supabase } = useAuth();
   const [projections, setProjections] = useState<MomentumProjection[]>([]);
   const [loading, setLoading] = useState(true);
   const [frequency, setFrequency] = useState(0.7);
-  const supabase = createClient();
 
   const loadProjections = useCallback(async () => {
+    if (!user) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
       const data = await simulateMomentum(user.id, 14, frequency);
       setProjections(data);
     } catch (err) {
@@ -28,7 +26,7 @@ export function MomentumRecovery() {
     } finally {
       setLoading(false);
     }
-  }, [supabase, frequency]);
+  }, [user, supabase, frequency]);
 
   useEffect(() => {
     loadProjections();

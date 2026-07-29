@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/lib/auth";
 import { getLevelProgress } from "@/lib/scoring";
 import { useI18n } from "@/lib/i18n";
 import { Avatar } from "@/components/ui/avatar";
@@ -54,6 +54,7 @@ function getSubtitle(ageGroup: string): string {
 
 export function DashboardHeader() {
   const { t } = useI18n();
+  const { user, supabase } = useAuth();
   const [userName, setUserName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [totalXp, setTotalXp] = useState(0);
@@ -64,51 +65,48 @@ export function DashboardHeader() {
   const [subtitle, setSubtitle] = useState("");
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) return;
-      const name =
-        user.user_metadata?.display_name ||
-        user.user_metadata?.full_name ||
-        user.email?.split("@")[0] ||
-        "there";
-      setUserName(name.split(" ")[0]);
+    if (!user) return;
+    const name =
+      user.user_metadata?.display_name ||
+      user.user_metadata?.full_name ||
+      user.email?.split("@")[0] ||
+      "there";
+    setUserName(name.split(" ")[0]);
 
-      Promise.all([
-        supabase
-          .from("profiles")
-          .select("avatar_url, age_group")
-          .eq("user_id", user.id)
-          .maybeSingle()
-          .then(({ data }) => ({
-            avatar: data?.avatar_url || "",
-            ageGroup: data?.age_group || "adult",
-          })),
-        supabase
-          .from("xp_ledger")
-          .select("amount")
-          .eq("user_id", user.id)
-          .then(({ data }) =>
-            data ? data.reduce((s, r) => s + r.amount, 0) : 0
-          ),
-        supabase
-          .from("coins_ledger")
-          .select("amount")
-          .eq("user_id", user.id)
-          .then(({ data }) =>
-            data ? data.reduce((s, r) => s + r.amount, 0) : 0
-          ),
-      ]).then(([profile, xp, coin]) => {
-        setAvatarUrl(profile.avatar);
-        setAgeGroup(profile.ageGroup);
-        setTotalXp(xp);
-        setCoins(coin);
-        setGreeting(getGreeting(profile.ageGroup));
-        setSubtitle(getSubtitle(profile.ageGroup));
-        setLoading(false);
-      });
+    Promise.all([
+      supabase
+        .from("profiles")
+        .select("avatar_url, age_group")
+        .eq("user_id", user.id)
+        .maybeSingle()
+        .then(({ data }) => ({
+          avatar: data?.avatar_url || "",
+          ageGroup: data?.age_group || "adult",
+        })),
+      supabase
+        .from("xp_ledger")
+        .select("amount")
+        .eq("user_id", user.id)
+        .then(({ data }) =>
+          data ? data.reduce((s, r) => s + r.amount, 0) : 0
+        ),
+      supabase
+        .from("coins_ledger")
+        .select("amount")
+        .eq("user_id", user.id)
+        .then(({ data }) =>
+          data ? data.reduce((s, r) => s + r.amount, 0) : 0
+        ),
+    ]).then(([profile, xp, coin]) => {
+      setAvatarUrl(profile.avatar);
+      setAgeGroup(profile.ageGroup);
+      setTotalXp(xp);
+      setCoins(coin);
+      setGreeting(getGreeting(profile.ageGroup));
+      setSubtitle(getSubtitle(profile.ageGroup));
+      setLoading(false);
     });
-  }, []);
+  }, [user, supabase]);
 
   const { level } = getLevelProgress(totalXp);
 

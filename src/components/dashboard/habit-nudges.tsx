@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/lib/auth";
 import { X, Zap, ArrowRight, Dumbbell, Users, Flame, TrendingUp, Globe } from "lucide-react";
 
 interface Nudge {
@@ -34,6 +34,7 @@ function markDismissed() {
 }
 
 export function HabitNudges() {
+  const { user, supabase } = useAuth();
   const [nudge, setNudge] = useState<Nudge | null>(null);
   const [dismissed, setDismissed] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -44,109 +45,106 @@ export function HabitNudges() {
       return;
     }
 
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) { setLoading(false); return; }
+    if (!user) { setLoading(false); return; }
 
-      const today = new Date().toISOString().split("T")[0];
-      const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
+    const today = new Date().toISOString().split("T")[0];
+    const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
 
-      Promise.all([
-        supabase.from("daily_workouts").select("status").eq("user_id", user.id).eq("date", today).maybeSingle(),
-        supabase.from("daily_workouts").select("status").eq("user_id", user.id).eq("date", yesterday).maybeSingle(),
-        supabase.from("streaks").select("current_streak").eq("user_id", user.id).maybeSingle(),
-        supabase.from("profiles").select("preferred_workout_time").eq("user_id", user.id).maybeSingle(),
-        supabase.from("brain_scores").select("score, category_id").eq("user_id", user.id).order("date", { ascending: false }),
-        supabase.from("daily_workouts").select("id").eq("user_id", user.id).limit(1),
-      ]).then(([todayWorkout, yesterdayWorkout, streak, profile, scores, hasHistory]) => {
-        const todayDone = todayWorkout.data?.status === "completed";
-        if (todayDone) { setLoading(false); return; }
+    Promise.all([
+      supabase.from("daily_workouts").select("status").eq("user_id", user.id).eq("date", today).maybeSingle(),
+      supabase.from("daily_workouts").select("status").eq("user_id", user.id).eq("date", yesterday).maybeSingle(),
+      supabase.from("streaks").select("current_streak").eq("user_id", user.id).maybeSingle(),
+      supabase.from("profiles").select("preferred_workout_time").eq("user_id", user.id).maybeSingle(),
+      supabase.from("brain_scores").select("score, category_id").eq("user_id", user.id).order("date", { ascending: false }),
+      supabase.from("daily_workouts").select("id").eq("user_id", user.id).limit(1),
+    ]).then(([todayWorkout, yesterdayWorkout, streak, profile, scores, hasHistory]) => {
+      const todayDone = todayWorkout.data?.status === "completed";
+      if (todayDone) { setLoading(false); return; }
 
-        const now = new Date();
-        const currentHour = now.getHours();
-        const preferredTime = profile.data?.preferred_workout_time;
-        let preferredHour = 9;
-        if (preferredTime) {
-          const h = parseInt(preferredTime.split(":")[0], 10);
-          if (!isNaN(h)) preferredHour = h;
-        }
+      const now = new Date();
+      const currentHour = now.getHours();
+      const preferredTime = profile.data?.preferred_workout_time;
+      let preferredHour = 9;
+      if (preferredTime) {
+        const h = parseInt(preferredTime.split(":")[0], 10);
+        if (!isNaN(h)) preferredHour = h;
+      }
 
-        const currentStreak = streak.data?.current_streak ?? 0;
-        const missedYesterday = !yesterdayWorkout.data || yesterdayWorkout.data.status !== "completed";
+      const currentStreak = streak.data?.current_streak ?? 0;
+      const missedYesterday = !yesterdayWorkout.data || yesterdayWorkout.data.status !== "completed";
 
-        // Priority 1: Time-based nudge
-        if (currentHour >= preferredHour + 1) {
-          setNudge({
-            type: "time",
-            message: "It's workout time! Your brain is waiting.",
-            actionLabel: "Start Training",
-            actionHref: "/dashboard/workout",
-          });
-          setLoading(false);
-          return;
-        }
-
-        // Priority 2: Missed day nudge — show for streak holders AND returning users
-        const hasWorkoutHistory = (hasHistory.data?.length ?? 0) > 0;
-        if (missedYesterday && (currentStreak > 0 || hasWorkoutHistory)) {
-          const message = currentStreak > 0
-            ? "Welcome back! A quick session keeps your streak alive."
-            : "We missed you! Even 5 minutes keeps your progress going.";
-          setNudge({
-            type: "missed",
-            message,
-            actionLabel: "Quick 5-min workout",
-            actionHref: "/dashboard/workout",
-          });
-          setLoading(false);
-          return;
-        }
-
-        // Priority 3: Consistency nudge
-        if (currentStreak >= 3) {
-          setNudge({
-            type: "consistency",
-            message: `You're on fire! Day ${currentStreak} streak — keep the momentum!`,
-            actionLabel: "Continue streak",
-            actionHref: "/dashboard/workout",
-          });
-          setLoading(false);
-          return;
-        }
-
-        // Priority 4: Progress nudge (score improvements)
-        if (scores.data && scores.data.length > 0) {
-          const byCategory: Record<string, number[]> = {};
-          scores.data.forEach((s) => {
-            if (!byCategory[s.category_id]) byCategory[s.category_id] = [];
-            byCategory[s.category_id].push(s.score);
-          });
-          for (const [, vals] of Object.entries(byCategory)) {
-            if (vals.length >= 2 && vals[0] > vals[1]) {
-              const diff = vals[0] - vals[1];
-              setNudge({
-                type: "progress",
-                message: `Your score went up ${diff} points — great improvement!`,
-                actionLabel: "View Progress",
-                actionHref: "/dashboard/progress",
-              });
-              setLoading(false);
-              return;
-            }
-          }
-        }
-
-        // Priority 5: Social nudge
+      // Priority 1: Time-based nudge
+      if (currentHour >= preferredHour + 1) {
         setNudge({
-          type: "social",
-          message: "Join thousands training their brains right now!",
+          type: "time",
+          message: "It's workout time! Your brain is waiting.",
           actionLabel: "Start Training",
           actionHref: "/dashboard/workout",
         });
         setLoading(false);
+        return;
+      }
+
+      // Priority 2: Missed day nudge — show for streak holders AND returning users
+      const hasWorkoutHistory = (hasHistory.data?.length ?? 0) > 0;
+      if (missedYesterday && (currentStreak > 0 || hasWorkoutHistory)) {
+        const message = currentStreak > 0
+          ? "Welcome back! A quick session keeps your streak alive."
+          : "We missed you! Even 5 minutes keeps your progress going.";
+        setNudge({
+          type: "missed",
+          message,
+          actionLabel: "Quick 5-min workout",
+          actionHref: "/dashboard/workout",
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Priority 3: Consistency nudge
+      if (currentStreak >= 3) {
+        setNudge({
+          type: "consistency",
+          message: `You're on fire! Day ${currentStreak} streak — keep the momentum!`,
+          actionLabel: "Continue streak",
+          actionHref: "/dashboard/workout",
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Priority 4: Progress nudge (score improvements)
+      if (scores.data && scores.data.length > 0) {
+        const byCategory: Record<string, number[]> = {};
+        scores.data.forEach((s) => {
+          if (!byCategory[s.category_id]) byCategory[s.category_id] = [];
+          byCategory[s.category_id].push(s.score);
+        });
+        for (const [, vals] of Object.entries(byCategory)) {
+          if (vals.length >= 2 && vals[0] > vals[1]) {
+            const diff = vals[0] - vals[1];
+            setNudge({
+              type: "progress",
+              message: `Your score went up ${diff} points — great improvement!`,
+              actionLabel: "View Progress",
+              actionHref: "/dashboard/progress",
+            });
+            setLoading(false);
+            return;
+          }
+        }
+      }
+
+      // Priority 5: Social nudge
+      setNudge({
+        type: "social",
+        message: "Join thousands training their brains right now!",
+        actionLabel: "Start Training",
+        actionHref: "/dashboard/workout",
       });
+      setLoading(false);
     });
-  }, []);
+  }, [user, supabase]);
 
   function handleDismiss() {
     setDismissed(true);

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { purchaseStreakFreeze, type SmartReminder } from '@/lib/reminders';
-import { createClient } from '@/lib/supabase/client';
+import { useAuth } from '@/lib/auth';
 import { Shield, Snowflake, Coins, ShoppingCart, Check } from 'lucide-react';
 
 interface StreakFreezeInfo {
@@ -14,15 +14,14 @@ interface StreakFreezeInfo {
 }
 
 export function StreakProtectionCard() {
+  const { user, supabase } = useAuth();
   const [info, setInfo] = useState<StreakFreezeInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [purchasing, setPurchasing] = useState(false);
-  const supabase = createClient();
 
   const loadInfo = useCallback(async () => {
+    if (!user) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
 
       const [profileRes, coinsRes, purchasesRes] = await Promise.all([
         supabase.from('profiles').select('streak_freezes_remaining').eq('user_id', user.id).maybeSingle(),
@@ -46,7 +45,7 @@ export function StreakProtectionCard() {
     } finally {
       setLoading(false);
     }
-  }, [supabase]);
+  }, [user, supabase]);
 
   useEffect(() => {
     loadInfo();

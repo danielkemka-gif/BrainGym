@@ -6,7 +6,7 @@ import {
   getJourneyStats,
   type JourneySnapshot,
 } from '@/lib/reminders';
-import { createClient } from '@/lib/supabase/client';
+import { useAuth } from '@/lib/auth';
 import { Calendar, TrendingUp, Award, Flame, Zap, Target, Sparkles } from 'lucide-react';
 
 interface JourneyStats {
@@ -21,15 +21,13 @@ interface JourneyStats {
 }
 
 export function ThreeSixFiveJourney() {
+  const { user, supabase } = useAuth();
   const [stats, setStats] = useState<JourneyStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
 
   const loadData = useCallback(async () => {
+    if (!user) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
       const journeyStats = await getJourneyStats(user.id);
       setStats(journeyStats);
     } catch (err) {
@@ -37,7 +35,7 @@ export function ThreeSixFiveJourney() {
     } finally {
       setLoading(false);
     }
-  }, [supabase]);
+  }, [user, supabase]);
 
   useEffect(() => {
     loadData();

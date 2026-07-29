@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/lib/auth";
 
 const DAYS = 91; // ~13 weeks
 const CELL_SIZE = 11;
@@ -26,30 +26,28 @@ function getTooltip(count: number, dateStr: string): string {
 }
 
 export function StreakCalendar() {
+  const { user, supabase } = useAuth();
   const [activityMap, setActivityMap] = useState<Map<string, number>>(new Map());
   const [loading, setLoading] = useState(true);
   const [tooltip, setTooltip] = useState<{ text: string; x: number; y: number } | null>(null);
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) return;
-      const since = new Date(Date.now() - DAYS * 86400000).toISOString().split("T")[0];
-      supabase
-        .from("activity_logs")
-        .select("date")
-        .eq("user_id", user.id)
-        .gte("date", since)
-        .then(({ data }) => {
-          const map = new Map<string, number>();
-          for (const row of data ?? []) {
-            map.set(row.date, (map.get(row.date) ?? 0) + 1);
-          }
-          setActivityMap(map);
-          setLoading(false);
-        });
-    });
-  }, []);
+    if (!user) return;
+    const since = new Date(Date.now() - DAYS * 86400000).toISOString().split("T")[0];
+    supabase
+      .from("activity_logs")
+      .select("date")
+      .eq("user_id", user.id)
+      .gte("date", since)
+      .then(({ data }) => {
+        const map = new Map<string, number>();
+        for (const row of data ?? []) {
+          map.set(row.date, (map.get(row.date) ?? 0) + 1);
+        }
+        setActivityMap(map);
+        setLoading(false);
+      });
+  }, [user, supabase]);
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);

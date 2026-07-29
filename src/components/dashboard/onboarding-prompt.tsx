@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/lib/auth";
 import { X, ArrowRight, Zap, Brain, Trophy, Sparkles, Target } from "lucide-react";
 
 const PROMPTS = [
@@ -57,6 +58,7 @@ const PROMPTS = [
 ];
 
 export function OnboardingPrompt() {
+  const { user, supabase } = useAuth();
   const [visible, setVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const [currentPrompt, setCurrentPrompt] = useState(0);
@@ -65,43 +67,40 @@ export function OnboardingPrompt() {
   const [hasWorkouts, setHasWorkouts] = useState(false);
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) return;
+    if (!user) return;
 
-      const name =
-        user.user_metadata?.display_name ||
-        user.user_metadata?.full_name ||
-        user.email?.split("@")[0] ||
-        "there";
-      setUserName(name.split(" ")[0]);
+    const name =
+      user.user_metadata?.display_name ||
+      user.user_metadata?.full_name ||
+      user.email?.split("@")[0] ||
+      "there";
+    setUserName(name.split(" ")[0]);
 
-      Promise.all([
-        supabase
-          .from("profiles")
-          .select("avatar_url")
-          .eq("user_id", user.id)
-          .maybeSingle()
-          .then(({ data }) => data?.avatar_url || ""),
-        supabase
-          .from("daily_workouts")
-          .select("id")
-          .eq("user_id", user.id)
-          .limit(1)
-          .then(({ data }) => (data && data.length > 0 ? true : false)),
-      ]).then(([avatar, workouts]) => {
-        setAvatarUrl(avatar);
-        setHasWorkouts(workouts);
+    Promise.all([
+      supabase
+        .from("profiles")
+        .select("avatar_url")
+        .eq("user_id", user.id)
+        .maybeSingle()
+        .then(({ data }) => data?.avatar_url || ""),
+      supabase
+        .from("daily_workouts")
+        .select("id")
+        .eq("user_id", user.id)
+        .limit(1)
+        .then(({ data }) => (data && data.length > 0 ? true : false)),
+    ]).then(([avatar, workouts]) => {
+      setAvatarUrl(avatar);
+      setHasWorkouts(workouts);
 
-        const key = `braingym_onboarding_prompt_dismissed_${user.id}`;
-        const wasDismissed = localStorage.getItem(key);
+      const key = `braingym_onboarding_prompt_dismissed_${user.id}`;
+      const wasDismissed = localStorage.getItem(key);
 
-        if (!wasDismissed && !workouts) {
-          setVisible(true);
-        }
-      });
+      if (!wasDismissed && !workouts) {
+        setVisible(true);
+      }
     });
-  }, []);
+  }, [user, supabase]);
 
   function handleDismiss() {
     setDismissed(true);

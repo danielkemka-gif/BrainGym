@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { Sparkles } from "lucide-react";
 
@@ -18,28 +18,26 @@ function getDaysRemaining(periodEnd: string): number {
 }
 
 export function TrialBanner() {
+  const { user, supabase } = useAuth();
   const { t } = useI18n();
   const [trial, setTrial] = useState<TrialInfo | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) { setLoading(false); return; }
+    if (!user) { setLoading(false); return; }
 
-      supabase
-        .from("subscriptions")
-        .select("status, current_period_end")
-        .eq("user_id", user.id)
-        .maybeSingle()
-        .then(({ data }) => {
-          if (data?.status === "trialing" && data.current_period_end) {
-            setTrial({ status: data.status, periodEnd: data.current_period_end });
-          }
-          setLoading(false);
-        });
-    });
-  }, []);
+    supabase
+      .from("subscriptions")
+      .select("status, current_period_end")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.status === "trialing" && data.current_period_end) {
+          setTrial({ status: data.status, periodEnd: data.current_period_end });
+        }
+        setLoading(false);
+      });
+  }, [user]);
 
   if (loading || !trial || !trial.periodEnd) return null;
 

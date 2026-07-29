@@ -10,20 +10,18 @@ import {
   type BrainHealthSnapshot,
   type BrainHealthSummary,
 } from '@/lib/brain-health';
-import { createClient } from '@/lib/supabase/client';
+import { useAuth } from '@/lib/auth';
 import { Heart, TrendingUp, TrendingDown, Minus, Sparkles, Target, Flame, Shield, Zap } from 'lucide-react';
 
 export function BrainHealthInsights() {
+  const { user, supabase } = useAuth();
   const [snapshot, setSnapshot] = useState<BrainHealthSnapshot | null>(null);
   const [weekly, setWeekly] = useState<BrainHealthSummary | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
 
   const loadData = useCallback(async () => {
+    if (!user) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
       const [snap, wk] = await Promise.all([
         generateBrainHealthSnapshot(user.id),
         getWeeklyHealthSummary(user.id),
@@ -36,7 +34,7 @@ export function BrainHealthInsights() {
     } finally {
       setLoading(false);
     }
-  }, [supabase]);
+  }, [user, supabase]);
 
   useEffect(() => {
     loadData();

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/lib/auth";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 
 interface UserMission {
@@ -18,32 +18,30 @@ interface UserMission {
 }
 
 export function MissionsSection() {
+  const { user, supabase } = useAuth();
   const [missions, setMissions] = useState<UserMission[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) { setLoading(false); return; }
+    if (!user) { setLoading(false); return; }
 
-      const now = new Date();
-      const dayOfWeek = now.getDay();
-      const monday = new Date(now);
-      monday.setDate(now.getDate() - ((dayOfWeek + 6) % 7));
-      const weekStart = monday.toISOString().split("T")[0];
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - ((dayOfWeek + 6) % 7));
+    const weekStart = monday.toISOString().split("T")[0];
 
-      supabase
-        .from("user_missions")
-        .select("id, title, description, target_value, current_value, completed, claimed, xp_reward, coin_reward")
-        .eq("user_id", user.id)
-        .eq("week_start", weekStart)
-        .order("created_at", { ascending: true })
-        .then(({ data }) => {
-          if (data) setMissions(data);
-          setLoading(false);
-        });
-    });
-  }, []);
+    supabase
+      .from("user_missions")
+      .select("id, title, description, target_value, current_value, completed, claimed, xp_reward, coin_reward")
+      .eq("user_id", user.id)
+      .eq("week_start", weekStart)
+      .order("created_at", { ascending: true })
+      .then(({ data }) => {
+        if (data) setMissions(data);
+        setLoading(false);
+      });
+  }, [user, supabase]);
 
   if (loading || missions.length === 0) return null;
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { createClient } from '@/lib/supabase/client';
+import { useAuth } from '@/lib/auth';
 import { Brain, TrendingUp, Clock, Calendar, Sparkles, Target, Zap } from 'lucide-react';
 
 interface HabitAnalysis {
@@ -19,14 +19,13 @@ interface HabitAnalysis {
 }
 
 export function AdaptiveHabitIntelligence() {
+  const { user, supabase } = useAuth();
   const [analysis, setAnalysis] = useState<HabitAnalysis | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
 
   const loadData = useCallback(async () => {
+    if (!user) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
 
       // Gather training data
       const [workoutsRes, streakRes, momentumRes] = await Promise.all([
@@ -122,7 +121,7 @@ export function AdaptiveHabitIntelligence() {
     } finally {
       setLoading(false);
     }
-  }, [supabase]);
+  }, [user, supabase]);
 
   useEffect(() => {
     loadData();

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Eye, EyeOff } from "lucide-react";
 
-export function SignupForm() {
+export function SignupForm({ refCode }: { refCode?: string | null }) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,12 +26,18 @@ export function SignupForm() {
     }
 
     const supabase = createClient();
+    const options: any = {
+      emailRedirectTo: `${window.location.origin}/auth/callback${refCode ? `?ref=${refCode}` : ""}`,
+    };
+
+    if (refCode) {
+      options.data = { ref_code: refCode };
+    }
+
     const { error: authError } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
+      options,
     });
 
     if (authError) {
@@ -53,6 +59,9 @@ export function SignupForm() {
         <h3 className="font-semibold">Check your email</h3>
         <p className="text-sm text-muted-foreground">
           We sent a confirmation link to <strong>{email}</strong>
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Click the link in the email to confirm your account, then sign in.
         </p>
         <button
           onClick={() => router.push("/login")}

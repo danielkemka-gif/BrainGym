@@ -9,20 +9,18 @@ import {
   type BrainMomentum,
   type MomentumTrend,
 } from '@/lib/momentum';
-import { createClient } from '@/lib/supabase/client';
+import { useAuth } from '@/lib/auth';
 import { Zap, TrendingUp, TrendingDown, Minus, Calendar, Target, Flame, Sparkles } from 'lucide-react';
 
 export function BrainMomentumCard() {
+  const { user, supabase } = useAuth();
   const [momentum, setMomentum] = useState<BrainMomentum | null>(null);
   const [trend, setTrend] = useState<MomentumTrend[]>([]);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
 
   const loadData = useCallback(async () => {
+    if (!user) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
       const [m, t] = await Promise.all([
         calculateMomentum(user.id),
         getMomentumTrend(user.id, 30),
@@ -35,7 +33,7 @@ export function BrainMomentumCard() {
     } finally {
       setLoading(false);
     }
-  }, [supabase]);
+  }, [user, supabase]);
 
   useEffect(() => {
     loadData();

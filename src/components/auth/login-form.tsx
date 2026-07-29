@@ -1,17 +1,25 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Eye, EyeOff } from "lucide-react";
 
 export function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    const errorParam = searchParams.get("error");
+    if (errorParam === "auth_callback_error") {
+      setError("Sign-in link expired or invalid. Please try signing in again.");
+    }
+  }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -25,7 +33,20 @@ export function LoginForm() {
     });
 
     if (authError) {
-      setError("Invalid email or password. Please try again.");
+      if (authError.message?.toLowerCase().includes("email not confirmed")) {
+        setError(
+          "Please check your email and click the confirmation link before signing in. Didn't get the email? Try signing up again."
+        );
+      } else if (authError.message?.toLowerCase().includes("invalid login credentials")) {
+        setError("Invalid email or password. Please try again.");
+      } else if (
+        authError.message?.toLowerCase().includes("rate limit") ||
+        authError.message?.toLowerCase().includes("too many")
+      ) {
+        setError("Too many attempts. Please wait a moment and try again.");
+      } else {
+        setError(authError.message || "Invalid email or password. Please try again.");
+      }
       setLoading(false);
       return;
     }

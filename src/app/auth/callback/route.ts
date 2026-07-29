@@ -1,13 +1,35 @@
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://brain-gym-nsu6.vercel.app";
+
+async function createServiceClient() {
+  const cookieStore = await cookies();
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll() {},
+      },
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+    }
+  );
+}
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams, origin } = new URL(request.url);
     const code = searchParams.get("code");
     const errorParam = searchParams.get("error");
+    const refCode = searchParams.get("ref");
 
     if (code) {
+      const { createClient } = await import("@/lib/supabase/server");
       const supabase = await createClient();
       const { error } = await supabase.auth.exchangeCodeForSession(code);
 
@@ -17,31 +39,37 @@ export async function GET(request: NextRequest) {
         } = await supabase.auth.getUser();
 
         if (user) {
+          // Process referral if present
+          const ref = refCode || user.user_metadata?.ref_code;
+          if (ref) {
+            try {
+              const admin = await createServiceClient();
+              const { data: referrer } = await admin
+                .from("profiles")
+                .select("user_id")
+                .eq("referral_code", ref)
+                .maybeSingle();
+
+              if (referrer) {
+                await admin
+                  .from("profiles")
+                  .update({ referred_by: referrer.user_id })
+                  .eq("user_id", user.id);
+
+                await admin.rpc("increment_referral_count", {
+                  referrer_id: referrer.user_id,
+                });
+              }
+            } catch (err) {
+              console.error("Failed to process referral:", err);
+            }
+          }
+
           const { data: profile } = await supabase
             .from("profiles")
             .select("id")
             .eq("user_id", user.id)
             .maybeSingle();
-
-          const { data: sub } = await supabase
-            .from("subscriptions")
-            .select("id, status")
-            .eq("user_id", user.id)
-            .maybeSingle();
-
-          if (sub && sub.status === "incomplete") {
-            const now = new Date();
-            const periodEnd = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
-            await supabase
-              .from("subscriptions")
-              .update({
-                status: "trialing",
-                plan_tier: "premium",
-                current_period_start: now.toISOString(),
-                current_period_end: periodEnd.toISOString(),
-              })
-              .eq("id", sub.id);
-          }
 
           if (!profile) {
             return NextResponse.redirect(`${origin}/onboarding`);
@@ -55,7 +83,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(
       `${origin}/login?error=${errorParam || "auth_callback_error"}`
     );
-  } catch {
-    return NextResponse.redirect(`/login?error=auth_callback_error`);
+  } catch (err) {
+    console.error("Auth callback error:", err);
+    return NextResponse.redirect(`${APP_URL}/login?error=auth_callback_error`);
   }
 }

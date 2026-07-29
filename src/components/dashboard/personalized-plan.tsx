@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/lib/auth";
 import { CATEGORIES } from "@/lib/constants";
 import { CATEGORY_ICONS } from "@/lib/icons";
 import { BrainCircuit, Target, Sparkles, ArrowRight, Clock, Zap } from "lucide-react";
@@ -44,74 +44,72 @@ function getReason(score: number): string {
 }
 
 export function PersonalizedPlan() {
+  const { user, supabase } = useAuth();
   const [plan, setPlan] = useState<TrainingPlanItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) { setLoading(false); return; }
+    if (!user) { setLoading(false); return; }
 
-      // Get latest brain scores
-      supabase
-        .from("brain_scores")
-        .select("category_id, score")
-        .eq("user_id", user.id)
-        .order("date", { ascending: false })
-        .limit(50)
-        .then(async ({ data: scoreData }) => {
-          if (!scoreData || scoreData.length === 0) { setLoading(false); return; }
+    // Get latest brain scores
+    supabase
+      .from("brain_scores")
+      .select("category_id, score")
+      .eq("user_id", user.id)
+      .order("date", { ascending: false })
+      .limit(50)
+      .then(async ({ data: scoreData }) => {
+        if (!scoreData || scoreData.length === 0) { setLoading(false); return; }
 
-          // Get latest score per category
-          const latestScores: Record<string, number> = {};
-          for (const row of scoreData) {
-            if (!latestScores[row.category_id]) {
-              latestScores[row.category_id] = row.score;
-            }
+        // Get latest score per category
+        const latestScores: Record<string, number> = {};
+        for (const row of scoreData) {
+          if (!latestScores[row.category_id]) {
+            latestScores[row.category_id] = row.score;
           }
+        }
 
-          // Get activities for weak categories
-          const weakCategories = CATEGORIES
-            .map((c) => ({
-              ...c,
-              score: latestScores[c.id] ?? 50,
-            }))
-            .filter((c) => c.score < 80)
-            .sort((a, b) => a.score - b.score)
-            .slice(0, 3);
+        // Get activities for weak categories
+        const weakCategories = CATEGORIES
+          .map((c) => ({
+            ...c,
+            score: latestScores[c.id] ?? 50,
+          }))
+          .filter((c) => c.score < 80)
+          .sort((a, b) => a.score - b.score)
+          .slice(0, 3);
 
-          const planItems: TrainingPlanItem[] = [];
+        const planItems: TrainingPlanItem[] = [];
 
-          for (const cat of weakCategories) {
-            // Get uncompleted activities in this category
-            const { data: activities } = await supabase
-              .from("activities")
-              .select("id, title, difficulty, estimated_time")
-              .eq("category_id", cat.id)
-              .limit(5);
+        for (const cat of weakCategories) {
+          // Get uncompleted activities in this category
+          const { data: activities } = await supabase
+            .from("activities")
+            .select("id, title, difficulty, estimated_time")
+            .eq("category_id", cat.id)
+            .limit(5);
 
-            const targetScore = Math.min(100, cat.score + 20);
-            const gap = targetScore - cat.score;
-            const priority = cat.score < 30 ? "high" : cat.score < 60 ? "medium" : "low";
+          const targetScore = Math.min(100, cat.score + 20);
+          const gap = targetScore - cat.score;
+          const priority = cat.score < 30 ? "high" : cat.score < 60 ? "medium" : "low";
 
-            planItems.push({
-              categoryId: cat.id,
-              categorySlug: cat.slug,
-              categoryLabel: cat.label,
-              currentScore: cat.score,
-              targetScore,
-              gap,
-              suggestedActivities: (activities ?? []).slice(0, 3),
-              priority,
-              reason: getReason(cat.score),
-            });
-          }
+          planItems.push({
+            categoryId: cat.id,
+            categorySlug: cat.slug,
+            categoryLabel: cat.label,
+            currentScore: cat.score,
+            targetScore,
+            gap,
+            suggestedActivities: (activities ?? []).slice(0, 3),
+            priority,
+            reason: getReason(cat.score),
+          });
+        }
 
-          setPlan(planItems);
-          setLoading(false);
-        });
-    });
-  }, []);
+        setPlan(planItems);
+        setLoading(false);
+      });
+  }, [user, supabase]);
 
   if (loading) {
     return (

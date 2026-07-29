@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/lib/auth";
 import { CATEGORIES } from "@/lib/constants";
 import { Bot, ArrowRight, TrendingUp, TrendingDown, Target, Flame } from "lucide-react";
 
@@ -81,25 +81,23 @@ function wasDismissed(): boolean {
 }
 
 export function CoachNudge() {
+  const { user, supabase } = useAuth();
   const [tip, setTip] = useState<CoachTip | null>(null);
   const [dismissed, setDismissed] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!user) { setLoading(false); return; }
     if (wasDismissed()) { setLoading(false); return; }
 
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) { setLoading(false); return; }
+    const today = new Date().toISOString().split("T")[0];
+    const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().split("T")[0];
 
-      const today = new Date().toISOString().split("T")[0];
-      const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().split("T")[0];
-
-      Promise.all([
-        supabase.from("brain_scores").select("score, category_id").eq("user_id", user.id).order("date", { ascending: false }),
-        supabase.from("streaks").select("current_streak, last_workout_date").eq("user_id", user.id).maybeSingle(),
-        supabase.from("daily_workouts").select("status").eq("user_id", user.id).eq("date", today).maybeSingle(),
-      ]).then(([scoresRes, streakRes, todayWorkout]) => {
+    Promise.all([
+      supabase.from("brain_scores").select("score, category_id").eq("user_id", user.id).order("date", { ascending: false }),
+      supabase.from("streaks").select("current_streak, last_workout_date").eq("user_id", user.id).maybeSingle(),
+      supabase.from("daily_workouts").select("status").eq("user_id", user.id).eq("date", today).maybeSingle(),
+    ]).then(([scoresRes, streakRes, todayWorkout]) => {
         const scores = scoresRes.data ?? [];
         const streak = streakRes.data;
         const didWorkoutToday = todayWorkout.data?.status === "completed";
@@ -156,8 +154,7 @@ export function CoachNudge() {
 
         setLoading(false);
       });
-    });
-  }, []);
+  }, [user]);
 
   function handleDismiss() {
     setDismissed(true);

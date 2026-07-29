@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { createClient } from '@/lib/supabase/client';
+import { useAuth } from '@/lib/auth';
 import {
   Share2,
   Copy,
@@ -23,21 +23,18 @@ interface ReferralInfo {
 }
 
 export function InviteFriendsCard() {
+  const { user, supabase } = useAuth();
   const [info, setInfo] = useState<ReferralInfo | null>(null);
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
 
   const loadInfo = useCallback(async () => {
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
-        setLoading(false);
-        return;
-      }
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
+    try {
       const { data: profile } = await supabase
         .from('profiles')
         .select('referral_code, referral_count')
@@ -63,14 +60,14 @@ export function InviteFriendsCard() {
     } finally {
       setLoading(false);
     }
-  }, [supabase]);
+  }, [user, supabase]);
 
   useEffect(() => {
     loadInfo();
   }, [loadInfo]);
 
   const inviteText = `Train your brain with me on BrainGym! 🧠 Join free and use my code: ${info?.code}`;
-  const inviteUrl = `${APP_URL}/auth?ref=${info?.code}`;
+  const inviteUrl = `${APP_URL}/signup?ref=${info?.code}`;
 
   const copyLink = async () => {
     try {

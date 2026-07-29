@@ -2,9 +2,18 @@ import { SignupForm } from "@/components/auth/signup-form";
 import { SocialAuthButtons } from "@/components/auth/social-auth-buttons";
 import Link from "next/link";
 
-export default function SignupPage() {
+export default async function SignupPage(props: { searchParams?: Promise<{ ref?: string }> }) {
+  const searchParams = await props.searchParams;
+  const refCode = searchParams?.ref || null;
+
   return (
     <div className="w-full max-w-sm space-y-5">
+      {refCode && (
+        <div className="rounded-xl bg-primary/10 border border-primary/20 px-4 py-3 text-center text-sm text-primary">
+          You were invited by a friend! Join now and earn bonus coins.
+        </div>
+      )}
+
       <div className="space-y-2 text-center">
         <h1 className="text-2xl font-bold">Join BrainGym</h1>
         <p className="text-sm text-muted-foreground">
@@ -25,7 +34,7 @@ export default function SignupPage() {
         </div>
       </div>
 
-      <SignupForm />
+      <SignupForm refCode={refCode} />
 
       <p className="text-center text-xs text-muted-foreground">
         By signing up you agree to our{" "}

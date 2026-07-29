@@ -1,7 +1,16 @@
+import { Suspense } from "react";
 import { LoginForm } from "@/components/auth/login-form";
 import { MagicLinkForm } from "@/components/auth/magic-link-form";
 import { SocialAuthButtons } from "@/components/auth/social-auth-buttons";
 import Link from "next/link";
+
+function LoginFormWrapper() {
+  return (
+    <Suspense fallback={<div className="h-48 animate-pulse rounded-lg bg-muted" />}>
+      <LoginForm />
+    </Suspense>
+  );
+}
 
 export default function LoginPage() {
   return (
@@ -26,7 +35,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <LoginForm />
+      <LoginFormWrapper />
 
       <div className="relative">
         <div className="absolute inset-0 flex items-center">

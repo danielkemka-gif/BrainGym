@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/lib/auth";
 import { pickDailyActivities, calculateWorkoutXp, calculateWorkoutCoins } from "@/lib/workout";
 import { calculateStreakMultiplier } from "@/lib/scoring";
 import { useI18n } from "@/lib/i18n";
@@ -35,6 +36,7 @@ interface DailyWorkout {
 
 export function TodaysWorkoutSection() {
   const { t } = useI18n();
+  const { user, supabase } = useAuth();
   const [workout, setWorkout] = useState<DailyWorkout | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,8 +47,6 @@ export function TodaysWorkoutSection() {
   const fetchWorkout = useCallback(async () => {
     try {
       setError(null);
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
       const today = new Date().toISOString().split("T")[0];
@@ -116,7 +116,7 @@ export function TodaysWorkoutSection() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [supabase, user]);
 
   useEffect(() => {
     fetchWorkout();

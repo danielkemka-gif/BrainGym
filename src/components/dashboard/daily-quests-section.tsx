@@ -11,20 +11,18 @@ import {
   getQuestDifficultyColor,
   type DailyQuest,
 } from '@/lib/quests';
-import { createClient } from '@/lib/supabase/client';
+import { useAuth } from '@/lib/auth';
 import { Check, Gift, Clock, Sparkles, RefreshCw } from 'lucide-react';
 
 export function DailyQuestsSection() {
+  const { user, supabase } = useAuth();
   const [quests, setQuests] = useState<DailyQuest[]>([]);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
-  const supabase = createClient();
 
   const loadQuests = useCallback(async () => {
+    if (!user) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
       const todayQuests = await getTodayQuests(user.id);
       if (todayQuests.length === 0) {
         setQuests([]);
@@ -36,7 +34,7 @@ export function DailyQuestsSection() {
     } finally {
       setLoading(false);
     }
-  }, [supabase]);
+  }, [user, supabase]);
 
   useEffect(() => {
     loadQuests();

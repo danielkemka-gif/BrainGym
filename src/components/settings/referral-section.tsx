@@ -1,20 +1,22 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/lib/auth";
 import { Gift, Copy, Check, Users, Share2 } from "lucide-react";
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://braingym.app";
+
 export function ReferralSection() {
+  const { user, supabase } = useAuth();
   const [referralCode, setReferralCode] = useState("");
   const [referralCount, setReferralCount] = useState(0);
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(async ({ data: { user } }) => {
-      if (!user) { setLoading(false); return; }
+    if (!user) { setLoading(false); return; }
 
+    (async () => {
       const { data: profile } = await supabase
         .from("profiles")
         .select("referral_code, referral_count")
@@ -25,7 +27,6 @@ export function ReferralSection() {
         setReferralCode(profile.referral_code);
         setReferralCount(profile.referral_count ?? 0);
       } else {
-        // Generate a new referral code
         const code = `BG${user.id.slice(0, 8).toUpperCase()}`;
         await supabase
           .from("profiles")
@@ -35,19 +36,21 @@ export function ReferralSection() {
         setReferralCount(0);
       }
       setLoading(false);
-    });
-  }, []);
+    })();
+  }, [user, supabase]);
+
+  const inviteUrl = `${APP_URL}/signup?ref=${referralCode}`;
 
   async function copyCode() {
     try {
-      await navigator.clipboard.writeText(referralCode);
+      await navigator.clipboard.writeText(inviteUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {}
   }
 
   async function share() {
-    const text = `Join me on BrainGym — train your brain with fun daily exercises! Use my code: ${referralCode}`;
+    const text = `Join me on BrainGym — train your brain with fun daily exercises! ${inviteUrl}`;
     if (navigator.share) {
       try {
         await navigator.share({ title: "BrainGym", text });
@@ -80,7 +83,6 @@ export function ReferralSection() {
         </div>
       </div>
 
-      {/* Referral code */}
       <div className="mb-4 flex items-center gap-2">
         <div className="flex-1 rounded-xl border border-dashed border-primary/30 bg-primary/5 px-4 py-3 text-center">
           <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Your Code</p>
@@ -88,14 +90,13 @@ export function ReferralSection() {
         </div>
       </div>
 
-      {/* Actions */}
       <div className="flex gap-2">
         <button
           onClick={copyCode}
           className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
         >
           {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
-          {copied ? "Copied!" : "Copy Code"}
+          {copied ? "Copied!" : "Copy Link"}
         </button>
         <button
           onClick={share}
@@ -106,7 +107,6 @@ export function ReferralSection() {
         </button>
       </div>
 
-      {/* Stats */}
       <div className="mt-4 flex items-center justify-center gap-4 rounded-xl bg-muted/50 py-3">
         <div className="flex items-center gap-1.5 text-sm">
           <Users className="h-4 w-4 text-muted-foreground" />

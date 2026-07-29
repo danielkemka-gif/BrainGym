@@ -10,19 +10,18 @@ import {
   getReminderColor,
   type SmartReminder,
 } from '@/lib/reminders';
-import { createClient } from '@/lib/supabase/client';
+import { useAuth } from '@/lib/auth';
 import { Bell, X, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
 export function SmartRemindersSection() {
+  const { user, supabase } = useAuth();
   const [reminders, setReminders] = useState<SmartReminder[]>([]);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
 
   const loadReminders = useCallback(async () => {
+    if (!user) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
 
       // Generate fresh reminders
       await generateReminders(user.id);
@@ -35,7 +34,7 @@ export function SmartRemindersSection() {
     } finally {
       setLoading(false);
     }
-  }, [supabase]);
+  }, [user, supabase]);
 
   useEffect(() => {
     loadReminders();

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/lib/auth";
 import { Users, UserPlus, Flame, Trophy, X, Check, Search } from "lucide-react";
 
 interface Partner {
@@ -30,6 +31,7 @@ const LEVEL_COLORS: Record<string, string> = {
 };
 
 export function AccountabilityPartner() {
+  const { user, supabase } = useAuth();
   const [partners, setPartners] = useState<Partner[]>([]);
   const [requests, setRequests] = useState<PartnerRequest[]>([]);
   const [myId, setMyId] = useState<string>("");
@@ -40,8 +42,7 @@ export function AccountabilityPartner() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(async ({ data: { user } }) => {
+    async function loadPartners() {
       if (!user) { setLoading(false); return; }
       setMyId(user.id);
 
@@ -99,8 +100,9 @@ export function AccountabilityPartner() {
       }
 
       setLoading(false);
-    });
-  }, []);
+    }
+    loadPartners();
+  }, [user, supabase]);
 
   async function handleSearch() {
     if (!searchEmail.trim()) return;

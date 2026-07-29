@@ -13,21 +13,19 @@ import {
   type CognitiveIdentity,
   type UserIdentity,
 } from '@/lib/cognitive-identity';
-import { createClient } from '@/lib/supabase/client';
+import { useAuth } from '@/lib/auth';
 import { Shield, Lock, Check, Sparkles, ChevronRight } from 'lucide-react';
 
 export function CognitiveIdentityCard() {
+  const { user, supabase } = useAuth();
   const [allIdentities, setAllIdentities] = useState<CognitiveIdentity[]>([]);
   const [userIdentities, setUserIdentities] = useState<UserIdentity[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAll, setShowAll] = useState(false);
-  const supabase = createClient();
 
   const loadData = useCallback(async () => {
+    if (!user) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
       const [all, mine] = await Promise.all([
         getAllIdentities(),
         getUserIdentities(user.id),
@@ -43,7 +41,7 @@ export function CognitiveIdentityCard() {
     } finally {
       setLoading(false);
     }
-  }, [supabase]);
+  }, [user, supabase]);
 
   useEffect(() => {
     loadData();

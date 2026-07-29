@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/lib/auth";
 import { getLevelProgress } from "@/lib/scoring";
 import { LEVELS, STREAK } from "@/lib/constants";
 import { Lock } from "lucide-react";
 import { STREAK_FREEZE_ICON, STREAK_WARNING_ICON } from "@/lib/icons";
 
 export function XpStreakSection() {
+  const { user, supabase } = useAuth();
   const [totalXp, setTotalXp] = useState(0);
   const [streak, setStreak] = useState({ current: 0, longest: 0, lastWorkoutDate: null as string | null });
   const [coins, setCoins] = useState(0);
@@ -15,50 +16,47 @@ export function XpStreakSection() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) return;
+    if (!user) return;
 
-      Promise.all([
-        supabase
-          .from("xp_ledger")
-          .select("amount")
-          .eq("user_id", user.id)
-          .then(({ data }) =>
-            data ? data.reduce((s, r) => s + r.amount, 0) : 0
-          ),
-        supabase
-          .from("coins_ledger")
-          .select("amount")
-          .eq("user_id", user.id)
-          .then(({ data }) =>
-            data ? data.reduce((s, r) => s + r.amount, 0) : 0
-          ),
-        supabase
-          .from("streaks")
-          .select("current_streak, longest_streak, last_workout_date")
-          .eq("user_id", user.id)
-          .maybeSingle()
-          .then(({ data }) => ({
-            current: data?.current_streak ?? 0,
-            longest: data?.longest_streak ?? 0,
-            lastWorkoutDate: data?.last_workout_date ?? null,
-          })),
-        supabase
-          .from("profiles")
-          .select("streak_freezes_remaining")
-          .eq("user_id", user.id)
-          .maybeSingle()
-          .then(({ data }) => data?.streak_freezes_remaining ?? 0),
-      ]).then(([xp, coin, str, freezes]) => {
-        setTotalXp(xp);
-        setCoins(coin);
-        setStreak(str);
-        setStreakFreezesRemaining(freezes);
-        setLoading(false);
-      });
+    Promise.all([
+      supabase
+        .from("xp_ledger")
+        .select("amount")
+        .eq("user_id", user.id)
+        .then(({ data }) =>
+          data ? data.reduce((s, r) => s + r.amount, 0) : 0
+        ),
+      supabase
+        .from("coins_ledger")
+        .select("amount")
+        .eq("user_id", user.id)
+        .then(({ data }) =>
+          data ? data.reduce((s, r) => s + r.amount, 0) : 0
+        ),
+      supabase
+        .from("streaks")
+        .select("current_streak, longest_streak, last_workout_date")
+        .eq("user_id", user.id)
+        .maybeSingle()
+        .then(({ data }) => ({
+          current: data?.current_streak ?? 0,
+          longest: data?.longest_streak ?? 0,
+          lastWorkoutDate: data?.last_workout_date ?? null,
+        })),
+      supabase
+        .from("profiles")
+        .select("streak_freezes_remaining")
+        .eq("user_id", user.id)
+        .maybeSingle()
+        .then(({ data }) => data?.streak_freezes_remaining ?? 0),
+    ]).then(([xp, coin, str, freezes]) => {
+      setTotalXp(xp);
+      setCoins(coin);
+      setStreak(str);
+      setStreakFreezesRemaining(freezes);
+      setLoading(false);
     });
-  }, []);
+  }, [user, supabase]);
 
   const { level, progress, xpInLevel, xpForNext } = getLevelProgress(totalXp);
   const nextLevel = LEVELS.find((l) => l.level === level.level + 1);

@@ -1,28 +1,26 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { AuthProvider, useAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/client";
 import { identifyUser } from "@/lib/analytics/events";
 import { Sidebar } from "./sidebar";
 import { Topbar } from "./topbar";
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+function AppShellInner({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) {
-        setUserName(data.user.user_metadata?.full_name || null);
-        identifyUser(data.user.id, {
-          email: data.user.email,
-          name: data.user.user_metadata?.full_name,
-          created_at: data.user.created_at,
-        });
-      }
+    if (!user) return;
+    setUserName(user.user_metadata?.full_name || null);
+    identifyUser(user.id, {
+      email: user.email,
+      name: user.user_metadata?.full_name,
+      created_at: user.created_at,
     });
-  }, []);
+  }, [user]);
 
   return (
     <div className="flex min-h-screen">
@@ -37,5 +35,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </main>
       </div>
     </div>
+  );
+}
+
+export function AppShell({ children }: { children: React.ReactNode }) {
+  return (
+    <AuthProvider>
+      <AppShellInner>{children}</AppShellInner>
+    </AuthProvider>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/lib/auth";
 import { CATEGORIES } from "@/lib/constants";
 import { Check } from "lucide-react";
 import { MILESTONE_ICONS } from "@/lib/icons";
@@ -48,60 +48,57 @@ function getMotivationalMessage(unlockedCount: number): string {
 }
 
 export function BrainJourney() {
+  const { user, supabase } = useAuth();
   const [stats, setStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
-    const supabase = createClient();
+    if (!user) { setLoading(false); return; }
 
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user || cancelled) { setLoading(false); return; }
+    Promise.all([
+      supabase.from("daily_workouts").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("status", "completed"),
+      supabase.from("streaks").select("longest_streak").eq("user_id", user.id).maybeSingle(),
+      supabase.from("xp_ledger").select("amount").eq("user_id", user.id),
+      supabase.from("activity_logs").select("activity_id, activities!inner(category_id)").eq("user_id", user.id),
+      supabase.from("brain_scores").select("score").eq("user_id", user.id).order("date", { ascending: false }),
+    ]).then(([workouts, streak, xp, logs, scores]) => {
+      if (cancelled) return;
 
-      Promise.all([
-        supabase.from("daily_workouts").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("status", "completed"),
-        supabase.from("streaks").select("longest_streak").eq("user_id", user.id).maybeSingle(),
-        supabase.from("xp_ledger").select("amount").eq("user_id", user.id),
-        supabase.from("activity_logs").select("activity_id, activities!inner(category_id)").eq("user_id", user.id),
-        supabase.from("brain_scores").select("score").eq("user_id", user.id).order("date", { ascending: false }),
-      ]).then(([workouts, streak, xp, logs, scores]) => {
-        if (cancelled) return;
+      const totalXp = xp.data ? xp.data.reduce((s, r) => s + r.amount, 0) : 0;
+      let level = 1;
+      const LEVEL_THRESHOLDS = [0, 500, 1500, 4000, 10000, 20000, 35000, 55000, 80000, 120000, 170000, 230000, 300000, 400000, 500000];
+      for (let i = LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
+        if (totalXp >= LEVEL_THRESHOLDS[i]) { level = i + 1; break; }
+      }
 
-        const totalXp = xp.data ? xp.data.reduce((s, r) => s + r.amount, 0) : 0;
-        let level = 1;
-        const LEVEL_THRESHOLDS = [0, 500, 1500, 4000, 10000, 20000, 35000, 55000, 80000, 120000, 170000, 230000, 300000, 400000, 500000];
-        for (let i = LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
-          if (totalXp >= LEVEL_THRESHOLDS[i]) { level = i + 1; break; }
-        }
-
-        const uniqueCategories = new Set<string>();
-        let totalActivities = 0;
-        if (logs.data) {
-          totalActivities = logs.data.length;
-          logs.data.forEach((l: any) => {
-            const catId = l.activities?.category_id;
-            if (catId) uniqueCategories.add(catId);
-          });
-        }
-
-        const avgScore = scores.data && scores.data.length > 0
-          ? Math.round(scores.data.reduce((s, r) => s + r.score, 0) / scores.data.length)
-          : 0;
-
-        setStats({
-          totalWorkouts: workouts.count ?? 0,
-          longestStreak: streak.data?.longest_streak ?? 0,
-          level,
-          categoriesTried: uniqueCategories.size,
-          totalActivities,
-          brainScore: avgScore,
+      const uniqueCategories = new Set<string>();
+      let totalActivities = 0;
+      if (logs.data) {
+        totalActivities = logs.data.length;
+        logs.data.forEach((l: any) => {
+          const catId = l.activities?.category_id;
+          if (catId) uniqueCategories.add(catId);
         });
-        setLoading(false);
+      }
+
+      const avgScore = scores.data && scores.data.length > 0
+        ? Math.round(scores.data.reduce((s, r) => s + r.score, 0) / scores.data.length)
+        : 0;
+
+      setStats({
+        totalWorkouts: workouts.count ?? 0,
+        longestStreak: streak.data?.longest_streak ?? 0,
+        level,
+        categoriesTried: uniqueCategories.size,
+        totalActivities,
+        brainScore: avgScore,
       });
+      setLoading(false);
     });
 
     return () => { cancelled = true; };
-  }, []);
+  }, [user, supabase]);
 
   if (loading || !stats) {
     return (

@@ -20,25 +20,53 @@ export function SocialAuthButtons({
   redirectTo?: string;
 }) {
   const [loading, setLoading] = useState<Record<string, boolean>>({});
+  const [error, setError] = useState<string | null>(null);
 
   async function handleOAuth(provider: "google") {
+    setError(null);
     setLoading((prev) => ({ ...prev, [provider]: true }));
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        redirectTo:
-          redirectTo ||
-          `${window.location.origin}/auth/callback`,
-      },
-    });
-    if (error) {
+    console.log(`Starting ${provider} OAuth...`);
+
+    try {
+      const supabase = createClient();
+      const result = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo:
+            redirectTo ||
+            `${window.location.origin}/auth/callback`,
+        },
+      });
+
+      if (result.error) {
+        console.error(`${provider} OAuth error:`, result.error);
+        const message =
+          result.error?.message ||
+          result.error?.error_description ||
+          result.error?.details ||
+          `${provider} sign-in failed. Please try again.`;
+        setError(message);
+        setLoading((prev) => ({ ...prev, [provider]: false }));
+      }
+      // If no error, the browser navigates away — no need to reset loading
+    } catch (err) {
+      console.error(`Unexpected ${provider} OAuth error:`, err);
+      const message =
+        (err as any)?.message ||
+        (err as any)?.error_description ||
+        "Connection error. Please check your internet and try again.";
+      setError(message);
       setLoading((prev) => ({ ...prev, [provider]: false }));
     }
   }
 
   return (
     <div className="flex flex-col gap-2">
+      {error && (
+        <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+          {error}
+        </div>
+      )}
       <button
         onClick={() => handleOAuth("google")}
         disabled={loading["google"]}

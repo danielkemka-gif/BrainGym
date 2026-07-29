@@ -34,20 +34,39 @@ export function SignupForm({ refCode }: { refCode?: string | null }) {
       options.data = { ref_code: refCode };
     }
 
-    const { error: authError } = await supabase.auth.signUp({
-      email,
-      password,
-      options,
-    });
+    try {
+      console.log("Starting signup...", { email, refCode });
+      const { error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options,
+      });
 
-    if (authError) {
-      setError(authError.message);
+      if (authError) {
+        console.error("Signup error:", authError);
+        const message =
+          authError?.message ||
+          (authError as any)?.error_description ||
+          (authError as any)?.details ||
+          "Something went wrong. Please try again.";
+        setError(message);
+        setLoading(false);
+        return;
+      }
+
+      console.log("Signup successful — confirmation email sent");
+      setSubmitted(true);
+    } catch (err) {
+      console.error("Unexpected signup error:", err);
+      const message =
+        (err as any)?.message ||
+        (err as any)?.error_description ||
+        (err as any)?.details ||
+        "Network error. Please check your connection and try again.";
+      setError(message);
+    } finally {
       setLoading(false);
-      return;
     }
-
-    setSubmitted(true);
-    setLoading(false);
   }
 
   if (submitted) {

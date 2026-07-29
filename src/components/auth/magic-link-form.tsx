@@ -16,21 +16,38 @@ export function MagicLinkForm() {
     setLoading(true);
 
     const supabase = createClient();
-    const { error: authError } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
 
-    if (authError) {
-      setError(authError.message);
+    try {
+      console.log("Sending magic link...", { email });
+      const { error: authError } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+
+      if (authError) {
+        console.error("Magic link error:", authError);
+        const message =
+          authError?.message ||
+          (authError as any)?.error_description ||
+          "Failed to send sign-in link. Please try again.";
+        setError(message);
+        setLoading(false);
+        return;
+      }
+
+      console.log("Magic link sent successfully");
+      setSubmitted(true);
+    } catch (err) {
+      console.error("Unexpected magic link error:", err);
+      const message =
+        (err as any)?.message ||
+        "Network error. Please check your connection and try again.";
+      setError(message);
+    } finally {
       setLoading(false);
-      return;
     }
-
-    setSubmitted(true);
-    setLoading(false);
   }
 
   if (submitted) {

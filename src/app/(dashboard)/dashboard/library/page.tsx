@@ -98,13 +98,13 @@ export default function LibraryPage() {
   const totalCompleted = Object.values(userCompleted).reduce((s, n) => s + n, 0);
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
+    <div className="mx-auto w-full max-w-full space-y-6 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
       {/* Hero header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-background to-purple-500/10 p-6">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-background to-purple-500/10 p-4 sm:p-6">
         <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-primary/10 blur-3xl" />
         <div className="absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-purple-500/10 blur-3xl" />
         <div className="relative">
-          <h1 className="text-xl font-bold sm:text-2xl">Activity Library</h1>
+          <h1 className="text-balance text-xl font-bold sm:text-2xl">Activity Library</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             177+ brain training exercises across 7 categories
           </p>
@@ -133,7 +133,7 @@ export default function LibraryPage() {
             <button
               key={cat.id}
               onClick={() => setCategory(cat.id)}
-              className="group relative overflow-hidden rounded-2xl border border-border bg-card p-4 text-left transition-all hover:border-transparent hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5"
+              className="group relative overflow-hidden rounded-2xl border border-border bg-card p-3 sm:p-4 text-left transition-all hover:border-transparent hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 active:scale-[0.97]"
             >
               <div className={`mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br text-2xl transition-transform group-hover:scale-110 ${CATEGORY_GRADIENTS[cat.slug]}`}>
                 {CATEGORY_EMOJIS[cat.slug]}
@@ -169,7 +169,7 @@ export default function LibraryPage() {
 
       {/* Activity grid */}
       {loading ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div key={i} className="h-48 animate-pulse rounded-2xl bg-muted" />
           ))}
@@ -189,7 +189,7 @@ export default function LibraryPage() {
           }
         />
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((a, i) => (
             <ActivityCard key={a.id} activity={a} index={i} />
           ))}

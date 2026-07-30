@@ -418,30 +418,30 @@ export default function MemoryMatchPage() {
                 transition={{ delay: level.level * 0.05 }}
                 disabled={!state.unlocked}
                 onClick={() => startLevel(level.level)}
-                className={`flex items-center gap-4 rounded-xl border p-4 text-left transition-all ${
+                className={`flex items-center gap-3 sm:gap-4 rounded-xl border p-3 sm:p-4 text-left transition-all touch-manipulation ${
                   state.unlocked
-                    ? "border-border bg-card hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 cursor-pointer"
+                    ? "border-border bg-card hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 cursor-pointer active:scale-[0.98]"
                     : "border-border/50 bg-muted/30 opacity-50 cursor-not-allowed"
                 }`}
               >
                 {/* Level number */}
-                <div className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl text-lg font-bold ${
+                <div className={`flex h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0 items-center justify-center rounded-xl text-base sm:text-lg font-bold ${
                   state.completed
                     ? "bg-gradient-to-br from-amber-500/20 to-orange-500/20 text-amber-500"
                     : state.unlocked
                     ? "bg-primary/10 text-primary"
                     : "bg-muted text-muted-foreground"
                 }`}>
-                  {state.unlocked ? level.level : <Lock className="h-5 w-5" />}
+                  {state.unlocked ? level.level : <Lock className="h-4 w-4 sm:h-5 sm:w-5" />}
                 </div>
 
                 {/* Info */}
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold">Level {level.level}</span>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="text-sm sm:text-base font-semibold">Level {level.level}</span>
                     <DifficultyBadge d={level.difficulty} />
                   </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">
                     {level.params.pairs ? `${level.params.pairs} pairs` : ""}
                     {level.params.words ? `${level.params.words} words` : ""}
                     {level.params.targets ? `${level.params.targets} targets` : ""}
@@ -450,7 +450,7 @@ export default function MemoryMatchPage() {
                     {Math.floor(level.timeLimitMs / 1000)}s
                   </p>
                   {state.bestScore > 0 && (
-                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                    <p className="text-[9px] sm:text-[10px] text-muted-foreground mt-0.5">
                       Best: {state.bestScore} pts
                     </p>
                   )}
@@ -458,10 +458,10 @@ export default function MemoryMatchPage() {
 
                 {/* Stars */}
                 <div className="flex-shrink-0 text-right">
-                  <div className="text-lg">
+                  <div className="text-sm sm:text-lg leading-tight">
                     {state.stars === 3 ? "⭐⭐⭐" : state.stars === 2 ? "⭐⭐" : state.stars === 1 ? "⭐" : "☆☆☆"}
                   </div>
-                  <p className="text-[10px] text-muted-foreground">
+                  <p className="text-[9px] sm:text-[10px] text-muted-foreground">
                     +{getXpForStars(3, level.level)} XP
                   </p>
                 </div>
@@ -545,7 +545,7 @@ export default function MemoryMatchPage() {
 
   // ─── Result ────────────────────────────────────────────────────────
   return (
-    <div className="mx-auto max-w-md space-y-6 py-8 text-center">
+    <div className="mx-auto max-w-md w-full space-y-4 sm:space-y-6 py-6 sm:py-8 text-center px-3 sm:px-0">
       <AnimatePresence>
         <motion.div
           initial={{ scale: 0 }}
@@ -581,7 +581,7 @@ export default function MemoryMatchPage() {
             transition={{ delay: 0.3 + s * 0.2, type: "spring", bounce: 0.6 }}
           >
             <Star
-              className={`h-10 w-10 ${
+              className={`h-8 w-8 sm:h-10 sm:w-10 ${
                 s <= resultStars ? "fill-amber-400 text-amber-400" : "text-muted-foreground/30"
               }`}
             />
@@ -590,18 +590,18 @@ export default function MemoryMatchPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="rounded-xl bg-muted/50 p-3">
-          <p className="text-xl font-bold">{score}</p>
-          <p className="text-xs text-muted-foreground">Score</p>
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
+        <div className="rounded-xl bg-muted/50 p-2 sm:p-3">
+          <p className="text-base sm:text-xl font-bold">{score}</p>
+          <p className="text-[10px] sm:text-xs text-muted-foreground">Score</p>
         </div>
-        <div className="rounded-xl bg-primary/10 p-3">
-          <p className="text-xl font-bold text-primary">+{resultXp}</p>
-          <p className="text-xs text-muted-foreground">XP</p>
+        <div className="rounded-xl bg-primary/10 p-2 sm:p-3">
+          <p className="text-base sm:text-xl font-bold text-primary">+{resultXp}</p>
+          <p className="text-[10px] sm:text-xs text-muted-foreground">XP</p>
         </div>
-        <div className="rounded-xl bg-amber-500/10 p-3">
-          <p className="text-xl font-bold text-amber-500">+{resultCoins}</p>
-          <p className="text-xs text-muted-foreground">Coins</p>
+        <div className="rounded-xl bg-amber-500/10 p-2 sm:p-3">
+          <p className="text-base sm:text-xl font-bold text-amber-500">+{resultCoins}</p>
+          <p className="text-[10px] sm:text-xs text-muted-foreground">Coins</p>
         </div>
       </div>
 

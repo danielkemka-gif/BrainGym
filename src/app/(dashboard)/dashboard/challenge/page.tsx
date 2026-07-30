@@ -486,12 +486,12 @@ export default function ChallengePage() {
   // ═══ SETUP ═══
   if (phase === "setup") {
     return (
-      <div className="mx-auto max-w-lg space-y-6">
-        <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+      <div className="mx-auto w-full max-w-lg max-w-full space-y-6 overflow-x-hidden">
+        <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground min-h-[44px]">
           <ArrowLeft className="h-4 w-4" /> Back
         </Link>
 
-        <div className="rounded-2xl border border-border bg-card p-5 text-center sm:p-8">
+        <div className="w-full max-w-full overflow-x-hidden rounded-2xl border border-border bg-card p-4 text-center sm:p-6 lg:p-8">
           <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-red-600 text-4xl shadow-lg shadow-orange-500/20">
             ⚡
           </div>
@@ -574,10 +574,10 @@ export default function ChallengePage() {
 
           <div className="mt-6">
             <p className="mb-3 text-sm font-medium">Choose your time limit</p>
-            <div className="flex justify-center gap-3">
+            <div className="flex justify-center gap-2 sm:gap-3">
               {QUICK_FIRE_DURATIONS.map(d => (
                 <button key={d} onClick={() => setDuration(d)}
-                  className={`rounded-xl border px-6 py-3 text-sm font-medium transition-all ${
+                  className={`min-h-[44px] touch-manipulation rounded-xl border px-5 py-3 text-sm font-medium transition-all active:scale-[0.97] ${
                     duration === d
                       ? "border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/20"
                       : "border-border hover:border-muted-foreground"
@@ -595,7 +595,7 @@ export default function ChallengePage() {
             <div className="grid grid-cols-1 gap-2">
               {QUIZ_LANGUAGES.map(lang => (
                 <button key={lang.value} onClick={() => setQuizLang(lang.value)}
-                  className={`flex items-center gap-3 rounded-xl border px-4 py-3 text-left text-sm font-medium transition-all ${
+                  className={`min-h-[48px] touch-manipulation flex items-center gap-3 rounded-xl border px-4 py-3 text-left text-sm font-medium transition-all active:scale-[0.97] ${
                     quizLang === lang.value
                       ? "border-primary bg-primary/5 shadow-md shadow-primary/10"
                       : "border-border hover:border-muted-foreground/50 hover:bg-accent/50"
@@ -639,7 +639,7 @@ export default function ChallengePage() {
     return (
       <div className="mx-auto flex min-h-[60vh] items-center justify-center">
         <div className="text-center">
-          <div className="mb-6 text-7xl font-bold text-primary animate-bounce sm:text-8xl">
+          <div className="mb-6 text-5xl font-bold text-primary animate-bounce sm:text-7xl">
             {countdownValue || "GO!"}
           </div>
           <p className="text-lg text-muted-foreground font-medium">{phrases[countdownValue] || "Go!"}</p>
@@ -668,9 +668,9 @@ export default function ChallengePage() {
       : "Every question is a learning opportunity!";
 
     return (
-      <div className="mx-auto max-w-lg space-y-6">
-        <div className="rounded-2xl border border-border bg-card p-5 text-center sm:p-8">
-          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 text-4xl shadow-lg shadow-green-500/20">
+      <div className="mx-auto w-full max-w-lg max-w-full space-y-6 overflow-x-hidden">
+        <div className="rounded-2xl border border-border bg-card p-4 text-center sm:p-6 lg:p-8">
+          <div className="mx-auto mb-4 flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 text-3xl sm:text-4xl shadow-lg shadow-green-500/20">
             🎉
           </div>
           <h2 className="text-xl font-bold sm:text-2xl">{grade}</h2>
@@ -782,25 +782,25 @@ export default function ChallengePage() {
   const qTimeVisual = (questionTimeLeft / qTimePercent) * 100;
 
   return (
-    <div className="mx-auto max-w-lg space-y-4">
+    <div className="mx-auto w-full max-w-lg max-w-full space-y-3 sm:space-y-4 overflow-x-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between min-w-0">
         <button onClick={() => { if (timerRef.current) clearInterval(timerRef.current); setPhase("setup"); }}
-          className="text-sm text-muted-foreground hover:text-foreground">
+          className="min-h-[44px] touch-manipulation text-sm text-muted-foreground hover:text-foreground active:scale-[0.97]">
           <ArrowLeft className="h-4 w-4" />
         </button>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1 sm:gap-3 min-w-0">
           {streak >= 2 && (
-            <div className="flex items-center gap-1 rounded-full bg-orange-500/10 px-2.5 py-1 text-xs font-bold text-orange-500 animate-pulse">
-              <Flame className="h-3 w-3" /> {streak}x streak!
+            <div className="flex items-center gap-1 rounded-full bg-orange-500/10 px-2 py-1 text-[10px] sm:text-xs font-bold text-orange-500 animate-pulse whitespace-nowrap">
+              <Flame className="h-3 w-3" /> {streak}x
             </div>
           )}
-          <div className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold ${isUrgent ? "bg-red-500/10 text-red-500" : "bg-muted"}`}>
-            <Clock className="h-3.5 w-3.5" />
+          <div className={`flex items-center gap-1 rounded-full px-2 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm font-bold whitespace-nowrap ${isUrgent ? "bg-red-500/10 text-red-500" : "bg-muted"}`}>
+            <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
             {formatTime(timeLeft)}
           </div>
         </div>
-        <div className="text-xs text-muted-foreground font-medium">
+        <div className="text-[10px] sm:text-xs text-muted-foreground font-medium whitespace-nowrap">
           {currentIndex + 1}/{sessionItems.length}
         </div>
       </div>
@@ -827,7 +827,7 @@ export default function ChallengePage() {
 
       {/* Question card, Brain Task, or Premium Preview */}
       {isBrainTask ? (
-        <div className="rounded-2xl border border-border bg-card overflow-hidden p-5">
+        <div className="rounded-2xl border border-border bg-card overflow-hidden p-4 sm:p-5">
           <BrainTaskPlayer
             key={`bt-${currentIndex}`}
             task={currentItem.task}
@@ -853,9 +853,9 @@ export default function ChallengePage() {
             </span>
           </div>
 
-          <div className="p-5 space-y-4">
+          <div className="p-4 sm:p-5 space-y-4">
             {/* Scenario */}
-            <p className="text-lg font-bold leading-relaxed">{currentItem.scenario.scenario}</p>
+            <p className="text-base sm:text-lg font-bold leading-relaxed text-balance">{currentItem.scenario.scenario}</p>
 
             {isPremium ? (
               <>
@@ -868,7 +868,7 @@ export default function ChallengePage() {
                     return (
                       <button key={i} onClick={() => { if (answerState === "unanswered") setSelectedOption(opt); }}
                         disabled={answerState !== "unanswered"}
-                        className={`w-full rounded-xl border p-4 text-left text-sm font-medium transition-all ${
+                        className={`min-h-[52px] touch-manipulation w-full rounded-xl border p-4 text-left text-sm font-medium transition-all active:scale-[0.97] ${
                           isCorrectOpt ? "border-green-500 bg-green-500/10 text-green-500"
                           : isWrongSelected ? "border-red-500 bg-red-500/10 text-red-500"
                           : isSelected ? "border-primary bg-primary/10 text-primary"
@@ -941,23 +941,23 @@ export default function ChallengePage() {
         </div>
       ) : currentTrivia ? (
         <div className="rounded-2xl border border-border bg-card overflow-hidden">
-          <div className="flex items-center justify-between border-b border-border px-5 py-3">
-            <div className="flex items-center gap-2">
-              {(() => { const Illust = CATEGORY_ILLUSTRATIONS[currentTrivia.category]; return Illust ? <Illust className="h-5 w-5" /> : <span className="text-lg">{CAT_EMOJI[currentTrivia.category] || "🧠"}</span>; })()}
-              <span className="text-sm text-muted-foreground">{category?.label}</span>
+          <div className="flex items-center justify-between border-b border-border px-4 py-3 sm:px-5">
+            <div className="flex items-center gap-2 min-w-0">
+              {(() => { const Illust = CATEGORY_ILLUSTRATIONS[currentTrivia.category]; return Illust ? <Illust className="h-4 w-4 sm:h-5 sm:w-5" /> : <span className="text-base sm:text-lg">{CAT_EMOJI[currentTrivia.category] || "🧠"}</span>; })()}
+              <span className="text-xs sm:text-sm text-muted-foreground truncate">{category?.label}</span>
             </div>
-            <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${
+            <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] sm:text-xs font-medium capitalize ${
               currentTrivia.difficulty === "beginner" ? "text-green-500 bg-green-500/10"
                 : currentTrivia.difficulty === "intermediate" ? "text-yellow-500 bg-yellow-500/10"
                 : "text-red-500 bg-red-500/10"
             }`}>{currentTrivia.difficulty}</span>
           </div>
 
-          <div className="p-5 space-y-4">
-            <h2 className="text-lg font-bold leading-relaxed">{currentTrivia.question}</h2>
+          <div className="p-4 sm:p-5 space-y-3 sm:space-y-4">
+            <h2 className="text-base sm:text-lg font-bold leading-relaxed text-balance">{currentTrivia.question}</h2>
 
             {currentTrivia.type === "multiple-choice" && currentTrivia.options && (
-              <div className="space-y-2">
+              <div className="space-y-2 sm:space-y-3">
                 {currentTrivia.options.map((opt, i) => {
                   const isSelected = selectedOption === opt;
                   const isCorrectOpt = answerState !== "unanswered" && opt === currentTrivia.correctAnswer;
@@ -965,7 +965,7 @@ export default function ChallengePage() {
                   return (
                     <button key={i} onClick={() => { if (answerState === "unanswered") setSelectedOption(opt); }}
                       disabled={answerState !== "unanswered"}
-                      className={`w-full rounded-xl border p-4 text-left text-sm font-medium transition-all ${
+                      className={`min-h-[52px] touch-manipulation w-full rounded-xl border p-4 text-left text-sm font-medium transition-all active:scale-[0.97] ${
                         isCorrectOpt
                           ? "border-green-500 bg-green-500/10 text-green-500"
                           : isWrongSelected
@@ -978,9 +978,9 @@ export default function ChallengePage() {
                         <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-current/20 text-xs font-bold">
                           {String.fromCharCode(65 + i)}
                         </span>
-                        {opt}
-                        {isCorrectOpt && <CheckCircle2 className="ml-auto h-4 w-4 text-green-500" />}
-                        {isWrongSelected && <XCircle className="ml-auto h-4 w-4 text-red-500" />}
+                        <span className="flex-1 min-w-0">{opt}</span>
+                        {isCorrectOpt && <CheckCircle2 className="ml-auto h-4 w-4 shrink-0 text-green-500" />}
+                        {isWrongSelected && <XCircle className="ml-auto h-4 w-4 shrink-0 text-red-500" />}
                       </div>
                     </button>
                   );
@@ -996,10 +996,10 @@ export default function ChallengePage() {
                     onKeyDown={e => { if (e.key === "Enter" && textInput.trim() && answerState === "unanswered") handleSubmit(); }}
                     disabled={answerState !== "unanswered"}
                     placeholder="Type your answer here..."
-                    className="flex-1 rounded-xl border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50" />
+                    className="min-h-[48px] flex-1 rounded-xl border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50" />
                   {answerState === "unanswered" && (
                     <button onClick={() => handleSubmit()} disabled={!textInput.trim()}
-                      className="inline-flex h-12 items-center justify-center rounded-xl bg-primary px-4 text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
+                      className="min-h-[48px] touch-manipulation inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary px-4 text-primary-foreground hover:bg-primary/90 disabled:opacity-50 active:scale-[0.97]">
                       <Send className="h-4 w-4" />
                     </button>
                   )}
@@ -1027,14 +1027,14 @@ export default function ChallengePage() {
               </div>
             )}
 
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1.5 rounded-lg bg-violet-500/10 px-3 py-1.5">
-                <Trophy className="h-3.5 w-3.5 text-violet-400" />
-                <span className="text-xs font-bold text-violet-400">+{currentTrivia.xp + (streak > 0 ? streak * 3 : 0)} XP</span>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <div className="flex items-center gap-1.5 rounded-lg bg-violet-500/10 px-2.5 py-1.5 sm:px-3">
+                <Trophy className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-violet-400" />
+                <span className="text-[11px] sm:text-xs font-bold text-violet-400">+{currentTrivia.xp + (streak > 0 ? streak * 3 : 0)} XP</span>
               </div>
-              <div className="flex items-center gap-1.5 rounded-lg bg-amber-500/10 px-3 py-1.5">
-                <Coins className="h-3.5 w-3.5 text-amber-500" />
-                <span className="text-xs font-bold text-amber-500">+{currentTrivia.coins} coins</span>
+              <div className="flex items-center gap-1.5 rounded-lg bg-amber-500/10 px-2.5 py-1.5 sm:px-3">
+                <Coins className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-amber-500" />
+                <span className="text-[11px] sm:text-xs font-bold text-amber-500">+{currentTrivia.coins} coins</span>
               </div>
             </div>
 
@@ -1058,16 +1058,16 @@ export default function ChallengePage() {
 
       {/* Actions — trivia and premium only */}
       {!isBrainTask && !isPremiumPreview && currentTrivia && (
-        <div className="flex gap-3">
+        <div className="flex gap-2 sm:gap-3">
           {answerState === "unanswered" ? (
             <button onClick={() => handleSubmit()}
               disabled={currentTrivia.type === "multiple-choice" ? !selectedOption : !textInput.trim()}
-              className="inline-flex h-12 flex-[2] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-6 text-sm font-bold text-white shadow-lg shadow-green-500/25 transition-all hover:shadow-xl active:scale-[0.98] disabled:opacity-50">
+              className="touch-manipulation inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-6 text-sm font-bold text-white shadow-lg shadow-green-500/25 transition-all hover:shadow-xl active:scale-[0.97] disabled:opacity-50">
               Submit Answer
             </button>
           ) : (
             <button onClick={nextQuestion}
-              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-red-600 px-6 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-all hover:shadow-xl active:scale-[0.98]">
+              className="touch-manipulation inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-red-600 px-6 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-all hover:shadow-xl active:scale-[0.97]">
               {currentIndex < sessionItems.length - 1 ? "Next Challenge →" : "See Results 🎉"}
             </button>
           )}
@@ -1076,16 +1076,16 @@ export default function ChallengePage() {
 
       {/* Actions — premium preview (premium users only) */}
       {isPremiumPreview && isPremium && (
-        <div className="flex gap-3">
+        <div className="flex gap-2 sm:gap-3">
           {answerState === "unanswered" ? (
             <button onClick={() => handlePremiumAnswer(selectedOption || "")}
               disabled={!selectedOption}
-              className="inline-flex h-12 flex-[2] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-6 text-sm font-bold text-white shadow-lg shadow-green-500/25 transition-all hover:shadow-xl active:scale-[0.98] disabled:opacity-50">
+              className="touch-manipulation inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-6 text-sm font-bold text-white shadow-lg shadow-green-500/25 transition-all hover:shadow-xl active:scale-[0.97] disabled:opacity-50">
               <Crown className="h-4 w-4" /> Submit Premium Answer
             </button>
           ) : (
             <button onClick={nextQuestion}
-              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-red-600 px-6 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-all hover:shadow-xl active:scale-[0.98]">
+              className="touch-manipulation inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-red-600 px-6 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-all hover:shadow-xl active:scale-[0.97]">
               {currentIndex < sessionItems.length - 1 ? "Next Challenge →" : "See Results 🎉"}
             </button>
           )}

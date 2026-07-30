@@ -104,7 +104,7 @@ export function XpStreakSection() {
       </div>
 
       {/* Coins + Stats */}
-      <div className="grid grid-cols-3 gap-1.5 text-center sm:gap-2 sm:gap-3">
+      <div className="grid grid-cols-3 gap-1.5 text-center sm:gap-3">
         <div className="rounded-lg bg-primary/10 p-1.5 sm:p-2">
           <p className="text-base sm:text-lg font-bold text-primary">{coins}</p>
           <p className="text-[11px] text-muted-foreground sm:text-xs">Coins</p>

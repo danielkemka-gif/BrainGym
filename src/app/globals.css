@@ -63,23 +63,53 @@
   * {
     @apply border-border;
   }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: none;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
-    -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
     overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    word-break: break-word;
   }
-  html {
-    overflow-x: hidden;
-    scroll-behavior: smooth;
-  }
+
   img, video {
     max-width: 100%;
     height: auto;
   }
+
   input, textarea, select, button {
     font: inherit;
+  }
+
+  /* Prevent zoom on input focus in iOS Safari */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="url"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+
+  /* Thumb-friendly minimum sizes for all interactive elements */
+  button, a, input, select, textarea, [role="button"], [tabindex]:not([tabindex="-1"]) {
+    @apply focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none;
   }
 }
 
@@ -93,6 +123,40 @@
       transparent 1px
     );
     background-size: 24px 24px;
+  }
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer components {
+  .card-responsive {
+    @apply rounded-2xl border border-border bg-card p-4 sm:p-6;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 touch-manipulation;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-xl border border-border px-5 py-3 text-sm font-medium transition-all hover:bg-accent active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 touch-manipulation;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-medium transition-all hover:bg-accent active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 touch-manipulation;
+  }
+  .btn-icon {
+    @apply inline-flex items-center justify-center rounded-xl p-2.5 transition-all hover:bg-accent active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 touch-manipulation min-h-[44px] min-w-[44px];
+  }
+  .input-field {
+    @apply flex h-12 w-full rounded-xl border border-border bg-background px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50;
   }
 }
 

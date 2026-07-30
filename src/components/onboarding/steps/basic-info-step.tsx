@@ -118,14 +118,14 @@ export function BasicInfoStep({ defaultValues, onNext }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-5">
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4 sm:space-y-5">
       <div className="flex justify-center">
         <div className="relative">
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-dashed border-border bg-muted transition-colors hover:border-primary/50 hover:bg-accent"
+            className="flex h-20 w-20 sm:h-24 sm:w-24 items-center justify-center rounded-full border-2 border-dashed border-border bg-muted transition-colors hover:border-primary/50 hover:bg-accent touch-manipulation"
           >
             {avatarUrl ? (
               <img
@@ -134,18 +134,18 @@ export function BasicInfoStep({ defaultValues, onNext }: Props) {
                 className="h-full w-full rounded-full object-cover"
               />
             ) : uploading ? (
-              <span className="h-6 w-6 animate-spin rounded-full border-2 border-current border-t-transparent" />
+              <span className="h-5 w-5 sm:h-6 sm:w-6 animate-spin rounded-full border-2 border-current border-t-transparent" />
             ) : (
-              <Camera className="h-8 w-8 text-muted-foreground" />
+              <Camera className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground" />
             )}
           </button>
           {avatarUrl && (
             <button
               type="button"
               onClick={handleRemoveAvatar}
-              className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-destructive text-destructive-foreground"
+              className="absolute -right-1 -top-1 flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full bg-destructive text-destructive-foreground touch-manipulation"
             >
-              <X className="h-3 w-3" />
+              <X className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
             </button>
           )}
           <input
@@ -169,7 +169,7 @@ export function BasicInfoStep({ defaultValues, onNext }: Props) {
           id="name"
           {...register("name")}
           placeholder="e.g. Alex"
-          className="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex h-11 sm:h-12 w-full rounded-xl border border-border bg-background px-3 sm:px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
         {errors.name && (
           <p className="text-xs text-destructive">{errors.name.message}</p>
@@ -184,20 +184,20 @@ export function BasicInfoStep({ defaultValues, onNext }: Props) {
           id="username"
           {...register("username")}
           placeholder="yourname"
-          className="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex h-11 sm:h-12 w-full rounded-xl border border-border bg-background px-3 sm:px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
         {errors.username && (
           <p className="text-xs text-destructive">{errors.username.message}</p>
         )}
 
         {suggestions.length > 0 && (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5 sm:gap-2">
             {suggestions.map((s) => (
               <button
                 key={s}
                 type="button"
                 onClick={() => setValue("username", s, { shouldValidate: true })}
-                className="rounded-full border border-border bg-background px-3 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                className="rounded-full border border-border bg-background px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground touch-manipulation"
               >
                 {s}
               </button>
@@ -205,7 +205,7 @@ export function BasicInfoStep({ defaultValues, onNext }: Props) {
             <button
               type="button"
               onClick={refreshSuggestions}
-              className="rounded-full border border-dashed border-border px-3 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+              className="rounded-full border border-dashed border-border px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground touch-manipulation"
             >
               ↻ New ideas
             </button>
@@ -215,11 +215,11 @@ export function BasicInfoStep({ defaultValues, onNext }: Props) {
 
       <div className="space-y-2">
         <label className="text-sm font-medium">Gender</label>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
           {["male", "female", "other"].map((g) => (
             <label
               key={g}
-              className={`flex cursor-pointer items-center justify-center rounded-lg border border-border px-3 py-2.5 text-sm transition-colors ${
+              className={`flex cursor-pointer items-center justify-center rounded-xl border border-border px-2 sm:px-3 py-2.5 sm:py-3 text-xs sm:text-sm transition-colors touch-manipulation ${
                 watch("gender") === g
                   ? "border-primary bg-primary/10 text-primary font-medium"
                   : "bg-background text-muted-foreground hover:bg-accent"
@@ -251,7 +251,7 @@ export function BasicInfoStep({ defaultValues, onNext }: Props) {
           placeholder="25"
           min={13}
           max={120}
-          className="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex h-11 sm:h-12 w-full rounded-xl border border-border bg-background px-3 sm:px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
         {errors.age && (
           <p className="text-xs text-destructive">{errors.age.message}</p>
@@ -266,13 +266,13 @@ export function BasicInfoStep({ defaultValues, onNext }: Props) {
           id="occupation"
           {...register("occupation")}
           placeholder="e.g. Software engineer"
-          className="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex h-11 sm:h-12 w-full rounded-xl border border-border bg-background px-3 sm:px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
       </div>
 
       <button
         type="submit"
-        className="inline-flex h-10 w-full items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+        className="inline-flex h-11 sm:h-12 w-full items-center justify-center rounded-xl bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 active:scale-[0.97] touch-manipulation"
       >
         Continue
       </button>

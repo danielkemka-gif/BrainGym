@@ -114,8 +114,8 @@ export function BrainJourney() {
   const message = getMotivationalMessage(unlocked.length);
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-4 sm:p-6 overflow-hidden">
-      <h3 className="font-semibold mb-3 sm:mb-4">Your Brain Journey</h3>
+    <div className="rounded-2xl border border-border bg-card p-4 sm:p-6 overflow-x-hidden">
+      <h3 className="text-sm sm:text-base font-semibold mb-3 sm:mb-4">Your Brain Journey</h3>
 
       {/* Timeline */}
       <div className="relative overflow-x-auto pb-2 -mx-1 px-1">

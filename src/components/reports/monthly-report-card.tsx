@@ -85,7 +85,7 @@ export function MonthlyReportCard() {
 
   if (loading || generating) {
     return (
-      <div className="rounded-2xl border border-border bg-card p-6">
+      <div className="rounded-2xl border border-border bg-card p-4 sm:p-6">
         <div className="space-y-3">
           <div className="h-6 w-48 animate-pulse rounded-lg bg-muted" />
           <div className="h-4 w-32 animate-pulse rounded-lg bg-muted" />
@@ -109,7 +109,7 @@ export function MonthlyReportCard() {
   const weakCat = CATEGORIES.find((c) => c.slug === report.weakest_category);
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-6">
+    <div className="rounded-2xl border border-border bg-card p-4 sm:p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <button

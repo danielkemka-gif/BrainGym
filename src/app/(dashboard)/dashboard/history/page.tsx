@@ -77,9 +77,9 @@ export default function HistoryPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="mx-auto w-full max-w-full space-y-6 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
       <div>
-        <h1 className="text-xl font-bold sm:text-2xl">Workout History</h1>
+        <h1 className="text-balance text-xl font-bold sm:text-2xl">Workout History</h1>
         <p className="text-sm text-muted-foreground">
           Review your past brain training sessions
         </p>
@@ -104,11 +104,11 @@ export default function HistoryPage() {
       )}
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-col sm:flex-row gap-3">
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="h-9 rounded-lg border border-border bg-background px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary"
+          className="h-12 w-full sm:w-auto rounded-xl border border-border bg-background px-4 text-xs focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
         >
           <option value="">All categories</option>
           {CATEGORIES.map((c) => (
@@ -118,7 +118,7 @@ export default function HistoryPage() {
         <select
           value={difficultyFilter}
           onChange={(e) => setDifficultyFilter(e.target.value)}
-          className="h-9 rounded-lg border border-border bg-background px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary"
+          className="h-12 w-full sm:w-auto rounded-xl border border-border bg-background px-4 text-xs focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
         >
           <option value="">All difficulties</option>
           {DIFFICULTIES.map((d) => (
@@ -128,7 +128,7 @@ export default function HistoryPage() {
         <select
           value={dateRange}
           onChange={(e) => setDateRange(e.target.value)}
-          className="h-9 rounded-lg border border-border bg-background px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary"
+          className="h-12 w-full sm:w-auto rounded-xl border border-border bg-background px-4 text-xs focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
         >
           <option value="all">All time</option>
           <option value="month">Last 30 days</option>

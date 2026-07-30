@@ -141,7 +141,7 @@ export function StreakProtectionCard() {
       <button
         onClick={handlePurchase}
         disabled={purchasing || info.freezesRemaining >= info.maxFreezes || info.coinsBalance < 50}
-        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-medium text-sm hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-medium text-sm hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] touch-manipulation active:scale-[0.97]"
       >
         {purchasing ? (
           <span className="flex items-center gap-2">

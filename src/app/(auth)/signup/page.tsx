@@ -7,15 +7,15 @@ export default async function SignupPage(props: { searchParams?: Promise<{ ref?:
   const refCode = searchParams?.ref || null;
 
   return (
-    <div className="w-full max-w-sm space-y-5">
+    <div className="w-full max-w-sm space-y-3 sm:space-y-5">
       {refCode && (
-        <div className="rounded-xl bg-primary/10 border border-primary/20 px-4 py-3 text-center text-sm text-primary">
+        <div className="rounded-xl bg-primary/10 border border-primary/20 px-3 sm:px-4 py-2.5 sm:py-3 text-center text-xs sm:text-sm text-primary">
           You were invited by a friend! Join now and earn bonus coins.
         </div>
       )}
 
       <div className="space-y-2 text-center">
-        <h1 className="text-2xl font-bold">Join BrainGym</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-balance">Join BrainGym</h1>
         <p className="text-sm text-muted-foreground">
           Train your brain in 5 minutes a day
         </p>

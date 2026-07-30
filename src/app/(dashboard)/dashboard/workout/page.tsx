@@ -427,12 +427,12 @@ export default function GuidedWorkoutPage() {
   // Summary phase
   if (phase === "summary") {
     return (
-      <div className="mx-auto max-w-2xl space-y-6">
-        <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+      <div className="mx-auto w-full max-w-full space-y-6 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
+        <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground min-h-[44px]">
           <ArrowLeft className="h-4 w-4" /> Back to Dashboard
         </Link>
 
-        <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 text-center relative overflow-hidden">
+        <div className="rounded-2xl border border-border bg-card p-4 sm:p-8 text-center relative overflow-hidden">
           <Confetti active={showConfetti} />
           <LevelUpModal
             show={showLevelUp}
@@ -454,7 +454,7 @@ export default function GuidedWorkoutPage() {
             Amazing work today — your brain just got stronger!
           </p>
 
-          <div className="mt-6 grid grid-cols-3 gap-4">
+          <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-4">
             <div className="rounded-xl bg-violet-500/10 p-4">
               <div className="flex items-center justify-center gap-1">
                 <Trophy className="h-4 w-4 text-violet-400" />
@@ -480,11 +480,11 @@ export default function GuidedWorkoutPage() {
 
           <div className="mt-6 flex gap-3">
             <Link href="/dashboard"
-              className="inline-flex h-11 flex-1 items-center justify-center rounded-xl bg-primary px-6 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+              className="inline-flex h-11 flex-1 items-center justify-center rounded-xl bg-primary px-6 text-sm font-medium text-primary-foreground hover:bg-primary/90 touch-manipulation">
               Back to Dashboard
             </Link>
             <Link href="/dashboard/progress"
-              className="inline-flex h-11 flex-1 items-center justify-center rounded-xl border border-border px-6 text-sm font-medium hover:bg-accent">
+              className="inline-flex h-11 flex-1 items-center justify-center rounded-xl border border-border px-6 text-sm font-medium hover:bg-accent touch-manipulation">
               View Progress
             </Link>
           </div>
@@ -495,14 +495,14 @@ export default function GuidedWorkoutPage() {
 
   if (!activeActivity || sortedItems.length === 0) {
     return (
-      <div className="mx-auto max-w-2xl space-y-6">
-        <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+      <div className="mx-auto w-full max-w-full space-y-6 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
+        <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground min-h-[44px]">
           <ArrowLeft className="h-4 w-4" /> Back to Dashboard
         </Link>
-        <div className="rounded-2xl border border-border bg-card p-8 text-center">
+        <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 text-center">
           <p className="text-muted-foreground">No workout available today.</p>
           <Link href="/dashboard/library"
-            className="mt-4 inline-flex h-10 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+            className="mt-4 inline-flex h-12 items-center justify-center rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 active:scale-[0.97]">
             Browse Activities
           </Link>
         </div>
@@ -515,8 +515,8 @@ export default function GuidedWorkoutPage() {
   // Intro phase — show activity before starting
   if (phase === "intro") {
     return (
-      <div className="mx-auto max-w-2xl space-y-6">
-        <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+      <div className="mx-auto w-full max-w-full space-y-6 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
+        <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground min-h-[44px]">
           <ArrowLeft className="h-4 w-4" /> Back to Dashboard
         </Link>
 
@@ -541,7 +541,7 @@ export default function GuidedWorkoutPage() {
         {/* Activity card */}
         <div className="rounded-2xl border border-border bg-card overflow-hidden">
           <div className="h-2 w-full" style={{ backgroundColor: category?.color ?? "#6366f1" }} />
-          <div className="p-6 space-y-4">
+          <div className="p-4 sm:p-6 space-y-4">
             <div className="flex items-center gap-3">
               {category && (
                 <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium"
@@ -590,7 +590,7 @@ export default function GuidedWorkoutPage() {
             <Play className="h-4 w-4" /> Start Activity
           </button>
           <button onClick={skipActivity}
-            className="inline-flex h-12 items-center justify-center rounded-xl border border-border px-4 text-sm font-medium text-muted-foreground hover:bg-accent">
+            className="inline-flex h-12 items-center justify-center rounded-xl border border-border px-4 text-sm font-medium text-muted-foreground hover:bg-accent active:scale-[0.97]">
             <SkipForward className="h-4 w-4" />
           </button>
         </div>
@@ -606,9 +606,9 @@ export default function GuidedWorkoutPage() {
     const isComplete = timerSeconds <= 0;
 
     return (
-      <div className="mx-auto max-w-2xl space-y-6">
+      <div className="mx-auto w-full max-w-full space-y-6 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
         <div className="flex items-center justify-between">
-          <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+          <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground min-h-[44px]">
             <ArrowLeft className="h-4 w-4" /> Back
           </Link>
           <span className="text-sm text-muted-foreground">
@@ -659,7 +659,7 @@ export default function GuidedWorkoutPage() {
             <CheckCircle2 className="h-4 w-4" /> Done!
           </button>
           <button onClick={skipActivity}
-            className="inline-flex h-12 items-center justify-center rounded-xl border border-border px-4 text-sm font-medium text-muted-foreground hover:bg-accent">
+            className="inline-flex h-12 items-center justify-center rounded-xl border border-border px-4 text-sm font-medium text-muted-foreground hover:bg-accent active:scale-[0.97]">
             Skip
           </button>
         </div>
@@ -670,8 +670,8 @@ export default function GuidedWorkoutPage() {
   // Complete phase — brief celebration before next activity
   if (phase === "complete") {
     return (
-      <div className="mx-auto max-w-2xl space-y-6">
-        <div className="rounded-2xl border border-green-500/20 bg-green-500/5 p-8 text-center">
+      <div className="mx-auto w-full max-w-full space-y-6 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
+        <div className="rounded-2xl border border-green-500/20 bg-green-500/5 p-6 sm:p-8 text-center">
           <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-green-500/10">
             <Star className="h-8 w-8 text-green-500" />
           </div>
@@ -682,12 +682,12 @@ export default function GuidedWorkoutPage() {
 
           {activeIndex < sortedItems.length - 1 ? (
             <button onClick={nextActivity}
-              className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-8 text-sm font-bold text-primary-foreground hover:bg-primary/90">
+              className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-8 text-sm font-bold text-primary-foreground hover:bg-primary/90 active:scale-[0.97]">
               Next Activity <ChevronRight className="h-4 w-4" />
             </button>
           ) : (
             <button onClick={finishSession}
-              className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-8 text-sm font-bold text-white shadow-lg shadow-green-500/25">
+              className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-8 text-sm font-bold text-white shadow-lg shadow-green-500/25 active:scale-[0.97]">
               <Star className="h-4 w-4" /> Finish Workout
             </button>
           )}

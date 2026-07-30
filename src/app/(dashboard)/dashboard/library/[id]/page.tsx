@@ -148,9 +148,9 @@ export default function ActivityDetailPage() {
   const emoji = CATEGORY_EMOJIS[category?.slug || ""] || "🧠";
 
   return (
-    <div className="mx-auto max-w-2xl space-y-5">
+    <div className="mx-auto w-full max-w-full space-y-5 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
       {/* Hero */}
-      <div className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${gradient} p-6`}>
+      <div className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${gradient} p-4 sm:p-6`}>
         <div className="absolute inset-0 bg-black/20" />
         <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
         <div className="absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-black/10 blur-3xl" />
@@ -168,7 +168,7 @@ export default function ActivityDetailPage() {
             <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15 text-3xl backdrop-blur-sm overflow-hidden">
               {(() => { const Illust = CATEGORY_ILLUSTRATIONS[category?.slug || ""]; return Illust ? <Illust className="h-12 w-12" /> : emoji; })()}
             </div>
-            <div className="flex-1">
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-xs text-white/70">{category?.label}</span>
                 <span className="text-white/30">·</span>
@@ -176,7 +176,7 @@ export default function ActivityDetailPage() {
                   {diff.label}
                 </span>
               </div>
-              <h1 className="text-xl font-bold text-white break-words sm:text-2xl">{activity.title}</h1>
+              <h1 className="text-balance text-xl font-bold text-white break-words sm:text-2xl">{activity.title}</h1>
             </div>
           </div>
 
@@ -261,9 +261,9 @@ export default function ActivityDetailPage() {
       )}
 
       {/* Action buttons */}
-      <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row gap-3">
         {completed ? (
-          <div className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-green-500/30 bg-green-500/5 px-4 py-3 text-center text-xs font-medium text-green-500 sm:text-sm">
+          <div className="flex w-full sm:flex-1 items-center justify-center gap-2 rounded-xl border border-green-500/30 bg-green-500/5 px-4 py-3 text-center text-xs font-medium text-green-500 sm:text-sm">
             <CheckCircle2 className="h-4 w-4 flex-shrink-0" />
             <span>Completed! +{activity.xp} XP +{activity.coins} coins</span>
           </div>
@@ -271,7 +271,7 @@ export default function ActivityDetailPage() {
           <button
             onClick={markComplete}
             disabled={completing}
-            className="flex-[2] inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-6 text-sm font-bold text-white shadow-lg shadow-green-500/25 transition-all hover:shadow-xl hover:shadow-green-500/30 disabled:opacity-50"
+            className="w-full sm:flex-[2] inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-6 text-sm font-bold text-white shadow-lg shadow-green-500/25 transition-all hover:shadow-xl hover:shadow-green-500/30 disabled:opacity-50 active:scale-[0.97] touch-manipulation"
           >
             {completing ? (
               <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
@@ -285,7 +285,7 @@ export default function ActivityDetailPage() {
         )}
         <button
           onClick={() => router.push("/dashboard/library")}
-          className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-xl border border-border px-4 text-sm font-medium hover:bg-accent"
+          className="w-full sm:flex-1 inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-border px-4 text-sm font-medium hover:bg-accent active:scale-[0.97] touch-manipulation"
         >
           Browse More
         </button>

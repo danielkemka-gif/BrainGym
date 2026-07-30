@@ -161,17 +161,17 @@ export default function ChallengesPage() {
   );
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="mx-auto w-full max-w-6xl max-w-full space-y-6 overflow-x-hidden">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold sm:text-2xl">Community Challenges</h1>
+          <h1 className="text-balance text-xl font-bold sm:text-2xl">Community Challenges</h1>
           <p className="text-sm text-muted-foreground">
             Join group challenges and train together
           </p>
         </div>
         <button
           onClick={() => setShowCreate((p) => !p)}
-          className="inline-flex h-9 items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          className="w-full sm:w-auto touch-manipulation inline-flex h-12 items-center justify-center rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 active:scale-[0.97] min-h-[44px]"
         >
           Create Challenge
         </button>
@@ -179,14 +179,14 @@ export default function ChallengesPage() {
 
       {/* Create form */}
       {showCreate && (
-        <form onSubmit={handleCreate} className="rounded-2xl border border-border bg-card p-5 space-y-4">
+        <form onSubmit={handleCreate} className="rounded-2xl border border-border bg-card p-4 sm:p-5 space-y-4 w-full max-w-full overflow-x-hidden">
           <h2 className="font-semibold">New Challenge</h2>
           <div>
             <label className="mb-1.5 block text-sm font-medium">Title</label>
             <input
               value={form.title}
               onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-              className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-primary"
+              className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary"
               required
             />
           </div>
@@ -196,16 +196,16 @@ export default function ChallengesPage() {
               value={form.description}
               onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
               rows={2}
-              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary"
+              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="mb-1.5 block text-sm font-medium">Category</label>
               <select
                 value={form.category}
                 onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
-                className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-primary"
+                className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary"
               >
                 <option value="">All categories</option>
                 {CATEGORIES.map((c) => (
@@ -218,7 +218,7 @@ export default function ChallengesPage() {
               <select
                 value={form.difficulty}
                 onChange={(e) => setForm((f) => ({ ...f, difficulty: e.target.value }))}
-                className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-primary"
+                className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary"
               >
                 <option value="">Any</option>
                 {DIFFICULTIES.map((d) => (
@@ -227,7 +227,7 @@ export default function ChallengesPage() {
               </select>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             <div>
               <label className="mb-1.5 block text-sm font-medium">Duration (days)</label>
               <input
@@ -236,7 +236,7 @@ export default function ChallengesPage() {
                 max={90}
                 value={form.duration_days}
                 onChange={(e) => setForm((f) => ({ ...f, duration_days: Number(e.target.value) }))}
-                className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-primary"
+                className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
             <div>
@@ -244,7 +244,7 @@ export default function ChallengesPage() {
               <select
                 value={form.goal_type}
                 onChange={(e) => setForm((f) => ({ ...f, goal_type: e.target.value }))}
-                className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-primary"
+                className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary"
               >
                 <option value="xp">Total XP</option>
                 <option value="workouts">Workouts</option>
@@ -258,7 +258,7 @@ export default function ChallengesPage() {
                 min={1}
                 value={form.goal_amount}
                 onChange={(e) => setForm((f) => ({ ...f, goal_amount: Number(e.target.value) }))}
-                className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-primary"
+                className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
           </div>
@@ -268,7 +268,7 @@ export default function ChallengesPage() {
           <button
             type="submit"
             disabled={creating}
-            className="inline-flex h-10 w-full items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50"
+            className="touch-manipulation inline-flex h-12 w-full items-center justify-center rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.97]"
           >
             {creating ? "Creating..." : "Create & Join"}
           </button>
@@ -283,7 +283,7 @@ export default function ChallengesPage() {
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="h-9 rounded-lg border border-border bg-background px-3 text-xs outline-none focus:ring-2 focus:ring-primary"
+          className="h-12 rounded-xl border border-border bg-background px-4 text-xs outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
         >
           <option value="">All categories</option>
           {CATEGORIES.map((c) => (
@@ -323,7 +323,7 @@ export default function ChallengesPage() {
               <Link
                 key={c.id}
                 href={`/dashboard/challenges/${c.id}`}
-                className="rounded-2xl border border-border bg-card p-5 transition-colors hover:border-muted-foreground/30"
+                className="touch-manipulation rounded-2xl border border-border bg-card p-4 sm:p-5 transition-colors hover:border-muted-foreground/30 active:scale-[0.98]"
               >
                 <div className="mb-3 flex items-center justify-between">
                   <div className="flex items-center gap-2">

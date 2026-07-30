@@ -35,7 +35,7 @@ export function AssessmentStep({ defaultValues, onNext, onBack }: Props) {
       <button
         type="button"
         onClick={onBack}
-        className="inline-flex h-10 w-full items-center justify-center rounded-lg border border-border bg-background px-4 text-sm font-medium transition-colors hover:bg-accent"
+        className="inline-flex h-11 sm:h-12 w-full items-center justify-center rounded-xl border border-border bg-background px-4 text-sm font-medium transition-colors hover:bg-accent active:scale-[0.97] touch-manipulation"
       >
         Back
       </button>

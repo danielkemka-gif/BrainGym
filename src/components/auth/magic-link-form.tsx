@@ -52,7 +52,7 @@ export function MagicLinkForm() {
 
   if (submitted) {
     return (
-      <div className="rounded-lg border bg-card p-6 text-center space-y-3">
+      <div className="rounded-xl border bg-card p-4 sm:p-6 text-center space-y-3">
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
           <Mail className="h-6 w-6 text-primary" />
         </div>
@@ -83,12 +83,12 @@ export function MagicLinkForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex h-12 w-full rounded-xl border border-border bg-background px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring touch-manipulation"
         />
       </div>
 
       {error && (
-        <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+        <div className="rounded-xl bg-destructive/10 p-3 sm:p-4 text-sm text-destructive">
           {error}
         </div>
       )}
@@ -96,7 +96,7 @@ export function MagicLinkForm() {
       <button
         type="submit"
         disabled={loading}
-        className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 text-sm font-medium transition-colors hover:bg-accent disabled:pointer-events-none disabled:opacity-50"
+        className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 text-sm sm:text-base font-semibold transition-colors hover:bg-accent active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50"
       >
         {loading ? (
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />

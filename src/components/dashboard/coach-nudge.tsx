@@ -164,10 +164,10 @@ export function CoachNudge() {
   if (loading || !tip || dismissed) return null;
 
   return (
-    <div className={`relative overflow-hidden rounded-2xl border bg-gradient-to-r p-4 ${tip.gradient}`}>
+    <div className={`relative overflow-hidden rounded-2xl border bg-gradient-to-r p-4 sm:p-5 ${tip.gradient}`}>
       <button
         onClick={handleDismiss}
-        className="absolute right-3 top-3 rounded-full p-1 text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
+        className="absolute right-3 top-3 rounded-full p-1 text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors min-h-[44px] touch-manipulation"
         aria-label="Dismiss"
       >
         <span className="sr-only">Dismiss</span>
@@ -181,7 +181,7 @@ export function CoachNudge() {
           <p className="text-sm font-medium pr-6">{tip.message}</p>
           <Link
             href={tip.actionHref}
-            className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+            className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline min-h-[44px] touch-manipulation"
           >
             {tip.actionLabel}
             <ArrowRight className="h-3 w-3" />

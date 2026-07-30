@@ -35,7 +35,7 @@ export function XpHistory() {
   const maxXp = Math.max(...dailyXp.map((d) => d.xp), 1);
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-5">
+    <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
       <h2 className="mb-4 font-semibold">Last 30 Days XP</h2>
       <div className="flex items-end gap-1">
         {dailyXp.map((d) => (

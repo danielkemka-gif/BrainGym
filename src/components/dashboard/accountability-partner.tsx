@@ -164,13 +164,13 @@ export function AccountabilityPartner() {
   }
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-5">
+    <div className="rounded-2xl border border-border bg-card p-4 sm:p-6">
       <div className="mb-4 flex items-center gap-2">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
           <Users className="h-4 w-4 text-primary" />
         </div>
         <div>
-          <h2 className="font-semibold">Accountability Partners</h2>
+          <h2 className="text-sm sm:text-base font-semibold">Accountability Partners</h2>
           <p className="text-xs text-muted-foreground">Train together, stay motivated</p>
         </div>
       </div>
@@ -185,13 +185,13 @@ export function AccountabilityPartner() {
             value={searchEmail}
             onChange={(e) => setSearchEmail(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            className="h-10 w-full rounded-xl border border-border bg-background pl-9 pr-4 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+            className="h-10 w-full rounded-xl border border-border bg-background pl-9 pr-4 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 min-h-[44px]"
           />
         </div>
         <button
           onClick={handleSearch}
           disabled={sending || !searchEmail.trim()}
-          className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+          className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50 min-h-[44px] touch-manipulation active:scale-[0.97]"
         >
           <UserPlus className="h-4 w-4" />
         </button>

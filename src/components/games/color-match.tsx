@@ -191,7 +191,7 @@ export function ColorMatchGame({ level, config, gradient, onComplete, onExit }: 
         )}
 
         {/* Options */}
-        <div className="grid grid-cols-2 gap-3 w-full max-w-xs">
+        <div className="grid grid-cols-2 gap-2 sm:gap-3 w-full max-w-[240px] sm:max-w-xs">
           {options.map((colorName) => {
             const colorObj = COLORS.find((c) => c.name === colorName);
             return (
@@ -199,7 +199,7 @@ export function ColorMatchGame({ level, config, gradient, onComplete, onExit }: 
                 key={colorName}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => handleAnswer(colorName)}
-                className="flex h-14 items-center justify-center rounded-xl border-2 border-border bg-card text-sm font-bold hover:border-primary/30 transition-all"
+                className="touch-manipulation min-h-[48px] flex items-center justify-center rounded-xl border-2 border-border bg-card text-xs sm:text-sm font-bold hover:border-primary/30 transition-all active:scale-[0.97]"
                 style={{ color: colorObj?.value }}
               >
                 {colorName}

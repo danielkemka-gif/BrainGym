@@ -52,7 +52,7 @@ export function FilterBar({
           placeholder="Search 177+ brain exercises..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="h-11 w-full rounded-xl border border-border bg-card pl-10 pr-10 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/50 transition-all"
+          className="h-12 w-full rounded-xl border border-border bg-card pl-10 pr-10 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/50 transition-all"
         />
         {search && (
           <button

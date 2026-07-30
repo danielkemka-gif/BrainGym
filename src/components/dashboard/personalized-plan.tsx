@@ -127,13 +127,13 @@ export function PersonalizedPlan() {
   if (plan.length === 0) return null;
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-5">
+    <div className="rounded-2xl border border-border bg-card p-4 sm:p-6">
       <div className="mb-4 flex items-center gap-2">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
           <Sparkles className="h-4 w-4 text-primary" />
         </div>
         <div>
-          <h2 className="font-semibold">Your Training Plan</h2>
+          <h2 className="text-sm sm:text-base font-semibold">Your Training Plan</h2>
           <p className="text-xs text-muted-foreground">Personalized based on your brain scores</p>
         </div>
       </div>

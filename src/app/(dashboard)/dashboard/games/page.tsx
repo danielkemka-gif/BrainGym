@@ -65,31 +65,31 @@ export default function GamesHubPage() {
       </div>
 
       {/* Stats summary */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="rounded-xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/10 p-4 text-center">
-          <p className="text-2xl font-bold text-amber-500">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
+        <div className="rounded-xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/10 p-3 sm:p-4 text-center">
+          <p className="text-lg sm:text-2xl font-bold text-amber-500">
             {progress.reduce((s, p) => s + p.stars, 0)}
           </p>
-          <p className="text-xs text-muted-foreground">Total Stars</p>
+          <p className="text-[10px] sm:text-xs text-muted-foreground">Stars</p>
         </div>
-        <div className="rounded-xl bg-gradient-to-br from-violet-500/10 to-purple-500/10 border border-violet-500/10 p-4 text-center">
-          <p className="text-2xl font-bold text-violet-500">
+        <div className="rounded-xl bg-gradient-to-br from-violet-500/10 to-purple-500/10 border border-violet-500/10 p-3 sm:p-4 text-center">
+          <p className="text-lg sm:text-2xl font-bold text-violet-500">
             {progress.filter((p) => p.stars > 0).length}
           </p>
-          <p className="text-xs text-muted-foreground">Levels Cleared</p>
+          <p className="text-[10px] sm:text-xs text-muted-foreground">Levels</p>
         </div>
-        <div className="rounded-xl bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/10 p-4 text-center">
-          <p className="text-2xl font-bold text-green-500">
+        <div className="rounded-xl bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/10 p-3 sm:p-4 text-center">
+          <p className="text-lg sm:text-2xl font-bold text-green-500">
             {ALL_GAMES.filter((g) => getGameStats(g.id).completedLevels > 0).length}/{ALL_GAMES.length}
           </p>
-          <p className="text-xs text-muted-foreground">Games Played</p>
+          <p className="text-[10px] sm:text-xs text-muted-foreground">Played</p>
         </div>
       </div>
 
       {/* Daily Challenge — prominent CTA */}
       <Link
         href="/dashboard/daily-challenge"
-        className="group block overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 to-violet-500/5 transition-all hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10"
+        className="group touch-manipulation block overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 to-violet-500/5 transition-all hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10 active:scale-[0.99]"
       >
         <div className="flex items-center gap-3 sm:gap-4 p-4 sm:p-5">
           <div className="flex h-12 w-12 sm:h-14 sm:w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-violet-600 shadow-lg shadow-primary/25">
@@ -122,7 +122,7 @@ export default function GamesHubPage() {
             >
               <Link
                 href={`/dashboard/games/${game.id}`}
-                className="group block overflow-hidden rounded-2xl border border-border bg-card transition-all hover:border-transparent hover:shadow-xl hover:shadow-primary/5"
+                className="group touch-manipulation block overflow-hidden rounded-2xl border border-border bg-card transition-all hover:border-transparent hover:shadow-xl hover:shadow-primary/5 active:scale-[0.99]"
               >
                 {/* Gradient header */}
                 <div className={`relative overflow-hidden bg-gradient-to-br ${game.gradient} p-4 sm:p-6`}>

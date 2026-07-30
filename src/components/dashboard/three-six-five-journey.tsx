@@ -125,10 +125,10 @@ export function ThreeSixFiveJourney() {
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6">
+      <div className="grid grid-cols-4 gap-1.5 sm:gap-3 mb-4 sm:mb-6">
         <div className="text-center">
-          <div className="text-lg font-bold text-gray-900 dark:text-white">{stats.totalXp.toLocaleString()}</div>
-          <div className="text-xs text-gray-500 dark:text-gray-400">Total XP</div>
+          <div className="text-sm sm:text-lg font-bold text-gray-900 dark:text-white">{stats.totalXp.toLocaleString()}</div>
+          <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">Total XP</div>
         </div>
         <div className="text-center">
           <div className="text-lg font-bold text-gray-900 dark:text-white">{stats.totalCoins.toLocaleString()}</div>

@@ -177,7 +177,7 @@ export function WeeklyReportCard() {
   if (!report) return null;
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-5">
+    <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
       <div className="mb-5 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
@@ -218,7 +218,7 @@ export function WeeklyReportCard() {
 
           return (
             <div key={cat.id} className="flex items-center gap-2">
-              <span className="w-28 truncate text-xs font-medium">{cat.label}</span>
+              <span className="w-20 sm:w-28 truncate text-xs font-medium">{cat.label}</span>
               <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
                 <div
                   className="h-full rounded-full transition-all"

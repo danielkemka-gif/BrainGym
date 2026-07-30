@@ -103,9 +103,9 @@ export default function DecisionLabPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8">
+    <div className="mx-auto w-full max-w-full space-y-8 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
       <div>
-        <h1 className="text-xl font-bold sm:text-2xl">Decision Lab</h1>
+        <h1 className="text-balance text-xl font-bold sm:text-2xl">Decision Lab</h1>
         <p className="text-sm text-muted-foreground">
           Analyze real decisions with AI-powered thinking frameworks
         </p>
@@ -125,7 +125,7 @@ export default function DecisionLabPage() {
                   onChange={(e) => setScenario(e.target.value)}
                   placeholder="e.g. I'm considering leaving my stable job to start a business..."
                   rows={3}
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
                 />
               </div>
 
@@ -138,7 +138,7 @@ export default function DecisionLabPage() {
                   onChange={(e) => setUserResponse(e.target.value)}
                   placeholder="What are you leaning towards? What are your concerns?"
                   rows={2}
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
                 />
               </div>
 
@@ -151,7 +151,7 @@ export default function DecisionLabPage() {
               <button
                 type="submit"
                 disabled={!scenario.trim() || submitting}
-                className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50"
+                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.97]"
               >
                 {submitting ? (
                   <>
@@ -276,7 +276,7 @@ export default function DecisionLabPage() {
                         setCurrentEval(evalData);
                         setShowForm(false);
                       }}
-                      className="w-full rounded-2xl border border-border bg-card p-4 text-left transition-colors hover:border-muted-foreground/30"
+                      className="w-full rounded-2xl border border-border bg-card p-4 text-left transition-colors hover:border-muted-foreground/30 min-h-[44px]"
                     >
                       <p className="line-clamp-1 text-sm font-medium">
                         {entry.scenario}

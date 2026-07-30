@@ -151,7 +151,7 @@ export default function ChallengeDetailPage() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-4xl space-y-6">
+      <div className="mx-auto w-full max-w-4xl max-w-full space-y-6 overflow-x-hidden">
         <div className="h-8 w-64 animate-pulse rounded bg-muted" />
         <div className="h-48 animate-pulse rounded-2xl bg-muted" />
       </div>
@@ -177,16 +177,16 @@ export default function ChallengeDetailPage() {
   const timePct = Math.min((daysElapsed / daysTotal) * 100, 100);
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="mx-auto w-full max-w-4xl max-w-full space-y-6 overflow-x-hidden">
       <button
         onClick={() => router.back()}
-        className="text-sm text-muted-foreground hover:text-foreground"
+        className="text-sm text-muted-foreground hover:text-foreground min-h-[44px]"
       >
         ← Back to challenges
       </button>
 
-      <div className="rounded-2xl border border-border bg-card p-6">
-        <div className="flex items-start justify-between">
+      <div className="rounded-2xl border border-border bg-card p-4 sm:p-6 w-full max-w-full overflow-x-hidden">
+        <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
           <div>
             <div className="flex items-center gap-2 mb-2">
               {cat && (
@@ -205,12 +205,12 @@ export default function ChallengeDetailPage() {
               <p className="mt-2 text-muted-foreground">{challenge.description}</p>
             )}
           </div>
-          <div className="flex flex-col items-end gap-2">
+          <div className="flex flex-col items-start sm:items-end gap-2 w-full sm:w-auto">
             {!isParticipant && !isCreator ? (
               <button
                 onClick={handleJoin}
                 disabled={joining}
-                className="inline-flex h-9 items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50"
+                className="touch-manipulation inline-flex h-12 w-full sm:w-auto items-center justify-center rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.97] min-h-[44px]"
               >
                 {joining ? "Joining..." : "Join Challenge"}
               </button>
@@ -220,12 +220,12 @@ export default function ChallengeDetailPage() {
               </span>
             )}
             {joinError && (
-              <p className="max-w-64 text-right text-xs text-destructive">{joinError}</p>
+              <p className="max-w-full sm:max-w-64 text-right text-xs text-destructive">{joinError}</p>
             )}
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-4 gap-4">
+        <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
           <div className="text-center">
             <p className="text-lg font-bold">{challenge.duration_days}</p>
             <p className="text-xs text-muted-foreground">Days</p>
@@ -261,7 +261,7 @@ export default function ChallengeDetailPage() {
 
       {/* My progress */}
       {isParticipant && (
-        <div className="rounded-2xl border border-border bg-card p-5">
+        <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
           <h2 className="mb-4 font-semibold">My Progress</h2>
           <div className="mb-3 space-y-1">
             <div className="flex items-center justify-between text-sm">
@@ -300,7 +300,7 @@ export default function ChallengeDetailPage() {
       )}
 
       {/* Leaderboard */}
-      <div className="rounded-2xl border border-border bg-card p-5">
+      <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
         <h2 className="mb-4 font-semibold">Leaderboard</h2>
         {participants.length === 0 ? (
           <p className="text-sm text-muted-foreground">No participants yet</p>

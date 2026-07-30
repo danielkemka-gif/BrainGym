@@ -103,7 +103,7 @@ export function WelcomeGuide() {
   const isLast = currentStep === steps.length - 1;
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 via-background to-primary/10 p-6">
+    <div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 via-background to-primary/10 p-4 sm:p-6">
       <button
         onClick={handleDismiss}
         className="absolute right-3 top-3 rounded-full p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
@@ -138,7 +138,7 @@ export function WelcomeGuide() {
         <Link
           href={step.href}
           onClick={handleDismiss}
-          className="inline-flex h-9 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          className="inline-flex h-9 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 min-h-[44px] touch-manipulation active:scale-[0.97]"
         >
           {step.cta}
         </Link>

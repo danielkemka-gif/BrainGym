@@ -42,8 +42,6 @@ export function SocialAuthButtons({
         console.error(`${provider} OAuth error:`, result.error);
         const message =
           result.error?.message ||
-          result.error?.error_description ||
-          result.error?.details ||
           `${provider} sign-in failed. Please try again.`;
         setError(message);
         setLoading((prev) => ({ ...prev, [provider]: false }));
@@ -63,14 +61,14 @@ export function SocialAuthButtons({
   return (
     <div className="flex flex-col gap-2">
       {error && (
-        <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+        <div className="rounded-xl bg-destructive/10 p-3 sm:p-4 text-sm text-destructive">
           {error}
         </div>
       )}
       <button
         onClick={() => handleOAuth("google")}
         disabled={loading["google"]}
-        className="inline-flex h-12 w-full items-center justify-center gap-3 rounded-lg border border-border bg-background px-4 text-sm font-semibold transition-colors hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-50"
+        className="inline-flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-border bg-background px-4 text-sm sm:text-base font-semibold transition-colors hover:bg-accent hover:text-accent-foreground active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50"
       >
         {loading["google"] ? (
           <span className="h-5 w-5 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />

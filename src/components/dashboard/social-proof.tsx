@@ -42,11 +42,11 @@ export function SocialProof() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="rounded-2xl border border-border bg-card p-5"
+        className="rounded-2xl border border-border bg-card p-4 sm:p-6"
       >
         <div className="mb-3 flex items-center gap-2">
           <Users className="h-4 w-4 text-primary" />
-          <h3 className="text-sm font-semibold">Community Pulse</h3>
+          <h3 className="text-sm sm:text-base font-semibold">Community Pulse</h3>
         </div>
 
         <div className="space-y-2.5">
@@ -79,11 +79,11 @@ export function SocialProof() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1 }}
-        className="rounded-2xl border border-border bg-card p-5"
+        className="rounded-2xl border border-border bg-card p-4 sm:p-6"
       >
         <div className="mb-3 flex items-center gap-2">
           <Trophy className="h-4 w-4 text-amber-400" />
-          <h3 className="text-sm font-semibold">Top Performers This Week</h3>
+          <h3 className="text-sm sm:text-base font-semibold">Top Performers This Week</h3>
         </div>
 
         <div className="space-y-2">
@@ -111,9 +111,9 @@ export function SocialProof() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.2 }}
-        className="overflow-hidden rounded-2xl border border-border bg-card p-5"
+        className="overflow-hidden rounded-2xl border border-border bg-card p-4 sm:p-6"
       >
-        <h3 className="mb-3 text-sm font-semibold">Recent Achievements</h3>
+        <h3 className="mb-3 text-sm sm:text-base font-semibold">Recent Achievements</h3>
         <div className="relative">
           <div className="marquee flex gap-8 whitespace-nowrap">
             {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, i) => (

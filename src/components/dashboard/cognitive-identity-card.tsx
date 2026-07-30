@@ -139,7 +139,7 @@ export function CognitiveIdentityCard() {
               <motion.button
                 key={ui.id}
                 onClick={() => handleSetActive(ui.identity_id)}
-                className={`w-full p-3 rounded-xl border text-left transition-all ${
+                className={`w-full p-3 rounded-xl border text-left transition-all min-h-[44px] touch-manipulation active:scale-[0.97] ${
                   ui.is_active
                     ? 'border-purple-300 dark:border-purple-600 bg-purple-50 dark:bg-purple-900/10'
                     : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'

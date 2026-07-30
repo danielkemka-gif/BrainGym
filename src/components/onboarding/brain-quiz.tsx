@@ -166,33 +166,33 @@ export function BrainQuiz({ onComplete }: { onComplete: (result: QuizResult) => 
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="space-y-6 py-8 text-center"
+        className="space-y-4 sm:space-y-6 py-6 sm:py-8 text-center"
       >
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: "spring", bounce: 0.5, delay: 0.2 }}
-          className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-orange-500 shadow-xl shadow-amber-500/30"
+          className="mx-auto flex h-20 w-20 sm:h-24 sm:w-24 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-orange-500 shadow-xl shadow-amber-500/30"
         >
-          <Trophy className="h-12 w-12 text-white" />
+          <Trophy className="h-10 w-10 sm:h-12 sm:w-12 text-white" />
         </motion.div>
         <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.4 }}>
           <p className="text-xs font-semibold uppercase tracking-wider text-amber-400">Assessment Complete</p>
-          <p className="mt-2 text-3xl font-black">{avg}<span className="text-lg text-muted-foreground">/100</span></p>
+          <p className="mt-2 text-2xl sm:text-3xl font-black">{avg}<span className="text-base sm:text-lg text-muted-foreground">/100</span></p>
         </motion.div>
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }} className="flex flex-wrap justify-center gap-2">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }} className="flex flex-wrap justify-center gap-1.5 sm:gap-2 px-2">
           {QUIZ_QUESTIONS.map((q, i) => {
             const score = scoreForAnswer(answers[i], q.correct);
             const cat = CATEGORIES.find((c) => c.slug === q.category);
             return (
-              <div key={q.category} className="rounded-lg bg-muted/50 px-3 py-1.5 text-xs">
+              <div key={q.category} className="rounded-lg bg-muted/50 px-2 sm:px-3 py-1 text-[11px] sm:text-xs">
                 <span className="font-medium">{cat?.label}</span>
-                <span className="ml-1.5 text-muted-foreground">{score}</span>
+                <span className="ml-1 text-muted-foreground">{score}</span>
               </div>
             );
           })}
         </motion.div>
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }} className="text-sm text-muted-foreground">
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }} className="text-xs sm:text-sm text-muted-foreground">
           Setting up your personalized plan...
         </motion.p>
       </motion.div>
@@ -239,10 +239,10 @@ export function BrainQuiz({ onComplete }: { onComplete: (result: QuizResult) => 
           </div>
 
           {/* Question */}
-          <h3 className="text-xl font-bold">{question.question}</h3>
+          <h3 className="text-lg sm:text-xl font-bold text-balance">{question.question}</h3>
 
           {/* Options */}
-          <div className="space-y-2.5">
+          <div className="space-y-2 sm:space-y-2.5">
             {question.options.map((opt, idx) => {
               const isCorrect = idx === question.correct;
               const isSelected = idx === selected;
@@ -262,14 +262,14 @@ export function BrainQuiz({ onComplete }: { onComplete: (result: QuizResult) => 
                   key={idx}
                   onClick={() => handleSelect(idx)}
                   disabled={revealed}
-                  className={`flex w-full items-center gap-3 rounded-xl border p-4 text-left text-sm font-medium transition-all ${optionStyle}`}
+                  className={`flex w-full items-center gap-3 rounded-xl border p-3 sm:p-4 text-left text-sm font-medium transition-all touch-manipulation active:scale-[0.98] ${optionStyle}`}
                 >
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted text-xs font-bold">
+                  <span className="flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-lg bg-muted text-xs font-bold">
                     {String.fromCharCode(65 + idx)}
                   </span>
-                  {opt}
+                  <span className="flex-1">{opt}</span>
                   {isRevealed && isCorrect && (
-                    <CheckCircle2 className="ml-auto h-4 w-4 text-green-500" />
+                    <CheckCircle2 className="ml-auto h-4 w-4 shrink-0 text-green-500" />
                   )}
                 </button>
               );

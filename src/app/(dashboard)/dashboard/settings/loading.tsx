@@ -1,6 +1,6 @@
 export default function SettingsLoading() {
   return (
-    <div className="mx-auto max-w-2xl space-y-6 animate-pulse" role="status" aria-live="polite" aria-label="Loading settings">
+    <div className="mx-auto w-full max-w-2xl max-w-full space-y-6 overflow-x-hidden animate-pulse" role="status" aria-live="polite" aria-label="Loading settings">
       <div>
         <div className="h-7 w-32 rounded-lg bg-muted" />
         <div className="mt-2 h-4 w-48 rounded-lg bg-muted" />

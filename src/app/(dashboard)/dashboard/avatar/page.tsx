@@ -149,11 +149,11 @@ export default function AvatarPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="mx-auto w-full max-w-full space-y-6 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
       {/* Header */}
       <div>
-        <h1 className="text-xl font-bold sm:text-2xl flex items-center gap-2">
-          <Palette className="h-6 w-6 text-pink-500" />
+        <h1 className="text-balance text-xl font-bold sm:text-2xl flex items-center gap-2">
+          <Palette className="h-6 w-6 text-pink-500 shrink-0" />
           Brain Avatar
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -240,7 +240,7 @@ export default function AvatarPage() {
         animate={{ opacity: 1, x: 0 }}
         className="rounded-2xl border border-border bg-card p-4"
       >
-        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {AVATAR_PARTS[activeCategory].map((part) => {
             const stateKey: keyof AvatarState = activeCategory === "skin" ? "skin_tone" : activeCategory === "outfit" ? "outfit_id" : activeCategory === "background" ? "background_id" : activeCategory === "frame" ? "frame_id" : activeCategory === "accessory" ? "accessory_id" : activeCategory === "hair" ? "hair_style" : activeCategory as keyof AvatarState;
             const isActive = avatar[stateKey] === part.id;

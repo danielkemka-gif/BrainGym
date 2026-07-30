@@ -127,7 +127,7 @@ export function DashboardHeader() {
         <div className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/dashboard/invite"
-            className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 px-3 py-1.5 text-white shadow-lg shadow-emerald-500/20 transition-all hover:shadow-xl hover:shadow-emerald-500/30 hover:scale-105 active:scale-95"
+            className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 px-3 py-1.5 text-white shadow-lg shadow-emerald-500/20 transition-all hover:shadow-xl hover:shadow-emerald-500/30 hover:scale-105 active:scale-[0.97] min-h-[44px] touch-manipulation"
           >
             <Share2 className="h-3.5 w-3.5" />
             <span className="text-xs font-bold hidden sm:inline">Share</span>

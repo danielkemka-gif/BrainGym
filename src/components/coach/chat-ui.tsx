@@ -134,7 +134,7 @@ export function ChatUI() {
   const showSuggestions = messages.length === 0 && !showUpgrade && !loadingHistory;
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col space-y-4">
+    <div className="mx-auto flex w-full max-w-full flex-col space-y-4 overflow-x-hidden touch-manipulation">
       {/* Chat header with level */}
       {userLevel !== null && (
         <div className="flex items-center justify-between rounded-2xl border border-border bg-card px-4 py-3">
@@ -158,7 +158,7 @@ export function ChatUI() {
       <div className="flex-1 space-y-4 overflow-y-auto">
         {loadingHistory && (
           <div className="flex justify-start">
-            <div className="max-w-[85%] rounded-2xl border border-border bg-card px-4 py-3">
+            <div className="max-w-[85%] sm:max-w-[70%] rounded-2xl border border-border bg-card px-4 py-3">
               <div className="mb-1.5 flex items-center gap-2">
                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs">
                   🧠
@@ -176,7 +176,7 @@ export function ChatUI() {
 
         {!loadingHistory && messages.length === 0 && (
           <div className="flex justify-start">
-            <div className="max-w-[85%] rounded-2xl border border-border bg-card px-4 py-3 text-sm leading-relaxed">
+            <div className="max-w-[85%] sm:max-w-[70%] rounded-2xl border border-border bg-card px-4 py-3 text-sm leading-relaxed">
               <div className="mb-1.5 flex items-center gap-2">
                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs">
                   🧠
@@ -196,7 +196,7 @@ export function ChatUI() {
             className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
           >
             <div
-              className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+              className={`max-w-[85%] sm:max-w-[70%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                 msg.role === "user"
                   ? "bg-primary text-primary-foreground"
                   : "border border-border bg-card"
@@ -217,7 +217,7 @@ export function ChatUI() {
 
         {sending && (
           <div className="flex justify-start">
-            <div className="max-w-[85%] rounded-2xl border border-border bg-card px-4 py-3">
+            <div className="max-w-[85%] sm:max-w-[70%] rounded-2xl border border-border bg-card px-4 py-3">
               <div className="mb-1.5 flex items-center gap-2">
                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs">
                   🧠
@@ -269,7 +269,7 @@ export function ChatUI() {
               setCheckingUpgrade(false);
             }}
             disabled={checkingUpgrade}
-            className="inline-flex h-10 items-center justify-center rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+            className="inline-flex h-12 items-center justify-center rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 active:scale-[0.97]"
           >
             {checkingUpgrade ? "Redirecting..." : "Upgrade to Premium"}
           </button>
@@ -283,7 +283,7 @@ export function ChatUI() {
               key={s}
               onClick={() => sendMessage(s)}
               disabled={sending}
-              className="rounded-full border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-muted-foreground hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
+              className="rounded-full border border-border bg-card px-3 py-2 text-xs text-muted-foreground transition-colors hover:border-muted-foreground hover:text-foreground disabled:pointer-events-none disabled:opacity-50 min-h-[44px]"
             >
               {s}
             </button>
@@ -305,7 +305,7 @@ export function ChatUI() {
           <button
             onClick={() => sendMessage(input)}
             disabled={!input.trim() || sending}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground transition-colors hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground transition-colors hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.97]"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />

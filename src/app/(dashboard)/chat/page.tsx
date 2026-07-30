@@ -665,7 +665,7 @@ function ChatContent() {
                     )}
 
                     <div
-                      className={`group relative ${emojiOnly ? "" : "max-w-[75%]"} ${isOwn ? "items-end" : "items-start"}`}
+                      className={`group relative ${emojiOnly ? "" : "max-w-[85%] sm:max-w-[70%]"} ${isOwn ? "items-end" : "items-start"}`}
                     >
                       {/* Username */}
                       {!isOwn && !isConsecutive && (

@@ -155,13 +155,13 @@ export function OnboardingWizard() {
   }
 
   return (
-    <div className="w-full max-w-lg">
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
+    <div className="w-full max-w-lg overflow-x-hidden">
+      <div className="mb-6 sm:mb-8">
+        <div className="flex items-center justify-between overflow-x-auto scrollbar-none gap-1">
           {STEP_LABELS.map((label, i) => (
-            <div key={label} className="flex items-center">
+            <div key={label} className="flex items-center shrink-0">
               <div
-                className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium transition-colors ${
+                className={`flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full text-[11px] sm:text-xs font-medium transition-colors ${
                   i <= step
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted text-muted-foreground"
@@ -171,7 +171,7 @@ export function OnboardingWizard() {
               </div>
               {i < STEP_LABELS.length - 1 && (
                 <div
-                  className={`mx-2 h-0.5 w-12 rounded transition-colors ${
+                  className={`mx-1 sm:mx-2 h-0.5 w-8 sm:w-12 rounded transition-colors ${
                     i < step ? "bg-primary" : "bg-muted"
                   }`}
                 />
@@ -181,8 +181,8 @@ export function OnboardingWizard() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-border bg-card p-6">
-        <h2 className="mb-6 text-xl font-bold">
+      <div className="rounded-2xl border border-border bg-card p-4 sm:p-6">
+        <h2 className="mb-4 sm:mb-6 text-lg sm:text-xl font-bold">
           {STEP_LABELS[step]}
         </h2>
 

@@ -102,11 +102,11 @@ export function QuickActions() {
           <Link
             key={feature.href}
             href={feature.href}
-            className={`group relative overflow-hidden rounded-2xl border border-border bg-card p-4 transition-all duration-300 hover:border-transparent hover:shadow-xl ${feature.glow}`}
+            className={`group relative overflow-hidden rounded-2xl border border-border bg-card p-4 transition-all duration-300 hover:border-transparent hover:shadow-xl min-h-[44px] touch-manipulation active:scale-[0.97] ${feature.glow}`}
           >
             <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-gradient-to-br opacity-[0.07] blur-2xl transition-opacity group-hover:opacity-[0.15]" />
-            <div className={`mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 ${feature.gradient}`}>
-              <feature.icon className="h-5 w-5" />
+            <div className={`mb-3 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 ${feature.gradient}`}>
+              <feature.icon className="h-5 w-5 sm:h-6 sm:w-6" />
             </div>
             <p className="text-sm font-semibold">{feature.label}</p>
             <p className="mt-0.5 text-xs text-muted-foreground">{feature.description}</p>
@@ -135,15 +135,15 @@ export function QuickActions() {
             <Link
               key={cat.id}
               href={`/dashboard/library?category=${cat.id}`}
-              className={`group relative overflow-hidden rounded-2xl border border-border bg-card p-4 transition-all duration-300 hover:border-transparent hover:shadow-xl hover:-translate-y-0.5 ${theme.glow}`}
+              className={`group relative overflow-hidden rounded-2xl border border-border bg-card p-4 transition-all duration-300 hover:border-transparent hover:shadow-xl hover:-translate-y-0.5 min-h-[44px] touch-manipulation active:scale-[0.97] ${theme.glow}`}
             >
               {/* Decorative glow blob */}
               <div className={`absolute -right-4 -top-4 h-24 w-24 rounded-full bg-gradient-to-br opacity-[0.07] blur-2xl transition-opacity group-hover:opacity-[0.15] ${theme.gradient}`} />
 
               {/* Icon with decorative ring */}
               <div className="relative mb-3">
-                <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 ${theme.gradient} overflow-hidden`}>
-                  {(() => { const Illust = CATEGORY_ILLUSTRATIONS[cat.slug]; return Illust ? <Illust className="h-9 w-9" /> : <Icon className="h-5 w-5" />; })()}
+                <div className={`flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 ${theme.gradient} overflow-hidden`}>
+                  {(() => { const Illust = CATEGORY_ILLUSTRATIONS[cat.slug]; return Illust ? <Illust className="w-7 h-7 sm:w-9 sm:h-9" /> : <Icon className="h-5 w-5" />; })()}
                 </div>
                 {/* Decorative orbit ring */}
                 <div className={`absolute -inset-1 rounded-xl ring-1 opacity-0 transition-opacity duration-300 group-hover:opacity-100 ${theme.ring}`} />

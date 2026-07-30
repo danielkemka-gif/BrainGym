@@ -123,11 +123,11 @@ export function OnboardingPrompt() {
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl border ${prompt.border} bg-gradient-to-br ${prompt.gradient} p-6 transition-all`}
+      className={`relative overflow-hidden rounded-2xl border ${prompt.border} bg-gradient-to-br ${prompt.gradient} p-4 sm:p-6 transition-all`}
     >
       <button
         onClick={handleDismiss}
-        className="absolute right-3 top-3 rounded-full p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
+        className="absolute right-3 top-3 rounded-full p-1 text-muted-foreground hover:bg-accent hover:text-foreground min-h-[44px] touch-manipulation"
       >
         <X className="h-4 w-4" />
       </button>
@@ -152,7 +152,7 @@ export function OnboardingPrompt() {
           <Link
             href={prompt.href}
             onClick={handleDismiss}
-            className="mt-4 inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="mt-4 inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 min-h-[44px] touch-manipulation active:scale-[0.97]"
           >
             {prompt.cta}
             <ArrowRight className="h-4 w-4" />

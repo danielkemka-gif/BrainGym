@@ -212,13 +212,13 @@ export function FriendDuelSection() {
 
               {selectedPartner && (
                 <>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     <div>
                       <label className="text-[10px] text-muted-foreground">Goal</label>
                       <select
                         value={duelGoal}
                         onChange={(e) => setDuelGoal(e.target.value)}
-                        className="w-full rounded-lg border border-border bg-background px-2 py-1.5 text-xs"
+                        className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs min-h-[44px]"
                       >
                         <option value="workouts">Workouts</option>
                         <option value="xp">XP</option>
@@ -232,7 +232,7 @@ export function FriendDuelSection() {
                         value={duelAmount}
                         onChange={(e) => setDuelAmount(parseInt(e.target.value) || 1)}
                         min={1}
-                        className="w-full rounded-lg border border-border bg-background px-2 py-1.5 text-xs"
+                        className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs min-h-[44px]"
                       />
                     </div>
                     <div>
@@ -243,7 +243,7 @@ export function FriendDuelSection() {
                         onChange={(e) => setDuelDays(parseInt(e.target.value) || 1)}
                         min={1}
                         max={30}
-                        className="w-full rounded-lg border border-border bg-background px-2 py-1.5 text-xs"
+                        className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs min-h-[44px]"
                       />
                     </div>
                   </div>

@@ -372,9 +372,9 @@ export default function ShareCardPage() {
   ];
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="mx-auto w-full max-w-full space-y-6 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
       <div>
-        <h1 className="text-xl font-bold sm:text-2xl">Share Your Progress</h1>
+        <h1 className="text-balance text-xl font-bold sm:text-2xl">Share Your Progress</h1>
         <p className="text-sm text-muted-foreground">
           Upload a photo and share your brain training stats with friends
         </p>
@@ -490,7 +490,7 @@ export default function ShareCardPage() {
             <button
               onClick={handleDownload}
               disabled={generating}
-              className="flex-1 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+              className="flex-1 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 active:scale-[0.97] touch-manipulation"
             >
               <Download className="h-4 w-4" />
               {generating ? "Generating..." : "Download Image"}
@@ -500,7 +500,7 @@ export default function ShareCardPage() {
           {/* Social share buttons */}
           <div className="space-y-3">
             <h2 className="font-semibold text-center">Share on Social Media</h2>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {shareButtons.map((btn) => {
                 if (btn.type === "copy") {
                   return (

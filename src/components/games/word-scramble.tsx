@@ -144,19 +144,19 @@ export function WordScrambleGame({ level, config, gradient, onComplete, onExit }
       {/* Word */}
       <div className="flex flex-col items-center gap-6 py-8">
         <p className="text-sm text-muted-foreground">Unscramble this word</p>
-        <div className={`flex flex-wrap items-center justify-center gap-2 rounded-2xl bg-gradient-to-br ${gradient} px-4 py-4 sm:px-8 sm:py-5`}>
-          {scrambled.split("").map((char, i) => (
-            <motion.span
-              key={`${currentWordIndex}-${i}`}
-              initial={{ scale: 0, rotate: -90 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ delay: i * 0.05, type: "spring" }}
-              className="text-2xl sm:text-3xl font-bold text-white uppercase"
-            >
-              {char}
-            </motion.span>
-          ))}
-        </div>
+          <div className={`flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 rounded-2xl bg-gradient-to-br ${gradient} px-4 py-4 sm:px-8 sm:py-5`}>
+            {scrambled.split("").map((char, i) => (
+              <motion.span
+                key={`${currentWordIndex}-${i}`}
+                initial={{ scale: 0, rotate: -90 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ delay: i * 0.05, type: "spring" }}
+                className="text-xl sm:text-2xl md:text-3xl font-bold text-white uppercase"
+              >
+                {char}
+              </motion.span>
+            ))}
+          </div>
 
         {feedback && (
           <motion.p

@@ -63,7 +63,7 @@ const ThreeSixFiveJourney = dynamic(() => import("@/components/dashboard/three-s
 
 function ShowMoreToggle({ expanded, onClick }: { expanded: boolean; onClick: () => void }) {
   return (
-    <button onClick={onClick} className="flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-card py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors lg:hidden">
+    <button onClick={onClick} className="flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-card py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors lg:hidden min-h-[44px]">
       {expanded ? "Show less" : "Show more"}
       <svg className={`h-4 w-4 transition-transform ${expanded ? "rotate-180" : ""}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
         <path d="m6 9 6 6 6-6" />
@@ -76,7 +76,7 @@ export default function DashboardPage() {
   const [showAll, setShowAll] = useState(false);
 
   return (
-    <div className="mx-auto max-w-6xl space-y-3 sm:space-y-4 lg:space-y-6">
+    <div className="mx-auto w-full max-w-6xl space-y-3 sm:space-y-4 lg:space-y-6 overflow-x-hidden pb-4 sm:pb-6">
       {/* Header */}
       <Suspense fallback={<HeaderSkeleton />}>
         <DashboardHeader />
@@ -92,7 +92,7 @@ export default function DashboardPage() {
       <Suspense fallback={<MedCard />}><CentralCTA /></Suspense>
 
       {/* Hero row: Brain Age + XP/Streak */}
-      <div className="grid gap-3 lg:gap-6 lg:grid-cols-3">
+      <div className="grid gap-3 sm:gap-4 lg:gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <Suspense fallback={<Skeleton className="h-72" />}>
             <BrainAgeSection />
@@ -119,7 +119,7 @@ export default function DashboardPage() {
       </Suspense>
 
       {/* Streak Calendar + Brain Scores */}
-      <div className="grid gap-3 lg:gap-6 lg:grid-cols-3">
+      <div className="grid gap-3 sm:gap-4 lg:gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <Suspense fallback={<Skeleton className="h-40" />}>
             <StreakCalendar />
@@ -174,7 +174,7 @@ export default function DashboardPage() {
       </Suspense>
 
       {/* Cognitive Identity + Momentum Recovery */}
-      <div className="grid gap-3 lg:gap-6 lg:grid-cols-2">
+      <div className="grid gap-3 sm:gap-4 lg:gap-6 lg:grid-cols-2">
         <Suspense fallback={<TallCard />}><CognitiveIdentityCard /></Suspense>
         <Suspense fallback={<TallCard />}><MomentumRecovery /></Suspense>
       </div>
@@ -185,7 +185,7 @@ export default function DashboardPage() {
       </Suspense>
 
       {/* Brain Health + Adaptive Habits */}
-      <div className="grid gap-3 lg:gap-6 lg:grid-cols-2">
+      <div className="grid gap-3 sm:gap-4 lg:gap-6 lg:grid-cols-2">
         <Suspense fallback={<TallCard />}><BrainHealthInsights /></Suspense>
         <Suspense fallback={<TallCard />}><AdaptiveHabitIntelligence /></Suspense>
       </div>
@@ -196,7 +196,7 @@ export default function DashboardPage() {
       </Suspense>
 
       {/* Streak Protection + 365-Day Journey */}
-      <div className="grid gap-3 lg:gap-6 lg:grid-cols-2">
+      <div className="grid gap-3 sm:gap-4 lg:gap-6 lg:grid-cols-2">
         <Suspense fallback={<TallCard />}><StreakProtectionCard /></Suspense>
         <Suspense fallback={<TallCard />}><ThreeSixFiveJourney /></Suspense>
       </div>

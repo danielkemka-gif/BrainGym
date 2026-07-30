@@ -304,7 +304,7 @@ export function TodaysWorkoutSection() {
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-border bg-card p-5">
+      <div className="rounded-2xl border border-border bg-card p-4 sm:p-6">
         <div className="h-5 w-32 animate-pulse rounded bg-muted" />
         <div className="mt-4 space-y-3">
           {[1, 2, 3].map((i) => (
@@ -345,7 +345,7 @@ export function TodaysWorkoutSection() {
         </p>
         <button
           onClick={startWorkout}
-          className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-xl bg-primary px-6 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-xl bg-primary px-6 text-sm font-medium text-primary-foreground hover:bg-primary/90 min-h-[44px] touch-manipulation active:scale-[0.97]"
         >
           {t.dashboard_start_training}
         </button>
@@ -401,9 +401,9 @@ export function TodaysWorkoutSection() {
 
   return (
     <>
-      <div className="rounded-2xl border border-border bg-card p-5">
+      <div       className="rounded-2xl border border-border bg-card p-4 sm:p-6">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-semibold">Today&apos;s Workout</h2>
+          <h2 className="text-sm sm:text-base font-semibold">Today&apos;s Workout</h2>
           <span className="text-xs text-muted-foreground">
             {doneCount}/{workout?.workout_items.length ?? 0}
           </span>
@@ -422,7 +422,7 @@ export function TodaysWorkoutSection() {
               key={item.id}
               onClick={() => toggleItem(item.id)}
               disabled={workout?.status === "completed"}
-              className={`flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-left transition-all ${
+              className={`flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-left transition-all min-h-[44px] touch-manipulation active:scale-[0.97] ${
                 item.status === "completed"
                   ? "border-green-500/30 bg-green-500/5"
                   : "border-border hover:border-muted-foreground/30"
@@ -461,7 +461,7 @@ export function TodaysWorkoutSection() {
           <button
             onClick={completeWorkout}
             disabled={!allDone || completing}
-            className="mt-4 inline-flex h-10 w-full items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50"
+            className="mt-4 inline-flex h-10 w-full items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50 min-h-[44px] touch-manipulation active:scale-[0.97]"
           >
             {completing ? (
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />

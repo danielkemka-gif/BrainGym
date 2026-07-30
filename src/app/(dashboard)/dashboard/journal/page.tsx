@@ -138,18 +138,18 @@ export default function JournalPage() {
   const moodObj = (m: string) => MOODS.find((mo) => mo.value === m);
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="mx-auto w-full max-w-full space-y-6 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold sm:text-2xl">Brain Journal</h1>
+          <h1 className="text-balance text-xl font-bold sm:text-2xl">Brain Journal</h1>
           <p className="text-sm text-muted-foreground">
             Write about your brain training journey
           </p>
         </div>
         <button
           onClick={() => { resetForm(); setShowForm(true); }}
-          className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 active:scale-[0.97]"
         >
           <Plus className="h-4 w-4" />
           New Entry
@@ -171,7 +171,7 @@ export default function JournalPage() {
             placeholder="Give this entry a title..."
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="h-10 w-full rounded-xl border border-border bg-background px-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+            className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 min-h-[44px]"
           />
 
           <textarea
@@ -233,13 +233,13 @@ export default function JournalPage() {
             <button
               onClick={saveEntry}
               disabled={!title.trim() || !content.trim() || saving}
-              className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+              className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 active:scale-[0.97] min-h-[44px]"
             >
               {saving ? "Saving..." : editingId ? "Update Entry" : "Save Entry"}
             </button>
             <button
               onClick={resetForm}
-              className="inline-flex h-10 items-center justify-center rounded-xl border border-border px-4 text-sm hover:bg-accent"
+              className="inline-flex h-12 items-center justify-center rounded-xl border border-border px-4 text-sm hover:bg-accent min-h-[44px] active:scale-[0.97] touch-manipulation"
             >
               Cancel
             </button>
@@ -254,7 +254,7 @@ export default function JournalPage() {
           placeholder="Search your journal..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="h-10 w-full rounded-xl border border-border bg-card px-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+          className="h-12 w-full rounded-xl border border-border bg-card px-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 min-h-[44px]"
         />
       )}
 
@@ -279,7 +279,7 @@ export default function JournalPage() {
           {entries.length === 0 && (
             <button
               onClick={() => setShowForm(true)}
-              className="mt-4 rounded-lg bg-primary/10 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/20"
+              className="mt-4 h-12 rounded-xl bg-primary/10 px-5 py-3 text-sm font-semibold text-primary hover:bg-primary/20 active:scale-[0.97] min-h-[44px]"
             >
               Write your first entry
             </button>
@@ -292,10 +292,10 @@ export default function JournalPage() {
             return (
               <div
                 key={entry.id}
-                className="rounded-2xl border border-border bg-card p-5 transition-all hover:border-muted-foreground/30"
+                className="rounded-2xl border border-border bg-card p-4 sm:p-5 transition-all hover:border-muted-foreground/30"
               >
                 <div className="flex items-start justify-between">
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       {m && (
                         <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${m.color}`}>
@@ -311,7 +311,7 @@ export default function JournalPage() {
                         })}
                       </span>
                     </div>
-                    <h3 className="font-semibold">{entry.title}</h3>
+                    <h3 className="truncate font-semibold">{entry.title}</h3>
                     <p className="mt-1 text-sm text-muted-foreground leading-relaxed whitespace-pre-line line-clamp-3">
                       {entry.content}
                     </p>
@@ -329,15 +329,15 @@ export default function JournalPage() {
                   <div className="flex gap-1 shrink-0 ml-2">
                     <button
                       onClick={() => startEdit(entry)}
-                      className="rounded-lg p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"
+                      className="rounded-lg p-2 text-muted-foreground hover:bg-accent hover:text-foreground min-h-[44px] min-w-[44px] flex items-center justify-center"
                     >
-                      <Pencil className="h-3.5 w-3.5" />
+                      <Pencil className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => deleteEntry(entry.id)}
-                      className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                      className="rounded-lg p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive min-h-[44px] min-w-[44px] flex items-center justify-center"
                     >
-                      <Trash2 className="h-3.5 w-3.5" />
+                      <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
                 </div>

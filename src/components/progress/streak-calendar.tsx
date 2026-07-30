@@ -40,7 +40,7 @@ export function StreakCalendar() {
   if (currentWeek.length > 0) weeks.push(currentWeek);
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-5">
+    <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
       <h2 className="mb-4 font-semibold">Activity Calendar</h2>
       <div className="flex gap-1">
         {weeks.map((week, wi) => (

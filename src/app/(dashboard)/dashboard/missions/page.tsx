@@ -46,7 +46,7 @@ function MissionCard({
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`relative overflow-hidden rounded-2xl border p-5 transition-all ${
+      className={`relative overflow-hidden rounded-2xl border p-4 sm:p-5 transition-all ${
         isClaimed
           ? "border-emerald-500/20 bg-emerald-500/5"
           : isClaimable
@@ -128,7 +128,7 @@ function MissionCard({
           <button
             onClick={() => onClaim(mission.id)}
             disabled={claiming === mission.id}
-            className="flex-shrink-0 rounded-xl bg-gradient-to-r from-primary to-emerald-400 px-4 py-2 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:shadow-xl hover:shadow-primary/30 disabled:opacity-50"
+            className="flex-shrink-0 rounded-xl bg-gradient-to-r from-primary to-emerald-400 px-4 py-2 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:shadow-xl hover:shadow-primary/30 disabled:opacity-50 min-h-[44px]"
           >
             {claiming === mission.id ? "Claiming..." : "Claim"}
           </button>
@@ -198,10 +198,10 @@ export default function MissionsPage() {
   const weekLabel = weekStart ? getWeekDateRange(weekStart) : "";
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="mx-auto w-full max-w-full space-y-6 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
       {/* Header */}
       <div>
-        <h1 className="text-xl font-bold sm:text-2xl">Weekly Missions</h1>
+        <h1 className="text-balance text-xl font-bold sm:text-2xl">Weekly Missions</h1>
         <p className="text-sm text-muted-foreground">
           Complete challenges every week to earn XP and coins
         </p>
@@ -222,7 +222,7 @@ export default function MissionsPage() {
             <button
               onClick={handleGenerate}
               disabled={generating}
-              className="mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-primary to-emerald-400 px-6 py-3 font-bold text-white shadow-lg shadow-primary/20 transition-all hover:shadow-xl hover:shadow-primary/30 disabled:opacity-50"
+              className="mt-4 inline-flex h-12 items-center gap-2 rounded-xl bg-gradient-to-r from-primary to-emerald-400 px-6 font-bold text-white shadow-lg shadow-primary/20 transition-all hover:shadow-xl hover:shadow-primary/30 disabled:opacity-50 active:scale-[0.97]"
             >
               {generating ? (
                 <>
@@ -296,7 +296,7 @@ export default function MissionsPage() {
             <button
               onClick={handleRefresh}
               disabled={refreshing}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted disabled:opacity-50"
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted disabled:opacity-50 min-h-[44px]"
             >
               <span
                 className={`h-3 w-3 ${refreshing ? "animate-spin" : ""}`}

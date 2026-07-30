@@ -262,16 +262,16 @@ export default function ReportsPage() {
   const totalWorkouts = new Set(filteredLogs.map((l) => l.date)).size;
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8">
-      <div className="flex items-center justify-between">
+    <div className="mx-auto w-full max-w-full space-y-8 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold sm:text-2xl">Reports & Analytics</h1>
+          <h1 className="text-balance text-xl font-bold sm:text-2xl">Reports & Analytics</h1>
           <p className="text-sm text-muted-foreground">
             Deep insights into your brain training journey
           </p>
         </div>
         {/* Time Range Filter */}
-        <div className="flex rounded-lg border border-border bg-card p-0.5">
+        <div className="flex rounded-lg border border-border bg-card p-0.5 flex-nowrap">
           {([
             { value: "7" as TimeRange, label: "7 Days" },
             { value: "30" as TimeRange, label: "30 Days" },
@@ -280,7 +280,7 @@ export default function ReportsPage() {
             <button
               key={tab.value}
               onClick={() => setTimeRange(tab.value)}
-              className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+              className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors min-h-[44px] ${
                 timeRange === tab.value
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:text-foreground"
@@ -311,10 +311,10 @@ export default function ReportsPage() {
 
       {/* Detailed Weekly Report Card */}
       <div className="flex items-center gap-2 mb-2">
-        <div className="flex rounded-lg border border-border bg-card p-0.5">
+        <div className="flex rounded-lg border border-border bg-card p-0.5 flex-nowrap w-full sm:w-auto overflow-x-auto">
           <button
             onClick={() => setReportView("weekly")}
-            className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+            className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors min-h-[44px] ${
               reportView === "weekly"
                 ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:text-foreground"
@@ -324,7 +324,7 @@ export default function ReportsPage() {
           </button>
           <button
             onClick={() => setReportView("monthly")}
-            className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+            className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors min-h-[44px] ${
               reportView === "monthly"
                 ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:text-foreground"
@@ -338,7 +338,7 @@ export default function ReportsPage() {
       {reportView === "weekly" ? <WeeklyReportCard /> : <MonthlyReportCard />}
 
       {/* Summary cards */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-6">
         <div className="rounded-2xl border border-border bg-card p-4 text-center">
           <p className="text-2xl font-bold">{totalWorkouts}</p>
           <p className="text-xs text-muted-foreground">Workouts</p>

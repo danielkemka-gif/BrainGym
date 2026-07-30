@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { LOCALES } from "@/lib/i18n/types";
 import { Avatar } from "@/components/ui/avatar";
@@ -40,6 +40,7 @@ const SETTINGS_NAV = { href: "/dashboard/settings", labelKey: "nav_settings", ic
 
 export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   const pathname = usePathname();
+  const { user, supabase } = useAuth();
   const { t, locale, setLocale } = useI18n();
   const [profile, setProfile] = useState<{ name: string | null; username: string | null; avatar_url: string | null } | null>(null);
   const [showLang, setShowLang] = useState(false);
@@ -49,27 +50,24 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
   const isMoreActive = MORE_NAV.some((item) => pathname === item.href);
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) return;
-      supabase
-        .from("profiles")
-        .select("name, username, avatar_url")
-        .eq("user_id", user.id)
-        .maybeSingle()
-        .then(({ data }) => {
-          if (data) setProfile(data);
-        });
-      supabase
-        .from("admins")
-        .select("user_id")
-        .eq("user_id", user.id)
-        .maybeSingle()
-        .then(({ data }) => {
-          setIsAdmin(!!data);
-        });
-    });
-  }, []);
+    if (!user) return;
+    supabase
+      .from("profiles")
+      .select("name, username, avatar_url")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) setProfile(data);
+      });
+    supabase
+      .from("admins")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        setIsAdmin(!!data);
+      });
+  }, [user, supabase]);
 
   function renderNavItem(item: { href: string; labelKey: string; iconKey: string }) {
     const active = pathname === item.href;

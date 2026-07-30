@@ -84,7 +84,7 @@ export function StreakCalendar() {
   const totalActive = Array.from(activityMap.values()).reduce((s, c) => s + (c > 0 ? 1 : 0), 0);
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-5">
+    <div className="rounded-2xl border border-border bg-card p-4 sm:p-6 overflow-x-hidden">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-sm font-semibold">Activity</h3>
         <span className="text-xs text-muted-foreground">{totalActive} active days</span>

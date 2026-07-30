@@ -227,9 +227,9 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-8">
+    <div className="mx-auto w-full max-w-full space-y-8 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
       <div>
-        <h1 className="text-xl font-bold sm:text-2xl">Settings</h1>
+        <h1 className="text-balance text-xl font-bold sm:text-2xl">Settings</h1>
         <p className="text-sm text-muted-foreground">Manage your profile and preferences</p>
       </div>
 
@@ -240,7 +240,7 @@ export default function SettingsPage() {
       )}
 
       {/* Profile Section */}
-      <section className="rounded-2xl border border-border bg-card p-6">
+      <section className="rounded-2xl border border-border bg-card p-4 sm:p-6">
         <h2 className="mb-5 text-lg font-semibold">Profile</h2>
         <div className="space-y-4">
           <div className="flex items-center gap-4">
@@ -286,7 +286,7 @@ export default function SettingsPage() {
             <input
               value={email}
               disabled
-              className="h-10 w-full rounded-lg border border-border bg-muted/50 px-3 text-sm text-muted-foreground"
+              className="h-12 w-full rounded-xl border border-border bg-muted/50 px-4 text-sm text-muted-foreground"
             />
           </div>
           <div>
@@ -294,7 +294,7 @@ export default function SettingsPage() {
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
           <div>
@@ -303,7 +303,7 @@ export default function SettingsPage() {
               value={username}
               onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))}
               placeholder="yourname"
-              className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             />
             <p className="mt-1 text-xs text-muted-foreground">
               Lowercase letters, numbers, and underscores only
@@ -318,7 +318,7 @@ export default function SettingsPage() {
                 max={120}
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
-                className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
             <div>
@@ -326,7 +326,7 @@ export default function SettingsPage() {
               <input
                 value={occupation}
                 onChange={(e) => setOccupation(e.target.value)}
-                className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
           </div>
@@ -334,7 +334,7 @@ export default function SettingsPage() {
       </section>
 
       {/* Goals & Challenges */}
-      <section className="rounded-2xl border border-border bg-card p-6">
+      <section className="rounded-2xl border border-border bg-card p-4 sm:p-6">
         <h2 className="mb-1 text-lg font-semibold">Goals & Challenges</h2>
         <p className="mb-4 text-xs text-muted-foreground">Pick up to 5 of each</p>
 
@@ -381,7 +381,7 @@ export default function SettingsPage() {
           <select
             value={preferredTime}
             onChange={(e) => setPreferredTime(e.target.value)}
-            className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <option value="">Any time</option>
             {WORKOUT_TIMES.map((t) => (
@@ -392,17 +392,17 @@ export default function SettingsPage() {
       </section>
 
       {/* Notifications */}
-      <section className="rounded-2xl border border-border bg-card p-6">
+      <section className="rounded-2xl border border-border bg-card p-4 sm:p-6">
         <h2 className="mb-5 text-lg font-semibold">Notifications</h2>
         <div className="space-y-4">
-          <label className="flex items-center justify-between">
+          <label className="flex items-center justify-between min-h-[44px] py-3">
             <div>
               <p className="text-sm font-medium">Daily workout reminder</p>
               <p className="text-xs text-muted-foreground">Get reminded to complete your daily workout</p>
             </div>
             <button
               onClick={() => setNotificationsEnabled((p) => !p)}
-              className={`relative h-7 w-12 rounded-full transition-colors ${
+              className={`relative h-7 w-12 rounded-full transition-colors shrink-0 ${
                 notificationsEnabled ? "bg-primary" : "bg-muted"
               }`}
             >
@@ -421,7 +421,7 @@ export default function SettingsPage() {
                 type="time"
                 value={reminderTime}
                 onChange={(e) => setReminderTime(e.target.value)}
-                className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
           )}
@@ -429,7 +429,7 @@ export default function SettingsPage() {
       </section>
 
       {/* Streak Protection */}
-      <section className="rounded-2xl border border-border bg-card p-6">
+      <section className="rounded-2xl border border-border bg-card p-4 sm:p-6">
         <h2 className="mb-5 text-lg font-semibold">Streak Protection</h2>
         <div className="space-y-4">
           <p className="text-sm text-muted-foreground">
@@ -458,7 +458,7 @@ export default function SettingsPage() {
       </section>
 
       {/* Language */}
-      <section className="rounded-2xl border border-border bg-card p-6">
+      <section className="rounded-2xl border border-border bg-card p-4 sm:p-6">
         <div className="flex items-center gap-2 mb-5">
           <Globe className="h-5 w-5 text-muted-foreground" />
           <h2 className="text-lg font-semibold">{t.settings_language}</h2>
@@ -488,7 +488,7 @@ export default function SettingsPage() {
       <ThemeSection />
 
       {/* Subscription */}
-      <section className="rounded-2xl border border-border bg-card p-6">
+      <section className="rounded-2xl border border-border bg-card p-4 sm:p-6">
         <h2 className="mb-5 text-lg font-semibold">Subscription</h2>
         <div className="space-y-3">
           <div className="flex items-center justify-between rounded-lg bg-muted/50 px-4 py-3">
@@ -537,7 +537,7 @@ export default function SettingsPage() {
       <ReferralSection />
 
       {/* Account */}
-      <section className="rounded-2xl border border-border bg-card p-6">
+      <section className="rounded-2xl border border-border bg-card p-4 sm:p-6">
         <h2 className="mb-5 text-lg font-semibold">Account</h2>
         <div className="space-y-3">
           <div className="flex items-center justify-between rounded-lg bg-muted/50 px-4 py-3">
@@ -553,14 +553,14 @@ export default function SettingsPage() {
         </div>
       </section>
 
-      <div className="flex items-center justify-between pb-8">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pb-8">
         <p className="text-xs text-muted-foreground">
           {saved && "Settings saved!"}
         </p>
         <button
           onClick={handleSave}
           disabled={saving}
-          className="inline-flex h-11 items-center gap-2 rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50 min-h-[44px]"
+          className="w-full sm:w-auto inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.97]"
         >
           {saving ? (
             <>
@@ -585,7 +585,7 @@ function ThemeSection() {
   ];
 
   return (
-    <section className="rounded-2xl border border-border bg-card p-6">
+    <section className="rounded-2xl border border-border bg-card p-4 sm:p-6">
       <div className="flex items-center gap-2 mb-5">
         <Sun className="h-5 w-5 text-muted-foreground" />
         <h2 className="text-lg font-semibold">Appearance</h2>
@@ -595,7 +595,7 @@ function ThemeSection() {
           <button
             key={value}
             onClick={() => setTheme(value)}
-            className={`flex flex-col items-center gap-2 rounded-xl border p-4 transition-all ${
+            className={`flex flex-col items-center gap-2 rounded-xl border p-4 transition-all active:scale-[0.97] ${
               theme === value
                 ? "border-primary bg-primary/10 text-primary"
                 : "border-border hover:border-muted-foreground/30"

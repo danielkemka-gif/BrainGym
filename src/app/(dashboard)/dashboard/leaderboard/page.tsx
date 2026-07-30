@@ -130,11 +130,11 @@ export default function LeaderboardPage() {
   }));
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="mx-auto w-full max-w-full space-y-6 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
       {/* Header */}
       <div>
-        <h1 className="text-xl font-bold sm:text-2xl flex items-center gap-2">
-          <Trophy className="h-6 w-6 text-amber-500" />
+        <h1 className="text-balance text-xl font-bold sm:text-2xl flex items-center gap-2">
+          <Trophy className="h-6 w-6 text-amber-500 shrink-0" />
           Leaderboard
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -191,7 +191,7 @@ export default function LeaderboardPage() {
           onClick={() => setSelectedLeague("all")}
           role="tab"
           aria-selected={selectedLeague === "all"}
-          className={`flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
+          className={`flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium transition-colors min-h-[44px] ${
             selectedLeague === "all"
               ? "bg-primary/10 text-primary"
               : "text-muted-foreground hover:bg-accent"
@@ -208,7 +208,7 @@ export default function LeaderboardPage() {
               onClick={() => setSelectedLeague(league.id)}
               role="tab"
               aria-selected={isSelected}
-              className={`flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
+              className={`flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium transition-colors min-h-[44px] ${
                 isSelected
                   ? "bg-gradient-to-r " + league.gradient + " text-white"
                   : "text-muted-foreground hover:bg-accent"
@@ -257,7 +257,7 @@ export default function LeaderboardPage() {
                   }`}
                 >
                   <span
-                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
+                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-lg sm:text-xl font-bold ${
                       rank === 1
                         ? "bg-yellow-500/20 text-yellow-500"
                         : rank === 2

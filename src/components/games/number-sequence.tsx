@@ -184,13 +184,13 @@ export function NumberSequenceGame({ level, config, gradient, onComplete, onExit
           </div>
 
           {/* Number pad */}
-          <div className="grid grid-cols-3 gap-2 w-full max-w-[200px] sm:max-w-[240px]">
+          <div className="grid grid-cols-3 gap-2 w-full max-w-[180px] sm:max-w-[240px]">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
               <motion.button
                 key={num}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => handleNumberClick(num)}
-                className="flex h-12 sm:h-14 items-center justify-center rounded-xl bg-card border-2 border-border text-lg sm:text-xl font-bold hover:border-primary/30 hover:bg-accent transition-all"
+                className="touch-manipulation flex h-12 sm:h-14 items-center justify-center rounded-xl bg-card border-2 border-border text-base sm:text-lg md:text-xl font-bold hover:border-primary/30 hover:bg-accent transition-all active:scale-[0.97]"
               >
                 {num}
               </motion.button>

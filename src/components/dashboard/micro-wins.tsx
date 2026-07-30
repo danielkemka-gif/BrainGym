@@ -75,11 +75,11 @@ export function MicroWins() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="rounded-2xl border border-border bg-card p-5"
+        className="rounded-2xl border border-border bg-card p-4 sm:p-6"
       >
         <div className="flex items-center gap-2">
           <Target className="h-4 w-4 text-primary" />
-          <h3 className="text-sm font-semibold">Daily Goal</h3>
+          <h3 className="text-sm sm:text-base font-semibold">Daily Goal</h3>
         </div>
 
         <div className="mt-3 flex items-center gap-4">
@@ -109,11 +109,11 @@ export function MicroWins() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1 }}
-        className="rounded-2xl border border-border bg-card p-5"
+        className="rounded-2xl border border-border bg-card p-4 sm:p-6"
       >
         <div className="flex items-center gap-2">
           <Flame className="h-4 w-4 text-orange-400" />
-          <h3 className="text-sm font-semibold">Momentum Streak</h3>
+          <h3 className="text-sm sm:text-base font-semibold">Momentum Streak</h3>
         </div>
 
         <div className="mt-3">

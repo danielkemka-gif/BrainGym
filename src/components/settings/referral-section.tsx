@@ -64,7 +64,7 @@ export function ReferralSection() {
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-border bg-card p-5">
+    <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
         <div className="h-6 w-48 animate-pulse rounded bg-muted" />
         <div className="mt-4 h-20 animate-pulse rounded-xl bg-muted" />
       </div>
@@ -93,14 +93,14 @@ export function ReferralSection() {
       <div className="flex gap-2">
         <button
           onClick={copyCode}
-          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
+          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-border px-4 py-3 text-sm font-semibold transition-colors hover:bg-accent min-h-[44px] active:scale-[0.97]"
         >
           {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
           {copied ? "Copied!" : "Copy Link"}
         </button>
         <button
           onClick={share}
-          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 min-h-[44px] active:scale-[0.97]"
         >
           <Share2 className="h-4 w-4" />
           Share

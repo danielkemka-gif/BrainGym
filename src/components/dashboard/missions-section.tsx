@@ -49,9 +49,9 @@ export function MissionsSection() {
   const completedCount = missions.filter((m) => m.completed && !m.claimed).length;
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-5">
+    <div className="rounded-2xl border border-border bg-card p-4 sm:p-6">
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-sm font-semibold">Weekly Missions</h3>
+        <h3 className="text-sm sm:text-base font-semibold">Weekly Missions</h3>
         <Link
           href="/dashboard/missions"
           className="flex items-center gap-1 text-xs text-primary hover:underline"

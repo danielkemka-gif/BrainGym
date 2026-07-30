@@ -508,12 +508,12 @@ function MiniColorGame({ onComplete }: { onComplete: (score: number) => void }) 
           {currentWord.toUpperCase()}
         </p>
       </div>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
         {options.map((opt) => (
           <button
             key={opt}
             onClick={() => handleChoice(opt)}
-            className="h-12 rounded-xl font-bold text-sm capitalize transition-all hover:scale-105 hover:shadow-md"
+            className="min-h-[48px] touch-manipulation rounded-xl font-bold text-xs sm:text-sm capitalize transition-all active:scale-[0.97] hover:scale-105 hover:shadow-md"
             style={{ backgroundColor: COLOR_HEX[opt], color: "white" }}
           >
             {opt}
@@ -698,7 +698,7 @@ export default function DailyChallengePage() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-lg space-y-6">
+      <div className="mx-auto w-full max-w-lg max-w-full space-y-6 overflow-x-hidden">
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
             <div key={i} className="h-24 animate-pulse rounded-2xl bg-muted" />
@@ -719,8 +719,8 @@ export default function DailyChallengePage() {
           <ArrowLeft className="h-4 w-4" /> Back to Games
         </Link>
 
-        <div className="rounded-2xl border border-border bg-card p-6 text-center">
-          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 text-4xl shadow-lg shadow-violet-500/20">
+        <div className="w-full max-w-full overflow-x-hidden rounded-2xl border border-border bg-card p-4 text-center sm:p-6">
+          <div className="mx-auto mb-4 flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 text-3xl sm:text-4xl shadow-lg shadow-violet-500/20">
             ⚡
           </div>
           <h1 className="text-xl font-bold sm:text-2xl">Daily Brain Age Challenge</h1>
@@ -730,8 +730,8 @@ export default function DailyChallengePage() {
           </p>
 
           {streak > 0 && (
-            <div className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-orange-500/10 px-3 py-1.5 text-sm font-bold text-orange-500">
-              <Flame className="h-4 w-4" />
+            <div className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-orange-500/10 px-3 py-1.5 text-xs sm:text-sm font-bold text-orange-500">
+              <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               {streak} day streak!
             </div>
           )}
@@ -739,7 +739,7 @@ export default function DailyChallengePage() {
           {alreadyCompleted && existingResult && (
             <div className="mt-4 rounded-xl border border-border bg-background p-4">
               <p className="text-xs text-muted-foreground">Today&apos;s Brain Age</p>
-              <p className={`text-3xl font-bold ${getBrainAgeColor(existingResult.brain_age)}`}>
+              <p className={`text-2xl sm:text-3xl font-bold ${getBrainAgeColor(existingResult.brain_age)}`}>
                 {existingResult.brain_age}
               </p>
               <p className="text-xs text-muted-foreground">
@@ -774,10 +774,10 @@ export default function DailyChallengePage() {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4"
+                className="flex items-center gap-3 sm:gap-4 rounded-2xl border border-border bg-card p-4 touch-manipulation"
               >
-                <div className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${game.gradient} text-white overflow-hidden`}>
-                  {Illust ? <Illust className="h-9 w-9" /> : Icon ? <Icon className="h-6 w-6" /> : null}
+                <div className={`flex h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${game.gradient} text-white overflow-hidden`}>
+                  {Illust ? <Illust className="h-7 w-7 sm:h-9 sm:w-9" /> : Icon ? <Icon className="h-5 w-5 sm:h-6 sm:w-6" /> : null}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold">{game.title}</p>
@@ -794,7 +794,7 @@ export default function DailyChallengePage() {
         {!alreadyCompleted && (
           <button
             onClick={() => setPhase("playing")}
-            className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 px-6 text-sm font-bold text-white shadow-lg shadow-violet-500/25 transition-all hover:shadow-xl hover:shadow-violet-500/30 active:scale-[0.98]"
+            className="touch-manipulation inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 px-6 text-sm font-bold text-white shadow-lg shadow-violet-500/25 transition-all hover:shadow-xl hover:shadow-violet-500/30 active:scale-[0.97]"
           >
             <Zap className="h-4 w-4" />
             Start Challenge
@@ -813,8 +813,8 @@ export default function DailyChallengePage() {
     const progress = ((currentGameIndex) / todayGames.length) * 100;
 
     return (
-      <div className="mx-auto max-w-lg space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="mx-auto max-w-lg space-y-4 sm:space-y-6">
+        <div className="flex items-center justify-between min-w-0">
           <button
             onClick={() => {
               if (currentGameIndex > 0) {
@@ -824,16 +824,16 @@ export default function DailyChallengePage() {
                 setPhase("intro");
               }
             }}
-            className="rounded-lg p-2 hover:bg-accent"
+            className="min-h-[44px] touch-manipulation rounded-lg p-2 hover:bg-accent active:scale-[0.97]"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-bold text-primary">
+          <div className="flex items-center gap-1 sm:gap-2">
+            <span className="text-xs sm:text-sm font-bold text-primary whitespace-nowrap">
               Game {currentGameIndex + 1}/3
             </span>
           </div>
-          <div className="text-sm font-bold text-muted-foreground">
+          <div className="text-xs sm:text-sm font-bold text-muted-foreground whitespace-nowrap">
             {gameResults.reduce((s, r) => s + r.score, 0)}
           </div>
         </div>
@@ -851,17 +851,17 @@ export default function DailyChallengePage() {
             key={currentGameIndex}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="rounded-2xl border border-border bg-card p-6"
+            className="rounded-2xl border border-border bg-card p-4 sm:p-6"
           >
-            <div className="mb-4 flex items-center gap-3">
+            <div className="mb-3 sm:mb-4 flex items-center gap-3">
               {(Illust || Icon) && (
-                <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${game.gradient} text-white overflow-hidden`}>
-                  {Illust ? <Illust className="h-8 w-8" /> : Icon ? <Icon className="h-5 w-5" /> : null}
+                <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${game.gradient} text-white overflow-hidden`}>
+                  {Illust ? <Illust className="h-7 w-7 sm:h-8 sm:w-8" /> : Icon ? <Icon className="h-5 w-5" /> : null}
                 </div>
               )}
-              <div>
-                <h2 className="font-bold">{game.title}</h2>
-                <p className="text-xs text-muted-foreground">{game.description}</p>
+              <div className="min-w-0">
+                <h2 className="font-bold text-sm sm:text-base">{game.title}</h2>
+                <p className="text-[11px] sm:text-xs text-muted-foreground truncate">{game.description}</p>
               </div>
             </div>
 
@@ -869,16 +869,16 @@ export default function DailyChallengePage() {
           </motion.div>
         )}
 
-        <div className="flex gap-2">
+        <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
           {gameResults.map((r, i) => (
-            <div key={i} className="flex-1 rounded-xl border border-border bg-card p-2 text-center">
-              <p className="text-[10px] text-muted-foreground">
+            <div key={i} className="rounded-xl border border-border bg-card p-2 text-center min-w-0">
+              <p className="text-[9px] sm:text-[10px] text-muted-foreground truncate">
                 {todayGames[i]?.title?.split(" ")[0]}
               </p>
-              <p className="text-sm font-bold">{r.score}</p>
+              <p className="text-xs sm:text-sm font-bold">{r.score}</p>
               <div className="mt-0.5 flex justify-center gap-0.5">
                 {[1, 2, 3].map((s) => (
-                  <span key={s} className={`text-[8px] ${s <= r.stars ? "text-amber-400" : "text-muted-foreground/30"}`}>
+                  <span key={s} className={`text-[7px] sm:text-[8px] ${s <= r.stars ? "text-amber-400" : "text-muted-foreground/30"}`}>
                     ★
                   </span>
                 ))}
@@ -886,9 +886,9 @@ export default function DailyChallengePage() {
             </div>
           ))}
           {Array.from({ length: Math.max(0, 3 - gameResults.length) }, (_, i) => (
-            <div key={`empty-${i}`} className="flex-1 rounded-xl border border-dashed border-border p-2 text-center">
-              <p className="text-[10px] text-muted-foreground/50">Game {gameResults.length + i + 1}</p>
-              <p className="text-sm font-bold text-muted-foreground/30">—</p>
+            <div key={`empty-${i}`} className="rounded-xl border border-dashed border-border p-2 text-center min-w-0">
+              <p className="text-[9px] sm:text-[10px] text-muted-foreground/50">Game {gameResults.length + i + 1}</p>
+              <p className="text-xs sm:text-sm font-bold text-muted-foreground/30">—</p>
             </div>
           ))}
         </div>
@@ -902,13 +902,13 @@ export default function DailyChallengePage() {
       <div className="mx-auto max-w-lg space-y-6">
         <Confetti active={showConfetti} duration={5000} />
 
-        <div className="rounded-2xl border border-border bg-card p-5 text-center sm:p-8">
+        <div className="rounded-2xl border border-border bg-card p-4 text-center sm:p-6 lg:p-8">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", bounce: 0.5 }}
           >
-            <div className={`mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-2xl bg-gradient-to-br ${getBrainAgeGradient(brainAge)} text-white text-4xl font-bold shadow-lg`}>
+            <div className={`mx-auto mb-4 flex h-20 w-20 sm:h-24 sm:w-24 items-center justify-center rounded-2xl bg-gradient-to-br ${getBrainAgeGradient(brainAge)} text-white text-2xl sm:text-4xl font-bold shadow-lg`}>
               {brainAge}
             </div>
           </motion.div>
@@ -981,16 +981,16 @@ export default function DailyChallengePage() {
             })}
           </div>
 
-          <div className="mt-6 flex gap-3">
+          <div className="mt-6 flex flex-col sm:flex-row gap-2 sm:gap-3">
             <button
               onClick={() => { loadLeaderboard(); setPhase("leaderboard"); }}
-              className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 px-6 text-sm font-bold text-white shadow-lg shadow-violet-500/25 transition-all hover:shadow-xl active:scale-[0.98]"
+              className="touch-manipulation inline-flex h-11 w-full sm:flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 px-6 text-sm font-bold text-white shadow-lg shadow-violet-500/25 transition-all hover:shadow-xl active:scale-[0.97]"
             >
               <Trophy className="h-4 w-4" /> Leaderboard
             </button>
             <Link
               href="/dashboard"
-              className="inline-flex h-11 flex-1 items-center justify-center rounded-xl border border-border px-6 text-sm font-medium hover:bg-accent"
+              className="touch-manipulation inline-flex h-11 w-full sm:flex-1 items-center justify-center rounded-xl border border-border px-6 text-sm font-medium hover:bg-accent active:scale-[0.97]"
             >
               Dashboard
             </Link>
@@ -1106,16 +1106,16 @@ export default function DailyChallengePage() {
         </div>
       )}
 
-      <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
         <button
           onClick={() => setPhase("results")}
-          className="inline-flex h-11 flex-1 items-center justify-center rounded-xl border border-border px-6 text-sm font-medium hover:bg-accent"
+          className="touch-manipulation inline-flex h-11 w-full sm:flex-1 items-center justify-center rounded-xl border border-border px-6 text-sm font-medium hover:bg-accent active:scale-[0.97]"
         >
           Back to Results
         </button>
         <Link
           href="/dashboard"
-          className="inline-flex h-11 flex-1 items-center justify-center rounded-xl bg-primary px-6 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          className="touch-manipulation inline-flex h-11 w-full sm:flex-1 items-center justify-center rounded-xl bg-primary px-6 text-sm font-medium text-primary-foreground hover:bg-primary/90 active:scale-[0.97]"
         >
           Dashboard
         </Link>

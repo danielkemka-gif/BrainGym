@@ -57,14 +57,14 @@ export function CentralCTA() {
             <div className="mt-4 flex flex-col items-center gap-2.5 sm:mt-5 sm:flex-row sm:justify-center sm:gap-3">
               <Link
                 href="/dashboard/challenge"
-                className="inline-flex h-11 sm:h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary/10 px-6 sm:px-8 text-sm font-medium text-primary hover:bg-primary/20 transition-all sm:w-auto"
+                className="inline-flex h-11 sm:h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary/10 px-6 sm:px-8 text-sm font-medium text-primary hover:bg-primary/20 transition-all sm:w-auto min-h-[44px] touch-manipulation active:scale-[0.97]"
               >
                 <Zap className="h-4 w-4 sm:h-5 sm:w-5" />
                 {t.nav_quick_fire}
               </Link>
               <Link
                 href="/dashboard/library"
-                className="inline-flex h-11 sm:h-12 w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-6 sm:px-8 text-sm font-medium hover:bg-accent transition-all sm:w-auto"
+                className="inline-flex h-11 sm:h-12 w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-6 sm:px-8 text-sm font-medium hover:bg-accent transition-all sm:w-auto min-h-[44px] touch-manipulation active:scale-[0.97]"
               >
                 <Brain className="h-4 w-4 sm:h-5 sm:w-5" />
                 {t.nav_activities}
@@ -85,7 +85,7 @@ export function CentralCTA() {
             <div className="mt-4 flex flex-col items-center gap-2.5 sm:mt-5 sm:flex-row sm:justify-center sm:gap-3">
               <Link
                 href="/dashboard/challenge"
-                className="inline-flex h-11 sm:h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-red-600 px-6 sm:px-8 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-all hover:shadow-xl hover:shadow-orange-500/30 hover:scale-[1.02] sm:w-auto"
+                className="inline-flex h-11 sm:h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-red-600 px-6 sm:px-8 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-all hover:shadow-xl hover:shadow-orange-500/30 hover:scale-[1.02] sm:w-auto min-h-[44px] touch-manipulation active:scale-[0.97]"
               >
                 <Zap className="h-4 w-4 sm:h-5 sm:w-5" />
                 {t.dashboard_start_training}

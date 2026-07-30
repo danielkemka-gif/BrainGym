@@ -189,23 +189,23 @@ export default function CoinShopPage() {
   const ownedItems = items.filter((i) => ownedCount(i.id) > 0);
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
-      <div className="flex items-center gap-4">
+    <div className="mx-auto w-full max-w-full space-y-6 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
+      <div className="flex items-start gap-4">
         <Link
           href="/dashboard"
-          className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card transition-colors hover:bg-muted min-h-[44px] min-w-[44px]"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border bg-card transition-colors hover:bg-muted min-h-[44px] min-w-[44px]"
         >
           <ArrowLeft className="h-5 w-5" />
         </Link>
-        <div className="flex-1">
-              <h1 className="text-xl font-bold sm:text-2xl">Coin Shop</h1>
+        <div className="min-w-0 flex-1">
+              <h1 className="text-balance text-xl font-bold sm:text-2xl">Coin Shop</h1>
           <p className="text-sm text-muted-foreground">
             Spend your coins on power-ups, cosmetics, and protections
           </p>
         </div>
-        <div className="flex items-center gap-2 rounded-2xl border border-border bg-card px-4 py-2">
-          <span className="text-xl">🪙</span>
-          <span className="text-lg font-bold">{coins.toLocaleString()}</span>
+        <div className="flex shrink-0 items-center gap-2 rounded-2xl border border-border bg-card px-3 py-1.5 sm:px-4 sm:py-2">
+          <span className="text-lg sm:text-xl">🪙</span>
+          <span className="text-base font-bold sm:text-lg">{coins.toLocaleString()}</span>
         </div>
       </div>
 
@@ -235,7 +235,7 @@ export default function CoinShopPage() {
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`flex shrink-0 items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-colors ${
+              className={`flex shrink-0 items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-colors active:scale-[0.97] min-h-[44px] ${
                 activeCategory === cat.id
                   ? "border-primary bg-primary/10 text-primary"
                   : "border-border bg-card text-muted-foreground hover:border-muted-foreground/30"
@@ -249,7 +249,7 @@ export default function CoinShopPage() {
       </div>
 
       {loading ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div
               key={i}
@@ -264,7 +264,7 @@ export default function CoinShopPage() {
           description="Check back later for new items"
         />
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {filteredItems.map((item, index) => {
             const owned = isOwned(item);
             const canAfford = coins >= item.cost_coins;
@@ -274,7 +274,7 @@ export default function CoinShopPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="flex flex-col rounded-2xl border border-border bg-card p-5"
+                className="flex flex-col rounded-2xl border border-border bg-card p-4 sm:p-5"
               >
                 <div className="mb-3 flex items-start justify-between">
                   <span className="text-3xl">{item.icon_emoji}</span>
@@ -322,7 +322,7 @@ export default function CoinShopPage() {
       {ownedItems.length > 0 && (
         <div className="space-y-4">
           <h2 className="text-lg font-semibold">Your Purchases</h2>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {ownedItems.map((item, index) => {
               const count = ownedCount(item.id);
               return (

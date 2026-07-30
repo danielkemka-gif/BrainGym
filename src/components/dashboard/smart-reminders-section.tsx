@@ -89,7 +89,7 @@ export function SmartRemindersSection() {
                 )}
                 <button
                   onClick={() => handleDismiss(reminder.id)}
-                  className="p-1.5 rounded-lg hover:bg-white/50 dark:hover:bg-white/5 transition"
+                  className="p-1.5 rounded-lg hover:bg-white/50 dark:hover:bg-white/5 transition min-h-[44px] touch-manipulation"
                 >
                   <X className="w-4 h-4 text-gray-400" />
                 </button>

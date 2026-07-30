@@ -65,9 +65,9 @@ export function LoginForm() {
         onChange={(e) => setEmail(e.target.value)}
         required
         autoComplete="email"
-        className="flex h-12 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="flex h-12 w-full rounded-xl border border-border bg-background px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring touch-manipulation"
       />
-
+ 
       <div className="relative">
         <input
           id="password"
@@ -78,7 +78,7 @@ export function LoginForm() {
           required
           minLength={6}
           autoComplete="current-password"
-          className="flex h-12 w-full rounded-lg border border-border bg-background px-3 py-2 pr-10 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex h-12 w-full rounded-xl border border-border bg-background px-4 py-2 pr-10 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring touch-manipulation"
           />
           <button
             type="button"
@@ -91,7 +91,7 @@ export function LoginForm() {
         </div>
 
       {error && (
-        <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+        <div className="rounded-xl bg-destructive/10 p-3 sm:p-4 text-sm text-destructive">
           {error}
         </div>
       )}
@@ -99,7 +99,7 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={loading}
-        className="inline-flex h-12 w-full items-center justify-center rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50"
+        className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-primary px-4 text-sm sm:text-base font-semibold text-primary-foreground transition-colors hover:bg-primary/90 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50"
       >
         {loading ? (
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />

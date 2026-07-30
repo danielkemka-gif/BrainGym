@@ -145,7 +145,7 @@ export function BrainTaskPlayer({ task, onComplete }: BrainTaskPlayerProps) {
 
         <button
           onClick={startDoing}
-          className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary/80 px-6 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:shadow-xl active:scale-[0.98]"
+          className="touch-manipulation inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary/80 px-6 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:shadow-xl active:scale-[0.97]"
         >
           I&apos;m Ready — Start! <ArrowRight className="h-4 w-4" />
         </button>
@@ -194,7 +194,7 @@ export function BrainTaskPlayer({ task, onComplete }: BrainTaskPlayerProps) {
           <button
             onClick={handleSubmit}
             disabled={!userInput.trim()}
-            className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-6 text-sm font-bold text-white shadow-lg shadow-green-500/25 transition-all hover:shadow-xl active:scale-[0.98] disabled:opacity-50"
+            className="touch-manipulation inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-6 text-sm font-bold text-white shadow-lg shadow-green-500/25 transition-all hover:shadow-xl active:scale-[0.97] disabled:opacity-50"
           >
             Submit
           </button>
@@ -212,7 +212,7 @@ export function BrainTaskPlayer({ task, onComplete }: BrainTaskPlayerProps) {
           </div>
           <button
             onClick={handleDone}
-            className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-6 text-sm font-bold text-white shadow-lg shadow-green-500/25 transition-all hover:shadow-xl active:scale-[0.98]"
+            className="touch-manipulation inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-6 text-sm font-bold text-white shadow-lg shadow-green-500/25 transition-all hover:shadow-xl active:scale-[0.97]"
           >
             I&apos;m Done Breathing
           </button>

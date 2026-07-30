@@ -54,9 +54,9 @@ export default function ProgressPage() {
   }, []);
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
+    <div className="mx-auto w-full max-w-full space-y-6 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
       <div>
-        <h1 className="text-xl font-bold sm:text-2xl">Progress</h1>
+        <h1 className="text-balance text-xl font-bold sm:text-2xl">Progress</h1>
         <p className="text-sm text-muted-foreground">
           Track your brain training journey
         </p>
@@ -73,7 +73,7 @@ export default function ProgressPage() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-border bg-card p-5">
+      <div className="overflow-x-auto rounded-2xl border border-border bg-card p-5">
         <h2 className="mb-4 text-xl font-bold">Skill Tree</h2>
         <SkillTree activityCounts={activityCounts} scores={scores} />
       </div>

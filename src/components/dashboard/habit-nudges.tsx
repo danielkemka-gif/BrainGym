@@ -170,10 +170,10 @@ export function HabitNudges() {
   };
 
   return (
-    <div className={`relative overflow-hidden rounded-2xl border bg-gradient-to-r p-4 ${gradients[nudge.type]}`}>
+    <div className={`relative overflow-hidden rounded-2xl border bg-gradient-to-r p-4 sm:p-5 ${gradients[nudge.type]}`}>
       <button
         onClick={handleDismiss}
-        className="absolute right-3 top-3 rounded-full p-1 text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
+        className="absolute right-3 top-3 rounded-full p-1 text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors min-h-[44px] touch-manipulation"
         aria-label="Dismiss"
       >
         <X className="h-3.5 w-3.5" />
@@ -186,7 +186,7 @@ export function HabitNudges() {
           {nudge.actionLabel && nudge.actionHref && (
             <Link
               href={nudge.actionHref}
-              className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+              className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline min-h-[44px] touch-manipulation"
             >
               <Zap className="h-3 w-3" />
               {nudge.actionLabel}

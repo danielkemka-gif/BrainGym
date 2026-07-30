@@ -171,7 +171,7 @@ export function InviteFriendsCard() {
           <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
             Your Invite Code
           </p>
-          <p className="text-xl font-black tracking-[0.2em] text-violet-600 dark:text-violet-400 font-mono">
+          <p className="text-base sm:text-lg font-black tracking-[0.2em] text-violet-600 dark:text-violet-400 font-mono">
             {info.code}
           </p>
         </div>
@@ -180,7 +180,7 @@ export function InviteFriendsCard() {
       {/* Copy link button */}
       <button
         onClick={copyLink}
-        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-violet-300 dark:border-violet-700 text-violet-700 dark:text-violet-300 font-medium text-sm hover:bg-violet-50 dark:hover:bg-violet-900/20 transition mb-3"
+        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-violet-300 dark:border-violet-700 text-violet-700 dark:text-violet-300 font-medium text-sm hover:bg-violet-50 dark:hover:bg-violet-900/20 transition mb-3 min-h-[44px] touch-manipulation active:scale-[0.97]"
       >
         {copied ? (
           <>
@@ -233,7 +233,7 @@ export function InviteFriendsCard() {
       {typeof navigator !== 'undefined' && 'share' in navigator && (
         <button
           onClick={nativeShare}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-600 text-white font-medium text-sm hover:opacity-90 transition mb-3"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-600 text-white font-medium text-sm hover:opacity-90 transition mb-3 min-h-[44px] touch-manipulation active:scale-[0.97]"
         >
           <Share2 className="w-4 h-4" /> Share via...
         </button>
@@ -281,7 +281,7 @@ function ShareButton({
   return (
     <button
       onClick={onClick}
-      className={`flex flex-col items-center gap-1.5 p-3 rounded-xl text-white text-xs font-medium transition ${color}`}
+      className={`flex flex-col items-center gap-1.5 p-3 rounded-xl text-white text-xs font-medium transition min-h-[44px] touch-manipulation active:scale-[0.97] ${color}`}
       title={`Share on ${label}`}
     >
       {icon}

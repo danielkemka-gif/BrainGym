@@ -16,8 +16,10 @@ function GoogleIcon() {
 
 export function SocialAuthButtons({
   redirectTo,
+  refCode,
 }: {
   redirectTo?: string;
+  refCode?: string | null;
 }) {
   const [loading, setLoading] = useState<Record<string, boolean>>({});
   const [error, setError] = useState<string | null>(null);
@@ -29,12 +31,16 @@ export function SocialAuthButtons({
 
     try {
       const supabase = createClient();
+      const baseRedirect =
+        redirectTo || `${window.location.origin}/auth/callback`;
+      const redirectUrl = refCode
+        ? `${baseRedirect}${baseRedirect.includes("?") ? "&" : "?"}ref=${encodeURIComponent(refCode)}`
+        : baseRedirect;
+
       const result = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo:
-            redirectTo ||
-            `${window.location.origin}/auth/callback`,
+          redirectTo: redirectUrl,
         },
       });
 

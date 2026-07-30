@@ -134,7 +134,15 @@ export function InviteFriendsCard() {
     );
   }
 
-  if (!info) return null;
+  if (!info) {
+    return (
+      <div className="rounded-2xl bg-gradient-to-br from-violet-500/10 via-purple-500/10 to-fuchsia-500/10 dark:from-violet-500/5 dark:via-purple-500/5 dark:to-fuchsia-500/5 backdrop-blur-sm border border-violet-200 dark:border-violet-800/50 p-4 sm:p-6 text-center">
+        <p className="text-sm text-muted-foreground">
+          Sign in to view your invite code and share with friends.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <motion.div

@@ -21,7 +21,7 @@ export default async function SignupPage(props: { searchParams?: Promise<{ ref?:
         </p>
       </div>
 
-      <SocialAuthButtons />
+      <SocialAuthButtons refCode={refCode} />
 
       <div className="relative">
         <div className="absolute inset-0 flex items-center">

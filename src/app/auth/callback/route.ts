@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://brain-gym-nsu6.vercel.app";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://braingym.app";
 
 async function createServiceClient() {
   const cookieStore = await cookies();

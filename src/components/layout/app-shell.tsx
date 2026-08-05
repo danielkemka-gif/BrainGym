@@ -25,17 +25,19 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
   }, [user]);
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-dvh">
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <div className="flex flex-1 flex-col min-w-0 min-h-0">
+      <div className="flex flex-1 flex-col min-w-0">
         <Topbar
           onMenuClick={() => setSidebarOpen((p) => !p)}
           userName={userName}
         />
         <main
           id="main-content"
-          className="flex-1 w-full max-w-full px-3 py-3 pb-28 sm:px-4 sm:py-4 lg:p-6 overflow-y-auto min-h-0"
-          style={{ paddingBottom: 'max(7rem, calc(env(safe-area-inset-bottom) + 4rem))', touchAction: 'auto' }}
+          className="flex-1 w-full max-w-full px-3 py-3 pb-28 sm:px-4 sm:py-4 lg:p-6"
+          style={{
+            paddingBottom: 'max(7rem, calc(env(safe-area-inset-bottom) + 4rem))',
+          }}
           tabIndex={-1}
         >
           {children}

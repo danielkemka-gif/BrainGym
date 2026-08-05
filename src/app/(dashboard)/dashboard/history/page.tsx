@@ -11,7 +11,7 @@ interface LogEntry {
   xp_earned: number;
   coins_earned: number;
   created_at: string;
-  activity: {
+  activities: {
     title: string;
     difficulty: string;
     category_id: string;
@@ -162,40 +162,43 @@ export default function HistoryPage() {
         </div>
       ) : (
         <div className="space-y-2">
-          {filtered.map((log) => (
-            <div
-              key={log.id}
-              className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4"
-            >
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm">
-                {log.activity?.title[0] ?? "?"}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="truncate text-sm font-medium">
-                  {log.activity?.title ?? "Unknown activity"}
-                </p>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span>{log.date}</span>
-                  {log.activity?.category_id && (
-                    <>
-                      <span>·</span>
-                      <span>{getCategoryLabel(log.activity.category_id)}</span>
-                    </>
-                  )}
-                  {log.activity?.difficulty && (
-                    <>
-                      <span>·</span>
-                      <span className="capitalize">{log.activity.difficulty}</span>
-                    </>
-                  )}
+          {filtered.map((log) => {
+            const activity = log.activities;
+            return (
+              <div
+                key={log.id}
+                className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm">
+                  {activity?.title?.[0] ?? "?"}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="truncate text-sm font-medium">
+                    {activity?.title ?? "Unknown activity"}
+                  </p>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <span>{log.date}</span>
+                    {activity?.category_id && (
+                      <>
+                        <span>·</span>
+                        <span>{getCategoryLabel(activity.category_id)}</span>
+                      </>
+                    )}
+                    {activity?.difficulty && (
+                      <>
+                        <span>·</span>
+                        <span className="capitalize">{activity.difficulty}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-sm font-medium text-primary">+{log.xp_earned} XP</p>
+                  <p className="text-xs text-muted-foreground">+{log.coins_earned} coins</p>
                 </div>
               </div>
-              <div className="text-right shrink-0">
-                <p className="text-sm font-medium text-primary">+{log.xp_earned} XP</p>
-                <p className="text-xs text-muted-foreground">+{log.coins_earned} coins</p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

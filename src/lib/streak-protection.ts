@@ -20,7 +20,7 @@ export async function hasStreakFreeze(userId: string, date: string): Promise<boo
 /**
  * Use a streak freeze for a given date. Decrements the user's freeze count.
  */
-export async function useStreakFreeze(userId: string, date: string): Promise<boolean> {
+export async function consumeStreakFreeze(userId: string, date: string): Promise<boolean> {
   const supabase = createClient();
 
   // Check user has freezes available
@@ -115,7 +115,7 @@ export async function calculateStreakWithFreeze(
     }
 
     // Try to auto-use a freeze
-    const used = await useStreakFreeze(userId, yesterday);
+    const used = await consumeStreakFreeze(userId, yesterday);
     if (used) {
       return { newStreak: currentStreak + 1, freezeUsed: true, newLastDate: today };
     }
@@ -135,8 +135,8 @@ export async function calculateStreakWithFreeze(
 
     // Try to use available freezes
     let freezesUsed = 0;
-    if (await useStreakFreeze(userId, d1.toISOString().split("T")[0])) freezesUsed++;
-    if (await useStreakFreeze(userId, d2.toISOString().split("T")[0])) freezesUsed++;
+    if (await consumeStreakFreeze(userId, d1.toISOString().split("T")[0])) freezesUsed++;
+    if (await consumeStreakFreeze(userId, d2.toISOString().split("T")[0])) freezesUsed++;
 
     if (freezesUsed === 2) {
       return { newStreak: currentStreak + 1, freezeUsed: true, newLastDate: today };

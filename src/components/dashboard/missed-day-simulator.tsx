@@ -113,7 +113,7 @@ export function MissedDaySimulator() {
       <div className="flex items-center justify-center gap-2 mb-4 p-2 rounded-lg bg-orange-50 dark:bg-orange-900/10">
         <AlertTriangle className="w-4 h-4 text-orange-500" />
         <span className="text-sm text-orange-700 dark:text-orange-300 font-medium">
-          You'd lose {scoreDrop} points and drop to {label} {emoji}
+          You&apos;d lose {scoreDrop} points and drop to {label} {emoji}
         </span>
       </div>
 

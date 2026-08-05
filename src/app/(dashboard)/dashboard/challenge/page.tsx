@@ -486,7 +486,7 @@ export default function ChallengePage() {
   // ═══ SETUP ═══
   if (phase === "setup") {
     return (
-      <div className="mx-auto w-full max-w-lg max-w-full space-y-6 overflow-x-hidden">
+      <div className="mx-auto w-full max-w-lg space-y-6 overflow-x-hidden">
         <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground min-h-[44px]">
           <ArrowLeft className="h-4 w-4" /> Back
         </Link>
@@ -668,7 +668,7 @@ export default function ChallengePage() {
       : "Every question is a learning opportunity!";
 
     return (
-      <div className="mx-auto w-full max-w-lg max-w-full space-y-6 overflow-x-hidden">
+      <div className="mx-auto w-full max-w-lg space-y-6 overflow-x-hidden">
         <div className="rounded-2xl border border-border bg-card p-4 text-center sm:p-6 lg:p-8">
           <div className="mx-auto mb-4 flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 text-3xl sm:text-4xl shadow-lg shadow-green-500/20">
             🎉
@@ -782,10 +782,11 @@ export default function ChallengePage() {
   const qTimeVisual = (questionTimeLeft / qTimePercent) * 100;
 
   return (
-    <div className="mx-auto w-full max-w-lg max-w-full space-y-3 sm:space-y-4 overflow-x-hidden">
+    <div className="mx-auto w-full max-w-lg space-y-3 sm:space-y-4 overflow-x-hidden">
       {/* Header */}
       <div className="flex items-center justify-between min-w-0">
         <button onClick={() => { if (timerRef.current) clearInterval(timerRef.current); setPhase("setup"); }}
+          aria-label="Back to setup"
           className="min-h-[44px] touch-manipulation text-sm text-muted-foreground hover:text-foreground active:scale-[0.97]">
           <ArrowLeft className="h-4 w-4" />
         </button>

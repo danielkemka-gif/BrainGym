@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+
+const APP_URL =
+  process.env.NEXT_PUBLIC_APP_URL || "https://brain-gym-nsu6.vercel.app";
 import { createClient } from "@/lib/supabase/client";
 import { getLevelProgress } from "@/lib/scoring";
 import { LEVELS, CATEGORIES } from "@/lib/constants";
@@ -159,7 +162,7 @@ function drawCard(ctx: CanvasRenderingContext2D, W: number, H: number, stats: Us
 
   ctx.font = "bold 22px system-ui, sans-serif";
   ctx.fillStyle = "#ffffff";
-  ctx.fillText("Train your brain at braingym.app", W / 2, botY + 75);
+  ctx.fillText(`Train your brain at ${APP_URL.replace("https://", "")}`, W / 2, botY + 75);
 }
 
 export default function ShareCardPage() {
@@ -319,12 +322,12 @@ export default function ShareCardPage() {
   const [copied, setCopied] = useState(false);
 
   const shareText = stats
-    ? `🧠 I'm a Level ${stats.level} ${stats.levelTitle} on BrainGym! ${stats.totalXp} XP earned, ${stats.streak}-day streak 🔥\n\nTrain your brain at braingym.app`
+    ? `🧠 I'm a Level ${stats.level} ${stats.levelTitle} on BrainGym! ${stats.totalXp} XP earned, ${stats.streak}-day streak 🔥\n\nTrain your brain at ${APP_URL}`
     : "";
 
   function getShareUrl(platform: string) {
     const text = encodeURIComponent(shareText);
-    const url = encodeURIComponent("https://braingym.app");
+    const url = encodeURIComponent(APP_URL);
     switch (platform) {
       case "whatsapp": return `https://api.whatsapp.com/send?text=${text}`;
       case "twitter": return `https://twitter.com/intent/tweet?text=${text}`;

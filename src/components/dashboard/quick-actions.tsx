@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { CATEGORIES } from "@/lib/constants";
 import { useI18n } from "@/lib/i18n";
-import { ArrowRight, Zap, ShoppingCart } from "lucide-react";
+import { ArrowRight, Zap, ShoppingCart, Gamepad2 } from "lucide-react";
 import { CATEGORY_ICONS } from "@/lib/icons";
 import { CATEGORY_ILLUSTRATIONS } from "@/components/brain-illustrations";
 
@@ -62,6 +62,14 @@ const FEATURE_LINKS = [
     glow: "group-hover:shadow-primary/25",
   },
   {
+    href: "/dashboard/games",
+    label: "Brain Games",
+    description: "5 games, 10 levels each",
+    icon: Gamepad2,
+    gradient: "from-emerald-500 to-teal-600",
+    glow: "group-hover:shadow-emerald-500/25",
+  },
+  {
     href: "/dashboard/shop",
     label: "Coin Shop",
     description: "Spend coins on power-ups",
@@ -97,14 +105,13 @@ export function QuickActions() {
   return (
     <div className="space-y-5">
       {/* Feature quick links */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {FEATURE_LINKS.map((feature) => (
           <Link
             key={feature.href}
             href={feature.href}
             className={`group relative overflow-hidden rounded-2xl border border-border bg-card p-4 transition-all duration-300 hover:border-transparent hover:shadow-xl min-h-[44px] touch-manipulation active:scale-[0.97] ${feature.glow}`}
           >
-            <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-gradient-to-br opacity-[0.07] blur-2xl transition-opacity group-hover:opacity-[0.15]" />
             <div className={`mb-3 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 ${feature.gradient}`}>
               <feature.icon className="h-5 w-5 sm:h-6 sm:w-6" />
             </div>
@@ -137,9 +144,6 @@ export function QuickActions() {
               href={`/dashboard/library?category=${cat.id}`}
               className={`group relative overflow-hidden rounded-2xl border border-border bg-card p-4 transition-all duration-300 hover:border-transparent hover:shadow-xl hover:-translate-y-0.5 min-h-[44px] touch-manipulation active:scale-[0.97] ${theme.glow}`}
             >
-              {/* Decorative glow blob */}
-              <div className={`absolute -right-4 -top-4 h-24 w-24 rounded-full bg-gradient-to-br opacity-[0.07] blur-2xl transition-opacity group-hover:opacity-[0.15] ${theme.gradient}`} />
-
               {/* Icon with decorative ring */}
               <div className="relative mb-3">
                 <div className={`flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 ${theme.gradient} overflow-hidden`}>

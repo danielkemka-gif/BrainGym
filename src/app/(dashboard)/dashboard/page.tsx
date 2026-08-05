@@ -34,6 +34,7 @@ function HeaderSkeleton() {
 
 /* ---------- dynamic imports ---------- */
 const DashboardHeader = dynamic(() => import("@/components/dashboard/dashboard-header").then((m) => ({ default: m.DashboardHeader })), { ssr: false, loading: () => <HeaderSkeleton /> });
+const WelcomeTour = dynamic(() => import("@/components/dashboard/welcome-tour").then((m) => ({ default: m.WelcomeTour })), { ssr: false });
 const OnboardingPrompt = dynamic(() => import("@/components/dashboard/onboarding-prompt").then((m) => ({ default: m.OnboardingPrompt })), { ssr: false, loading: () => <MiniCard /> });
 const HabitNudges = dynamic(() => import("@/components/dashboard/habit-nudges").then((m) => ({ default: m.HabitNudges })), { ssr: false, loading: () => <MiniCard /> });
 const QuickActions = dynamic(() => import("@/components/dashboard/quick-actions").then((m) => ({ default: m.QuickActions })));
@@ -77,6 +78,9 @@ export default function DashboardPage() {
 
   return (
     <div className="mx-auto w-full max-w-6xl space-y-3 sm:space-y-4 lg:space-y-6 overflow-x-hidden pb-4 sm:pb-6">
+      {/* First-visit welcome tour */}
+      <WelcomeTour />
+
       {/* Header */}
       <Suspense fallback={<HeaderSkeleton />}>
         <DashboardHeader />

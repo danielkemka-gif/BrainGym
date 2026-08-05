@@ -1,6 +1,6 @@
 export default function AuthLoading() {
   return (
-    <div className="flex min-h-dvh items-center justify-center pb-[env(safe-area-inset-bottom)] touch-manipulation" role="status" aria-live="polite" aria-label="Loading">
+    <div className="flex min-h-screen items-center justify-center pb-[env(safe-area-inset-bottom)] touch-manipulation" role="status" aria-live="polite" aria-label="Loading">
       <div className="w-full max-w-md space-y-6 animate-pulse px-4">
         <div className="flex flex-col items-center gap-3">
           <div className="h-12 w-12 rounded-2xl bg-muted" />

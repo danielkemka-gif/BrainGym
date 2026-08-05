@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Play, Lock, Star, Trophy, Zap, Timer } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
+import { GameIntro } from "./game-intro";
+import { Countdown } from "./countdown";
 
 interface Props {
   level: number;
@@ -12,8 +14,10 @@ interface Props {
   onExit: () => void;
 }
 
+type Phase = "intro" | "countdown" | "show" | "input" | "result";
+
 export function NumberSequenceGame({ level, config, gradient, onComplete, onExit }: Props) {
-  const [phase, setPhase] = useState<"show" | "input" | "result">("show");
+  const [phase, setPhase] = useState<Phase>("intro");
   const [sequence, setSequence] = useState<number[]>([]);
   const [userInput, setUserInput] = useState<number[]>([]);
   const [currentRound, setCurrentRound] = useState(0);
@@ -23,28 +27,58 @@ export function NumberSequenceGame({ level, config, gradient, onComplete, onExit
   const [showingIndex, setShowingIndex] = useState(-1);
   const [feedback, setFeedback] = useState<"correct" | "wrong" | null>(null);
 
+  const scoreRef = useRef(0);
+  const timeLeftRef = useRef(0);
+  const onCompleteRef = useRef(onComplete);
+  const revealTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const transitionRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const startLen = config.params.startLen || 3;
   const maxLen = config.params.maxLen || 6;
   const totalRounds = Math.min(10, maxLen - startLen + 3);
+  const difficulty = level <= 3 ? "easy" : level <= 6 ? "medium" : level <= 8 ? "hard" : level <= 9 ? "expert" : "master";
 
-  // Timer
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
+
+  useEffect(() => {
+    return () => {
+      if (revealTimerRef.current) clearInterval(revealTimerRef.current);
+      if (transitionRef.current) clearTimeout(transitionRef.current);
+    };
+  }, []);
+
+  // Game timer — reads live values from refs
   useEffect(() => {
     if (!timerRunning) return;
     const t = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(t);
-          setTimerRunning(false);
-          onComplete(score, 0, 0);
-          return 0;
-        }
-        return prev - 1;
-      });
+      timeLeftRef.current -= 1;
+      setTimeLeft(timeLeftRef.current);
+      if (timeLeftRef.current <= 0) {
+        clearInterval(t);
+        setTimerRunning(false);
+        const finalStars =
+          scoreRef.current >= config.targetScore3 ? 3 : scoreRef.current >= config.targetScore2 ? 2 : scoreRef.current >= config.targetScore ? 1 : 0;
+        onCompleteRef.current(scoreRef.current, finalStars, 0);
+      }
     }, 1000);
     return () => clearInterval(t);
-  }, [timerRunning, score, onComplete]);
+  }, [timerRunning, config]);
+
+  function clearTransitions() {
+    if (revealTimerRef.current) {
+      clearInterval(revealTimerRef.current);
+      revealTimerRef.current = null;
+    }
+    if (transitionRef.current) {
+      clearTimeout(transitionRef.current);
+      transitionRef.current = null;
+    }
+  }
 
   function startRound(round: number) {
+    clearTransitions();
     const len = Math.min(startLen + round, maxLen);
     const seq = Array.from({ length: len }, () => Math.floor(Math.random() * 9) + 1);
     setSequence(seq);
@@ -53,13 +87,13 @@ export function NumberSequenceGame({ level, config, gradient, onComplete, onExit
     setPhase("show");
     setShowingIndex(0);
 
-    // Show sequence one by one
     let idx = 0;
-    const showInterval = setInterval(() => {
+    revealTimerRef.current = setInterval(() => {
       idx++;
       if (idx >= seq.length) {
-        clearInterval(showInterval);
-        setTimeout(() => {
+        clearInterval(revealTimerRef.current!);
+        revealTimerRef.current = null;
+        transitionRef.current = setTimeout(() => {
           setShowingIndex(-1);
           setPhase("input");
         }, 500);
@@ -69,15 +103,25 @@ export function NumberSequenceGame({ level, config, gradient, onComplete, onExit
     }, 800);
   }
 
-  function startGame() {
+  function beginGame() {
     setScore(0);
+    scoreRef.current = 0;
     setCurrentRound(0);
-    setTimeLeft(Math.floor(config.timeLimitMs / 1000));
+    const initialTime = Math.floor(config.timeLimitMs / 1000);
+    setTimeLeft(initialTime);
+    timeLeftRef.current = initialTime;
     setTimerRunning(true);
+    setPhase("show");
     startRound(0);
   }
 
-  const handleNumberClick = useCallback((num: number) => {
+  function finish(finalScore: number, finalStars: number, finalTimeLeftMs: number) {
+    setTimerRunning(false);
+    clearTransitions();
+    onCompleteRef.current(finalScore, finalStars, finalTimeLeftMs);
+  }
+
+  function handleNumberClick(num: number) {
     if (phase !== "input") return;
     const newInput = [...userInput, num];
     setUserInput(newInput);
@@ -85,16 +129,16 @@ export function NumberSequenceGame({ level, config, gradient, onComplete, onExit
     const expected = sequence[newInput.length - 1];
     if (num !== expected) {
       setFeedback("wrong");
-      setTimeout(() => {
+      transitionRef.current = setTimeout(() => {
         setFeedback(null);
-        const roundScore = Math.max(0, score + (currentRound + 1) * 10);
+        const roundScore = Math.max(0, scoreRef.current + (currentRound + 1) * 10);
         if (currentRound + 1 >= totalRounds || roundScore >= config.targetScore3) {
           const finalStars = roundScore >= config.targetScore3 ? 3 : roundScore >= config.targetScore2 ? 2 : roundScore >= config.targetScore ? 1 : 0;
-          setTimerRunning(false);
-          onComplete(roundScore, finalStars, timeLeft * 1000);
+          finish(roundScore, finalStars, timeLeftRef.current * 1000);
         } else {
-          setCurrentRound((r) => r + 1);
-          startRound(currentRound + 1);
+          const next = currentRound + 1;
+          setCurrentRound(next);
+          startRound(next);
         }
       }, 600);
       return;
@@ -102,32 +146,68 @@ export function NumberSequenceGame({ level, config, gradient, onComplete, onExit
 
     if (newInput.length === sequence.length) {
       setFeedback("correct");
-      const roundScore = score + (currentRound + 1) * 20;
+      const roundScore = scoreRef.current + (currentRound + 1) * 20;
+      scoreRef.current = roundScore;
       setScore(roundScore);
-      setTimeout(() => {
+      transitionRef.current = setTimeout(() => {
         setFeedback(null);
         if (currentRound + 1 >= totalRounds || roundScore >= config.targetScore3) {
           const finalStars = roundScore >= config.targetScore3 ? 3 : roundScore >= config.targetScore2 ? 2 : roundScore >= config.targetScore ? 1 : 0;
-          setTimerRunning(false);
-          onComplete(roundScore, finalStars, timeLeft * 1000);
+          finish(roundScore, finalStars, timeLeftRef.current * 1000);
         } else {
-          setCurrentRound((r) => r + 1);
-          startRound(currentRound + 1);
+          const next = currentRound + 1;
+          setCurrentRound(next);
+          startRound(next);
         }
       }, 600);
     }
-  }, [phase, userInput, sequence, score, currentRound, totalRounds, config, timeLeft, onComplete]);
+  }
+
+  // ─── Intro ──────────────────────────────────────────────────────────
+  if (phase === "intro") {
+    return (
+      <GameIntro
+        title="Number Memory"
+        description="Memorize the digits shown one by one, then repeat them back in order."
+        steps={[
+          "Watch carefully as digits light up, one at a time.",
+          "When the pad appears, tap the digits in the exact same order.",
+          "Each correct round earns more points — beat the target for stars!",
+        ]}
+        level={level}
+        difficulty={difficulty}
+        timeLimitSec={Math.floor(config.timeLimitMs / 1000)}
+        goal={`${config.targetScore}+ pts`}
+        gradient={gradient}
+        onStart={() => setPhase("countdown")}
+        onBack={onExit}
+      />
+    );
+  }
+
+  // ─── Countdown ──────────────────────────────────────────────────────
+  if (phase === "countdown") {
+    return <Countdown label="Get ready to memorize..." onDone={beginGame} />;
+  }
 
   return (
     <div className="mx-auto max-w-lg space-y-4">
       {/* HUD */}
       <div className="flex items-center justify-between">
-        <button onClick={onExit} className="rounded-lg p-2 hover:bg-accent min-h-[44px] flex items-center justify-center">
+        <button
+          onClick={() => {
+            clearTransitions();
+            setTimerRunning(false);
+            onExit();
+          }}
+          aria-label="Back to level select"
+          className="flex min-h-[44px] items-center justify-center rounded-lg p-2 hover:bg-accent"
+        >
           <ArrowLeft className="h-5 w-5" />
         </button>
         <div className="flex items-center gap-3">
           <div className="rounded-full bg-primary/10 px-3 py-1.5 text-sm font-bold text-primary">R{currentRound + 1}/{totalRounds}</div>
-          <div className={`rounded-full px-3 py-1.5 text-sm font-bold ${timeLeft <= 10 ? "bg-red-500/10 text-red-500 animate-pulse" : "bg-muted"}`}>
+          <div className={`rounded-full px-3 py-1.5 text-sm font-bold ${timeLeft <= 10 ? "bg-red-500/10 text-red-500" : "bg-muted"}`}>
             {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")}
           </div>
           <div className="rounded-full bg-primary/10 px-3 py-1.5 text-sm font-bold text-primary">{score}</div>
@@ -161,7 +241,7 @@ export function NumberSequenceGame({ level, config, gradient, onComplete, onExit
       {/* Input phase: user enters sequence */}
       {phase === "input" && (
         <div className="flex flex-col items-center gap-6 py-4">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm font-medium text-muted-foreground">
             {feedback === "correct" ? "Correct!" : feedback === "wrong" ? "Wrong!" : `Enter the sequence (${sequence.length} numbers)`}
           </p>
 

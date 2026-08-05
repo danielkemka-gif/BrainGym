@@ -698,7 +698,7 @@ export default function DailyChallengePage() {
 
   if (loading) {
     return (
-      <div className="mx-auto w-full max-w-lg max-w-full space-y-6 overflow-x-hidden">
+      <div className="mx-auto w-full max-w-lg space-y-6 overflow-x-hidden">
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
             <div key={i} className="h-24 animate-pulse rounded-2xl bg-muted" />
@@ -824,6 +824,7 @@ export default function DailyChallengePage() {
                 setPhase("intro");
               }
             }}
+            aria-label="Back to previous game"
             className="min-h-[44px] touch-manipulation rounded-lg p-2 hover:bg-accent active:scale-[0.97]"
           >
             <ArrowLeft className="h-5 w-5" />
@@ -1006,7 +1007,8 @@ export default function DailyChallengePage() {
       <div className="flex items-center gap-3">
         <button
           onClick={() => setPhase("results")}
-          className="rounded-lg p-2 hover:bg-accent"
+          aria-label="Back to results"
+          className="rounded-lg p-2 hover:bg-accent min-h-[44px] flex items-center justify-center"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>

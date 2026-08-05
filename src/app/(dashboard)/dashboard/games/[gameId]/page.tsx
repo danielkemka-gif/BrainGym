@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useState, useEffect, useRef } from "react";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import {
   ALL_GAMES,
-  MEMORY_MATCH,
   calculateStars,
   getXpForStars,
   getCoinsForStars,
@@ -21,6 +20,9 @@ import { NumberSequenceGame } from "@/components/games/number-sequence";
 import { WordScrambleGame } from "@/components/games/word-scramble";
 import { ReactionSpeedGame } from "@/components/games/reaction-speed";
 import { ColorMatchGame } from "@/components/games/color-match";
+import { GameIntro } from "@/components/games/game-intro";
+import { Countdown } from "@/components/games/countdown";
+import { ErrorBoundary } from "@/components/games/error-boundary";
 
 const CARD_EMOJIS = [
   "🧠", "🎯", "💡", "🔥", "⭐", "🎮", "🧩", "💎",
@@ -44,17 +46,21 @@ interface Card {
   matched: boolean;
 }
 
+type Phase = "select" | "intro" | "countdown" | "play" | "result";
+
+const SPECIALIZED_GAMES = new Set(["number_sequence", "word_scramble", "reaction_speed", "color_match"]);
+
 export default function MemoryMatchPage() {
   const params = useParams();
-  const router = useRouter();
   const { t } = useI18n();
   const gameId = params.gameId as string;
   const game = ALL_GAMES.find((g) => g.id === gameId);
 
   const [userId, setUserId] = useState<string | null>(null);
   const [progress, setProgress] = useState<GameProgress[]>([]);
+  const [progressLoaded, setProgressLoaded] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
-  const [phase, setPhase] = useState<"select" | "play" | "result">("select");
+  const [phase, setPhase] = useState<Phase>("select");
 
   // Game state
   const [cards, setCards] = useState<Card[]>([]);
@@ -72,22 +78,38 @@ export default function MemoryMatchPage() {
   const [resultXp, setResultXp] = useState(0);
   const [resultCoins, setResultCoins] = useState(0);
 
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Live refs so timer/win callbacks never read stale values
+  const scoreRef = useRef(0);
+  const matchedPairsRef = useRef(0);
+  const timeLeftRef = useRef(0);
+  const endGameRef = useRef<(won: boolean) => void>(() => {});
+  useEffect(() => { scoreRef.current = score; }, [score]);
+  useEffect(() => { matchedPairsRef.current = matchedPairs; }, [matchedPairs]);
+  useEffect(() => { timeLeftRef.current = timeLeft; }, [timeLeft]);
 
   // Load user + progress
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) return;
-      setUserId(data.user.id);
-      supabase
-        .from("game_progress")
-        .select("user_id, game_id, level_number, stars, score, best_time_ms, completed_at")
-        .eq("user_id", data.user.id)
-        .eq("game_id", gameId)
-        .then(({ data }) => setProgress(data || []));
-    });
+    (async () => {
+      try {
+        const { data } = await supabase.auth.getUser();
+        if (!data.user) return;
+        setUserId(data.user.id);
+        const { data: progressData } = await supabase
+          .from("game_progress")
+          .select("user_id, game_id, level_number, stars, score, best_time_ms, completed_at")
+          .eq("user_id", data.user.id)
+          .eq("game_id", gameId);
+        setProgress(progressData || []);
+      } catch {
+        // ignore — games still playable without saved progress
+      } finally {
+        setProgressLoaded(true);
+      }
+    })();
   }, [gameId]);
 
   // Cleanup timers
@@ -97,6 +119,23 @@ export default function MemoryMatchPage() {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, []);
+
+  // Quick-start from ?level=N (client-side, avoids useSearchParams Suspense)
+  useEffect(() => {
+    if (!game || !progressLoaded) return;
+    try {
+      const q = new URLSearchParams(window.location.search).get("level");
+      if (!q) return;
+      const n = parseInt(q, 10);
+      if (Number.isNaN(n) || n < 1 || n > game.levels.length) return;
+      const prev = progress.find((p) => p.level_number === n - 1);
+      const unlocked = n === 1 || (prev && prev.stars > 0);
+      if (unlocked) startLevel(n);
+    } catch {
+      // ignore — malformed URL is not fatal
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [progressLoaded]);
 
   function getLevelState(levelNum: number): LevelState {
     const p = progress.find((pr) => pr.level_number === levelNum);
@@ -114,6 +153,14 @@ export default function MemoryMatchPage() {
     const config = game?.levels[levelNum - 1];
     if (!config) return;
 
+    // Specialized games manage their own intro/countdown internally
+    if (SPECIALIZED_GAMES.has(gameId)) {
+      setSelectedLevel(levelNum);
+      setPhase("play");
+      return;
+    }
+
+    // Memory match: deal cards, then show instructions before play
     const pairs = config.params.pairs as number;
     const gridCols = config.params.gridCols as number;
     const emojis = shuffle(CARD_EMOJIS).slice(0, pairs);
@@ -127,32 +174,39 @@ export default function MemoryMatchPage() {
     setCards(deck);
     setFlippedIds([]);
     setScore(0);
+    scoreRef.current = 0;
     setMoves(0);
     setCombo(0);
     setMatchedPairs(0);
+    matchedPairsRef.current = 0;
     setGameOver(false);
     setTimeLeft(Math.floor(config.timeLimitMs / 1000));
+    timeLeftRef.current = Math.floor(config.timeLimitMs / 1000);
     setSelectedLevel(levelNum);
+    setTimerRunning(false);
+    setPhase("intro");
+  }
+
+  function beginMemoryPlay() {
     setPhase("play");
     setTimerRunning(true);
   }
 
-  // Timer
+  // Timer — reads live refs so an expired timeout keeps the real score
   useEffect(() => {
     if (!timerRunning || phase !== "play") return;
     timerRef.current = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timerRef.current!);
-          setTimerRunning(false);
-          endGame(false);
-          return 0;
-        }
-        return prev - 1;
-      });
+      timeLeftRef.current -= 1;
+      setTimeLeft(timeLeftRef.current);
+      if (timeLeftRef.current <= 0) {
+        clearInterval(timerRef.current!);
+        setTimerRunning(false);
+        endGameRef.current(false);
+      }
     }, 1000);
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
   }, [timerRunning, phase]);
 
   // Check match
@@ -163,10 +217,12 @@ export default function MemoryMatchPage() {
     const cardB = cards[b];
 
     if (cardA.emoji === cardB.emoji) {
-      // Match!
+      // Match! — compute new totals from live refs (never drops the last pair)
       const newCombo = combo + 1;
       const bonus = Math.floor(newCombo / 3) * 25;
       const points = 50 + bonus;
+      const newScore = scoreRef.current + points;
+      const newMatched = matchedPairsRef.current + 1;
 
       timeoutRef.current = setTimeout(() => {
         setCards((prev) =>
@@ -174,15 +230,16 @@ export default function MemoryMatchPage() {
             c.id === a || c.id === b ? { ...c, matched: true } : c
           )
         );
-        setScore((s) => s + points);
+        setScore(newScore);
+        scoreRef.current = newScore;
         setCombo(newCombo);
-        setMatchedPairs((p) => p + 1);
+        setMatchedPairs(newMatched);
+        matchedPairsRef.current = newMatched;
         setFlippedIds([]);
 
-        // Check win
         const config = game?.levels[(selectedLevel || 1) - 1];
-        if (config && matchedPairs + 1 >= (config.params.pairs as number)) {
-          endGame(true);
+        if (config && newMatched >= (config.params.pairs as number)) {
+          endGameRef.current(true);
         }
       }, 500);
     } else {
@@ -221,7 +278,7 @@ export default function MemoryMatchPage() {
       return;
     }
 
-    const finalScore = won ? score + Math.floor(timeLeft * 5) : score;
+    const finalScore = won ? scoreRef.current + Math.floor(timeLeftRef.current * 5) : scoreRef.current;
     const stars = won ? calculateStars(finalScore, config) : 0;
     const xp = getXpForStars(stars, selectedLevel || 1);
     const coins = getCoinsForStars(stars, selectedLevel || 1);
@@ -234,31 +291,37 @@ export default function MemoryMatchPage() {
     const supabase = createClient();
     const existing = progress.find((p) => p.level_number === selectedLevel);
     if (!existing || stars > existing.stars || finalScore > existing.score) {
-      await supabase.from("game_progress").upsert({
-        user_id: userId,
-        game_id: gameId,
-        level_number: selectedLevel,
-        stars: Math.max(stars, existing?.stars || 0),
-        score: Math.max(finalScore, existing?.score || 0),
-        best_time_ms: won ? Math.min(timeLeft * 1000, existing?.best_time_ms || Infinity) : existing?.best_time_ms,
-      }, { onConflict: "user_id,game_id,level_number" });
+      try {
+        await supabase
+          .from("game_progress")
+          .upsert({
+            user_id: userId,
+            game_id: gameId,
+            level_number: selectedLevel,
+            stars: Math.max(stars, existing?.stars || 0),
+            score: Math.max(finalScore, existing?.score || 0),
+            best_time_ms: won ? Math.min(timeLeftRef.current * 1000, existing?.best_time_ms || Infinity) : existing?.best_time_ms,
+          }, { onConflict: "user_id,game_id,level_number" });
 
-      // Credit XP and coins to main economy
-      if (xp > 0) {
-        await supabase.from("xp_ledger").insert({
-          user_id: userId,
-          amount: xp,
-          reason: `game_${gameId}_complete`,
-          reference_type: "game",
-        });
-      }
-      if (coins > 0) {
-        await supabase.from("coins_ledger").insert({
-          user_id: userId,
-          amount: coins,
-          reason: `game_${gameId}_complete`,
-          reference_type: "game",
-        });
+        // Credit XP and coins to main economy
+        if (xp > 0) {
+          await supabase.from("xp_ledger").insert({
+            user_id: userId,
+            amount: xp,
+            reason: `game_${gameId}_complete`,
+            reference_type: "game",
+          });
+        }
+        if (coins > 0) {
+          await supabase.from("coins_ledger").insert({
+            user_id: userId,
+            amount: coins,
+            reason: `game_${gameId}_complete`,
+            reference_type: "game",
+          });
+        }
+      } catch {
+        // ignore — local progress still updates below
       }
 
       // Update local progress
@@ -270,7 +333,7 @@ export default function MemoryMatchPage() {
           level_number: selectedLevel!,
           stars: Math.max(stars, existing?.stars || 0),
           score: Math.max(finalScore, existing?.score || 0),
-          best_time_ms: won ? timeLeft * 1000 : null,
+          best_time_ms: won ? timeLeftRef.current * 1000 : null,
           completed_at: new Date().toISOString(),
         }];
       });
@@ -278,6 +341,10 @@ export default function MemoryMatchPage() {
 
     setPhase("result");
   }
+
+  useEffect(() => {
+    endGameRef.current = endGame;
+  });
 
   async function endGameWithScore(finalScore: number, stars: number, timeLeftMs: number) {
     setTimerRunning(false);
@@ -302,31 +369,36 @@ export default function MemoryMatchPage() {
     const supabase = createClient();
     const existing = progress.find((p) => p.level_number === selectedLevel);
     if (!existing || stars > existing.stars || finalScore > existing.score) {
-      await supabase.from("game_progress").upsert({
-        user_id: userId,
-        game_id: gameId,
-        level_number: selectedLevel,
-        stars: Math.max(stars, existing?.stars || 0),
-        score: Math.max(finalScore, existing?.score || 0),
-        best_time_ms: timeLeftMs > 0 ? Math.min(timeLeftMs, existing?.best_time_ms || Infinity) : existing?.best_time_ms,
-      }, { onConflict: "user_id,game_id,level_number" });
+      try {
+        await supabase
+          .from("game_progress")
+          .upsert({
+            user_id: userId,
+            game_id: gameId,
+            level_number: selectedLevel,
+            stars: Math.max(stars, existing?.stars || 0),
+            score: Math.max(finalScore, existing?.score || 0),
+            best_time_ms: timeLeftMs > 0 ? Math.min(timeLeftMs, existing?.best_time_ms || Infinity) : existing?.best_time_ms,
+          }, { onConflict: "user_id,game_id,level_number" });
 
-      // Credit XP and coins to main economy
-      if (xp > 0) {
-        await supabase.from("xp_ledger").insert({
-          user_id: userId,
-          amount: xp,
-          reason: `game_${gameId}_complete`,
-          reference_type: "game",
-        });
-      }
-      if (coins > 0) {
-        await supabase.from("coins_ledger").insert({
-          user_id: userId,
-          amount: coins,
-          reason: `game_${gameId}_complete`,
-          reference_type: "game",
-        });
+        if (xp > 0) {
+          await supabase.from("xp_ledger").insert({
+            user_id: userId,
+            amount: xp,
+            reason: `game_${gameId}_complete`,
+            reference_type: "game",
+          });
+        }
+        if (coins > 0) {
+          await supabase.from("coins_ledger").insert({
+            user_id: userId,
+            amount: coins,
+            reason: `game_${gameId}_complete`,
+            reference_type: "game",
+          });
+        }
+      } catch {
+        // ignore — local progress still updates below
       }
 
       setProgress((prev) => {
@@ -366,25 +438,42 @@ export default function MemoryMatchPage() {
     },
     onExit: () => {
       setPhase("select");
+      setSelectedLevel(null);
       setTimerRunning(false);
     },
   };
 
   if (gameId === "number_sequence" && phase === "play" && selectedLevel) {
     const config = game.levels[selectedLevel - 1];
-    return <NumberSequenceGame level={selectedLevel} config={config} gradient={game.gradient} {...sharedCallbacks} />;
+    return (
+      <ErrorBoundary key={`${gameId}-${selectedLevel}`}>
+        <NumberSequenceGame level={selectedLevel} config={config} gradient={game.gradient} {...sharedCallbacks} />
+      </ErrorBoundary>
+    );
   }
   if (gameId === "word_scramble" && phase === "play" && selectedLevel) {
     const config = game.levels[selectedLevel - 1];
-    return <WordScrambleGame level={selectedLevel} config={config} gradient={game.gradient} {...sharedCallbacks} />;
+    return (
+      <ErrorBoundary key={`${gameId}-${selectedLevel}`}>
+        <WordScrambleGame level={selectedLevel} config={config} gradient={game.gradient} {...sharedCallbacks} />
+      </ErrorBoundary>
+    );
   }
   if (gameId === "reaction_speed" && phase === "play" && selectedLevel) {
     const config = game.levels[selectedLevel - 1];
-    return <ReactionSpeedGame level={selectedLevel} config={config} gradient={game.gradient} {...sharedCallbacks} />;
+    return (
+      <ErrorBoundary key={`${gameId}-${selectedLevel}`}>
+        <ReactionSpeedGame level={selectedLevel} config={config} gradient={game.gradient} {...sharedCallbacks} />
+      </ErrorBoundary>
+    );
   }
   if (gameId === "color_match" && phase === "play" && selectedLevel) {
     const config = game.levels[selectedLevel - 1];
-    return <ColorMatchGame level={selectedLevel} config={config} gradient={game.gradient} {...sharedCallbacks} />;
+    return (
+      <ErrorBoundary key={`${gameId}-${selectedLevel}`}>
+        <ColorMatchGame level={selectedLevel} config={config} gradient={game.gradient} {...sharedCallbacks} />
+      </ErrorBoundary>
+    );
   }
 
   const gridCols = selectedLevel
@@ -396,7 +485,7 @@ export default function MemoryMatchPage() {
     return (
       <div className="mx-auto max-w-2xl space-y-6">
         <div className="flex items-center gap-3">
-          <Link href="/dashboard/games" className="rounded-lg p-2 hover:bg-accent min-h-[44px] flex items-center justify-center">
+          <Link href="/dashboard/games" aria-label="Back to games" className="flex min-h-[44px] items-center justify-center rounded-lg p-2 hover:bg-accent">
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <div>
@@ -407,73 +496,111 @@ export default function MemoryMatchPage() {
           </div>
         </div>
 
-        <div className="grid gap-3">
-          {game.levels.map((level) => {
-            const state = getLevelState(level.level);
-            return (
-              <motion.button
-                key={level.level}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: level.level * 0.05 }}
-                disabled={!state.unlocked}
-                onClick={() => startLevel(level.level)}
-                className={`flex items-center gap-3 sm:gap-4 rounded-xl border p-3 sm:p-4 text-left transition-all touch-manipulation ${
-                  state.unlocked
-                    ? "border-border bg-card hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 cursor-pointer active:scale-[0.98]"
-                    : "border-border/50 bg-muted/30 opacity-50 cursor-not-allowed"
-                }`}
-              >
-                {/* Level number */}
-                <div className={`flex h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0 items-center justify-center rounded-xl text-base sm:text-lg font-bold ${
-                  state.completed
-                    ? "bg-gradient-to-br from-amber-500/20 to-orange-500/20 text-amber-500"
-                    : state.unlocked
-                    ? "bg-primary/10 text-primary"
-                    : "bg-muted text-muted-foreground"
-                }`}>
-                  {state.unlocked ? level.level : <Lock className="h-4 w-4 sm:h-5 sm:w-5" />}
-                </div>
-
-                {/* Info */}
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-sm sm:text-base font-semibold">Level {level.level}</span>
-                    <DifficultyBadge d={level.difficulty} />
+        {!progressLoaded ? (
+          <div className="grid gap-3">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="h-16 animate-pulse rounded-xl bg-muted" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid gap-3">
+            {game.levels.map((level) => {
+              const state = getLevelState(level.level);
+              const params: string[] = [];
+              if (level.params.pairs) params.push(`${level.params.pairs} pairs`);
+              if (level.params.words) params.push(`${level.params.words} words`);
+              if (level.params.targets) params.push(`${level.params.targets} targets`);
+              if (level.params.rounds) params.push(`${level.params.rounds} rounds`);
+              if (level.params.startLen) params.push(`${level.params.startLen}–${level.params.maxLen} digits`);
+              params.push(`${Math.floor(level.timeLimitMs / 1000)}s`);
+              return (
+                <motion.button
+                  key={level.level}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: Math.min(level.level * 0.05, 0.3) }}
+                  disabled={!state.unlocked}
+                  onClick={() => startLevel(level.level)}
+                  className={`flex items-center gap-3 sm:gap-4 rounded-xl border p-3 sm:p-4 text-left transition-all touch-manipulation ${
+                    state.unlocked
+                      ? "border-border bg-card hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 cursor-pointer active:scale-[0.98]"
+                      : "border-border/50 bg-muted/30 opacity-50 cursor-not-allowed"
+                  }`}
+                >
+                  {/* Level number */}
+                  <div className={`flex h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0 items-center justify-center rounded-xl text-base sm:text-lg font-bold ${
+                    state.completed
+                      ? "bg-gradient-to-br from-amber-500/20 to-orange-500/20 text-amber-500"
+                      : state.unlocked
+                      ? "bg-primary/10 text-primary"
+                      : "bg-muted text-muted-foreground"
+                  }`}>
+                    {state.unlocked ? level.level : <Lock className="h-4 w-4 sm:h-5 sm:w-5" />}
                   </div>
-                  <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">
-                    {level.params.pairs ? `${level.params.pairs} pairs` : ""}
-                    {level.params.words ? `${level.params.words} words` : ""}
-                    {level.params.targets ? `${level.params.targets} targets` : ""}
-                    {level.params.rounds ? `${level.params.rounds} rounds` : ""}
-                    {" · "}
-                    {Math.floor(level.timeLimitMs / 1000)}s
-                  </p>
-                  {state.bestScore > 0 && (
-                    <p className="text-[9px] sm:text-[10px] text-muted-foreground mt-0.5">
-                      Best: {state.bestScore} pts
+
+                  {/* Info */}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="text-sm sm:text-base font-semibold">Level {level.level}</span>
+                      <DifficultyBadge d={level.difficulty} />
+                    </div>
+                    <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+                      {params.join(" · ") || "Custom"}
                     </p>
-                  )}
-                </div>
-
-                {/* Stars */}
-                <div className="flex-shrink-0 text-right">
-                  <div className="text-sm sm:text-lg leading-tight">
-                    {state.stars === 3 ? "⭐⭐⭐" : state.stars === 2 ? "⭐⭐" : state.stars === 1 ? "⭐" : "☆☆☆"}
+                    {state.bestScore > 0 && (
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        Best: {state.bestScore} pts
+                      </p>
+                    )}
                   </div>
-                  <p className="text-[9px] sm:text-[10px] text-muted-foreground">
-                    +{getXpForStars(3, level.level)} XP
-                  </p>
-                </div>
-              </motion.button>
-            );
-          })}
-        </div>
+
+                  {/* Stars */}
+                  <div className="flex-shrink-0 text-right">
+                    <div className="text-sm sm:text-lg leading-tight">
+                      {state.stars === 3 ? "⭐⭐⭐" : state.stars === 2 ? "⭐⭐" : state.stars === 1 ? "⭐" : "☆☆☆"}
+                    </div>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground">
+                      +{getXpForStars(3, level.level)} XP
+                    </p>
+                  </div>
+                </motion.button>
+              );
+            })}
+          </div>
+        )}
       </div>
     );
   }
 
-  // ─── Play ──────────────────────────────────────────────────────────
+  // ─── Memory match: intro ───────────────────────────────────────────
+  if (phase === "intro") {
+    const config = game.levels[(selectedLevel || 1) - 1];
+    return (
+      <GameIntro
+        title={game.title}
+        description="Flip the cards and find every matching pair before time runs out."
+        steps={[
+          "Tap any card to flip it and reveal its icon.",
+          "Tap a second card to try to find its match.",
+          "Match every pair to win — combos earn bonus points!",
+        ]}
+        level={selectedLevel || 1}
+        difficulty={config?.difficulty || "easy"}
+        timeLimitSec={Math.floor((config?.timeLimitMs || 30000) / 1000)}
+        goal={`${config?.targetScore || 100}+ pts`}
+        gradient={game.gradient}
+        onStart={() => setPhase("countdown")}
+        onBack={() => setPhase("select")}
+      />
+    );
+  }
+
+  // ─── Memory match: countdown ───────────────────────────────────────
+  if (phase === "countdown") {
+    return <Countdown label="Get ready to match pairs..." onDone={beginMemoryPlay} />;
+  }
+
+  // ─── Memory match: play ────────────────────────────────────────────
   if (phase === "play") {
     const config = game.levels[(selectedLevel || 1) - 1];
     const totalPairs = config?.params.pairs as number;
@@ -484,17 +611,18 @@ export default function MemoryMatchPage() {
         {/* HUD */}
         <div className="flex items-center justify-between">
           <button onClick={() => { setPhase("select"); setTimerRunning(false); }}
-            className="rounded-lg p-2 hover:bg-accent min-h-[44px] flex items-center justify-center">
+            aria-label="Back to level select"
+            className="flex min-h-[44px] items-center justify-center rounded-lg p-2 hover:bg-accent">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div className="flex items-center gap-2 sm:gap-3">
             {combo >= 2 && (
-              <div className="flex items-center gap-1 rounded-full bg-orange-500/10 px-2.5 py-1 text-xs font-bold text-orange-500 animate-pulse">
+              <div className="flex items-center gap-1 rounded-full bg-orange-500/10 px-2.5 py-1 text-xs font-bold text-orange-500">
                 <Zap className="h-3 w-3" /> {combo}x
               </div>
             )}
             <div className={`rounded-full px-3 py-1.5 text-sm font-bold ${
-              timeLeft <= 10 ? "bg-red-500/10 text-red-500 animate-pulse" : "bg-muted"
+              timeLeft <= 10 ? "bg-red-500/10 text-red-500" : "bg-muted"
             }`}>
               {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")}
             </div>
@@ -523,6 +651,7 @@ export default function MemoryMatchPage() {
               key={card.id}
               onClick={() => handleCardClick(card.id)}
               whileTap={{ scale: 0.95 }}
+              aria-label={card.flipped || card.matched ? `Card ${card.emoji}` : "Hidden card"}
               className={`aspect-square rounded-lg sm:rounded-xl text-lg sm:text-2xl font-bold transition-all duration-200 ${
                 card.matched
                   ? "bg-gradient-to-br from-green-500/20 to-emerald-500/20 border-2 border-green-500/30 scale-95 opacity-70"
@@ -554,7 +683,7 @@ export default function MemoryMatchPage() {
         >
           {resultStars > 0 ? (
             <>
-              <div className="mb-4 text-6xl animate-bounce">
+              <div className="mb-4 text-6xl">
                 {resultStars === 3 ? "🏆" : resultStars === 2 ? "🎉" : "👏"}
               </div>
               <h2 className="text-2xl font-bold">
@@ -593,15 +722,15 @@ export default function MemoryMatchPage() {
       <div className="grid grid-cols-3 gap-2 sm:gap-3">
         <div className="rounded-xl bg-muted/50 p-2 sm:p-3">
           <p className="text-base sm:text-xl font-bold">{score}</p>
-          <p className="text-[10px] sm:text-xs text-muted-foreground">Score</p>
+          <p className="text-[11px] sm:text-xs text-muted-foreground">Score</p>
         </div>
         <div className="rounded-xl bg-primary/10 p-2 sm:p-3">
           <p className="text-base sm:text-xl font-bold text-primary">+{resultXp}</p>
-          <p className="text-[10px] sm:text-xs text-muted-foreground">XP</p>
+          <p className="text-[11px] sm:text-xs text-muted-foreground">XP</p>
         </div>
         <div className="rounded-xl bg-amber-500/10 p-2 sm:p-3">
           <p className="text-base sm:text-xl font-bold text-amber-500">+{resultCoins}</p>
-          <p className="text-[10px] sm:text-xs text-muted-foreground">Coins</p>
+          <p className="text-[11px] sm:text-xs text-muted-foreground">Coins</p>
         </div>
       </div>
 
@@ -609,21 +738,21 @@ export default function MemoryMatchPage() {
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <button
           onClick={() => startLevel(selectedLevel!)}
-          className="flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90 min-h-[48px]"
+          className="flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90 min-h-[48px] touch-manipulation"
         >
           <RotateCcw className="h-4 w-4" /> Retry
         </button>
         {resultStars > 0 && selectedLevel! < 10 && getLevelState(selectedLevel! + 1).unlocked && (
           <button
             onClick={() => startLevel(selectedLevel! + 1)}
-            className={`flex items-center gap-2 rounded-xl bg-gradient-to-r ${game.gradient} px-6 py-3 text-sm font-bold text-white hover:opacity-90 min-h-[48px]`}
+            className={`flex items-center gap-2 rounded-xl bg-gradient-to-r ${game.gradient} px-6 py-3 text-sm font-bold text-white hover:opacity-90 min-h-[48px] touch-manipulation`}
           >
             <Play className="h-4 w-4" /> Next Level
           </button>
         )}
         <button
-          onClick={() => setPhase("select")}
-          className="flex items-center gap-2 rounded-xl border border-border px-6 py-3 text-sm font-medium hover:bg-accent min-h-[48px]"
+          onClick={() => { setPhase("select"); setSelectedLevel(null); }}
+          className="flex items-center gap-2 rounded-xl border border-border px-6 py-3 text-sm font-medium hover:bg-accent min-h-[48px] touch-manipulation"
         >
           Levels
         </button>

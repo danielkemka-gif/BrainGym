@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/client";
 import { identifyUser } from "@/lib/analytics/events";
 import { Sidebar } from "./sidebar";
 import { Topbar } from "./topbar";
+import { MobileNav } from "./mobile-nav";
+import { TouchDebug } from "@/components/debug/touch-debug";
 
 function AppShellInner({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -23,16 +25,23 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
   }, [user]);
 
   return (
-    <div className="flex min-h-dvh">
+    <div className="flex min-h-screen">
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <div className="flex flex-1 flex-col min-w-0">
+      <div className="flex flex-1 flex-col min-w-0 min-h-0">
         <Topbar
           onMenuClick={() => setSidebarOpen((p) => !p)}
           userName={userName}
         />
-        <main id="main-content" className="flex-1 overflow-y-auto overflow-x-hidden px-3 py-3 pb-24 sm:px-4 sm:py-4 lg:p-6 w-full max-w-full" style={{ paddingBottom: 'max(6rem, env(safe-area-inset-bottom))' }} tabIndex={-1}>
+        <main
+          id="main-content"
+          className="flex-1 w-full max-w-full px-3 py-3 pb-28 sm:px-4 sm:py-4 lg:p-6 overflow-y-auto min-h-0"
+          style={{ paddingBottom: 'max(7rem, calc(env(safe-area-inset-bottom) + 4rem))', touchAction: 'auto' }}
+          tabIndex={-1}
+        >
           {children}
         </main>
+        <MobileNav />
+        {process.env.NODE_ENV === "development" && <TouchDebug />}
       </div>
     </div>
   );

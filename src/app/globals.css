@@ -65,24 +65,38 @@
   }
 
   html {
+    height: 100%;
+    width: 100%;
     -webkit-text-size-adjust: 100%;
     overflow-x: hidden;
-    scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior-x: none;
+    overscroll-behavior: auto;
+    touch-action: auto;
   }
 
   body {
+    min-height: 100%;
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-tap-highlight-color: transparent;
     overflow-x: hidden;
-    overflow-y: auto;
-    overscroll-behavior-y: contain;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     word-break: break-word;
+    position: relative;
+    overscroll-behavior: auto;
+    touch-action: auto;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
   }
 
   img, video {
@@ -125,7 +139,16 @@
     background-size: 24px 24px;
   }
   .touch-manipulation {
+    /* Allow taps and simple gestures on interactive controls */
     touch-action: manipulation;
+  }
+  /* Ensure native momentum scrolling on scrollable containers */
+  .overflow-y-auto,
+  .overflow-auto,
+  .overflow-scroll {
+    -webkit-overflow-scrolling: touch;
+    /* Let the browser decide panning for scrollable areas */
+    touch-action: auto;
   }
   .scrollbar-thin {
     scrollbar-width: thin;
@@ -136,6 +159,14 @@
   }
   .scrollbar-none::-webkit-scrollbar {
     display: none;
+  }
+
+  /* Debug: Avoid off-screen or transparent elements capturing touch on mobile */
+  .-translate-x-full,
+  .translate-x-full,
+  .opacity-0,
+  .invisible {
+    pointer-events: none !important;
   }
 }
 

@@ -47,6 +47,16 @@ export default function LibraryPage() {
   const [difficulty, setDifficulty] = useState("");
   const [userCompleted, setUserCompleted] = useState<Record<string, number>>({});
 
+  // Honor ?category= deep links (e.g. from dashboard category cards)
+  useEffect(() => {
+    try {
+      const q = new URLSearchParams(window.location.search).get("category");
+      if (q) setCategory(q);
+    } catch {
+      // ignore malformed URLs
+    }
+  }, []);
+
   useEffect(() => {
     const supabase = createClient();
 

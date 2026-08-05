@@ -14,7 +14,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://braingym.app';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://brain-gym-nsu6.vercel.app';
 
 interface ReferralInfo {
   code: string;

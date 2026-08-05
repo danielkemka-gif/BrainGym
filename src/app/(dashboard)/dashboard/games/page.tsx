@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { ALL_GAMES, type GameProgress } from "@/lib/games/config";
 import { GAME_ICONS } from "@/lib/icons";
 import { GAME_ILLUSTRATIONS } from "@/components/brain-illustrations";
-import { Star, Lock, Zap } from "lucide-react";
+import { Star, Lock, Play, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 
 function DifficultyBadge({ d }: { d: string }) {
@@ -18,9 +18,22 @@ function DifficultyBadge({ d }: { d: string }) {
     master: "bg-purple-500/10 text-purple-500",
   };
   return (
-    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${colors[d] || colors.easy}`}>
+    <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold uppercase ${colors[d] || colors.easy}`}>
       {d}
     </span>
+  );
+}
+
+function GameCardSkeleton() {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-border bg-card">
+      <div className="h-28 animate-pulse bg-muted" />
+      <div className="space-y-2 p-4">
+        <div className="h-4 w-2/3 animate-pulse rounded bg-muted" />
+        <div className="h-2 animate-pulse rounded-full bg-muted" />
+        <div className="h-12 animate-pulse rounded-xl bg-muted" />
+      </div>
+    </div>
   );
 }
 
@@ -30,17 +43,21 @@ export default function GamesHubPage() {
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) { setLoading(false); return; }
-      supabase
-        .from("game_progress")
-        .select("user_id, game_id, level_number, stars, score, best_time_ms, completed_at")
-        .eq("user_id", data.user.id)
-        .then(({ data }) => {
-          setProgress(data || []);
-          setLoading(false);
-        });
-    });
+    (async () => {
+      try {
+        const { data } = await supabase.auth.getUser();
+        if (!data.user) return;
+        const { data: progressData } = await supabase
+          .from("game_progress")
+          .select("user_id, game_id, level_number, stars, score, best_time_ms, completed_at")
+          .eq("user_id", data.user.id);
+        setProgress(progressData || []);
+      } catch {
+        // ignore — games still playable without saved progress
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
 
   function getGameStats(gameId: string) {
@@ -52,6 +69,19 @@ export default function GamesHubPage() {
       ? Math.max(...completedLevels.map((p) => p.level_number))
       : 0;
     return { completedLevels: completedLevels.length, totalStars, maxStars, highestLevel };
+  }
+
+  // First unlocked & not-yet-completed level → quick-start target
+  function getNextPlayable(gameId: string): number {
+    const levels = progress.filter((p) => p.game_id === gameId);
+    if (levels.length === 0) return 1;
+    for (let lvl = 1; lvl <= 10; lvl++) {
+      const p = levels.find((x) => x.level_number === lvl);
+      const prev = levels.find((x) => x.level_number === lvl - 1);
+      const unlocked = lvl === 1 || (prev && prev.stars > 0);
+      if (unlocked && (!p || p.stars === 0)) return lvl;
+    }
+    return 10;
   }
 
   return (
@@ -70,19 +100,19 @@ export default function GamesHubPage() {
           <p className="text-lg sm:text-2xl font-bold text-amber-500">
             {progress.reduce((s, p) => s + p.stars, 0)}
           </p>
-          <p className="text-[10px] sm:text-xs text-muted-foreground">Stars</p>
+          <p className="text-[11px] sm:text-xs text-muted-foreground">Stars</p>
         </div>
         <div className="rounded-xl bg-gradient-to-br from-violet-500/10 to-purple-500/10 border border-violet-500/10 p-3 sm:p-4 text-center">
           <p className="text-lg sm:text-2xl font-bold text-violet-500">
             {progress.filter((p) => p.stars > 0).length}
           </p>
-          <p className="text-[10px] sm:text-xs text-muted-foreground">Levels</p>
+          <p className="text-[11px] sm:text-xs text-muted-foreground">Levels</p>
         </div>
         <div className="rounded-xl bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/10 p-3 sm:p-4 text-center">
           <p className="text-lg sm:text-2xl font-bold text-green-500">
             {ALL_GAMES.filter((g) => getGameStats(g.id).completedLevels > 0).length}/{ALL_GAMES.length}
           </p>
-          <p className="text-[10px] sm:text-xs text-muted-foreground">Played</p>
+          <p className="text-[11px] sm:text-xs text-muted-foreground">Played</p>
         </div>
       </div>
 
@@ -102,42 +132,49 @@ export default function GamesHubPage() {
             </p>
           </div>
           <span className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary">
-            NEW
+            Daily
           </span>
         </div>
       </Link>
 
       {/* Game cards */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        {ALL_GAMES.map((game, i) => {
-          const stats = getGameStats(game.id);
-          const progressPercent = (stats.totalStars / stats.maxStars) * 100;
+      {loading ? (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {[1, 2, 3, 4].map((i) => <GameCardSkeleton key={i} />)}
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {ALL_GAMES.map((game, i) => {
+            const stats = getGameStats(game.id);
+            const progressPercent = (stats.totalStars / stats.maxStars) * 100;
+            const nextLevel = getNextPlayable(game.id);
 
-          return (
-            <motion.div
-              key={game.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.08 }}
-            >
-              <Link
-                href={`/dashboard/games/${game.id}`}
-                className="group touch-manipulation block overflow-hidden rounded-2xl border border-border bg-card transition-all hover:border-transparent hover:shadow-xl hover:shadow-primary/5 active:scale-[0.99]"
+            return (
+              <motion.div
+                key={game.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: Math.min(i * 0.08, 0.3) }}
+                className="overflow-hidden rounded-2xl border border-border bg-card transition-all hover:shadow-xl hover:shadow-primary/5"
               >
-                {/* Gradient header */}
-                <div className={`relative overflow-hidden bg-gradient-to-br ${game.gradient} p-4 sm:p-6`}>
-                  <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-white/10 blur-2xl" />
-                  <div className="absolute -bottom-8 -left-8 h-24 w-24 rounded-full bg-black/10 blur-2xl" />
-                  <div className="relative flex items-center gap-3 sm:gap-4">
-                    <div className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-white/20 text-white">
-                      {(() => { const Illust = GAME_ILLUSTRATIONS[game.iconKey]; return Illust ? <Illust className="h-10 w-10 sm:h-12 sm:w-12" /> : (() => { const GameIcon = GAME_ICONS[game.iconKey]; return GameIcon ? <GameIcon className="h-6 w-6 sm:h-7 sm:w-7" /> : null; })(); })()}
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-white">{game.title}</h3>
-                      <p className="text-sm text-white/70">{game.description}</p>
+                {/* Header (links to level select) */}
+                <Link
+                  href={`/dashboard/games/${game.id}`}
+                  className="group block"
+                  aria-label={`${game.title} levels`}
+                >
+                  <div className={`relative overflow-hidden bg-gradient-to-br ${game.gradient} p-4 sm:p-6`}>
+                    <div className="relative flex items-center gap-3 sm:gap-4">
+                      <div className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-white/20 text-white">
+                        {(() => { const Illust = GAME_ILLUSTRATIONS[game.iconKey]; return Illust ? <Illust className="h-10 w-10 sm:h-12 sm:w-12" /> : (() => { const GameIcon = GAME_ICONS[game.iconKey]; return GameIcon ? <GameIcon className="h-6 w-6 sm:h-7 sm:w-7" /> : null; })(); })()}
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-lg font-bold text-white">{game.title}</h3>
+                        <p className="text-sm text-white/80">{game.description}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </Link>
 
                 {/* Progress */}
                 <div className="p-4">
@@ -158,40 +195,20 @@ export default function GamesHubPage() {
                     />
                   </div>
 
-                  {/* Level badges */}
-                  <div className="mt-3 flex gap-1 overflow-x-auto pb-1">
-                    {Array.from({ length: 10 }, (_, lvl) => {
-                      const p = progress.find(
-                        (pr) => pr.game_id === game.id && pr.level_number === lvl + 1
-                      );
-                      const stars = p?.stars || 0;
-                      const unlocked = lvl === 0 || progress.some(
-                        (pr) => pr.game_id === game.id && pr.level_number === lvl && pr.stars > 0
-                      );
-                      return (
-                        <div
-                          key={lvl}
-                          className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md ${
-                            stars === 3
-                              ? "bg-amber-500/20 text-amber-500"
-                              : stars > 0
-                              ? "bg-green-500/20 text-green-500"
-                              : unlocked
-                              ? "bg-muted text-muted-foreground"
-                              : "bg-muted/50 text-muted-foreground/50"
-                          }`}
-                        >
-                          {stars === 3 ? <Star className="h-3 w-3 fill-current" /> : stars === 2 ? <Star className="h-3 w-3 fill-current opacity-60" /> : stars === 1 ? <Star className="h-3 w-3 fill-current opacity-30" /> : unlocked ? <span className="text-[10px] font-bold">{lvl + 1}</span> : <Lock className="h-2.5 w-2.5" />}
-                        </div>
-                      );
-                    })}
-                  </div>
+                  {/* Quick start */}
+                  <Link
+                    href={`/dashboard/games/${game.id}?level=${nextLevel}`}
+                    className={`mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r ${game.gradient} text-sm font-bold text-white shadow-sm transition-all hover:opacity-90 active:scale-[0.98] touch-manipulation min-h-[44px]`}
+                  >
+                    <Play className="h-4 w-4 fill-current" />
+                    {stats.completedLevels === 0 ? `Start Level ${nextLevel}` : `Play Level ${nextLevel}`}
+                  </Link>
                 </div>
-              </Link>
-            </motion.div>
-          );
-        })}
-      </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

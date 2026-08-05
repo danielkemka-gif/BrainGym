@@ -1,0 +1,24 @@
+{
+  "files.exclude": {
+    "node_modules": true,
+    ".next": true,
+    "dist": true,
+    "supabase/migrations": true,
+    "supabase/seed.sql": true
+  },
+  "search.exclude": {
+    "node_modules": true,
+    ".next": true,
+    "dist": true,
+    "supabase/migrations": true
+  },
+  "files.watcherExclude": {
+    "**/node_modules/*": true,
+    "**/.next/*": true,
+    "**/dist/*": true,
+    "**/supabase/migrations/*": true
+  },
+  "search.followSymlinks": false,
+  "editor.wordWrap": "on",
+  "editor.formatOnSave": false
+}

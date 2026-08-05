@@ -163,7 +163,7 @@ export function BrainTaskPlayer({ task, onComplete }: BrainTaskPlayerProps) {
           <Brain className="h-4 w-4" /> Brain Task
         </span>
         <div className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold ${
-          timeLeft <= 5 ? "bg-red-500/10 text-red-500 animate-pulse" : "bg-muted"
+          timeLeft <= 5 ? "bg-red-500/10 text-red-500" : "bg-muted"
         }`}>
           <Clock className="h-3.5 w-3.5" />
           {timeLeft}s
@@ -183,7 +183,11 @@ export function BrainTaskPlayer({ task, onComplete }: BrainTaskPlayerProps) {
 
       {!isMindfulness ? (
         <div className="space-y-3">
+          <label htmlFor="brain-task-answer" className="sr-only">
+            Your answer
+          </label>
           <textarea
+            id="brain-task-answer"
             value={userInput}
             onChange={e => setUserInput(e.target.value)}
             autoFocus

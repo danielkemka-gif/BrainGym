@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Shuffle, Timer } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { GameIntro } from "./game-intro";
+import { Countdown } from "./countdown";
 
 const WORD_POOLS: Record<string, string[]> = {
   easy: ["brain", "smart", "focus", "think", "learn", "study", "memory", "puzzle", "swift", "logic", "sharp", "quick", "speed", "train"],
@@ -39,8 +41,10 @@ interface Props {
   onExit: () => void;
 }
 
+type Phase = "intro" | "countdown" | "play" | "result";
+
 export function WordScrambleGame({ level, config, gradient, onComplete, onExit }: Props) {
-  const [phase, setPhase] = useState<"play" | "result">("play");
+  const [phase, setPhase] = useState<Phase>("intro");
   const [words, setWords] = useState<string[]>([]);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [scrambled, setScrambled] = useState("");
@@ -51,29 +55,41 @@ export function WordScrambleGame({ level, config, gradient, onComplete, onExit }
   const [timerRunning, setTimerRunning] = useState(false);
   const [feedback, setFeedback] = useState<"correct" | "wrong" | null>(null);
 
-  const wordCount = config.params.words || 3;
-  const timePerWord = config.params.timePerWord || 10;
+  const scoreRef = useRef(0);
+  const timeLeftRef = useRef(0);
+  const onCompleteRef = useRef(onComplete);
+  const transitionRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Timer
+  const wordCount = config.params.words || 3;
+  const difficulty = level <= 3 ? "easy" : level <= 6 ? "medium" : level <= 8 ? "hard" : level <= 9 ? "expert" : "master";
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
+
+  useEffect(() => {
+    return () => {
+      if (transitionRef.current) clearTimeout(transitionRef.current);
+    };
+  }, []);
+
+  // Timer — reads live values from refs
   useEffect(() => {
     if (!timerRunning) return;
     const t = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(t);
-          setTimerRunning(false);
-          const finalStars = score >= config.targetScore3 ? 3 : score >= config.targetScore2 ? 2 : score >= config.targetScore ? 1 : 0;
-          onComplete(score, finalStars, 0);
-          return 0;
-        }
-        return prev - 1;
-      });
+      timeLeftRef.current -= 1;
+      setTimeLeft(timeLeftRef.current);
+      if (timeLeftRef.current <= 0) {
+        clearInterval(t);
+        setTimerRunning(false);
+        const finalStars = scoreRef.current >= config.targetScore3 ? 3 : scoreRef.current >= config.targetScore2 ? 2 : scoreRef.current >= config.targetScore ? 1 : 0;
+        onCompleteRef.current(scoreRef.current, finalStars, 0);
+      }
     }, 1000);
     return () => clearInterval(t);
-  }, [timerRunning, score, config, onComplete]);
+  }, [timerRunning, config]);
 
-  function startGame() {
-    const difficulty = level <= 3 ? "easy" : level <= 6 ? "medium" : level <= 8 ? "hard" : level <= 9 ? "expert" : "master";
+  function beginGame() {
     const pool = WORD_POOLS[difficulty] || WORD_POOLS.easy;
     const selected = shuffleArray(pool).slice(0, wordCount);
     setWords(selected);
@@ -81,30 +97,37 @@ export function WordScrambleGame({ level, config, gradient, onComplete, onExit }
     setScrambled(scramble(selected[0]));
     setUserInput("");
     setScore(0);
+    scoreRef.current = 0;
     setCorrectCount(0);
-    setTimeLeft(Math.floor(config.timeLimitMs / 1000));
+    const initialTime = Math.floor(config.timeLimitMs / 1000);
+    setTimeLeft(initialTime);
+    timeLeftRef.current = initialTime;
     setTimerRunning(true);
     setPhase("play");
   }
 
   function checkWord() {
+    if (feedback || phase !== "play") return;
     const correct = words[currentWordIndex];
-    if (userInput.toLowerCase() === correct.toLowerCase()) {
-      setFeedback("correct");
-      const wordScore = Math.max(10, 30 + (correct.length * 5));
-      setScore((s) => s + wordScore);
+    const isCorrect = userInput.trim().toLowerCase() === correct.toLowerCase();
+
+    if (isCorrect) {
+      const wordScore = Math.max(10, 30 + correct.length * 5);
+      scoreRef.current += wordScore;
+      setScore(scoreRef.current);
       setCorrectCount((c) => c + 1);
+      setFeedback("correct");
     } else {
       setFeedback("wrong");
     }
 
-    setTimeout(() => {
+    if (transitionRef.current) clearTimeout(transitionRef.current);
+    transitionRef.current = setTimeout(() => {
       setFeedback(null);
       if (currentWordIndex + 1 >= wordCount) {
         setTimerRunning(false);
-        const finalScore = userInput.toLowerCase() === correct.toLowerCase() ? score + 30 : score;
-        const finalStars = finalScore >= config.targetScore3 ? 3 : finalScore >= config.targetScore2 ? 2 : finalScore >= config.targetScore ? 1 : 0;
-        onComplete(finalScore, finalStars, timeLeft * 1000);
+        const finalStars = scoreRef.current >= config.targetScore3 ? 3 : scoreRef.current >= config.targetScore2 ? 2 : scoreRef.current >= config.targetScore ? 1 : 0;
+        onCompleteRef.current(scoreRef.current, finalStars, timeLeftRef.current * 1000);
       } else {
         const nextIdx = currentWordIndex + 1;
         setCurrentWordIndex(nextIdx);
@@ -120,43 +143,80 @@ export function WordScrambleGame({ level, config, gradient, onComplete, onExit }
     }
   }
 
-  // Start on mount
-  useEffect(() => { startGame(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // ─── Intro ──────────────────────────────────────────────────────────
+  if (phase === "intro") {
+    return (
+      <GameIntro
+        title="Word Scramble"
+        description="Unscramble the letters to form the hidden word as fast as you can."
+        steps={[
+          "Study the scrambled letters on screen.",
+          "Type the correct word into the box.",
+          "Press Submit or Enter — longer words earn more points!",
+        ]}
+        level={level}
+        difficulty={difficulty}
+        timeLimitSec={Math.floor(config.timeLimitMs / 1000)}
+        goal={`${config.targetScore}+ pts`}
+        gradient={gradient}
+        onStart={() => setPhase("countdown")}
+        onBack={onExit}
+      />
+    );
+  }
 
-  if (phase === "play" && words.length === 0) return null;
+  // ─── Countdown ──────────────────────────────────────────────────────
+  if (phase === "countdown") {
+    return <Countdown label="Get ready to unscramble..." onDone={beginGame} />;
+  }
 
   return (
     <div className="mx-auto max-w-lg space-y-4">
       {/* HUD */}
       <div className="flex items-center justify-between">
-        <button onClick={onExit} className="rounded-lg p-2 hover:bg-accent min-h-[44px] flex items-center justify-center">
+        <button
+          onClick={() => {
+            setTimerRunning(false);
+            onExit();
+          }}
+          aria-label="Back to level select"
+          className="flex min-h-[44px] items-center justify-center rounded-lg p-2 hover:bg-accent"
+        >
           <ArrowLeft className="h-5 w-5" />
         </button>
         <div className="flex items-center gap-3">
           <div className="rounded-full bg-primary/10 px-3 py-1.5 text-sm font-bold text-primary">{currentWordIndex + 1}/{wordCount}</div>
-          <div className={`rounded-full px-3 py-1.5 text-sm font-bold ${timeLeft <= 10 ? "bg-red-500/10 text-red-500 animate-pulse" : "bg-muted"}`}>
+          <div className={`rounded-full px-3 py-1.5 text-sm font-bold ${timeLeft <= 10 ? "bg-red-500/10 text-red-500" : "bg-muted"}`}>
             {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")}
           </div>
           <div className="rounded-full bg-primary/10 px-3 py-1.5 text-sm font-bold text-primary">{score}</div>
         </div>
       </div>
 
+      {/* Progress */}
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+        <div
+          className={`h-full rounded-full bg-gradient-to-r ${gradient} transition-all`}
+          style={{ width: `${((currentWordIndex + (feedback === "correct" ? 1 : 0)) / wordCount) * 100}%` }}
+        />
+      </div>
+
       {/* Word */}
       <div className="flex flex-col items-center gap-6 py-8">
         <p className="text-sm text-muted-foreground">Unscramble this word</p>
-          <div className={`flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 rounded-2xl bg-gradient-to-br ${gradient} px-4 py-4 sm:px-8 sm:py-5`}>
-            {scrambled.split("").map((char, i) => (
-              <motion.span
-                key={`${currentWordIndex}-${i}`}
-                initial={{ scale: 0, rotate: -90 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ delay: i * 0.05, type: "spring" }}
-                className="text-xl sm:text-2xl md:text-3xl font-bold text-white uppercase"
-              >
-                {char}
-              </motion.span>
-            ))}
-          </div>
+        <div className={`flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 rounded-2xl bg-gradient-to-br ${gradient} px-4 py-4 sm:px-8 sm:py-5`}>
+          {scrambled.split("").map((char, i) => (
+            <motion.span
+              key={`${currentWordIndex}-${i}`}
+              initial={{ scale: 0, rotate: -90 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ delay: i * 0.05, type: "spring" }}
+              className="text-xl sm:text-2xl md:text-3xl font-bold text-white uppercase"
+            >
+              {char}
+            </motion.span>
+          ))}
+        </div>
 
         {feedback && (
           <motion.p
@@ -170,12 +230,18 @@ export function WordScrambleGame({ level, config, gradient, onComplete, onExit }
 
         {/* Input */}
         <div className="w-full max-w-xs">
+          <label htmlFor="word-answer" className="sr-only">
+            Type your answer
+          </label>
           <input
+            id="word-answer"
             type="text"
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
             onKeyDown={handleKeyPress}
             autoFocus
+            autoComplete="off"
+            autoCorrect="off"
             placeholder="Type your answer..."
             className="h-12 w-full rounded-xl border-2 border-border bg-card px-4 text-center text-lg font-semibold uppercase tracking-widest focus:border-primary/50 focus:outline-none"
           />
@@ -183,8 +249,8 @@ export function WordScrambleGame({ level, config, gradient, onComplete, onExit }
 
         <button
           onClick={checkWord}
-          disabled={userInput.length === 0}
-          className={`rounded-xl bg-gradient-to-r ${gradient} px-8 py-3 text-sm font-bold text-white hover:opacity-90 disabled:opacity-50 min-h-[48px]`}
+          disabled={userInput.length === 0 || !!feedback}
+          className={`rounded-xl bg-gradient-to-r ${gradient} px-8 py-3 text-sm font-bold text-white hover:opacity-90 disabled:opacity-50 min-h-[48px] touch-manipulation`}
         >
           Submit
         </button>

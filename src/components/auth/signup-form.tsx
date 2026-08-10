@@ -36,7 +36,7 @@ export function SignupForm({ refCode }: { refCode?: string | null }) {
 
     try {
       console.log("Starting signup...", { email, refCode });
-      const { error: authError } = await supabase.auth.signUp({
+      const { data, error: authError } = await supabase.auth.signUp({
         email,
         password,
         options,
@@ -51,6 +51,38 @@ export function SignupForm({ refCode }: { refCode?: string | null }) {
           "Something went wrong. Please try again.";
         setError(message);
         setLoading(false);
+        return;
+      }
+
+      // If a session was returned, email confirmation is disabled and the
+      // account is ready to use immediately — attribute any referral and
+      // continue to onboarding.
+      if (data?.session?.user) {
+        const userId = data.session.user.id;
+        if (refCode) {
+          try {
+            const { data: referrer } = await supabase
+              .from("profiles")
+              .select("user_id")
+              .eq("referral_code", refCode)
+              .maybeSingle();
+
+            if (referrer) {
+              await supabase
+                .from("profiles")
+                .update({ referred_by: referrer.user_id })
+                .eq("user_id", userId);
+              await supabase.rpc("increment_referral_count", {
+                referrer_id: referrer.user_id,
+              });
+            }
+          } catch (err) {
+            console.error("Failed to attribute referral:", err);
+          }
+        }
+
+        router.replace("/onboarding");
+        router.refresh();
         return;
       }
 

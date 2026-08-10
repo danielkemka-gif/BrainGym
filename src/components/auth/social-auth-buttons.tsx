@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { getSiteUrl } from "@/lib/site-url";
 
 function GoogleIcon() {
   return (
@@ -30,29 +31,52 @@ export function SocialAuthButtons({
     console.log(`Starting ${provider} OAuth...`);
 
     try {
-      const supabase = createClient();
-      const baseRedirect =
-        redirectTo || `${window.location.origin}/auth/callback`;
-      const redirectUrl = refCode
-        ? `${baseRedirect}${baseRedirect.includes("?") ? "&" : "?"}ref=${encodeURIComponent(refCode)}`
-        : baseRedirect;
+      // Carry the referral code via a short-lived cookie instead of a query
+      // string on redirectTo — Supabase's redirect allowlist matches URLs
+      // exactly, so `?ref=...` would fail validation after OAuth completes.
+      if (refCode) {
+        try {
+          document.cookie = `pending_ref=${encodeURIComponent(refCode)}; path=/; max-age=900; SameSite=Lax`;
+        } catch {
+          // ignore cookie failures
+        }
+      }
 
-      const result = await supabase.auth.signInWithOAuth({
+      const supabase = createClient();
+      const browserOrigin =
+        typeof window !== "undefined" ? window.location.origin : getSiteUrl();
+      const baseRedirect = redirectTo || `${browserOrigin}/auth/callback`;
+
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: redirectUrl,
+          redirectTo: baseRedirect,
+          queryParams: {
+            access_type: "offline",
+            prompt: "select_account",
+          },
         },
       });
 
-      if (result.error) {
-        console.error(`${provider} OAuth error:`, result.error);
+      if (error) {
+        console.error(`${provider} OAuth error:`, error);
         const message =
-          result.error?.message ||
-          `${provider} sign-in failed. Please try again.`;
+          error?.message?.includes("provider is not enabled")
+            ? "Google sign-in is not enabled for this app yet. Please use email sign-in for now."
+            : error?.message || `${provider} sign-in failed. Please try again.`;
         setError(message);
         setLoading((prev) => ({ ...prev, [provider]: false }));
+        return;
       }
-      // If no error, the browser navigates away — no need to reset loading
+
+      // Some Supabase clients return an OAuth URL to follow. If provided,
+      // navigate the browser there to start the provider flow.
+      if (data?.url) {
+        window.location.href = data.url;
+        return;
+      }
+
+      setLoading((prev) => ({ ...prev, [provider]: false }));
     } catch (err) {
       console.error(`Unexpected ${provider} OAuth error:`, err);
       const message =

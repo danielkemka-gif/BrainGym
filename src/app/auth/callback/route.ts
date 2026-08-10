@@ -25,8 +25,11 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams, origin } = new URL(request.url);
     const code = searchParams.get("code");
-    const errorParam = searchParams.get("error");
-    const refCode = searchParams.get("ref");
+    const errorParam = searchParams.get("error") || searchParams.get("error_description");
+    const pendingRef = request.cookies.get("pending_ref")?.value ?? null;
+    const refCode =
+      searchParams.get("ref") ??
+      (pendingRef ? decodeURIComponent(pendingRef) : null);
 
     if (code) {
       const { createClient } = await import("@/lib/supabase/server");
@@ -72,17 +75,23 @@ export async function GET(request: NextRequest) {
             .maybeSingle();
 
           if (!profile) {
-            return NextResponse.redirect(`${origin}/onboarding`);
+            const res = NextResponse.redirect(`${origin}/onboarding`);
+            res.cookies.set("pending_ref", "", { path: "/", maxAge: 0 });
+            return res;
           }
 
-          return NextResponse.redirect(`${origin}/dashboard`);
+          const res = NextResponse.redirect(`${origin}/dashboard`);
+          res.cookies.set("pending_ref", "", { path: "/", maxAge: 0 });
+          return res;
         }
       }
     }
 
-    return NextResponse.redirect(
+    const res = NextResponse.redirect(
       `${origin}/login?error=${errorParam || "auth_callback_error"}`
     );
+    res.cookies.set("pending_ref", "", { path: "/", maxAge: 0 });
+    return res;
   } catch (err) {
     console.error("Auth callback error:", err);
     return NextResponse.redirect(`${APP_URL}/login?error=auth_callback_error`);

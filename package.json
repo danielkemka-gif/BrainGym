@@ -8,6 +8,7 @@
     "start": "node node_modules/next/dist/bin/next start",
     "lint": "node node_modules/next/dist/bin/next lint",
     "typecheck": "tsc --noEmit",
+    "test:e2e": "playwright test",
     "seed": "tsx src/scripts/seed.ts",
     "supabase:types": "supabase gen types typescript --local > src/types/supabase.ts"
   },
@@ -49,6 +50,7 @@
     "zod": "^3.25.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@types/node": "^22.15.2",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",

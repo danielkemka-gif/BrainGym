@@ -9,6 +9,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || "https://brain-gym-nsu6.vercel.app"
+  ),
   title: "BrainGym — Train Your Brain For Real Life",
   description:
     "BrainGym helps you improve memory, focus, thinking, and emotional intelligence through daily real-life brain workouts.",

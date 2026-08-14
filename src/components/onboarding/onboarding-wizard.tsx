@@ -96,6 +96,18 @@ export function OnboardingWizard() {
         if (!err3) saveOk = true;
       }
 
+      const refCode = user.user_metadata?.ref_code || null;
+      if (saveOk && refCode) {
+        try {
+          await supabase.rpc("attribute_referral", {
+            p_user_id: user.id,
+            p_ref: refCode,
+          });
+        } catch (err) {
+          console.error("Failed to attribute referral:", err);
+        }
+      }
+
       if (basicInfo.gender) {
         supabase.auth.updateUser({
           data: { gender: basicInfo.gender, display_name: basicInfo.name },
@@ -121,11 +133,6 @@ export function OnboardingWizard() {
           avatar_url: basicInfo.avatar_url,
         }).eq("user_id", user.id);
       }
-
-      supabase.from("user_settings").upsert({
-        user_id: user.id,
-        age_group: ageGroup.age_group,
-      }, { onConflict: "user_id" });
 
       const scores = Object.entries(assessment.scores);
       if (scores.length > 0) {

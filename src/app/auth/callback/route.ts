@@ -42,29 +42,16 @@ export async function GET(request: NextRequest) {
         } = await supabase.auth.getUser();
 
         if (user) {
-          // Process referral if present
           const ref = refCode || user.user_metadata?.ref_code;
           if (ref) {
             try {
               const admin = await createServiceClient();
-              const { data: referrer } = await admin
-                .from("profiles")
-                .select("user_id")
-                .eq("referral_code", ref)
-                .maybeSingle();
-
-              if (referrer) {
-                await admin
-                  .from("profiles")
-                  .update({ referred_by: referrer.user_id })
-                  .eq("user_id", user.id);
-
-                await admin.rpc("increment_referral_count", {
-                  referrer_id: referrer.user_id,
-                });
-              }
+              await admin.rpc("attribute_referral", {
+                p_user_id: user.id,
+                p_ref: ref,
+              });
             } catch (err) {
-              console.error("Failed to process referral:", err);
+              console.error("Failed to attribute referral:", err);
             }
           }
 

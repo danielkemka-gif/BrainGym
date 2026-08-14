@@ -176,6 +176,7 @@ export default function ShareCardPage() {
   const [photoImage, setPhotoImage] = useState<HTMLImageElement | null>(null);
   const [photoDragOver, setPhotoDragOver] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -209,7 +210,17 @@ export default function ShareCardPage() {
             });
             return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] || "Memory";
           }),
-      ]).then(([xp, coin, streak, activitiesDone, workoutsDone, topCat]) => {
+        supabase.from("profiles").select("referral_code").eq("user_id", user.id).maybeSingle()
+          .then(async ({ data }) => {
+            if (data?.referral_code) return data.referral_code;
+            const code = `BG${user.id.slice(0, 8).toUpperCase()}`;
+            await supabase
+              .from("profiles")
+              .update({ referral_code: code })
+              .eq("user_id", user.id);
+            return code;
+          }),
+      ]).then(([xp, coin, streak, activitiesDone, workoutsDone, topCat, referral]) => {
         const { level } = getLevelProgress(xp);
         const s: UserStats = {
           name: name.split(" ")[0],
@@ -224,6 +235,7 @@ export default function ShareCardPage() {
           topCategory: topCat,
         };
         setStats(s);
+        setReferralCode(referral);
         setLoading(false);
       });
     });
@@ -321,13 +333,17 @@ export default function ShareCardPage() {
 
   const [copied, setCopied] = useState(false);
 
+  const shareUrl = referralCode
+    ? `${APP_URL}/signup?ref=${referralCode}`
+    : APP_URL;
+
   const shareText = stats
-    ? `🧠 I'm a Level ${stats.level} ${stats.levelTitle} on BrainGym! ${stats.totalXp} XP earned, ${stats.streak}-day streak 🔥\n\nTrain your brain at ${APP_URL}`
+    ? `🧠 I'm a Level ${stats.level} ${stats.levelTitle} on BrainGym! ${stats.totalXp} XP earned, ${stats.streak}-day streak 🔥\n\nJoin me — train your brain at ${shareUrl}`
     : "";
 
   function getShareUrl(platform: string) {
     const text = encodeURIComponent(shareText);
-    const url = encodeURIComponent(APP_URL);
+    const url = encodeURIComponent(shareUrl);
     switch (platform) {
       case "whatsapp": return `https://api.whatsapp.com/send?text=${text}`;
       case "twitter": return `https://twitter.com/intent/tweet?text=${text}`;

@@ -44,26 +44,27 @@ export default function LeaderboardPage() {
       if (user) setUserId(user.id);
     });
 
-    const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString();
-
     Promise.all([
       supabase
-        .from("xp_ledger")
-        .select("user_id, amount")
-        .gte("created_at", weekAgo),
+        .from("leaderboard_weekly")
+        .select("user_id, name, avatar_url, weekly_xp"),
       supabase
         .from("user_leagues")
         .select("user_id, league, weekly_xp, promoted, relegated")
         .order("week_start", { ascending: false })
         .limit(200),
-    ]).then(([xpRes, leagueRes]) => {
-      const logs = xpRes.data ?? [];
+    ]).then(([weeklyRes, leagueRes]) => {
+      const weekly = weeklyRes.data ?? [];
       const leagues = leagueRes.data ?? [];
 
-      // Build weekly XP totals
-      const xpMap: Record<string, number> = {};
-      for (const log of logs) {
-        xpMap[log.user_id] = (xpMap[log.user_id] ?? 0) + log.amount;
+      // Weekly view already aggregates XP per user
+      const weeklyMap: Record<string, { name: string | null; avatar_url: string | null; weekly_xp: number }> = {};
+      for (const row of weekly) {
+        weeklyMap[row.user_id] = {
+          name: row.name,
+          avatar_url: row.avatar_url,
+          weekly_xp: row.weekly_xp,
+        };
       }
 
       // Build league map (latest entry per user)
@@ -79,44 +80,33 @@ export default function LeaderboardPage() {
         }
       }
 
-      const allUserIds = [...new Set([...Object.keys(xpMap), ...Object.keys(leagueMap)])];
+      const allUserIds = [...new Set([...Object.keys(weeklyMap), ...Object.keys(leagueMap)])];
 
-      // Fetch profiles
-      supabase
-        .from("profiles")
-        .select("user_id, name, avatar_url")
-        .in("user_id", allUserIds)
-        .then(({ data: profiles }) => {
-          const profileMap = Object.fromEntries(
-            (profiles ?? []).map((p) => [p.user_id, p])
-          );
+      const allEntries: LeaderboardEntry[] = allUserIds.map((id) => ({
+        user_id: id,
+        total_xp: 0,
+        weekly_xp: leagueMap[id]?.weekly_xp ?? weeklyMap[id]?.weekly_xp ?? 0,
+        name: weeklyMap[id]?.name ?? null,
+        avatar_url: weeklyMap[id]?.avatar_url ?? null,
+        league: leagueMap[id]?.league ?? "bronze",
+        promoted: leagueMap[id]?.promoted ?? false,
+        relegated: leagueMap[id]?.relegated ?? false,
+      }));
 
-          const allEntries: LeaderboardEntry[] = allUserIds.map((id) => ({
-            user_id: id,
-            total_xp: xpMap[id] ?? 0,
-            weekly_xp: leagueMap[id]?.weekly_xp ?? xpMap[id] ?? 0,
-            name: profileMap[id]?.name ?? null,
-            avatar_url: profileMap[id]?.avatar_url ?? null,
-            league: leagueMap[id]?.league ?? "bronze",
-            promoted: leagueMap[id]?.promoted ?? false,
-            relegated: leagueMap[id]?.relegated ?? false,
-          }));
+      // Sort by weekly XP
+      allEntries.sort((a, b) => b.weekly_xp - a.weekly_xp);
+      setEntries(allEntries);
 
-          // Sort by weekly XP
-          allEntries.sort((a, b) => b.weekly_xp - a.weekly_xp);
-          setEntries(allEntries);
+      if (userId) {
+        const my = allEntries.find((e) => e.user_id === userId);
+        if (my) {
+          setMyEntry(my);
+          setUserLeague(my.league);
+          setSelectedLeague(my.league);
+        }
+      }
 
-          if (userId) {
-            const my = allEntries.find((e) => e.user_id === userId);
-            if (my) {
-              setMyEntry(my);
-              setUserLeague(my.league);
-              setSelectedLeague(my.league);
-            }
-          }
-
-          setLoading(false);
-        });
+      setLoading(false);
     });
   }, [userId]);
 

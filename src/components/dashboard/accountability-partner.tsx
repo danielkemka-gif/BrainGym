@@ -62,8 +62,8 @@ export function AccountabilityPartner() {
         const partnerData: Partner[] = [];
         for (const pid of partnerIds) {
           const [profileRes, streakRes] = await Promise.all([
-            supabase.from("profiles").select("name, avatar_url").eq("user_id", pid).maybeSingle(),
-            supabase.from("streaks").select("current_streak").eq("user_id", pid).maybeSingle(),
+            supabase.from("profiles_public").select("name, avatar_url").eq("user_id", pid).maybeSingle(),
+            supabase.from("streaks_public").select("current_streak").eq("user_id", pid).maybeSingle(),
           ]);
           if (profileRes.data) {
             partnerData.push({
@@ -90,7 +90,7 @@ export function AccountabilityPartner() {
         const enriched: PartnerRequest[] = [];
         for (const req of pending) {
           const { data: profile } = await supabase
-            .from("profiles")
+            .from("profiles_public")
             .select("name")
             .eq("user_id", req.from_user_id)
             .maybeSingle();
@@ -113,7 +113,7 @@ export function AccountabilityPartner() {
     const supabase = createClient();
     // Search by name (simplified — in production you'd search by email)
     const { data } = await supabase
-      .from("profiles")
+      .from("profiles_public")
       .select("user_id, name")
       .ilike("name", `%${searchEmail}%`)
       .neq("user_id", myId)

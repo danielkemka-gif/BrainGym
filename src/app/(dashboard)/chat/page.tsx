@@ -248,7 +248,7 @@ function ChatContent() {
 
     const supabase = createClient();
     const { data: profiles } = await supabase
-      .from("profiles")
+      .from("profiles_public")
       .select("user_id, name, avatar_url, username")
       .in("user_id", uncached);
 

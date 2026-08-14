@@ -79,7 +79,7 @@ export default function ChallengeDetailPage() {
             const userIds = data.map((p) => p.user_id);
 
             const { data: profiles } = await supabase
-              .from("profiles")
+              .from("profiles_public")
               .select("user_id, name")
               .in("user_id", userIds);
 

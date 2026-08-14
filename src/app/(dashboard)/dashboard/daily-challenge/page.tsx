@@ -602,7 +602,7 @@ export default function DailyChallengePage() {
 
     const userIds = [...new Set(data.map((d) => d.user_id))];
     const { data: profiles } = await supabase
-      .from("profiles")
+      .from("profiles_public")
       .select("user_id, name, avatar_url")
       .in("user_id", userIds);
 

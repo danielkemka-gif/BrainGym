@@ -75,12 +75,12 @@ export function FriendDuelSection() {
       );
 
       const { data: profiles } = await supabase
-        .from("profiles")
+        .from("profiles_public")
         .select("user_id, name, avatar_url")
         .in("user_id", partnerIds);
 
       const { data: streaks } = await supabase
-        .from("streaks")
+        .from("streaks_public")
         .select("user_id, current_streak")
         .in("user_id", partnerIds);
 
@@ -106,7 +106,7 @@ export function FriendDuelSection() {
         allIds.add(d.opponent_id);
       }
       const { data: nameProfiles } = await supabase
-        .from("profiles")
+        .from("profiles_public")
         .select("user_id, name")
         .in("user_id", [...allIds]);
 

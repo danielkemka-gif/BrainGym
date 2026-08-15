@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Brain, Zap, Gamepad2, Trophy, X, ChevronRight } from "lucide-react";
 
+export const OPEN_TOUR_EVENT = "braingym:opentour";
+
 const SLIDES = [
   {
     icon: Brain,
@@ -52,6 +54,16 @@ export function WelcomeTour() {
       const t = setTimeout(() => setVisible(true), 800);
       return () => clearTimeout(t);
     }
+  }, []);
+
+  // Reopen on demand from the Help button (even after dismissal).
+  useEffect(() => {
+    const open = () => {
+      setIndex(0);
+      setVisible(true);
+    };
+    window.addEventListener(OPEN_TOUR_EVENT, open);
+    return () => window.removeEventListener(OPEN_TOUR_EVENT, open);
   }, []);
 
   function dismiss() {

@@ -61,6 +61,13 @@ const AdaptiveHabitIntelligence = dynamic(() => import("@/components/dashboard/a
 const SmartRemindersSection = dynamic(() => import("@/components/dashboard/smart-reminders-section").then((m) => ({ default: m.SmartRemindersSection })), { ssr: false, loading: () => <MedCard /> });
 const StreakProtectionCard = dynamic(() => import("@/components/dashboard/streak-protection-card").then((m) => ({ default: m.StreakProtectionCard })), { ssr: false, loading: () => <TallCard /> });
 const ThreeSixFiveJourney = dynamic(() => import("@/components/dashboard/three-six-five-journey").then((m) => ({ default: m.ThreeSixFiveJourney })), { ssr: false, loading: () => <TallCard /> });
+const WeeklyThemeBanner = dynamic(() => import("@/components/dashboard/weekly-theme-banner").then((m) => ({ default: m.WeeklyThemeBanner })), { ssr: false, loading: () => <Skeleton className="h-24" /> });
+const WhatToDoSection = dynamic(() => import("@/components/dashboard/what-to-do-section").then((m) => ({ default: m.WhatToDoSection })), { ssr: false, loading: () => <MedCard /> });
+const BrainAgeTrend = dynamic(() => import("@/components/dashboard/brain-age-trend").then((m) => ({ default: m.BrainAgeTrend })), { ssr: false, loading: () => <Skeleton className="h-44" /> });
+const StreakMilestones = dynamic(() => import("@/components/dashboard/streak-milestones").then((m) => ({ default: m.StreakMilestones })), { ssr: false, loading: () => <Skeleton className="h-44" /> });
+const HabitCalendar = dynamic(() => import("@/components/dashboard/habit-calendar").then((m) => ({ default: m.HabitCalendar })), { ssr: false, loading: () => <Skeleton className="h-64" /> });
+const LevelUpCelebration = dynamic(() => import("@/components/dashboard/level-up-celebration").then((m) => ({ default: m.LevelUpCelebration })), { ssr: false });
+const PushNotificationCard = dynamic(() => import("@/components/dashboard/push-notification-card").then((m) => ({ default: m.PushNotificationCard })), { ssr: false, loading: () => <MedCard /> });
 
 function ShowMoreToggle({ expanded, onClick }: { expanded: boolean; onClick: () => void }) {
   return (
@@ -80,6 +87,7 @@ export default function DashboardPage() {
     <div className="mx-auto w-full max-w-6xl space-y-3 sm:space-y-4 lg:space-y-6 overflow-x-hidden pb-4 sm:pb-6">
       {/* First-visit welcome tour */}
       <WelcomeTour />
+      <LevelUpCelebration />
 
       {/* Header */}
       <Suspense fallback={<HeaderSkeleton />}>
@@ -91,6 +99,10 @@ export default function DashboardPage() {
       <Suspense fallback={<MiniCard />}><OnboardingPrompt /></Suspense>
       <Suspense fallback={<MiniCard />}><HabitNudges /></Suspense>
       <Suspense fallback={<MiniCard />}><CoachNudge /></Suspense>
+
+      {/* Weekly theme + What to do today */}
+      <Suspense fallback={<Skeleton className="h-24" />}><WeeklyThemeBanner /></Suspense>
+      <Suspense fallback={<MedCard />}><WhatToDoSection /></Suspense>
 
       {/* Central CTA */}
       <Suspense fallback={<MedCard />}><CentralCTA /></Suspense>
@@ -110,6 +122,12 @@ export default function DashboardPage() {
             <TodaysWorkoutSection />
           </Suspense>
         </div>
+      </div>
+
+      {/* Brain Age Trend + Streak Milestones */}
+      <div className="grid gap-3 sm:gap-4 lg:gap-6 lg:grid-cols-2">
+        <Suspense fallback={<Skeleton className="h-44" />}><BrainAgeTrend /></Suspense>
+        <Suspense fallback={<Skeleton className="h-44" />}><StreakMilestones /></Suspense>
       </div>
 
       {/* Invite friends */}
@@ -135,6 +153,11 @@ export default function DashboardPage() {
           </Suspense>
         </div>
       </div>
+
+      {/* Habit calendar */}
+      <Suspense fallback={<Skeleton className="h-64" />}>
+        <HabitCalendar />
+      </Suspense>
 
       {/* Quick actions */}
       <Suspense
@@ -197,6 +220,11 @@ export default function DashboardPage() {
       {/* Smart Reminders */}
       <Suspense fallback={<MedCard />}>
         <SmartRemindersSection />
+      </Suspense>
+
+      {/* Push notifications */}
+      <Suspense fallback={<MedCard />}>
+        <PushNotificationCard />
       </Suspense>
 
       {/* Streak Protection + 365-Day Journey */}

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/lib/auth";
-import { X, ArrowRight, Zap, Brain, Trophy, Sparkles, Target } from "lucide-react";
+import { X, ArrowRight, Zap, Brain, Trophy, Sparkles, Target, UserPlus } from "lucide-react";
 
 const PROMPTS = [
   {
@@ -65,6 +65,7 @@ export function OnboardingPrompt() {
   const [userName, setUserName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [hasWorkouts, setHasWorkouts] = useState(false);
+  const [profileComplete, setProfileComplete] = useState(true);
 
   useEffect(() => {
     if (!user) return;
@@ -79,19 +80,28 @@ export function OnboardingPrompt() {
     Promise.all([
       supabase
         .from("profiles")
-        .select("avatar_url")
+        .select("avatar_url, onboarding_complete")
         .eq("user_id", user.id)
         .maybeSingle()
-        .then(({ data }) => data?.avatar_url || ""),
+        .then(({ data }) => ({
+          avatar: data?.avatar_url || "",
+          complete: data?.onboarding_complete === true,
+        })),
       supabase
         .from("daily_workouts")
         .select("id")
         .eq("user_id", user.id)
         .limit(1)
         .then(({ data }) => (data && data.length > 0 ? true : false)),
-    ]).then(([avatar, workouts]) => {
-      setAvatarUrl(avatar);
+    ]).then(([profile, workouts]) => {
+      setAvatarUrl(profile.avatar);
+      setProfileComplete(profile.complete);
       setHasWorkouts(workouts);
+
+      if (!profile.complete) {
+        setVisible(true);
+        return;
+      }
 
       const key = `braingym_onboarding_prompt_dismissed_${user.id}`;
       const wasDismissed = localStorage.getItem(key);
@@ -101,6 +111,11 @@ export function OnboardingPrompt() {
       }
     });
   }, [user, supabase]);
+
+  function handleProfilePromptDismiss() {
+    setDismissed(true);
+    setVisible(false);
+  }
 
   function handleDismiss() {
     setDismissed(true);
@@ -117,6 +132,41 @@ export function OnboardingPrompt() {
   }
 
   if (!visible || dismissed) return null;
+
+  if (!profileComplete) {
+    return (
+      <div className="relative overflow-hidden rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/20 via-violet-500/10 to-primary/10 p-4 sm:p-6 transition-all">
+        <button
+          onClick={handleProfilePromptDismiss}
+          aria-label="Dismiss"
+          className="absolute right-3 top-3 rounded-full p-1 text-muted-foreground hover:bg-accent hover:text-foreground min-h-[44px] touch-manipulation"
+        >
+          <X className="h-4 w-4" />
+        </button>
+
+        <div className="flex items-start gap-4">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-primary/20">
+            <UserPlus className="h-7 w-7 text-primary" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <h3 className="text-lg font-bold">Let&apos;s personalize your experience</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {userName}, tell us a bit about yourself so we can build a training
+              plan that fits you — age, goals, and your preferred pace.
+            </p>
+            <Link
+              href="/onboarding"
+              onClick={handleProfilePromptDismiss}
+              className="mt-4 inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 min-h-[44px] touch-manipulation active:scale-[0.97]"
+            >
+              Complete your profile
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const prompt = PROMPTS[currentPrompt];
   const isLast = currentPrompt === PROMPTS.length - 1;

@@ -59,19 +59,54 @@ export function SignupForm({ refCode }: { refCode?: string | null }) {
       });
 
       if (authError) {
-        console.error("Signup error:", authError);
-        const msg = authError.message?.toLowerCase() || "";
+        console.warn("Client signUp encountered error, attempting server fallback...", authError);
+        const msg = (typeof authError === "string" ? authError : authError.message || (authError as any)?.error_description || "").toLowerCase();
+
         if (msg.includes("user already registered") || msg.includes("already exists")) {
           setIsExistingAccount(true);
           setError("An account with this email already exists. Please sign in.");
-        } else if (msg.includes("rate limit") || msg.includes("too many requests")) {
+          setLoading(false);
+          return;
+        }
+
+        // Attempt server-side creation fallback for instant signup & test run
+        try {
+          const apiRes = await fetch("/api/auth/signup", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: trimmedEmail, password, refCode }),
+          });
+          const apiData = await apiRes.json();
+
+          if (apiRes.ok && apiData.success) {
+            // Sign in directly
+            const { error: signInErr } = await supabase.auth.signInWithPassword({
+              email: trimmedEmail,
+              password,
+            });
+
+            if (!signInErr) {
+              router.replace("/onboarding");
+              router.refresh();
+              return;
+            }
+          } else if (apiData.isExisting) {
+            setIsExistingAccount(true);
+            setError("An account with this email already exists. Please sign in.");
+            setLoading(false);
+            return;
+          }
+        } catch (fallbackErr) {
+          console.error("Server fallback error:", fallbackErr);
+        }
+
+        // Format user-friendly error (never display `{}` or empty string)
+        if (msg.includes("rate limit") || msg.includes("too many requests")) {
           setError("Too many signup attempts. Please wait a moment or try Google sign-in.");
+        } else if (!authError.message || authError.message === "{}" || authError.message.includes("Database error")) {
+          setError("Unable to create account right now. Please try with Google or sign in.");
         } else {
-          setError(
-            authError.message ||
-            (authError as any)?.error_description ||
-            "Unable to create account. Please try again."
-          );
+          setError(authError.message);
         }
         setLoading(false);
         return;

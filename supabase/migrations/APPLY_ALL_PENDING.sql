@@ -1,4 +1,4 @@
-﻿-- Attribute a referral to a new user at profile creation time.
+-- Attribute a referral to a new user at profile creation time.
 -- Idempotent, runs as the function owner (bypasses RLS), and can be called
 -- by the authenticated user for their own account or by the service role.
 
@@ -188,4 +188,135 @@ CREATE POLICY "Users can delete own push subscriptions"
   ON public.push_subscriptions
   FOR DELETE
   USING (auth.uid() = user_id);
+
+-- ============================================================================
+-- 00035_fix_rls_and_referral_rewards.sql
+-- ============================================================================
+CREATE OR REPLACE FUNCTION public.grant_xp(
+  p_user_id UUID,
+  p_amount INTEGER,
+  p_reason TEXT,
+  p_reference_type TEXT DEFAULT NULL,
+  p_reference_id UUID DEFAULT NULL
+)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  INSERT INTO xp_ledger (user_id, amount, reason, reference_type, reference_id)
+  VALUES (p_user_id, p_amount, p_reason, p_reference_type, p_reference_id);
+
+  UPDATE user_levels
+  SET total_xp = total_xp + p_amount, updated_at = now()
+  WHERE user_id = p_user_id;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.grant_xp(UUID, INTEGER, TEXT, TEXT, UUID) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.grant_xp(UUID, INTEGER, TEXT, TEXT, UUID) TO service_role;
+
+CREATE OR REPLACE FUNCTION public.grant_coins(
+  p_user_id UUID,
+  p_amount INTEGER,
+  p_reason TEXT,
+  p_reference_type TEXT DEFAULT NULL,
+  p_reference_id UUID DEFAULT NULL
+)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  INSERT INTO coins_ledger (user_id, amount, reason, reference_type, reference_id)
+  VALUES (p_user_id, p_amount, p_reason, p_reference_type, p_reference_id);
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.grant_coins(UUID, INTEGER, TEXT, TEXT, UUID) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.grant_coins(UUID, INTEGER, TEXT, TEXT, UUID) TO service_role;
+
+-- ============================================================================
+-- 00036_fix_signup_trigger_and_error_handling.sql
+-- ============================================================================
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, auth
+AS $$
+BEGIN
+  BEGIN
+    INSERT INTO public.profiles (user_id, name, created_at, updated_at)
+    VALUES (
+      NEW.id,
+      COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', NULL),
+      NOW(),
+      NOW()
+    )
+    ON CONFLICT (user_id) DO NOTHING;
+  EXCEPTION WHEN OTHERS THEN
+    RAISE WARNING 'handle_new_user profiles insert error: %', SQLERRM;
+  END;
+
+  BEGIN
+    INSERT INTO public.user_settings (user_id, dark_mode, notifications_enabled, locale)
+    VALUES (NEW.id, true, true, 'en')
+    ON CONFLICT (user_id) DO NOTHING;
+  EXCEPTION WHEN OTHERS THEN
+    RAISE WARNING 'handle_new_user settings insert error: %', SQLERRM;
+  END;
+
+  BEGIN
+    INSERT INTO public.streaks (user_id, current_streak, longest_streak)
+    VALUES (NEW.id, 0, 0)
+    ON CONFLICT (user_id) DO NOTHING;
+  EXCEPTION WHEN OTHERS THEN
+    RAISE WARNING 'handle_new_user streaks insert error: %', SQLERRM;
+  END;
+
+  BEGIN
+    INSERT INTO public.user_levels (user_id, level, title, total_xp)
+    VALUES (NEW.id, 1, 'Bronze', 0)
+    ON CONFLICT (user_id) DO NOTHING;
+  EXCEPTION WHEN OTHERS THEN
+    RAISE WARNING 'handle_new_user levels insert error: %', SQLERRM;
+  END;
+
+  BEGIN
+    INSERT INTO public.subscriptions (user_id, status, plan_tier, current_period_start, current_period_end)
+    VALUES (
+      NEW.id,
+      'trialing',
+      'premium',
+      NOW(),
+      NOW() + INTERVAL '14 days'
+    )
+    ON CONFLICT (user_id) DO NOTHING;
+  EXCEPTION WHEN OTHERS THEN
+    RAISE WARNING 'handle_new_user subscriptions insert error: %', SQLERRM;
+  END;
+
+  BEGIN
+    INSERT INTO public.user_avatars (user_id)
+    VALUES (NEW.id)
+    ON CONFLICT (user_id) DO NOTHING;
+  EXCEPTION WHEN OTHERS THEN
+    RAISE WARNING 'handle_new_user avatar insert error: %', SQLERRM;
+  END;
+
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW
+  EXECUTE FUNCTION public.handle_new_user();
+
+DROP TRIGGER IF EXISTS on_auth_user_created_subscription ON auth.users;
+
 

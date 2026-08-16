@@ -20,28 +20,30 @@ export async function POST() {
     }
 
     const key = process.env.PAYSTACK_SECRET_KEY ?? "";
-    const res = await fetch(
-      `https://api.paystack.co/subscription/${sub.paystack_subscription_code}/disable`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${key}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ code: sub.paystack_subscription_code, token: "" }),
-      }
-    );
+    const res = await fetch("https://api.paystack.co/subscription/disable", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${key}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        code: sub.paystack_subscription_code,
+        token: sub.paystack_subscription_code,
+      }),
+    });
 
     const paystackResponse = await res.json();
 
-    if (!paystackResponse.status) {
+    if (!paystackResponse.status && !paystackResponse.message?.includes("already disabled")) {
       return NextResponse.json(
         { error: paystackResponse.message ?? "Paystack cancellation failed" },
         { status: 502 }
       );
     }
 
-    await supabase
+    const { createAdminClient } = await import("@/lib/supabase/admin");
+    const admin = createAdminClient();
+    await admin
       .from("subscriptions")
       .update({ status: "canceled" })
       .eq("user_id", user.id);

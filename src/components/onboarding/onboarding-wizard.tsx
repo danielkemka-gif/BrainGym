@@ -67,37 +67,43 @@ export function OnboardingWizard() {
         return;
       }
 
-      let saveOk = false;
-
-      const { error: err1 } = await supabase.from("profiles").upsert({
+      const profilePayload = {
         user_id: user.id,
         name: basicInfo.name || "User",
-        age: basicInfo.age,
+        username: basicInfo.username || null,
+        age: basicInfo.age || null,
         age_group: ageGroup.age_group,
+        occupation: basicInfo.occupation || null,
+        goals: goalsSchedule.goals || [],
+        challenges: goalsSchedule.challenges || [],
+        preferred_workout_time: goalsSchedule.preferred_workout_time || null,
+        preferred_difficulty: assessment.overallLevel || "beginner",
+        avatar_url: basicInfo.avatar_url || null,
         onboarding_complete: true,
-      });
-      if (!err1) saveOk = true;
+      };
 
-      if (!saveOk) {
-        const { error: err2 } = await supabase
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .upsert(profilePayload, { onConflict: "user_id" });
+
+      if (profileError) {
+        await supabase
           .from("profiles")
-          .update({ onboarding_complete: true, name: basicInfo.name || "User", age_group: ageGroup.age_group })
+          .update(profilePayload)
           .eq("user_id", user.id);
-        if (!err2) saveOk = true;
       }
 
-      if (!saveOk) {
-        const { error: err3 } = await supabase.from("profiles").insert({
-          user_id: user.id,
-          name: basicInfo.name || "User",
-          onboarding_complete: true,
-          age_group: ageGroup.age_group,
+      if (basicInfo.gender || basicInfo.name) {
+        await supabase.auth.updateUser({
+          data: {
+            gender: basicInfo.gender || undefined,
+            display_name: basicInfo.name || undefined,
+          },
         });
-        if (!err3) saveOk = true;
       }
 
       const refCode = user.user_metadata?.ref_code || null;
-      if (saveOk && refCode) {
+      if (refCode) {
         try {
           await supabase.rpc("attribute_referral", {
             p_user_id: user.id,
@@ -106,32 +112,6 @@ export function OnboardingWizard() {
         } catch (err) {
           console.error("Failed to attribute referral:", err);
         }
-      }
-
-      if (basicInfo.gender) {
-        supabase.auth.updateUser({
-          data: { gender: basicInfo.gender, display_name: basicInfo.name },
-        });
-      }
-
-      if (goalsSchedule.goals.length > 0 || goalsSchedule.challenges.length > 0) {
-        supabase.from("profiles").update({
-          goals: goalsSchedule.goals,
-          challenges: goalsSchedule.challenges,
-          occupation: basicInfo.occupation || null,
-        }).eq("user_id", user.id);
-      }
-
-      if (assessment.overallLevel) {
-        supabase.from("profiles").update({
-          preferred_difficulty: assessment.overallLevel,
-        }).eq("user_id", user.id);
-      }
-
-      if (basicInfo.avatar_url) {
-        supabase.from("profiles").update({
-          avatar_url: basicInfo.avatar_url,
-        }).eq("user_id", user.id);
       }
 
       const scores = Object.entries(assessment.scores);
@@ -148,15 +128,22 @@ export function OnboardingWizard() {
             if (id) rows.push({ user_id: user.id, date: today, category_id: id, score });
           }
           if (rows.length > 0) {
-            supabase.from("brain_scores").insert(rows);
+            await supabase.from("brain_scores").insert(rows);
           }
         }
       }
 
-      router.push("/dashboard");
+      // Ensure essential user tables are seeded if trigger didn't run
+      await Promise.allSettled([
+        supabase.from("user_settings").upsert({ user_id: user.id }, { onConflict: "user_id" }),
+        supabase.from("streaks").upsert({ user_id: user.id }, { onConflict: "user_id" }),
+        supabase.from("user_levels").upsert({ user_id: user.id, level: 1, current_xp: 0, total_xp: 0 }, { onConflict: "user_id" }),
+      ]);
+
+      router.replace("/dashboard");
       router.refresh();
     } catch {
-      router.push("/dashboard");
+      router.replace("/dashboard");
       router.refresh();
     }
   }

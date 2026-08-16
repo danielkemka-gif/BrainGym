@@ -4,7 +4,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Mail } from "lucide-react";
 
-export function MagicLinkForm() {
+export function MagicLinkForm({ refCode }: { refCode?: string | null }) {
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -15,6 +15,14 @@ export function MagicLinkForm() {
     setError(null);
     setLoading(true);
 
+    if (refCode) {
+      try {
+        document.cookie = `pending_ref=${encodeURIComponent(refCode)}; path=/; max-age=900; SameSite=Lax`;
+      } catch {
+        // ignore cookie write failures
+      }
+    }
+
     const supabase = createClient();
 
     try {
@@ -23,6 +31,7 @@ export function MagicLinkForm() {
         email,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
+          data: refCode ? { ref_code: refCode } : undefined,
         },
       });
 

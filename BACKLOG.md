@@ -62,7 +62,7 @@
 - [x] Fix: `ssr: false` not allowed in Server Components — moved to client component
 - [x] Fix: TypeScript error in `getLevel` — added proper type annotation
 - [x] Fix: Installed `@next/swc-win32-x64-msvc` — SWC warning eliminated
-- [ ] Workout history page
+- [x] Workout history page
 
 ## Phase F: Gamification
 

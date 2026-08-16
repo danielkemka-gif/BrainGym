@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-
-const APP_URL =
-  process.env.NEXT_PUBLIC_APP_URL || "https://brain-gym-nsu6.vercel.app";
+import { getSiteUrl } from "@/lib/site-url";
 import { createClient } from "@/lib/supabase/client";
 import { getLevelProgress } from "@/lib/scoring";
 import { LEVELS, CATEGORIES } from "@/lib/constants";
 import { Download, Share2, Trophy, Zap, Flame, Star, Target, Camera, X, ImagePlus } from "lucide-react";
+
 
 interface UserStats {
   name: string;
@@ -162,7 +161,7 @@ function drawCard(ctx: CanvasRenderingContext2D, W: number, H: number, stats: Us
 
   ctx.font = "bold 22px system-ui, sans-serif";
   ctx.fillStyle = "#ffffff";
-  ctx.fillText(`Train your brain at ${APP_URL.replace("https://", "")}`, W / 2, botY + 75);
+  ctx.fillText(`Train your brain at ${getSiteUrl().replace(/^https?:\/\//, "")}`, W / 2, botY + 75);
 }
 
 export default function ShareCardPage() {
@@ -333,9 +332,11 @@ export default function ShareCardPage() {
 
   const [copied, setCopied] = useState(false);
 
+  const siteUrl = getSiteUrl();
   const shareUrl = referralCode
-    ? `${APP_URL}/signup?ref=${referralCode}`
-    : APP_URL;
+    ? `${siteUrl}/signup?ref=${referralCode}`
+    : siteUrl;
+
 
   const shareText = stats
     ? `🧠 I'm a Level ${stats.level} ${stats.levelTitle} on BrainGym! ${stats.totalXp} XP earned, ${stats.streak}-day streak 🔥\n\nJoin me — train your brain at ${shareUrl}`

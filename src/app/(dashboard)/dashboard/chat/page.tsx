@@ -127,7 +127,7 @@ function EmojiPicker({ onSelect, onClose }: { onSelect: (emoji: string) => void;
     if (!search) return EMOJI_CATEGORIES[activeCategory]?.emojis || [];
     return Object.values(EMOJI_CATEGORIES)
       .flatMap((c) => c.emojis)
-      .filter(() => true); // search is just for UX, show all when searching
+      .filter(() => true);
   }, [activeCategory, search]);
 
   return (
@@ -383,7 +383,6 @@ function ChatContent() {
         setMessages((prev) => prev.filter((m) => m.id !== deleted.id));
       })
       .on("postgres_changes", { event: "*", schema: "public", table: "chat_reactions" }, () => {
-        // Reload reactions when any reaction changes
         const ids = messages.map((m) => m.id);
         if (ids.length > 0) loadReactions(ids);
       })
@@ -414,7 +413,6 @@ function ChatContent() {
         const uniqueMap = new Map<string, OnlineUser>();
         allPresences.forEach((p) => uniqueMap.set(p.user_id, p));
 
-        // Fetch profiles for online users
         const uids = [...uniqueMap.keys()];
         await fetchProfiles(uids);
 
@@ -496,14 +494,12 @@ function ChatContent() {
     );
 
     if (existing) {
-      // Remove reaction
       await supabase
         .from("chat_reactions")
         .delete()
         .eq("message_id", messageId)
         .eq("emoji", emoji);
     } else {
-      // Add reaction
       await supabase.from("chat_reactions").insert({
         message_id: messageId,
         user_id: userId,
@@ -511,7 +507,6 @@ function ChatContent() {
       });
     }
     setReactionTarget(null);
-    // Reload reactions
     const ids = messages.map((m) => m.id);
     loadReactions(ids);
   };
@@ -529,7 +524,6 @@ function ChatContent() {
     inputRef.current?.focus();
   };
 
-  // ─── Helpers ───────────────────────────────────────────────────────────
   const getReplyMessage = (replyId: string) => messages.find((m) => m.id === replyId);
   const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   const getMessageReactions = (msgId: string) => reactions.filter((r) => r.message_id === msgId);

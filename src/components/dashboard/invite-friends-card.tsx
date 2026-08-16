@@ -13,8 +13,8 @@ import {
   Send,
   ExternalLink,
 } from 'lucide-react';
+import { getSiteUrl } from '@/lib/site-url';
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://brain-gym-nsu6.vercel.app';
 
 interface ReferralInfo {
   code: string;
@@ -67,7 +67,7 @@ export function InviteFriendsCard() {
   }, [loadInfo]);
 
   const inviteText = `Train your brain with me on BrainGym! 🧠 Join free and use my code: ${info?.code}`;
-  const inviteUrl = `${APP_URL}/signup?ref=${info?.code}`;
+  const inviteUrl = `${getSiteUrl()}/signup?ref=${info?.code}`;
 
   const copyLink = async () => {
     try {

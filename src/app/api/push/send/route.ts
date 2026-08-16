@@ -74,6 +74,8 @@ export async function GET(req: Request) {
   let failures = 0;
   const stale: string[] = [];
 
+  const successfullySentIds: string[] = [];
+
   for (const sub of (subscriptions ?? []) as SubscriptionRow[]) {
     let keys: { p256dh: string; auth: string } | null = null;
     try {
@@ -104,6 +106,7 @@ export async function GET(req: Request) {
         })
       );
       sent += 1;
+      successfullySentIds.push(first.id);
     } catch (err) {
       failures += 1;
       // 404/410 = subscription is gone; clean it up
@@ -116,17 +119,18 @@ export async function GET(req: Request) {
     await admin.from("push_subscriptions").delete().in("id", stale);
   }
 
-  // Mark sent, unless sending failed outright
-  const sentIds = [...new Set(reminders.map((r) => r.id))];
-  await admin
-    .from("smart_reminders")
-    .update({ sent_at: new Date().toISOString(), is_read: true })
-    .in("id", sentIds);
+  // Only update reminders that were successfully sent
+  if (successfullySentIds.length > 0) {
+    await admin
+      .from("smart_reminders")
+      .update({ sent_at: new Date().toISOString() })
+      .in("id", successfullySentIds);
+  }
 
   return NextResponse.json({
     sent,
     failures,
-    reminders: sentIds.length,
+    reminders: reminders.length,
     subscriptions: (subscriptions ?? []).length,
   });
 }

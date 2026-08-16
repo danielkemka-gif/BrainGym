@@ -87,6 +87,7 @@ export const SIDEBAR_ICONS: Record<string, LucideIcon> = {
   settings: Settings,
   shop: ShoppingCart,
   avatar: Brain,
+  guide: Compass,
 };
 
 /* ── Category Icons ───────────────────────────────────────────── */

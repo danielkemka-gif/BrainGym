@@ -36,13 +36,16 @@ export default function ProgressPage() {
           }),
         supabase
           .from("activity_logs")
-          .select("category_id")
+          .select("activity_id, activities(category_id)")
           .eq("user_id", user.id)
           .then(({ data }) => {
             if (!data) return {} as Record<string, number>;
             const counts: Record<string, number> = {};
             for (const row of data) {
-              counts[row.category_id] = (counts[row.category_id] ?? 0) + 1;
+              const categoryId = (row as any).activities?.category_id;
+              if (categoryId) {
+                counts[categoryId] = (counts[categoryId] ?? 0) + 1;
+              }
             }
             return counts;
           }),

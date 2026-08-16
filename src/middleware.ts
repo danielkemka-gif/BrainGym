@@ -11,6 +11,8 @@ const publicPaths = [
   "/signup",
   "/forgot-password",
   "/auth/callback",
+  "/invite",
+  "/join",
 ];
 
 const authPaths = ["/login", "/signup", "/forgot-password"];
@@ -36,8 +38,11 @@ export async function middleware(request: NextRequest) {
   const { supabaseResponse, user } = await updateSession(request);
 
   if (user && authPaths.includes(pathname)) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    const ref = request.nextUrl.searchParams.get("ref");
+    const target = ref ? `/dashboard?ref=${encodeURIComponent(ref)}` : "/dashboard";
+    return NextResponse.redirect(new URL(target, request.url));
   }
+
 
   if (!user && !publicPaths.includes(pathname)) {
     const loginUrl = new URL("/login", request.url);

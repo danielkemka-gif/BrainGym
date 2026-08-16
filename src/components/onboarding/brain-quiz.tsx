@@ -42,19 +42,19 @@ const CATEGORY_ICONS: Record<string, LucideIcon> = {
 const QUIZ_QUESTIONS = [
   {
     category: "memory",
-    question: "Which number was shown 3 seconds ago?",
-    subtitle: "Memory recall test",
-    options: ["42", "17", "85", "23"],
+    question: "Sequential recall: In the sequence [Apple, Compass, River, Falcon], which item was third?",
+    subtitle: "Working memory retrieval",
+    options: ["Apple", "Compass", "River", "Falcon"],
     correct: 2,
     tip: "Your working memory capacity",
   },
   {
     category: "focus",
-    question: "How many blue items did you see?",
-    subtitle: "Selective attention test",
-    options: ["2", "4", "6", "3"],
-    correct: 1,
-    tip: "Your ability to filter distractions",
+    question: "Focus test: Which number is the only non-prime in this set?",
+    subtitle: "Selective attention & precision",
+    options: ["29", "31", "37", "49"],
+    correct: 3,
+    tip: "Your ability to filter and verify details",
   },
   {
     category: "thinking",

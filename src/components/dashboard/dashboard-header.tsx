@@ -73,6 +73,22 @@ export function DashboardHeader() {
       "there";
     setUserName(name.split(" ")[0]);
 
+    const searchRef = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("ref") : null;
+    if (searchRef && user) {
+      Promise.resolve(
+        supabase.rpc("attribute_referral", {
+          p_user_id: user.id,
+          p_ref: searchRef,
+        })
+      )
+        .then(() => {
+          window.history.replaceState({}, document.title, window.location.pathname);
+        })
+        .catch((err: unknown) => {
+          console.error("Referral attribution error:", err);
+        });
+    }
+
     Promise.all([
       supabase
         .from("profiles")

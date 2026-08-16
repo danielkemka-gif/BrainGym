@@ -3,8 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth";
 import { Gift, Copy, Check, Users, Share2 } from "lucide-react";
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://brain-gym-nsu6.vercel.app";
+import { getSiteUrl } from "@/lib/site-url";
 
 export function ReferralSection() {
   const { user, supabase } = useAuth();
@@ -39,7 +38,7 @@ export function ReferralSection() {
     })();
   }, [user, supabase]);
 
-  const inviteUrl = `${APP_URL}/signup?ref=${referralCode}`;
+  const inviteUrl = `${getSiteUrl()}/signup?ref=${referralCode}`;
 
   async function copyCode() {
     try {

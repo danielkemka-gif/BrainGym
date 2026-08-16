@@ -4,17 +4,29 @@ import { MagicLinkForm } from "@/components/auth/magic-link-form";
 import { SocialAuthButtons } from "@/components/auth/social-auth-buttons";
 import Link from "next/link";
 
-function LoginFormWrapper() {
+function LoginFormWrapper({ refCode }: { refCode?: string | null }) {
   return (
     <Suspense fallback={<div className="h-48 animate-pulse rounded-lg bg-muted" />}>
-      <LoginForm />
+      <LoginForm refCode={refCode} />
     </Suspense>
   );
 }
 
-export default function LoginPage() {
+export default async function LoginPage(props: {
+  searchParams?: Promise<{ ref?: string; redirect?: string; error?: string; email?: string }>;
+}) {
+  const searchParams = await props.searchParams;
+  const refCode = searchParams?.ref || null;
+  const redirect = searchParams?.redirect || null;
+
   return (
     <div className="w-full max-w-sm space-y-3 sm:space-y-5">
+      {refCode && (
+        <div className="rounded-xl bg-primary/10 border border-primary/20 px-3 sm:px-4 py-2.5 sm:py-3 text-center text-xs sm:text-sm text-primary">
+          You were invited by a friend! Sign in or join to earn bonus coins.
+        </div>
+      )}
+
       <div className="space-y-2 text-center">
         <h1 className="text-xl sm:text-2xl font-bold text-balance">Welcome back</h1>
         <p className="text-sm text-muted-foreground">
@@ -22,7 +34,7 @@ export default function LoginPage() {
         </p>
       </div>
 
-      <SocialAuthButtons />
+      <SocialAuthButtons refCode={refCode} redirectTo={redirect ? undefined : undefined} />
 
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
@@ -35,7 +47,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <LoginFormWrapper />
+      <LoginFormWrapper refCode={refCode} />
 
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
@@ -48,14 +60,18 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <MagicLinkForm />
+      <MagicLinkForm refCode={refCode} />
 
       <p className="text-center text-sm text-muted-foreground">
         Don&apos;t have an account?{" "}
-        <Link href="/signup" className="text-primary font-medium hover:underline">
+        <Link
+          href={refCode ? `/signup?ref=${encodeURIComponent(refCode)}` : "/signup"}
+          className="text-primary font-medium hover:underline"
+        >
           Sign up free
         </Link>
       </p>
     </div>
   );
 }
+

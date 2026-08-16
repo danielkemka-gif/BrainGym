@@ -335,7 +335,7 @@ export async function refreshMissionProgress(): Promise<UserMission[]> {
           .from("xp_ledger")
           .select("amount")
           .eq("user_id", user.id)
-          .eq("reason", "workout")
+          .gt("amount", 0)
           .gte("created_at", weekStart + "T00:00:00Z")
           .lt("created_at", weekEnd.toISOString());
         currentValue = (xpRows ?? []).reduce((sum, r) => sum + r.amount, 0);
@@ -346,7 +346,7 @@ export async function refreshMissionProgress(): Promise<UserMission[]> {
           .from("streaks")
           .select("current_streak")
           .eq("user_id", user.id)
-          .single();
+          .maybeSingle();
         currentValue = streak?.current_streak ?? 0;
         break;
       }
@@ -364,7 +364,7 @@ export async function refreshMissionProgress(): Promise<UserMission[]> {
       case "category_variety": {
         const { data: logs } = await supabase
           .from("activity_logs")
-          .select("activity_id, activities!inner(category_id)")
+          .select("activity_id, activities(category_id)")
           .eq("user_id", user.id)
           .gte("date", weekStart)
           .lt("date", weekEnd.toISOString().split("T")[0]);
@@ -372,7 +372,7 @@ export async function refreshMissionProgress(): Promise<UserMission[]> {
           (logs ?? []).map(
             (l: Record<string, unknown>) =>
               (l.activities as Record<string, unknown>)?.category_id as string
-          )
+          ).filter(Boolean)
         );
         currentValue = cats.size;
         break;
@@ -440,43 +440,50 @@ export async function claimMissionReward(
   const xpAmount = mission.xp_reward;
   const coinAmount = mission.coin_reward;
 
-  const [xpResult, coinResult, updateResult] = await Promise.all([
-    supabase.from("xp_ledger").insert({
-      user_id: user.id,
-      amount: xpAmount,
-      reason: "mission",
-      reference_type: "user_missions",
-      reference_id: mission.id,
-    }),
-    supabase.from("coins_ledger").insert({
-      user_id: user.id,
-      amount: coinAmount,
-      reason: "mission",
-      reference_type: "user_missions",
-      reference_id: mission.id,
-    }),
-    supabase
-      .from("user_missions")
-      .update({ claimed: true })
-      .eq("id", mission.id),
-  ]);
-
-  if (xpResult.error || coinResult.error || updateResult.error) {
-    return { success: false, error: "Failed to claim reward" };
+  // Award rewards via grant_xp and grant_coins RPCs
+  try {
+    await supabase.rpc("grant_xp", {
+      p_user_id: user.id,
+      p_amount: xpAmount,
+      p_reason: `mission_${mission.mission_type}`,
+      p_reference_type: "user_missions",
+      p_reference_id: mission.id,
+    });
+    await supabase.rpc("grant_coins", {
+      p_user_id: user.id,
+      p_amount: coinAmount,
+      p_reason: `mission_${mission.mission_type}`,
+      p_reference_type: "user_missions",
+      p_reference_id: mission.id,
+    });
+  } catch {
+    // Fallback direct inserts if RPC not yet deployed
+    await Promise.allSettled([
+      supabase.from("xp_ledger").insert({
+        user_id: user.id,
+        amount: xpAmount,
+        reason: "mission",
+        reference_type: "user_missions",
+        reference_id: mission.id,
+      }),
+      supabase.from("coins_ledger").insert({
+        user_id: user.id,
+        amount: coinAmount,
+        reason: "mission",
+        reference_type: "user_missions",
+        reference_id: mission.id,
+      }),
+    ]);
   }
 
-  const { data: levelData } = await supabase
-    .from("user_levels")
-    .select("total_xp")
-    .eq("user_id", user.id)
-    .single();
+  const { error: updateError } = await supabase
+    .from("user_missions")
+    .update({ claimed: true })
+    .eq("id", mission.id);
 
-  const newXp = (levelData?.total_xp ?? 0) + xpAmount;
-
-  await supabase
-    .from("user_levels")
-    .update({ total_xp: newXp })
-    .eq("user_id", user.id);
+  if (updateError) {
+    return { success: false, error: "Failed to update mission status" };
+  }
 
   return { success: true, xp: xpAmount, coins: coinAmount };
 }

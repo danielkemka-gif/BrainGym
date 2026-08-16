@@ -13,6 +13,7 @@ import { SIDEBAR_ICONS } from "@/lib/icons";
 
 const PRIMARY_NAV = [
   { href: "/dashboard", labelKey: "nav_dashboard", iconKey: "dashboard" },
+  { href: "/dashboard/guide", labelKey: "nav_guide", iconKey: "guide" },
   { href: "/dashboard/workout", labelKey: "nav_workout", iconKey: "workout" },
   { href: "/dashboard/games", labelKey: "nav_games", iconKey: "games" },
   { href: "/dashboard/challenge", labelKey: "nav_quick_fire", iconKey: "challenge" },

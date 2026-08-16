@@ -8,6 +8,7 @@ import { Sidebar } from "./sidebar";
 import { Topbar } from "./topbar";
 import { MobileNav } from "./mobile-nav";
 import { TouchDebug } from "@/components/debug/touch-debug";
+import { FeatureNavigator } from "./feature-navigator";
 
 function AppShellInner({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -43,6 +44,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
           {children}
         </main>
         <MobileNav />
+        <FeatureNavigator />
         {process.env.NODE_ENV === "development" && <TouchDebug />}
       </div>
     </div>

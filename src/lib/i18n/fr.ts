@@ -22,6 +22,7 @@ export const fr: TranslationKeys = {
   nav_shop: "Boutique",
   nav_daily_challenge: "Défi Quotidien",
   nav_avatar: "Avatar Cérébral",
+  nav_guide: "Guide des fonctionnalités",
   nav_tagline: "Entraîne ton cerveau pour la vraie vie",
 
   // Dashboard

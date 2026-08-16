@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { OPEN_TOUR_EVENT } from "@/components/dashboard/welcome-tour";
+import { OpenNavigatorButton } from "@/components/layout/feature-navigator";
 
 interface TopbarProps {
   onMenuClick: () => void;
@@ -22,19 +23,23 @@ export function Topbar({ onMenuClick, userName }: TopbarProps) {
 
   return (
       <header role="banner" className="flex min-h-14 items-center justify-between border-b border-border bg-background px-4" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-      <button
-        onClick={onMenuClick}
-        aria-label="Toggle navigation menu"
-        className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-muted-foreground hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring lg:hidden"
-      >
-        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-        </svg>
-      </button>
-
-      <div className="hidden lg:block" />
-
       <div className="flex items-center gap-3">
+        <button
+          onClick={onMenuClick}
+          aria-label="Toggle navigation menu"
+          className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-muted-foreground hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring lg:hidden"
+        >
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          </svg>
+        </button>
+
+        {/* Feature Explorer search pill */}
+        <OpenNavigatorButton variant="pill" className="hidden md:flex" />
+      </div>
+
+      <div className="flex items-center gap-2 sm:gap-3">
+        <OpenNavigatorButton variant="icon" className="md:hidden" />
         <span className="text-sm text-muted-foreground hidden sm:inline">
           {userName ?? "User"}
         </span>

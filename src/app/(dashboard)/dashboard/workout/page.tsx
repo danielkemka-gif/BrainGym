@@ -376,7 +376,7 @@ export default function GuidedWorkoutPage() {
 
     // Check for level-up
     const prevLevel = getLevelProgress(totalXp);
-    const newTotalXp = totalXp + bonusXp;
+    const newTotalXp = totalXp + sessionXp + bonusXp + (milestone?.xp ?? 0);
     const newLevel = getLevelProgress(newTotalXp);
     if (newLevel.level.level > prevLevel.level.level) {
       setLevelFrom(prevLevel.level.level);

@@ -15,7 +15,7 @@ export async function POST() {
     const { authorizationUrl, reference } = await initializeSubscription(
       user.email,
       planCode,
-      `${process.env.NEXT_PUBLIC_APP_URL}/api/paystack/verify?reference={reference}`
+      `${process.env.NEXT_PUBLIC_APP_URL || "https://brain-gym-nsu6.vercel.app"}/api/paystack/verify`
     );
 
     // Store the reference so we can match it on callback

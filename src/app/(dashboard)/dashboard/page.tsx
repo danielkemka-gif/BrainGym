@@ -35,6 +35,7 @@ function HeaderSkeleton() {
 /* ---------- dynamic imports ---------- */
 const DashboardHeader = dynamic(() => import("@/components/dashboard/dashboard-header").then((m) => ({ default: m.DashboardHeader })), { ssr: false, loading: () => <HeaderSkeleton /> });
 const WelcomeTour = dynamic(() => import("@/components/dashboard/welcome-tour").then((m) => ({ default: m.WelcomeTour })), { ssr: false });
+const FeatureGuideCard = dynamic(() => import("@/components/dashboard/feature-guide-card").then((m) => ({ default: m.FeatureGuideCard })), { ssr: false, loading: () => <MiniCard /> });
 const OnboardingPrompt = dynamic(() => import("@/components/dashboard/onboarding-prompt").then((m) => ({ default: m.OnboardingPrompt })), { ssr: false, loading: () => <MiniCard /> });
 const HabitNudges = dynamic(() => import("@/components/dashboard/habit-nudges").then((m) => ({ default: m.HabitNudges })), { ssr: false, loading: () => <MiniCard /> });
 const QuickActions = dynamic(() => import("@/components/dashboard/quick-actions").then((m) => ({ default: m.QuickActions })));
@@ -94,8 +95,9 @@ export default function DashboardPage() {
         <DashboardHeader />
       </Suspense>
 
-      {/* Trial banner, Onboarding, Habit nudges, Coach tip */}
+      {/* Trial banner, Feature Guide, Onboarding, Habit nudges, Coach tip */}
       <Suspense fallback={<MiniCard />}><TrialBanner /></Suspense>
+      <Suspense fallback={<MiniCard />}><FeatureGuideCard /></Suspense>
       <Suspense fallback={<MiniCard />}><OnboardingPrompt /></Suspense>
       <Suspense fallback={<MiniCard />}><HabitNudges /></Suspense>
       <Suspense fallback={<MiniCard />}><CoachNudge /></Suspense>

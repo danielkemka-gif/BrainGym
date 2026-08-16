@@ -8,6 +8,9 @@ const CANONICAL_SITE_URL = "https://brain-gym-nsu6.vercel.app";
  * payment callbacks point at the visitor's own machine).
  */
 export function getSiteUrl(): string {
+  if (typeof window !== "undefined" && window.location?.origin) {
+    return window.location.origin;
+  }
   const configured = process.env.NEXT_PUBLIC_APP_URL?.trim();
   if (configured && /^https?:\/\//.test(configured)) {
     const base = configured.replace(/\/+$/, "");
@@ -18,3 +21,4 @@ export function getSiteUrl(): string {
   }
   return CANONICAL_SITE_URL;
 }
+

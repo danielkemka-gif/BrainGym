@@ -2,7 +2,9 @@ import { SignupForm } from "@/components/auth/signup-form";
 import { SocialAuthButtons } from "@/components/auth/social-auth-buttons";
 import Link from "next/link";
 
-export default async function SignupPage(props: { searchParams?: Promise<{ ref?: string }> }) {
+export default async function SignupPage(props: {
+  searchParams?: Promise<{ ref?: string; redirect?: string }>;
+}) {
   const searchParams = await props.searchParams;
   const refCode = searchParams?.ref || null;
 
@@ -49,10 +51,14 @@ export default async function SignupPage(props: { searchParams?: Promise<{ ref?:
 
       <p className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}
-        <Link href="/login" className="text-primary font-medium hover:underline">
+        <Link
+          href={refCode ? `/login?ref=${encodeURIComponent(refCode)}` : "/login"}
+          className="text-primary font-medium hover:underline"
+        >
           Sign in
         </Link>
       </p>
     </div>
   );
 }
+

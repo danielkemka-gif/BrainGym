@@ -292,6 +292,7 @@ export default function MemoryMatchPage() {
     const existing = progress.find((p) => p.level_number === selectedLevel);
     if (!existing || stars > existing.stars || finalScore > existing.score) {
       try {
+        const elapsedMs = Math.max(1, (config.timeLimitMs || 60000) - timeLeftRef.current * 1000);
         await supabase
           .from("game_progress")
           .upsert({
@@ -300,7 +301,7 @@ export default function MemoryMatchPage() {
             level_number: selectedLevel,
             stars: Math.max(stars, existing?.stars || 0),
             score: Math.max(finalScore, existing?.score || 0),
-            best_time_ms: won ? Math.min(timeLeftRef.current * 1000, existing?.best_time_ms || Infinity) : existing?.best_time_ms,
+            best_time_ms: won ? Math.min(elapsedMs, existing?.best_time_ms || Infinity) : existing?.best_time_ms,
           }, { onConflict: "user_id,game_id,level_number" });
 
         // Credit XP and coins to main economy

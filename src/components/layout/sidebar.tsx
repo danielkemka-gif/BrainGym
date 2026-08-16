@@ -133,8 +133,25 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
           </div>
         )}
 
-        {/* Primary nav — 6 core items */}
+        {/* Primary nav — core items */}
         <nav className="flex-1 space-y-1 p-3 overflow-y-auto">
+          {/* Quick Explore / Search button */}
+          <button
+            onClick={() => {
+              onClose();
+              window.dispatchEvent(new Event("braingym:open-navigator"));
+            }}
+            className="flex w-full items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 px-3 py-2.5 text-xs font-semibold text-primary hover:bg-primary/10 transition-colors min-h-[44px] touch-manipulation mb-2"
+          >
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-primary/20">
+              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+            </span>
+            <span>Search All Features</span>
+          </button>
+
           {PRIMARY_NAV.map((item) => renderNavItem(item))}
 
           {/* More dropdown */}

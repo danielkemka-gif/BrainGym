@@ -23,7 +23,7 @@ export function Topbar({ onMenuClick, userName }: TopbarProps) {
 
   return (
       <header role="banner" className="flex min-h-14 items-center justify-between border-b border-border bg-background px-4" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3">
         <button
           onClick={onMenuClick}
           aria-label="Toggle navigation menu"
@@ -35,11 +35,10 @@ export function Topbar({ onMenuClick, userName }: TopbarProps) {
         </button>
 
         {/* Feature Explorer search pill */}
-        <OpenNavigatorButton variant="pill" className="hidden md:flex" />
+        <OpenNavigatorButton variant="pill" />
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3">
-        <OpenNavigatorButton variant="icon" className="md:hidden" />
         <span className="text-sm text-muted-foreground hidden sm:inline">
           {userName ?? "User"}
         </span>

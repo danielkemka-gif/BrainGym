@@ -9,7 +9,7 @@ const TABS = [
   { href: "/dashboard", labelKey: "nav_dashboard", iconKey: "dashboard" },
   { href: "/dashboard/workout", labelKey: "nav_workout", iconKey: "workout" },
   { href: "/dashboard/games", labelKey: "nav_games", iconKey: "games" },
-  { href: "/dashboard/challenge", labelKey: "nav_quick_fire", iconKey: "challenge" },
+  { href: "/dashboard/guide", labelKey: "nav_guide", iconKey: "guide" },
   { href: "/dashboard/progress", labelKey: "nav_progress", iconKey: "progress" },
 ] as const;
 

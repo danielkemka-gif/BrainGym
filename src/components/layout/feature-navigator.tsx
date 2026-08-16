@@ -291,30 +291,35 @@ export function FeatureNavigator() {
   return (
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-[110] flex items-start justify-center p-3 sm:p-6 sm:pt-16 bg-black/70 backdrop-blur-md">
+        <div className="fixed inset-0 z-[110] flex items-end sm:items-start justify-center p-0 sm:p-6 sm:pt-16 bg-black/75 backdrop-blur-md">
           {/* Backdrop click to close */}
           <div className="fixed inset-0" onClick={() => setOpen(false)} />
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -10 }}
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -10 }}
-            transition={{ duration: 0.15, ease: "easeOut" }}
-            className="relative w-full max-w-2xl max-h-[85vh] flex flex-col rounded-3xl border border-border bg-card shadow-2xl overflow-hidden z-10"
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            className="relative w-full max-w-2xl max-h-[90dvh] sm:max-h-[85vh] flex flex-col rounded-t-[28px] sm:rounded-3xl border border-border bg-card shadow-2xl overflow-hidden z-10"
             role="dialog"
             aria-modal="true"
             aria-label="Feature Navigator"
           >
+            {/* Mobile Drag/Grab Indicator */}
+            <div className="flex justify-center pt-2.5 pb-1 sm:hidden">
+              <div className="h-1 w-10 rounded-full bg-muted-foreground/30" />
+            </div>
+
             {/* Search Header */}
-            <div className="flex items-center gap-3 px-4 sm:px-6 py-4 border-b border-border bg-muted/30">
+            <div className="flex items-center gap-3 px-4 sm:px-6 py-3 sm:py-4 border-b border-border bg-muted/30">
               <Search className="h-5 w-5 text-muted-foreground shrink-0" />
               <input
                 ref={inputRef}
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search BrainGym features, games, scoring, AI coach..."
-                className="w-full bg-transparent text-sm sm:text-base placeholder:text-muted-foreground focus:outline-none"
+                placeholder="Search BrainGym features, games, AI coach..."
+                className="w-full bg-transparent text-base sm:text-sm placeholder:text-muted-foreground focus:outline-none"
               />
               {query && (
                 <button
@@ -407,14 +412,14 @@ export function FeatureNavigator() {
             </div>
 
             {/* Footer with Guide Shortcut */}
-            <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-t border-border bg-muted/40 text-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-4 sm:px-6 py-3 border-t border-border bg-muted/40 text-xs" style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}>
               <div className="flex items-center gap-2 text-muted-foreground">
-                <BookOpen className="h-4 w-4 text-primary" />
-                <span>Want to understand how everything works?</span>
+                <BookOpen className="h-4 w-4 text-primary shrink-0" />
+                <span className="truncate">Want to understand how everything works?</span>
               </div>
               <button
                 onClick={() => handleSelect("/dashboard/guide")}
-                className="font-semibold text-primary hover:underline flex items-center gap-1"
+                className="font-semibold text-primary hover:underline flex items-center gap-1 self-start sm:self-auto py-1"
               >
                 <span>Read Feature Guide</span>
                 <ArrowRight className="h-3.5 w-3.5" />

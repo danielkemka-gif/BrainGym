@@ -1,4 +1,4 @@
-const CANONICAL_SITE_URL = "https://braingym-app1.vercel.app";
+const CANONICAL_SITE_URL = "https://brain-gym-nsu6.vercel.app";
 
 /**
  * Returns the canonical base URL of the app.

@@ -7,12 +7,14 @@ import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { LOCALES } from "@/lib/i18n/types";
 import { Avatar } from "@/components/ui/avatar";
-import { Globe, ChevronDown, MoreHorizontal, Shield } from "lucide-react";
+import { Globe, ChevronDown, MoreHorizontal, Shield, Crown } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { SIDEBAR_ICONS } from "@/lib/icons";
 
 const PRIMARY_NAV = [
   { href: "/dashboard", labelKey: "nav_dashboard", iconKey: "dashboard" },
+  { href: "/dashboard/training", labelKey: "nav_training", iconKey: "training" },
+  { href: "/pricing", labelKey: "nav_premium", iconKey: "premium" },
   { href: "/dashboard/guide", labelKey: "nav_guide", iconKey: "guide" },
   { href: "/dashboard/workout", labelKey: "nav_workout", iconKey: "workout" },
   { href: "/dashboard/games", labelKey: "nav_games", iconKey: "games" },
@@ -178,6 +180,29 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
                 {MORE_NAV.map((item) => renderNavItem(item))}
               </div>
             )}
+          </div>
+
+          {/* Prominent Premium Promo Card */}
+          <div className="my-3 rounded-2xl bg-gradient-to-br from-amber-500/10 via-orange-500/10 to-purple-500/10 border border-amber-500/30 p-3 text-center space-y-2">
+            <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white shadow-md shadow-amber-500/20">
+              <Crown className="h-4 w-4 fill-current" />
+            </div>
+            <div className="space-y-0.5">
+              <h4 className="font-bold text-xs text-foreground flex items-center justify-center gap-1">
+                <span>BrainGym Premium</span>
+                <span className="rounded bg-amber-500/20 px-1 py-0.2 text-[9px] font-extrabold text-amber-600 dark:text-amber-400">PRO</span>
+              </h4>
+              <p className="text-[10px] text-muted-foreground leading-tight">
+                Unlock 177+ activities, AI Coach & ad-free training.
+              </p>
+            </div>
+            <Link
+              href="/pricing"
+              onClick={onClose}
+              className="block w-full rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white py-1.5 text-xs font-bold hover:brightness-105 shadow-sm transition active:scale-95 touch-manipulation"
+            >
+              Upgrade Now ⭐
+            </Link>
           </div>
         </nav>
 

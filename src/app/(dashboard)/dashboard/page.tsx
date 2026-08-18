@@ -44,6 +44,7 @@ const BrainScoreSection = dynamic(() => import("@/components/dashboard/brain-sco
 const XpStreakSection = dynamic(() => import("@/components/dashboard/xp-streak-section").then((m) => ({ default: m.XpStreakSection })));
 const MissionsSection = dynamic(() => import("@/components/dashboard/missions-section").then((m) => ({ default: m.MissionsSection })));
 const CentralCTA = dynamic(() => import("@/components/dashboard/central-cta").then((m) => ({ default: m.CentralCTA })), { ssr: false, loading: () => <MedCard /> });
+const CognitiveProfileRadar = dynamic(() => import("@/components/dashboard/cognitive-profile-radar").then((m) => ({ default: m.CognitiveProfileRadar })), { ssr: false, loading: () => <TallCard /> });
 const TrialBanner = dynamic(() => import("@/components/premium/trial-banner").then((m) => ({ default: m.TrialBanner })), { ssr: false, loading: () => <MiniCard /> });
 const BrainJourney = dynamic(() => import("@/components/dashboard/brain-journey").then((m) => ({ default: m.BrainJourney })), { ssr: false, loading: () => <MedCard /> });
 const StreakCalendar = dynamic(() => import("@/components/dashboard/streak-calendar").then((m) => ({ default: m.StreakCalendar })), { ssr: false, loading: () => <Skeleton className="h-40" /> });
@@ -108,6 +109,9 @@ export default function DashboardPage() {
 
       {/* Central CTA */}
       <Suspense fallback={<MedCard />}><CentralCTA /></Suspense>
+
+      {/* 10-Domain Cognitive Profile & Radar */}
+      <Suspense fallback={<TallCard />}><CognitiveProfileRadar /></Suspense>
 
       {/* Hero row: Brain Age + XP/Streak */}
       <div className="grid gap-3 sm:gap-4 lg:gap-6 lg:grid-cols-3">

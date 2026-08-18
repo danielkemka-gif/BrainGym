@@ -11,13 +11,14 @@ import { checkAndUnlockAchievements } from "@/lib/achievements";
 import { calculateStreakWithFreeze } from "@/lib/streak-protection";
 import {
   ArrowLeft, CheckCircle2, Clock, Zap, Trophy, Coins,
-  ChevronRight, ChevronLeft, Pause, Play, SkipForward, Star, Sparkles
+  ChevronRight, ChevronLeft, Pause, Play, SkipForward, Star, Sparkles, Lightbulb
 } from "lucide-react";
 import { Confetti } from "@/components/ui/confetti";
 import { LevelUpModal } from "@/components/ui/level-up-modal";
 import { StreakMilestoneModal, getStreakMilestone } from "@/components/ui/streak-milestone-modal";
 import { getLevelProgress } from "@/lib/scoring";
 import { LEVELS } from "@/lib/constants";
+import { getWorkoutExample } from "@/lib/workout-examples";
 
 interface Activity {
   id: string;
@@ -558,16 +559,47 @@ export default function GuidedWorkoutPage() {
 
             <h2 className="text-xl font-bold">{activeActivity.title}</h2>
 
-            {activeActivity.description && (
-              <p className="text-sm text-muted-foreground leading-relaxed">{activeActivity.description}</p>
-            )}
+            {(() => {
+              const exampleData = getWorkoutExample({
+                title: activeActivity.title,
+                category_id: activeActivity.category_id,
+                description: activeActivity.description,
+                instructions: activeActivity.instructions,
+              });
 
-            {activeActivity.instructions && (
-              <div className="rounded-xl bg-muted/50 p-4">
-                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Instructions</p>
-                <p className="text-sm leading-relaxed">{activeActivity.instructions}</p>
-              </div>
-            )}
+              return (
+                <div className="space-y-3">
+                  {/* Real-Life Concrete Example Card */}
+                  <div className="rounded-xl bg-amber-500/10 border border-amber-500/20 p-3.5 sm:p-4">
+                    <div className="flex items-center gap-1.5 font-bold text-amber-700 dark:text-amber-300 mb-1 text-xs">
+                      <Lightbulb className="h-4 w-4 shrink-0 text-amber-500" />
+                      <span>Real-Life Example:</span>
+                    </div>
+                    <p className="text-sm font-medium text-foreground/90 leading-relaxed">
+                      &ldquo;{exampleData.example}&rdquo;
+                    </p>
+                  </div>
+
+                  {/* Step-by-Step Instructions */}
+                  <div className="rounded-xl bg-muted/50 p-4 space-y-2">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">How To Execute This Drill</p>
+                    <ol className="space-y-1.5 pl-4 list-decimal text-sm text-foreground/80 leading-relaxed">
+                      {exampleData.steps.map((step, idx) => (
+                        <li key={idx}>
+                          <span>{step}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+
+                  {/* Brain Benefit */}
+                  <div className="text-xs text-muted-foreground flex items-start gap-1.5">
+                    <span className="text-sm">🧠</span>
+                    <p><strong className="text-foreground">Why this works:</strong> {exampleData.benefit}</p>
+                  </div>
+                </div>
+              );
+            })()}
 
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">

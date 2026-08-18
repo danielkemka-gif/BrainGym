@@ -37,6 +37,8 @@ export type TranslationKeys = {
   nav_daily_challenge: string;
   nav_avatar: string;
   nav_guide: string;
+  nav_premium: string;
+  nav_training: string;
   nav_tagline: string;
 
   // Dashboard

@@ -23,6 +23,8 @@ export const fr: TranslationKeys = {
   nav_daily_challenge: "Défi Quotidien",
   nav_avatar: "Avatar Cérébral",
   nav_guide: "Guide des fonctionnalités",
+  nav_premium: "Abonnement Premium",
+  nav_training: "Entraînement Cognitif",
   nav_tagline: "Entraîne ton cerveau pour la vraie vie",
 
   // Dashboard

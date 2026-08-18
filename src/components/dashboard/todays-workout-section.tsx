@@ -9,6 +9,8 @@ import { calculateStreakMultiplier } from "@/lib/scoring";
 import { useI18n } from "@/lib/i18n";
 import { AchievementNotification } from "@/components/achievements/achievement-notification";
 import type { AchievementId } from "@/components/achievements/achievements-grid";
+import { getWorkoutExample } from "@/lib/workout-examples";
+import { ChevronDown, ChevronUp, Lightbulb } from "lucide-react";
 
 interface Activity {
   id: string;
@@ -43,6 +45,7 @@ export function TodaysWorkoutSection() {
   const [completing, setCompleting] = useState(false);
   const [newAchievements, setNewAchievements] = useState<AchievementId[]>([]);
   const [started, setStarted] = useState(false);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const fetchWorkout = useCallback(async () => {
     try {
@@ -416,45 +419,131 @@ export function TodaysWorkoutSection() {
           />
         </div>
 
-        <div className="space-y-2">
-          {sortedItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => toggleItem(item.id)}
-              disabled={workout?.status === "completed"}
-              className={`flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-left transition-all min-h-[44px] touch-manipulation active:scale-[0.97] ${
-                item.status === "completed"
-                  ? "border-green-500/30 bg-green-500/5"
-                  : "border-border hover:border-muted-foreground/30"
-              }`}
-            >
+        <div className="space-y-2.5">
+          {sortedItems.map((item) => {
+            const isCompleted = item.status === "completed";
+            const isExpanded = expandedId === item.id;
+            const exampleData = getWorkoutExample({
+              title: item.activities?.title,
+              category_id: item.activities?.category_id,
+            });
+
+            return (
               <div
-                className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 text-xs transition-colors ${
-                  item.status === "completed"
-                    ? "border-green-500 bg-green-500 text-white"
-                    : "border-muted-foreground/30"
+                key={item.id}
+                className={`rounded-xl border transition-all overflow-hidden ${
+                  isCompleted
+                    ? "border-green-500/30 bg-green-500/5"
+                    : isExpanded
+                    ? "border-primary/50 bg-card shadow-sm ring-1 ring-primary/20"
+                    : "border-border bg-card/60 hover:border-muted-foreground/30"
                 }`}
               >
-                {item.status === "completed" ? "✓" : item.sort_order}
+                {/* Main Card Header */}
+                <div className="flex items-center gap-3 p-3.5 sm:p-4">
+                  <button
+                    type="button"
+                    onClick={() => toggleItem(item.id)}
+                    disabled={workout?.status === "completed"}
+                    aria-label={isCompleted ? "Mark incomplete" : "Mark complete"}
+                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 text-xs font-bold transition-all min-h-[28px] min-w-[28px] touch-manipulation active:scale-95 ${
+                      isCompleted
+                        ? "border-green-500 bg-green-500 text-white shadow-sm"
+                        : "border-muted-foreground/30 hover:border-primary hover:text-primary"
+                    }`}
+                  >
+                    {isCompleted ? "✓" : item.sort_order}
+                  </button>
+
+                  <div
+                    className="min-w-0 flex-1 cursor-pointer select-none"
+                    onClick={() => setExpandedId(isExpanded ? null : item.id)}
+                  >
+                    <div className="flex items-center gap-2">
+                      <p
+                        className={`text-sm font-semibold ${
+                          isCompleted ? "text-muted-foreground line-through" : "text-foreground"
+                        }`}
+                      >
+                        {item.activities?.title ?? "Activity"}
+                      </p>
+                      <span className="inline-flex items-center gap-0.5 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
+                        💡 Example
+                      </span>
+                    </div>
+
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      {item.activities?.estimated_time ?? "?"}s ·
+                      <span className="capitalize"> {item.activities?.difficulty ?? "?"}</span>
+                      {item.activities?.xp && (
+                        <> · +{item.activities.xp} XP</>
+                      )}
+                    </p>
+                  </div>
+
+                  {/* Toggle Example Drawer button */}
+                  <button
+                    type="button"
+                    onClick={() => setExpandedId(isExpanded ? null : item.id)}
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition touch-manipulation"
+                    aria-label={isExpanded ? "Hide example" : "Show example"}
+                  >
+                    {isExpanded ? (
+                      <ChevronUp className="h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+
+                {/* Rich Example & How-To Section */}
+                {isExpanded && (
+                  <div className="border-t border-border/60 bg-muted/30 p-3.5 sm:p-4 text-xs space-y-3 animate-in fade-in-50 duration-200">
+                    {/* Real-World Concrete Example */}
+                    <div className="rounded-lg bg-amber-500/10 border border-amber-500/20 p-2.5 sm:p-3">
+                      <div className="flex items-center gap-1.5 font-bold text-amber-700 dark:text-amber-300 mb-1">
+                        <Lightbulb className="h-3.5 w-3.5 shrink-0" />
+                        <span>Real-Life Example:</span>
+                      </div>
+                      <p className="text-foreground/90 leading-relaxed font-medium">
+                        &ldquo;{exampleData.example}&rdquo;
+                      </p>
+                    </div>
+
+                    {/* Step-by-Step Instructions */}
+                    <div className="space-y-1.5">
+                      <p className="font-semibold text-foreground/80 flex items-center gap-1.5">
+                        <span>How to do it:</span>
+                      </p>
+                      <ol className="space-y-1 pl-4 list-decimal text-muted-foreground leading-relaxed">
+                        {exampleData.steps.map((step, idx) => (
+                          <li key={idx}>
+                            <span className="text-foreground/90">{step}</span>
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+
+                    {/* Brain Benefit & Tip */}
+                    <div className="pt-2 border-t border-border/40 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-muted-foreground">
+                      <p>
+                        🧠 <strong className="text-foreground/80">Benefit:</strong> {exampleData.benefit}
+                      </p>
+                      {!isCompleted && (
+                        <button
+                          type="button"
+                          onClick={() => toggleItem(item.id)}
+                          className="self-end sm:self-auto inline-flex items-center gap-1 rounded-lg bg-green-600 hover:bg-green-700 text-white px-2.5 py-1 text-xs font-semibold shadow-sm transition active:scale-95 touch-manipulation"
+                        >
+                          Mark as Done ✓
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
-              <div className="min-w-0 flex-1">
-                <p
-                  className={`truncate text-sm font-medium ${
-                    item.status === "completed" ? "text-muted-foreground line-through" : ""
-                  }`}
-                >
-                  {item.activities?.title ?? "Activity"}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {item.activities?.estimated_time ?? "?"}s ·
-                  <span className="capitalize"> {item.activities?.difficulty ?? "?"}</span>
-                  {item.activities?.xp && (
-                    <> · +{item.activities.xp} XP</>
-                  )}
-                </p>
-              </div>
-            </button>
-          ))}
+            );
+          })}
         </div>
 
         {workout && workout.status !== "completed" && (

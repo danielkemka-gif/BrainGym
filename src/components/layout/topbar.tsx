@@ -1,10 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { OPEN_TOUR_EVENT } from "@/components/dashboard/welcome-tour";
 import { OpenNavigatorButton } from "@/components/layout/feature-navigator";
+import { Crown } from "lucide-react";
 
 interface TopbarProps {
   onMenuClick: () => void;
@@ -39,6 +41,17 @@ export function Topbar({ onMenuClick, userName }: TopbarProps) {
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3">
+        {/* Prominent Premium Upgrade Badge */}
+        <Link
+          href="/pricing"
+          aria-label="Upgrade to Premium Membership"
+          className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-white px-3 py-1.5 text-xs font-bold shadow-sm shadow-amber-500/25 transition active:scale-[0.97] min-h-[36px] touch-manipulation"
+        >
+          <Crown className="h-3.5 w-3.5 fill-current text-white shrink-0" />
+          <span className="hidden sm:inline">Go Premium</span>
+          <span className="sm:hidden">Pro ⭐</span>
+        </Link>
+
         <span className="text-sm text-muted-foreground hidden sm:inline">
           {userName ?? "User"}
         </span>

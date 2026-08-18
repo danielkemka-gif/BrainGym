@@ -23,6 +23,8 @@ export const pcm: TranslationKeys = {
   nav_daily_challenge: "Daily Challenge",
   nav_avatar: "Brain Avatar",
   nav_guide: "How App Dey Work",
+  nav_premium: "Premium Member",
+  nav_training: "Cognitive Training",
   nav_tagline: "Train Your Brain For Real Life",
 
   // Dashboard

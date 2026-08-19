@@ -5,6 +5,8 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { CATEGORIES, DIFFICULTIES } from "@/lib/constants";
 import { FriendDuelSection } from "@/components/challenges/friend-duel-section";
+import { LiveBrainDuel } from "@/components/challenges/live-brain-duel";
+import { Swords, Users, Handshake, Sparkles } from "lucide-react";
 
 interface Challenge {
   id: string;
@@ -32,6 +34,7 @@ export default function ChallengesPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState("");
   const [userId, setUserId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"duel" | "community" | "friends">("duel");
 
   const [form, setForm] = useState({
     title: "",
@@ -162,208 +165,283 @@ export default function ChallengesPage() {
 
   return (
     <div className="mx-auto w-full max-w-6xl max-w-full space-y-6 overflow-x-hidden">
+      {/* Top Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-balance text-xl font-bold sm:text-2xl">Community Challenges</h1>
+          <h1 className="text-balance text-xl font-bold sm:text-2xl flex items-center gap-2">
+            <span>Brain Challenges &amp; 1v1 Duels</span>
+            <span className="rounded-full bg-orange-500/10 px-2.5 py-0.5 text-xs font-bold text-orange-600 dark:text-orange-400">
+              Multiplayer ⚔️
+            </span>
+          </h1>
           <p className="text-sm text-muted-foreground">
-            Join group challenges and train together
+            Compete head-to-head with friends, join group tournaments, or challenge sparring bots
           </p>
         </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-2 border-b border-border pb-2 overflow-x-auto">
         <button
-          onClick={() => setShowCreate((p) => !p)}
-          className="w-full sm:w-auto touch-manipulation inline-flex h-12 items-center justify-center rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 active:scale-[0.97] min-h-[44px]"
+          onClick={() => setActiveTab("duel")}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition whitespace-nowrap min-h-[44px] touch-manipulation ${
+            activeTab === "duel"
+              ? "bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-md shadow-orange-500/20"
+              : "border border-border bg-card hover:bg-muted text-muted-foreground"
+          }`}
         >
-          Create Challenge
+          <Swords className="h-4 w-4" />
+          <span>Live 1v1 Duel Arena (2 Players)</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("community")}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition whitespace-nowrap min-h-[44px] touch-manipulation ${
+            activeTab === "community"
+              ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+              : "border border-border bg-card hover:bg-muted text-muted-foreground"
+          }`}
+        >
+          <Users className="h-4 w-4" />
+          <span>Group &amp; Community Challenges</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("friends")}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition whitespace-nowrap min-h-[44px] touch-manipulation ${
+            activeTab === "friends"
+              ? "bg-purple-600 text-white shadow-md shadow-purple-600/20"
+              : "border border-border bg-card hover:bg-muted text-muted-foreground"
+          }`}
+        >
+          <Handshake className="h-4 w-4" />
+          <span>Friend Accountability Duels</span>
         </button>
       </div>
 
-      {/* Create form */}
-      {showCreate && (
-        <form onSubmit={handleCreate} className="rounded-2xl border border-border bg-card p-4 sm:p-5 space-y-4 w-full max-w-full overflow-x-hidden">
-          <h2 className="font-semibold">New Challenge</h2>
-          <div>
-            <label className="mb-1.5 block text-sm font-medium">Title</label>
-            <input
-              value={form.title}
-              onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-              className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary"
-              required
-            />
-          </div>
-          <div>
-            <label className="mb-1.5 block text-sm font-medium">Description (optional)</label>
-            <textarea
-              value={form.description}
-              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-              rows={2}
-              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary"
-            />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <div>
-              <label className="mb-1.5 block text-sm font-medium">Category</label>
-              <select
-                value={form.category}
-                onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
-                className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary"
-              >
-                <option value="">All categories</option>
-                {CATEGORIES.map((c) => (
-                  <option key={c.id} value={c.id}>{c.label}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="mb-1.5 block text-sm font-medium">Difficulty</label>
-              <select
-                value={form.difficulty}
-                onChange={(e) => setForm((f) => ({ ...f, difficulty: e.target.value }))}
-                className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary"
-              >
-                <option value="">Any</option>
-                {DIFFICULTIES.map((d) => (
-                  <option key={d} value={d} className="capitalize">{d}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-            <div>
-              <label className="mb-1.5 block text-sm font-medium">Duration (days)</label>
-              <input
-                type="number"
-                min={1}
-                max={90}
-                value={form.duration_days}
-                onChange={(e) => setForm((f) => ({ ...f, duration_days: Number(e.target.value) }))}
-                className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary"
-              />
-            </div>
-            <div>
-              <label className="mb-1.5 block text-sm font-medium">Goal type</label>
-              <select
-                value={form.goal_type}
-                onChange={(e) => setForm((f) => ({ ...f, goal_type: e.target.value }))}
-                className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary"
-              >
-                <option value="xp">Total XP</option>
-                <option value="workouts">Workouts</option>
-                <option value="streak">Streak days</option>
-              </select>
-            </div>
-            <div>
-              <label className="mb-1.5 block text-sm font-medium">Goal amount</label>
-              <input
-                type="number"
-                min={1}
-                value={form.goal_amount}
-                onChange={(e) => setForm((f) => ({ ...f, goal_amount: Number(e.target.value) }))}
-                className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary"
-              />
-            </div>
-          </div>
-          {createError && (
-            <p className="text-sm text-destructive">{createError}</p>
-          )}
-          <button
-            type="submit"
-            disabled={creating}
-            className="touch-manipulation inline-flex h-12 w-full items-center justify-center rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.97]"
-          >
-            {creating ? "Creating..." : "Create & Join"}
-          </button>
-        </form>
+      {/* Tab 1: Live 1v1 Brain Duel */}
+      {activeTab === "duel" && (
+        <div className="space-y-6">
+          <LiveBrainDuel />
+        </div>
       )}
 
-      {/* Friend Duels */}
-      <FriendDuelSection />
+      {/* Tab 2: Group & Community Challenges */}
+      {activeTab === "community" && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-bold text-foreground">Active Group Challenges</h2>
+            <button
+              onClick={() => setShowCreate((p) => !p)}
+              className="touch-manipulation inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/90 active:scale-[0.97] min-h-[38px]"
+            >
+              {showCreate ? "Cancel" : "+ Create Group Challenge"}
+            </button>
+          </div>
 
-      {/* Filter */}
-      <div className="flex gap-2">
-        <select
-          value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
-          className="h-12 rounded-xl border border-border bg-background px-4 text-xs outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
-        >
-          <option value="">All categories</option>
-          {CATEGORIES.map((c) => (
-            <option key={c.id} value={c.id}>{c.label}</option>
-          ))}
-        </select>
-      </div>
+          {/* Create form */}
+          {showCreate && (
+            <form onSubmit={handleCreate} className="rounded-2xl border border-border bg-card p-4 sm:p-5 space-y-4 w-full max-w-full overflow-x-hidden">
+              <h2 className="font-semibold">New Community Challenge</h2>
+              <div>
+                <label className="mb-1.5 block text-sm font-medium">Title</label>
+                <input
+                  value={form.title}
+                  onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+                  className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary"
+                  required
+                />
+              </div>
+              <div>
+                <label className="mb-1.5 block text-sm font-medium">Description (optional)</label>
+                <textarea
+                  value={form.description}
+                  onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                  rows={2}
+                  className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary"
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium">Category</label>
+                  <select
+                    value={form.category}
+                    onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
+                    className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    <option value="">All categories</option>
+                    {CATEGORIES.map((c) => (
+                      <option key={c.id} value={c.id}>{c.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium">Difficulty</label>
+                  <select
+                    value={form.difficulty}
+                    onChange={(e) => setForm((f) => ({ ...f, difficulty: e.target.value }))}
+                    className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    <option value="">Any</option>
+                    {DIFFICULTIES.map((d) => (
+                      <option key={d} value={d} className="capitalize">{d}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium">Duration (days)</label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={90}
+                    value={form.duration_days}
+                    onChange={(e) => setForm((f) => ({ ...f, duration_days: Number(e.target.value) }))}
+                    className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium">Goal type</label>
+                  <select
+                    value={form.goal_type}
+                    onChange={(e) => setForm((f) => ({ ...f, goal_type: e.target.value }))}
+                    className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    <option value="xp">Total XP</option>
+                    <option value="workouts">Workouts</option>
+                    <option value="streak">Streak Days</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium">Goal amount</label>
+                  <input
+                    type="number"
+                    min={1}
+                    value={form.goal_amount}
+                    onChange={(e) => setForm((f) => ({ ...f, goal_amount: Number(e.target.value) }))}
+                    className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+              </div>
 
-      {/* List */}
-      {loading ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="h-44 animate-pulse rounded-2xl bg-muted" />
-          ))}
-        </div>
-      ) : error ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <p className="text-lg font-medium">{error}</p>
-          <button onClick={() => window.location.reload()} className="mt-2 text-sm text-primary hover:underline">
-            Try again
-          </button>
-        </div>
-      ) : filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <p className="text-lg font-medium">No active challenges</p>
-          <p className="text-sm text-muted-foreground">
-            Create one to get started
-          </p>
-        </div>
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((c) => {
-            const cat = CATEGORIES.find((x) => x.id === c.category);
-            const joined = userChallenges.has(c.id);
-            const pCount = participantCounts[c.id] ?? 0;
-            return (
-              <Link
+              {createError && (
+                <p className="text-sm text-destructive">{createError}</p>
+              )}
+
+              <div className="flex justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowCreate(false)}
+                  className="rounded-xl border border-border px-4 py-2.5 text-sm font-medium hover:bg-accent"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={creating}
+                  className="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                >
+                  {creating ? "Creating..." : "Create"}
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* Category filter */}
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setCategoryFilter("")}
+              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                categoryFilter === ""
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              All
+            </button>
+            {CATEGORIES.map((c) => (
+              <button
                 key={c.id}
-                href={`/dashboard/challenges/${c.id}`}
-                className="touch-manipulation rounded-2xl border border-border bg-card p-4 sm:p-5 transition-colors hover:border-muted-foreground/30 active:scale-[0.98]"
+                onClick={() => setCategoryFilter(c.id)}
+                className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                  categoryFilter === c.id
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground hover:text-foreground"
+                }`}
               >
-                <div className="mb-3 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    {cat && (
-                      <div className="h-2 w-2 rounded-full" style={{ backgroundColor: cat.color }} />
+                {c.label}
+              </button>
+            ))}
+          </div>
+
+          {/* List of challenges */}
+          {loading ? (
+            <div className="py-12 text-center text-sm text-muted-foreground">Loading challenges...</div>
+          ) : filtered.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-border p-8 text-center">
+              <p className="text-sm text-muted-foreground">No challenges found. Create one above!</p>
+            </div>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {filtered.map((c) => {
+                const cat = CATEGORIES.find((x) => x.id === c.category);
+                const joined = userChallenges.has(c.id);
+                const pCount = participantCounts[c.id] ?? 0;
+                return (
+                  <Link
+                    key={c.id}
+                    href={`/dashboard/challenges/${c.id}`}
+                    className="touch-manipulation rounded-2xl border border-border bg-card p-4 sm:p-5 transition-colors hover:border-muted-foreground/30 active:scale-[0.98]"
+                  >
+                    <div className="mb-3 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {cat && (
+                          <div className="h-2 w-2 rounded-full" style={{ backgroundColor: cat.color }} />
+                        )}
+                        <span className="text-xs text-muted-foreground">
+                          {cat?.label ?? "General"}
+                        </span>
+                      </div>
+                      {joined && (
+                        <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
+                          Joined
+                        </span>
+                      )}
+                    </div>
+
+                    <h3 className="mb-1 font-semibold">{c.title}</h3>
+                    {c.description && (
+                      <p className="mb-3 line-clamp-2 text-xs text-muted-foreground">
+                        {c.description}
+                      </p>
                     )}
-                    <span className="text-xs text-muted-foreground">
-                      {cat?.label ?? "General"}
-                    </span>
-                  </div>
-                  {joined && (
-                    <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
-                      Joined
-                    </span>
-                  )}
-                </div>
 
-                <h3 className="mb-1 font-semibold">{c.title}</h3>
-                {c.description && (
-                  <p className="mb-3 line-clamp-2 text-xs text-muted-foreground">
-                    {c.description}
-                  </p>
-                )}
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>{c.duration_days} days</span>
+                      <span>{pCount} participant{pCount !== 1 ? "s" : ""}</span>
+                    </div>
 
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>{c.duration_days} days</span>
-                  <span>{pCount} participant{pCount !== 1 ? "s" : ""}</span>
-                </div>
+                    <div className="mt-2 flex items-center gap-2 text-xs">
+                      <span className="rounded-full bg-muted px-2 py-0.5 capitalize">
+                        {c.goal_type}
+                      </span>
+                      <span className="text-muted-foreground">
+                        {c.goal_amount.toLocaleString()} goal
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
 
-                <div className="mt-2 flex items-center gap-2 text-xs">
-                  <span className="rounded-full bg-muted px-2 py-0.5 capitalize">
-                    {c.goal_type}
-                  </span>
-                  <span className="text-muted-foreground">
-                    {c.goal_amount.toLocaleString()} goal
-                  </span>
-                </div>
-              </Link>
-            );
-          })}
+      {/* Tab 3: Friend Accountability Duels */}
+      {activeTab === "friends" && (
+        <div className="space-y-6">
+          <FriendDuelSection />
         </div>
       )}
     </div>

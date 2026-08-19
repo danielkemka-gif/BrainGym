@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { PremiumGate } from "@/components/premium/premium-gate";
@@ -303,7 +304,35 @@ function ChatContent() {
   useEffect(() => {
     (async () => {
       const initial = await loadMessages();
-      setMessages(initial.reverse());
+      if (initial.length === 0) {
+        const welcomeSeed: ChatMessage[] = [
+          {
+            id: "seed-1",
+            content: "👋 Welcome to BrainGym Community Chat! Connect with other users, share daily high scores, discuss memory techniques, and challenge each other to 1v1 brain duels.",
+            created_at: new Date(Date.now() - 3600000).toISOString(),
+            edited_at: null,
+            reply_to: null,
+            user_id: "system-coach",
+            user_name: "BrainGym AI Coach 🤖",
+            user_avatar: null,
+            user_username: "coach",
+          },
+          {
+            id: "seed-2",
+            content: "🔥 Tip: Doing your 6-Step Daily Training Loop first thing in the morning boosts focus by 40% for the rest of your workday!",
+            created_at: new Date(Date.now() - 1800000).toISOString(),
+            edited_at: null,
+            reply_to: null,
+            user_id: "system-coach",
+            user_name: "BrainGym AI Coach 🤖",
+            user_avatar: null,
+            user_username: "coach",
+          },
+        ];
+        setMessages(welcomeSeed);
+      } else {
+        setMessages(initial.reverse());
+      }
       setHasMore(initial.length === PAGE_SIZE);
       setLoading(false);
       setTimeout(() => {
@@ -564,12 +593,16 @@ function ChatContent() {
             </div>
           </div>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
+            <Link
+              href="/dashboard/challenges"
+              className="inline-flex items-center gap-1 rounded-xl bg-gradient-to-r from-orange-500 to-red-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm hover:brightness-105 transition active:scale-95 touch-manipulation min-h-[36px]"
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>1v1 Duel Arena ⚔️</span>
+            </Link>
             <button className="rounded-lg p-2 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
               <Search className="h-4 w-4" />
-            </button>
-            <button className="rounded-lg p-2 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors relative">
-              <Bell className="h-4 w-4" />
             </button>
             <button
               onClick={() => setShowOnlinePanel(!showOnlinePanel)}
@@ -1030,10 +1063,5 @@ function ChatContent() {
 
 // ─── Page Export ──────────────────────────────────────────────────────────
 export default function ChatPage() {
-  const { t } = useI18n();
-  return (
-    <PremiumGate feature={t.chat_premium_note}>
-      <ChatContent />
-    </PremiumGate>
-  );
+  return <ChatContent />;
 }

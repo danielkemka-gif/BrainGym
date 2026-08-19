@@ -34,6 +34,7 @@ function HeaderSkeleton() {
 
 /* ---------- dynamic imports ---------- */
 const DashboardHeader = dynamic(() => import("@/components/dashboard/dashboard-header").then((m) => ({ default: m.DashboardHeader })), { ssr: false, loading: () => <HeaderSkeleton /> });
+const DashboardPremiumHero = dynamic(() => import("@/components/dashboard/dashboard-premium-hero").then((m) => ({ default: m.DashboardPremiumHero })), { ssr: false, loading: () => <MedCard /> });
 const WelcomeTour = dynamic(() => import("@/components/dashboard/welcome-tour").then((m) => ({ default: m.WelcomeTour })), { ssr: false });
 const FeatureGuideCard = dynamic(() => import("@/components/dashboard/feature-guide-card").then((m) => ({ default: m.FeatureGuideCard })), { ssr: false, loading: () => <MiniCard /> });
 const OnboardingPrompt = dynamic(() => import("@/components/dashboard/onboarding-prompt").then((m) => ({ default: m.OnboardingPrompt })), { ssr: false, loading: () => <MiniCard /> });
@@ -94,6 +95,11 @@ export default function DashboardPage() {
       {/* Header */}
       <Suspense fallback={<HeaderSkeleton />}>
         <DashboardHeader />
+      </Suspense>
+
+      {/* Top Premium Membership Banner & Benefits */}
+      <Suspense fallback={<MedCard />}>
+        <DashboardPremiumHero />
       </Suspense>
 
       {/* Trial banner, Feature Guide, Onboarding, Habit nudges, Coach tip */}

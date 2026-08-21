@@ -8,8 +8,8 @@ import { SIDEBAR_ICONS } from "@/lib/icons";
 const TABS = [
   { href: "/dashboard", labelKey: "nav_dashboard", iconKey: "dashboard" },
   { href: "/dashboard/workout", labelKey: "nav_workout", iconKey: "workout" },
-  { href: "/dashboard/games", labelKey: "nav_games", iconKey: "games" },
-  { href: "/dashboard/guide", labelKey: "nav_guide", iconKey: "guide" },
+  { href: "/dashboard/challenges", labelKey: "nav_challenges", iconKey: "challenges" },
+  { href: "/dashboard/chat", labelKey: "nav_chat", iconKey: "chat" },
   { href: "/dashboard/progress", labelKey: "nav_progress", iconKey: "progress" },
 ] as const;
 

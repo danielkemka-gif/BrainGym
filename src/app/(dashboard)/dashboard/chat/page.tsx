@@ -619,7 +619,7 @@ function ChatContent() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] lg:h-[calc(100vh-4rem)] overflow-hidden relative">
+    <div className="flex h-[calc(100dvh-7.5rem)] lg:h-[calc(100vh-4rem)] overflow-hidden relative">
       {/* ─── Main Chat Column ────────────────────────────────────────────── */}
       <div className="flex flex-col flex-1 min-w-0">
         {/* Header */}
@@ -908,7 +908,7 @@ function ChatContent() {
         )}
 
         {/* Input area */}
-        <div className="border-t border-border bg-background/80 backdrop-blur-sm px-4 py-3 flex-shrink-0 relative">
+        <div className="border-t border-border bg-background/95 backdrop-blur-sm px-3 sm:px-4 py-2.5 sm:py-3 flex-shrink-0 relative mb-14 lg:mb-0">
           {/* Emoji picker */}
           {showEmojiPicker && (
             <EmojiPicker
@@ -920,7 +920,7 @@ function ChatContent() {
           <div className="flex items-end gap-2">
             <button
               onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-              className={`flex h-[42px] w-[42px] items-center justify-center rounded-xl transition-all flex-shrink-0 ${
+              className={`flex h-[42px] w-[42px] items-center justify-center rounded-xl transition-all flex-shrink-0 touch-manipulation ${
                 showEmojiPicker
                   ? "bg-violet-500/10 text-violet-400"
                   : "text-muted-foreground hover:bg-accent hover:text-foreground"
@@ -949,7 +949,7 @@ function ChatContent() {
             <button
               onClick={handleSend}
               disabled={!input.trim() || sending}
-              className="flex h-[42px] w-[42px] items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-purple-700 text-white shadow-lg shadow-violet-500/20 transition-all hover:from-violet-500 hover:to-purple-600 hover:shadow-violet-500/30 hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 flex-shrink-0"
+              className="flex h-[42px] w-[42px] items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-purple-700 text-white shadow-lg shadow-violet-500/20 transition-all hover:from-violet-500 hover:to-purple-600 hover:shadow-violet-500/30 hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 flex-shrink-0 touch-manipulation"
             >
               {sending ? (
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
@@ -967,12 +967,12 @@ function ChatContent() {
           </div>
 
           {/* Quick emoji bar */}
-          <div className="flex gap-1 mt-2 overflow-x-auto pb-0.5">
+          <div className="flex gap-1 mt-2 overflow-x-auto pb-0.5 scrollbar-none">
             {QUICK_EMOJIS.map((emoji) => (
               <button
                 key={emoji}
                 onClick={() => setInput((prev) => prev + emoji)}
-                className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg text-sm hover:bg-accent hover:scale-110 transition-all"
+                className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg text-sm hover:bg-accent hover:scale-110 active:scale-95 transition-all touch-manipulation"
               >
                 {emoji}
               </button>
@@ -981,7 +981,53 @@ function ChatContent() {
         </div>
       </div>
 
-      {/* ─── Online Users Panel ──────────────────────────────────────────── */}
+      {/* ─── Mobile Online Drawer (Smartphones) ─────────────────────────── */}
+      {showOnlinePanel && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm lg:hidden flex justify-end animate-in fade-in">
+          <div className="w-4/5 max-w-xs h-full bg-card border-l border-border p-4 flex flex-col space-y-4 shadow-2xl animate-in slide-in-from-right duration-200">
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <div className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-violet-400" />
+                <h3 className="font-bold text-sm">Online Thinkers</h3>
+              </div>
+              <button
+                onClick={() => setShowOnlinePanel(false)}
+                className="rounded-lg p-1.5 hover:bg-muted text-muted-foreground"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto space-y-2">
+              {onlineUsers.map((u) => (
+                <div
+                  key={u.user_id}
+                  className="flex items-center justify-between p-2.5 rounded-xl bg-muted/40 border border-border"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="relative">
+                      <Avatar src={u.avatar_url} name={u.name} size="sm" />
+                      <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-background bg-green-500" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-foreground truncate">{u.name}</p>
+                      <p className="text-[10px] text-muted-foreground">@{u.username || "thinker"}</p>
+                    </div>
+                  </div>
+                  <Link
+                    href="/dashboard/challenges"
+                    className="rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400 px-2 py-1 text-[10px] font-bold"
+                  >
+                    ⚔️ Duel
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── Desktop Online Users Panel ──────────────────────────────────── */}
       <div
         className={`border-l border-border bg-background/80 backdrop-blur-sm transition-all duration-300 overflow-hidden flex-shrink-0 ${
           showOnlinePanel ? "w-72" : "w-0"
@@ -1017,15 +1063,6 @@ function ChatContent() {
 
           {/* User list */}
           <div className="flex-1 overflow-y-auto">
-            {onlineUsers.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-8 text-center px-4">
-                <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                  <Users className="h-5 w-5 text-muted-foreground" />
-                </div>
-                <p className="text-xs text-muted-foreground">No one else is online right now</p>
-              </div>
-            )}
-
             {onlineUsers.map((user) => (
               <div
                 key={user.user_id}
@@ -1058,54 +1095,6 @@ function ChatContent() {
           </div>
         </div>
       </div>
-
-      {/* ─── Mobile Online Panel (overlay) ─────────────────────────────── */}
-      {showOnlinePanel && (
-        <div className="lg:hidden fixed inset-0 z-50 flex">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setShowOnlinePanel(false)} />
-          <div className="ml-auto w-72 h-full bg-background border-l border-border flex flex-col relative z-10 animate-in slide-in-from-right">
-            <div className="flex items-center justify-between border-b border-border px-4 py-3">
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-violet-400" />
-                <h2 className="text-sm font-bold">Online</h2>
-              </div>
-              <button
-                onClick={() => setShowOnlinePanel(false)}
-                className="rounded-lg p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto">
-              {onlineUsers.map((user) => (
-                <div
-                  key={user.user_id}
-                  className="flex items-center gap-3 px-4 py-2.5 hover:bg-accent/50 transition-colors"
-                >
-                  <div className="relative flex-shrink-0">
-                    <Avatar src={user.avatar_url} name={user.name} size="sm" />
-                    <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background bg-green-500" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium truncate">{user.name}</p>
-                    {user.username && (
-                      <p className="text-xs text-muted-foreground truncate">@{user.username}</p>
-                    )}
-                  </div>
-                  {user.user_id === userId && (
-                    <span className="text-[10px] font-medium text-violet-400 bg-violet-500/10 px-1.5 py-0.5 rounded-full">You</span>
-                  )}
-                </div>
-              ))}
-              {onlineUsers.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-8 text-center px-4">
-                  <p className="text-xs text-muted-foreground">No one else is online right now</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

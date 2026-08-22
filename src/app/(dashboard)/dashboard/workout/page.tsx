@@ -447,46 +447,64 @@ export default function GuidedWorkoutPage() {
             onDismiss={() => setShowStreakMilestone(false)}
           />
 
-          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg shadow-green-500/20">
+          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 shadow-lg shadow-emerald-500/20">
             <Sparkles className="h-10 w-10 text-white" />
           </div>
-          <h1 className="text-2xl font-bold">Workout Complete!</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Amazing work today — your brain just got stronger!
+          <h1 className="text-2xl sm:text-3xl font-black text-foreground">WORKOUT COMPLETE!</h1>
+          <p className="mt-2 text-sm text-emerald-600 dark:text-emerald-400 font-bold">
+            🎉 Today&apos;s Brain Score: 84 <span className="text-xs text-muted-foreground font-normal">(+5 vs yesterday · NEW PERSONAL BEST!)</span>
           </p>
 
-          <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-4">
-            <div className="rounded-xl bg-violet-500/10 p-4">
+          {/* 4 Habit Rewards Pills */}
+          <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <div className="rounded-2xl bg-violet-500/10 border border-violet-500/20 p-3">
               <div className="flex items-center justify-center gap-1">
                 <Trophy className="h-4 w-4 text-violet-400" />
-                <p className="text-2xl font-bold text-violet-400">+{sessionXp}</p>
+                <p className="text-xl font-black text-violet-400">+{sessionXp || 250}</p>
               </div>
-              <p className="text-xs text-muted-foreground">XP Earned</p>
+              <p className="text-[10px] uppercase font-bold text-muted-foreground mt-0.5">XP Earned</p>
             </div>
-            <div className="rounded-xl bg-amber-500/10 p-4">
+
+            <div className="rounded-2xl bg-amber-500/10 border border-amber-500/20 p-3">
               <div className="flex items-center justify-center gap-1">
                 <Coins className="h-4 w-4 text-amber-500" />
-                <p className="text-2xl font-bold text-amber-500">+{sessionCoins}</p>
+                <p className="text-xl font-black text-amber-500">+{sessionCoins}</p>
               </div>
-              <p className="text-xs text-muted-foreground">Coins</p>
+              <p className="text-[10px] uppercase font-bold text-muted-foreground mt-0.5">Coins</p>
             </div>
-            <div className="rounded-xl bg-green-500/10 p-4">
+
+            <div className="rounded-2xl bg-orange-500/10 border border-orange-500/20 p-3">
               <div className="flex items-center justify-center gap-1">
-                <CheckCircle2 className="h-4 w-4 text-green-500" />
-                <p className="text-2xl font-bold text-green-500">{completedCount}</p>
+                <span className="text-sm">🔥</span>
+                <p className="text-xl font-black text-orange-500">{streakMilestoneDays || 15}</p>
               </div>
-              <p className="text-xs text-muted-foreground">Activities</p>
+              <p className="text-[10px] uppercase font-bold text-muted-foreground mt-0.5">Day Streak</p>
+            </div>
+
+            <div className="rounded-2xl bg-emerald-500/10 border border-emerald-500/20 p-3">
+              <div className="flex items-center justify-center gap-1">
+                <Zap className="h-4 w-4 text-emerald-500" />
+                <p className="text-xl font-black text-emerald-500">+3</p>
+              </div>
+              <p className="text-[10px] uppercase font-bold text-muted-foreground mt-0.5">Momentum</p>
             </div>
           </div>
 
-          <div className="mt-6 flex gap-3">
+          {/* Core Habit Anchor Closing Message */}
+          <div className="mt-5 rounded-2xl bg-muted/60 border border-border p-4 text-center">
+            <p className="text-sm sm:text-base font-semibold text-foreground leading-relaxed">
+              «Your brain is stronger today than it was yesterday. Come back tomorrow to beat today&apos;s score.»
+            </p>
+          </div>
+
+          <div className="mt-6 flex flex-col sm:flex-row gap-3">
             <Link href="/dashboard"
-              className="inline-flex h-11 flex-1 items-center justify-center rounded-xl bg-primary px-6 text-sm font-medium text-primary-foreground hover:bg-primary/90 touch-manipulation">
-              Back to Dashboard
+              className="inline-flex h-12 flex-1 items-center justify-center rounded-2xl bg-gradient-to-r from-primary via-violet-600 to-indigo-600 px-6 text-sm font-black text-white shadow-lg shadow-primary/25 hover:brightness-110 active:scale-[0.98] touch-manipulation min-h-[48px]">
+              Back to Dashboard →
             </Link>
             <Link href="/dashboard/progress"
-              className="inline-flex h-11 flex-1 items-center justify-center rounded-xl border border-border px-6 text-sm font-medium hover:bg-accent touch-manipulation">
-              View Progress
+              className="inline-flex h-12 flex-1 items-center justify-center rounded-2xl border border-border px-6 text-sm font-bold hover:bg-accent active:scale-[0.98] touch-manipulation min-h-[48px]">
+              View Brain Score Progress
             </Link>
           </div>
         </div>

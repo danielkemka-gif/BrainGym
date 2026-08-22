@@ -1,262 +1,149 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import dynamic from "next/dynamic";
+import { useAuth } from "@/lib/auth";
+import { fetchHabitEngineState, HabitMetricState } from "@/lib/habit-engine";
+import { MorningHabitHero } from "@/components/dashboard/morning-habit-hero";
+import { DailyHabitMission } from "@/components/dashboard/daily-habit-mission";
+import { BeatYourselfCard } from "@/components/dashboard/beat-yourself-card";
+import { BrainAgeMilestones } from "@/components/dashboard/brain-age-milestones";
+import { WeeklyBrainReportCard } from "@/components/dashboard/weekly-brain-report-card";
+import { WelcomeTour } from "@/components/dashboard/welcome-tour";
+import { LevelUpCelebration } from "@/components/dashboard/level-up-celebration";
+import { Swords, MessageCircle, Gamepad2, Scale, Compass, Crown, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
-/* ---------- skeleton helpers ---------- */
-function Skeleton({ className }: { className: string }) {
-  return <div className={`animate-pulse rounded-2xl bg-muted ${className}`} />;
-}
+/* ---------- Dynamic secondary modules ---------- */
+const DashboardPremiumHero = dynamic(
+  () => import("@/components/dashboard/dashboard-premium-hero").then((m) => ({ default: m.DashboardPremiumHero })),
+  { ssr: false }
+);
 
-function MiniCard() {
-  return <Skeleton className="h-20" />;
-}
-
-function MedCard() {
-  return <Skeleton className="h-44" />;
-}
-
-function TallCard() {
-  return <Skeleton className="h-64" />;
-}
-
-function HeaderSkeleton() {
+function HabitSkeleton() {
   return (
-    <div className="flex items-center gap-3">
-      <div className="h-12 w-12 animate-pulse rounded-full bg-muted" />
-      <div className="space-y-1.5">
-        <div className="h-5 w-40 animate-pulse rounded bg-muted" />
-        <div className="h-3 w-28 animate-pulse rounded bg-muted" />
+    <div className="space-y-4 animate-pulse">
+      <div className="h-10 bg-muted rounded-xl w-3/4" />
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="h-20 bg-muted rounded-2xl" />
+        <div className="h-20 bg-muted rounded-2xl" />
+        <div className="h-20 bg-muted rounded-2xl" />
+        <div className="h-20 bg-muted rounded-2xl" />
       </div>
+      <div className="h-64 bg-muted rounded-3xl" />
     </div>
   );
 }
 
-/* ---------- dynamic imports ---------- */
-const DashboardHeader = dynamic(() => import("@/components/dashboard/dashboard-header").then((m) => ({ default: m.DashboardHeader })), { ssr: false, loading: () => <HeaderSkeleton /> });
-const DashboardPremiumHero = dynamic(() => import("@/components/dashboard/dashboard-premium-hero").then((m) => ({ default: m.DashboardPremiumHero })), { ssr: false, loading: () => <MedCard /> });
-const WelcomeTour = dynamic(() => import("@/components/dashboard/welcome-tour").then((m) => ({ default: m.WelcomeTour })), { ssr: false });
-const FeatureGuideCard = dynamic(() => import("@/components/dashboard/feature-guide-card").then((m) => ({ default: m.FeatureGuideCard })), { ssr: false, loading: () => <MiniCard /> });
-const OnboardingPrompt = dynamic(() => import("@/components/dashboard/onboarding-prompt").then((m) => ({ default: m.OnboardingPrompt })), { ssr: false, loading: () => <MiniCard /> });
-const HabitNudges = dynamic(() => import("@/components/dashboard/habit-nudges").then((m) => ({ default: m.HabitNudges })), { ssr: false, loading: () => <MiniCard /> });
-const QuickActions = dynamic(() => import("@/components/dashboard/quick-actions").then((m) => ({ default: m.QuickActions })));
-const TodaysWorkoutSection = dynamic(() => import("@/components/dashboard/todays-workout-section").then((m) => ({ default: m.TodaysWorkoutSection })));
-const BrainScoreSection = dynamic(() => import("@/components/dashboard/brain-score-section").then((m) => ({ default: m.BrainScoreSection })));
-const XpStreakSection = dynamic(() => import("@/components/dashboard/xp-streak-section").then((m) => ({ default: m.XpStreakSection })));
-const MissionsSection = dynamic(() => import("@/components/dashboard/missions-section").then((m) => ({ default: m.MissionsSection })));
-const CentralCTA = dynamic(() => import("@/components/dashboard/central-cta").then((m) => ({ default: m.CentralCTA })), { ssr: false, loading: () => <MedCard /> });
-const CognitiveProfileRadar = dynamic(() => import("@/components/dashboard/cognitive-profile-radar").then((m) => ({ default: m.CognitiveProfileRadar })), { ssr: false, loading: () => <TallCard /> });
-const TrialBanner = dynamic(() => import("@/components/premium/trial-banner").then((m) => ({ default: m.TrialBanner })), { ssr: false, loading: () => <MiniCard /> });
-const BrainJourney = dynamic(() => import("@/components/dashboard/brain-journey").then((m) => ({ default: m.BrainJourney })), { ssr: false, loading: () => <MedCard /> });
-const StreakCalendar = dynamic(() => import("@/components/dashboard/streak-calendar").then((m) => ({ default: m.StreakCalendar })), { ssr: false, loading: () => <Skeleton className="h-40" /> });
-const BrainAgeSection = dynamic(() => import("@/components/dashboard/brain-age-section").then((m) => ({ default: m.BrainAgeSection })), { ssr: false, loading: () => <Skeleton className="h-72" /> });
-const CoachNudge = dynamic(() => import("@/components/dashboard/coach-nudge").then((m) => ({ default: m.CoachNudge })), { ssr: false, loading: () => <MiniCard /> });
-const PersonalizedPlan = dynamic(() => import("@/components/dashboard/personalized-plan").then((m) => ({ default: m.PersonalizedPlan })), { ssr: false, loading: () => <MedCard /> });
-const InviteFriendsCard = dynamic(() => import("@/components/dashboard/invite-friends-card").then((m) => ({ default: m.InviteFriendsCard })), { ssr: false, loading: () => <MedCard /> });
-const AccountabilityPartner = dynamic(() => import("@/components/dashboard/accountability-partner").then((m) => ({ default: m.AccountabilityPartner })), { ssr: false, loading: () => <MedCard /> });
-const BrainMomentumCard = dynamic(() => import("@/components/dashboard/brain-momentum-card").then((m) => ({ default: m.BrainMomentumCard })), { ssr: false, loading: () => <MedCard /> });
-const DailyQuestsSection = dynamic(() => import("@/components/dashboard/daily-quests-section").then((m) => ({ default: m.DailyQuestsSection })), { ssr: false, loading: () => <MedCard /> });
-const CognitiveIdentityCard = dynamic(() => import("@/components/dashboard/cognitive-identity-card").then((m) => ({ default: m.CognitiveIdentityCard })), { ssr: false, loading: () => <TallCard /> });
-const MomentumRecovery = dynamic(() => import("@/components/dashboard/momentum-recovery").then((m) => ({ default: m.MomentumRecovery })), { ssr: false, loading: () => <TallCard /> });
-const MissedDaySimulator = dynamic(() => import("@/components/dashboard/missed-day-simulator").then((m) => ({ default: m.MissedDaySimulator })), { ssr: false, loading: () => <MedCard /> });
-const BrainHealthInsights = dynamic(() => import("@/components/dashboard/brain-health-insights").then((m) => ({ default: m.BrainHealthInsights })), { ssr: false, loading: () => <TallCard /> });
-const AdaptiveHabitIntelligence = dynamic(() => import("@/components/dashboard/adaptive-habit-intelligence").then((m) => ({ default: m.AdaptiveHabitIntelligence })), { ssr: false, loading: () => <TallCard /> });
-const SmartRemindersSection = dynamic(() => import("@/components/dashboard/smart-reminders-section").then((m) => ({ default: m.SmartRemindersSection })), { ssr: false, loading: () => <MedCard /> });
-const StreakProtectionCard = dynamic(() => import("@/components/dashboard/streak-protection-card").then((m) => ({ default: m.StreakProtectionCard })), { ssr: false, loading: () => <TallCard /> });
-const ThreeSixFiveJourney = dynamic(() => import("@/components/dashboard/three-six-five-journey").then((m) => ({ default: m.ThreeSixFiveJourney })), { ssr: false, loading: () => <TallCard /> });
-const WeeklyThemeBanner = dynamic(() => import("@/components/dashboard/weekly-theme-banner").then((m) => ({ default: m.WeeklyThemeBanner })), { ssr: false, loading: () => <Skeleton className="h-24" /> });
-const WhatToDoSection = dynamic(() => import("@/components/dashboard/what-to-do-section").then((m) => ({ default: m.WhatToDoSection })), { ssr: false, loading: () => <MedCard /> });
-const BrainAgeTrend = dynamic(() => import("@/components/dashboard/brain-age-trend").then((m) => ({ default: m.BrainAgeTrend })), { ssr: false, loading: () => <Skeleton className="h-44" /> });
-const StreakMilestones = dynamic(() => import("@/components/dashboard/streak-milestones").then((m) => ({ default: m.StreakMilestones })), { ssr: false, loading: () => <Skeleton className="h-44" /> });
-const HabitCalendar = dynamic(() => import("@/components/dashboard/habit-calendar").then((m) => ({ default: m.HabitCalendar })), { ssr: false, loading: () => <Skeleton className="h-64" /> });
-const LevelUpCelebration = dynamic(() => import("@/components/dashboard/level-up-celebration").then((m) => ({ default: m.LevelUpCelebration })), { ssr: false });
-const PushNotificationCard = dynamic(() => import("@/components/dashboard/push-notification-card").then((m) => ({ default: m.PushNotificationCard })), { ssr: false, loading: () => <MedCard /> });
-
-function ShowMoreToggle({ expanded, onClick }: { expanded: boolean; onClick: () => void }) {
-  return (
-    <button onClick={onClick} className="flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-card py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors lg:hidden min-h-[44px]">
-      {expanded ? "Show less" : "Show more"}
-      <svg className={`h-4 w-4 transition-transform ${expanded ? "rotate-180" : ""}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-        <path d="m6 9 6 6 6-6" />
-      </svg>
-    </button>
-  );
-}
-
 export default function DashboardPage() {
-  const [showAll, setShowAll] = useState(false);
+  const { user } = useAuth();
+  const [habit, setHabit] = useState<HabitMetricState | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchHabitEngineState(user?.id).then((state) => {
+      setHabit(state);
+      setLoading(false);
+    });
+  }, [user]);
+
+  if (loading || !habit) {
+    return (
+      <div className="mx-auto w-full max-w-5xl px-3 sm:px-4 py-4 space-y-4">
+        <HabitSkeleton />
+      </div>
+    );
+  }
 
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-3 sm:space-y-4 lg:space-y-6 overflow-x-hidden pb-4 sm:pb-6">
-      {/* First-visit welcome tour */}
+    <div className="mx-auto w-full max-w-5xl space-y-4 sm:space-y-5 lg:space-y-6 overflow-x-hidden pb-6">
+      {/* First-visit welcome tour & level celebration */}
       <WelcomeTour />
       <LevelUpCelebration />
 
-      {/* Header */}
-      <Suspense fallback={<HeaderSkeleton />}>
-        <DashboardHeader />
-      </Suspense>
+      {/* ─── 1. MORNING HABIT HERO (Greeting, 4 Core Metrics & TODAY'S WORKOUT) ─ */}
+      <MorningHabitHero habit={habit} />
 
-      {/* Top Premium Membership Banner & Benefits */}
-      <Suspense fallback={<MedCard />}>
+      {/* ─── 2. TODAY'S DAILY HABIT MISSION ─────────────────────────────────── */}
+      <DailyHabitMission habit={habit} />
+
+      {/* ─── 3. BEAT YOURSELF & BRAIN SCORE BREAKDOWN ──────────────────────── */}
+      <BeatYourselfCard habit={habit} />
+
+      {/* ─── 4. BRAIN AGE JOURNEY & STREAK MILESTONES ───────────────────────── */}
+      <BrainAgeMilestones habit={habit} />
+
+      {/* ─── 5. WEEKLY BRAIN REPORT & NEXT WEEK'S GOAL ───────────────────────── */}
+      <WeeklyBrainReportCard habit={habit} />
+
+      {/* ─── 6. PRO MEMBERSHIP PERKS ────────────────────────────────────────── */}
+      <Suspense fallback={<div className="h-32 bg-muted rounded-2xl animate-pulse" />}>
         <DashboardPremiumHero />
       </Suspense>
 
-      {/* Trial banner, Feature Guide, Onboarding, Habit nudges, Coach tip */}
-      <Suspense fallback={<MiniCard />}><TrialBanner /></Suspense>
-      <Suspense fallback={<MiniCard />}><FeatureGuideCard /></Suspense>
-      <Suspense fallback={<MiniCard />}><OnboardingPrompt /></Suspense>
-      <Suspense fallback={<MiniCard />}><HabitNudges /></Suspense>
-      <Suspense fallback={<MiniCard />}><CoachNudge /></Suspense>
-
-      {/* Weekly theme + What to do today */}
-      <Suspense fallback={<Skeleton className="h-24" />}><WeeklyThemeBanner /></Suspense>
-      <Suspense fallback={<MedCard />}><WhatToDoSection /></Suspense>
-
-      {/* Central CTA */}
-      <Suspense fallback={<MedCard />}><CentralCTA /></Suspense>
-
-      {/* 10-Domain Cognitive Profile & Radar */}
-      <Suspense fallback={<TallCard />}><CognitiveProfileRadar /></Suspense>
-
-      {/* Hero row: Brain Age + XP/Streak */}
-      <div className="grid gap-3 sm:gap-4 lg:gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <Suspense fallback={<Skeleton className="h-72" />}>
-            <BrainAgeSection />
-          </Suspense>
+      {/* ─── 7. SECONDARY QUICK ACCESS BAR ──────────────────────────────────── */}
+      <div className="rounded-3xl border border-border bg-card p-4 sm:p-5 space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-muted-foreground">
+            Explore More Cognitive Activities
+          </h3>
+          <span className="text-[11px] text-muted-foreground">177+ Drills</span>
         </div>
-        <div className="space-y-3 lg:space-y-6">
-          <Suspense fallback={<Skeleton className="h-48" />}>
-            <XpStreakSection />
-          </Suspense>
-          <Suspense fallback={<Skeleton className="h-32" />}>
-            <TodaysWorkoutSection />
-          </Suspense>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <Link
+            href="/dashboard/challenges"
+            className="flex items-center gap-2.5 rounded-2xl border border-border/80 bg-muted/30 p-3 hover:bg-muted/60 transition active:scale-[0.98] min-h-[48px] touch-manipulation"
+          >
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500">
+              <Swords className="h-4 w-4" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-foreground truncate">1v1 Brain Duel</p>
+              <p className="text-[10px] text-muted-foreground truncate">2-Player Live Arena</p>
+            </div>
+          </Link>
+
+          <Link
+            href="/dashboard/chat"
+            className="flex items-center gap-2.5 rounded-2xl border border-border/80 bg-muted/30 p-3 hover:bg-muted/60 transition active:scale-[0.98] min-h-[48px] touch-manipulation"
+          >
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-500">
+              <MessageCircle className="h-4 w-4" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-foreground truncate">Community Chat</p>
+              <p className="text-[10px] text-muted-foreground truncate">Connect with Thinkers</p>
+            </div>
+          </Link>
+
+          <Link
+            href="/dashboard/decision-lab"
+            className="flex items-center gap-2.5 rounded-2xl border border-border/80 bg-muted/30 p-3 hover:bg-muted/60 transition active:scale-[0.98] min-h-[48px] touch-manipulation"
+          >
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 text-blue-500">
+              <Scale className="h-4 w-4" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-foreground truncate">Decision Lab</p>
+              <p className="text-[10px] text-muted-foreground truncate">Cognitive Biases</p>
+            </div>
+          </Link>
+
+          <Link
+            href="/dashboard/library"
+            className="flex items-center gap-2.5 rounded-2xl border border-border/80 bg-muted/30 p-3 hover:bg-muted/60 transition active:scale-[0.98] min-h-[48px] touch-manipulation"
+          >
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500">
+              <Gamepad2 className="h-4 w-4" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-foreground truncate">All Drills</p>
+              <p className="text-[10px] text-muted-foreground truncate">Browse 177+ Games</p>
+            </div>
+          </Link>
         </div>
       </div>
-
-      {/* Brain Age Trend + Streak Milestones */}
-      <div className="grid gap-3 sm:gap-4 lg:gap-6 lg:grid-cols-2">
-        <Suspense fallback={<Skeleton className="h-44" />}><BrainAgeTrend /></Suspense>
-        <Suspense fallback={<Skeleton className="h-44" />}><StreakMilestones /></Suspense>
-      </div>
-
-      {/* Invite friends */}
-      <Suspense fallback={<MedCard />}>
-        <InviteFriendsCard />
-      </Suspense>
-
-      {/* Brain Momentum */}
-      <Suspense fallback={<MedCard />}>
-        <BrainMomentumCard />
-      </Suspense>
-
-      {/* Streak Calendar + Brain Scores */}
-      <div className="grid gap-3 sm:gap-4 lg:gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <Suspense fallback={<Skeleton className="h-40" />}>
-            <StreakCalendar />
-          </Suspense>
-        </div>
-        <div>
-          <Suspense fallback={<Skeleton className="h-64" />}>
-            <BrainScoreSection />
-          </Suspense>
-        </div>
-      </div>
-
-      {/* Habit calendar */}
-      <Suspense fallback={<Skeleton className="h-64" />}>
-        <HabitCalendar />
-      </Suspense>
-
-      {/* Quick actions */}
-      <Suspense
-        fallback={
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-            {[1, 2, 3, 4, 5, 6, 7].map((i) => (
-              <div key={i} className="h-32 animate-pulse rounded-2xl bg-muted" />
-            ))}
-          </div>
-        }
-      >
-        <QuickActions />
-      </Suspense>
-
-      {/* Mobile: show more/less toggle */}
-      <div className="lg:hidden">
-        <ShowMoreToggle expanded={showAll} onClick={() => setShowAll(!showAll)} />
-      </div>
-
-      {/* ── below the fold (hidden on mobile unless expanded) ── */}
-      <div
-        className={`grid transition-all duration-300 ease-in-out lg:block ${
-          showAll ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0 lg:opacity-100"
-        }`}
-      >
-        <div className="overflow-hidden space-y-3 sm:space-y-4 lg:space-y-6">
-
-      {/* Personalized plan */}
-      <Suspense fallback={<MedCard />}>
-        <PersonalizedPlan />
-      </Suspense>
-
-      {/* Daily Quests */}
-      <Suspense fallback={<MedCard />}>
-        <DailyQuestsSection />
-      </Suspense>
-
-      {/* Brain Journey */}
-      <Suspense fallback={<MedCard />}>
-        <BrainJourney />
-      </Suspense>
-
-      {/* Cognitive Identity + Momentum Recovery */}
-      <div className="grid gap-3 sm:gap-4 lg:gap-6 lg:grid-cols-2">
-        <Suspense fallback={<TallCard />}><CognitiveIdentityCard /></Suspense>
-        <Suspense fallback={<TallCard />}><MomentumRecovery /></Suspense>
-      </div>
-
-      {/* Missed Day Simulator */}
-      <Suspense fallback={<MedCard />}>
-        <MissedDaySimulator />
-      </Suspense>
-
-      {/* Brain Health + Adaptive Habits */}
-      <div className="grid gap-3 sm:gap-4 lg:gap-6 lg:grid-cols-2">
-        <Suspense fallback={<TallCard />}><BrainHealthInsights /></Suspense>
-        <Suspense fallback={<TallCard />}><AdaptiveHabitIntelligence /></Suspense>
-      </div>
-
-      {/* Smart Reminders */}
-      <Suspense fallback={<MedCard />}>
-        <SmartRemindersSection />
-      </Suspense>
-
-      {/* Push notifications */}
-      <Suspense fallback={<MedCard />}>
-        <PushNotificationCard />
-      </Suspense>
-
-      {/* Streak Protection + 365-Day Journey */}
-      <div className="grid gap-3 sm:gap-4 lg:gap-6 lg:grid-cols-2">
-        <Suspense fallback={<TallCard />}><StreakProtectionCard /></Suspense>
-        <Suspense fallback={<TallCard />}><ThreeSixFiveJourney /></Suspense>
-      </div>
-
-      {/* Weekly missions */}
-      <Suspense fallback={<Skeleton className="h-32" />}>
-        <MissionsSection />
-      </Suspense>
-
-      {/* Accountability partner */}
-      <Suspense fallback={<MedCard />}>
-        <AccountabilityPartner />
-      </Suspense>
-
-      </div>{/* end inner */}
-      </div>{/* end below-the-fold wrapper */}
     </div>
   );
 }

@@ -7,24 +7,45 @@ export function ServiceWorkerRegistration() {
     if (typeof window === 'undefined') return;
     if (!('serviceWorker' in navigator)) return;
 
-    // Register service worker
+    // Register and immediately force-update service worker
     navigator.serviceWorker
       .register('/sw.js')
       .then((registration) => {
-        console.log('SW registered:', registration.scope);
+        // Trigger immediate check on page load
+        registration.update();
 
-        // Check for updates every hour
-        setInterval(() => {
+        // Check for updates periodically
+        const interval = setInterval(() => {
           registration.update();
-        }, 60 * 60 * 1000);
+        }, 15 * 60 * 1000);
+
+        // When a new SW is installing, ask it to skip waiting
+        registration.addEventListener('updatefound', () => {
+          const installingWorker = registration.installing;
+          if (installingWorker) {
+            installingWorker.addEventListener('statechange', () => {
+              if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                console.log('New BrainGym version available on mobile. Refreshing cache...');
+                // Automatically take over
+                installingWorker.postMessage({ type: 'SKIP_WAITING' });
+              }
+            });
+          }
+        });
+
+        return () => clearInterval(interval);
       })
       .catch((err) => {
-        console.log('SW registration failed:', err);
+        console.warn('SW registration warning:', err);
       });
 
-    // Listen for controller change (new SW activated)
+    // Listen for controllerchange so the mobile client picks up the new bundle seamlessly
+    let refreshing = false;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      // Optional: show a toast that the app has been updated
+      if (!refreshing) {
+        refreshing = true;
+        window.location.reload();
+      }
     });
   }, []);
 

@@ -1,6 +1,6 @@
-const CACHE_NAME = 'braingym-v1';
-const STATIC_CACHE = 'braingym-static-v1';
-const DYNAMIC_CACHE = 'braingym-dynamic-v1';
+const CACHE_VERSION = 'braingym-v2026-live-v3';
+const STATIC_CACHE = `braingym-static-${CACHE_VERSION}`;
+const DYNAMIC_CACHE = `braingym-dynamic-${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [
   '/',
@@ -10,34 +10,35 @@ const STATIC_ASSETS = [
   '/logo.png',
 ];
 
-// Install: cache critical assets
+// Install: immediately take over
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(STATIC_CACHE).then((cache) => {
       return cache.addAll(STATIC_ASSETS).catch(() => {
-        // Silently fail for non-critical assets
-        console.log('Some static assets failed to cache');
+        console.log('Static asset caching completed with partial fallbacks');
       });
     })
   );
-  self.skipWaiting();
 });
 
-// Activate: clean old caches
+// Activate: clean and delete ALL previous cache versions immediately
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
         keys
           .filter((key) => key !== STATIC_CACHE && key !== DYNAMIC_CACHE)
-          .map((key) => caches.delete(key))
+          .map((key) => {
+            console.log('Purging old cache:', key);
+            return caches.delete(key);
+          })
       );
-    })
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// Fetch: Network-first for API, Cache-first for static
+// Fetch: Network-First for everything when online to guarantee live updates reflect on smartphones
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -48,77 +49,32 @@ self.addEventListener('fetch', (event) => {
   // Skip Supabase API calls (always network)
   if (url.hostname.includes('supabase')) return;
 
-  // Skip OpenAI API calls
-  if (url.hostname.includes('openai')) return;
+  // Skip OpenAI / AI API calls
+  if (url.hostname.includes('openai') || url.hostname.includes('anthropic') || url.hostname.includes('googleapis')) return;
 
   // Skip Chrome extension requests
   if (url.protocol === 'chrome-extension:') return;
 
-  // API routes: Network-first with cache fallback
-  if (url.pathname.startsWith('/api/')) {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          // Cache successful API responses for 5 minutes
-          if (response.ok) {
-            const cloned = response.clone();
-            caches.open(DYNAMIC_CACHE).then((cache) => {
-              cache.put(request, cloned);
-            });
-          }
-          return response;
-        })
-        .catch(() => {
-          return caches.match(request);
-        })
-    );
-    return;
-  }
-
-  // Static assets: Cache-first
-  if (
-    url.pathname.startsWith('/_next/static/') ||
-    url.pathname.endsWith('.js') ||
-    url.pathname.endsWith('.css') ||
-    url.pathname.endsWith('.png') ||
-    url.pathname.endsWith('.jpg') ||
-    url.pathname.endsWith('.svg') ||
-    url.pathname.endsWith('.woff2')
-  ) {
-    event.respondWith(
-      caches.match(request).then((cached) => {
-        if (cached) return cached;
-        return fetch(request).then((response) => {
-          const cloned = response.clone();
-          caches.open(STATIC_CACHE).then((cache) => {
-            cache.put(request, cloned);
-          });
-          return response;
-        });
-      })
-    );
-    return;
-  }
-
-  // Pages: Network-first with offline fallback
+  // Network-First strategy: Always fetch latest from server, fallback to cache when offline
   event.respondWith(
     fetch(request)
       .then((response) => {
-        // Cache the page
-        const cloned = response.clone();
-        caches.open(DYNAMIC_CACHE).then((cache) => {
-          cache.put(request, cloned);
-        });
+        if (response && response.status === 200 && response.type === 'basic') {
+          const responseToCache = response.clone();
+          caches.open(DYNAMIC_CACHE).then((cache) => {
+            cache.put(request, responseToCache);
+          });
+        }
         return response;
       })
       .catch(() => {
-        return caches.match(request).then((cached) => {
-          if (cached) return cached;
-          // Offline fallback for navigation
+        // Fallback to cache if offline
+        return caches.match(request).then((cachedResponse) => {
+          if (cachedResponse) return cachedResponse;
           if (request.mode === 'navigate') {
             return caches.match('/offline.html');
           }
-          return new Response('Offline', { status: 503 });
+          return new Response('Offline', { status: 503, statusText: 'Offline' });
         });
       })
   );

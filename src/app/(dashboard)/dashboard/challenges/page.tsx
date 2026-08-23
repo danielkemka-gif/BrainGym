@@ -6,7 +6,8 @@ import { createClient } from "@/lib/supabase/client";
 import { CATEGORIES, DIFFICULTIES } from "@/lib/constants";
 import { FriendDuelSection } from "@/components/challenges/friend-duel-section";
 import { LiveBrainDuel } from "@/components/challenges/live-brain-duel";
-import { Swords, Users, Handshake, Sparkles } from "lucide-react";
+import { ThirtyDayChallenge } from "@/components/challenges/thirty-day-challenge";
+import { Swords, Users, Handshake, Sparkles, Award } from "lucide-react";
 
 interface Challenge {
   id: string;
@@ -34,7 +35,7 @@ export default function ChallengesPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState("");
   const [userId, setUserId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"duel" | "community" | "friends">("duel");
+  const [activeTab, setActiveTab] = useState<"thirty-day" | "duel" | "community" | "friends">("thirty-day");
 
   const [form, setForm] = useState({
     title: "",
@@ -170,18 +171,30 @@ export default function ChallengesPage() {
         <div>
           <h1 className="text-balance text-xl font-bold sm:text-2xl flex items-center gap-2">
             <span>Brain Challenges &amp; 1v1 Duels</span>
-            <span className="rounded-full bg-orange-500/10 px-2.5 py-0.5 text-xs font-bold text-orange-600 dark:text-orange-400">
-              Multiplayer ⚔️
+            <span className="rounded-full bg-purple-500/10 px-2.5 py-0.5 text-xs font-bold text-purple-600 dark:text-purple-400">
+              Habit &amp; Duels 🏆
             </span>
           </h1>
           <p className="text-sm text-muted-foreground">
-            Compete head-to-head with friends, join group tournaments, or challenge sparring bots
+            Complete your 30-Day Brain Transformation, battle in live 1v1 duels, or join community challenges
           </p>
         </div>
       </div>
 
       {/* Tabs */}
       <div className="flex gap-2 border-b border-border pb-2 overflow-x-auto">
+        <button
+          onClick={() => setActiveTab("thirty-day")}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition whitespace-nowrap min-h-[44px] touch-manipulation ${
+            activeTab === "thirty-day"
+              ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/20"
+              : "border border-border bg-card hover:bg-muted text-muted-foreground"
+          }`}
+        >
+          <Award className="h-4 w-4" />
+          <span>30-Day Brain Transformation</span>
+        </button>
+
         <button
           onClick={() => setActiveTab("duel")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition whitespace-nowrap min-h-[44px] touch-manipulation ${
@@ -218,6 +231,13 @@ export default function ChallengesPage() {
           <span>Friend Accountability Duels</span>
         </button>
       </div>
+
+      {/* Tab 0: 30-Day Brain Transformation Challenge */}
+      {activeTab === "thirty-day" && (
+        <div className="space-y-6">
+          <ThirtyDayChallenge />
+        </div>
+      )}
 
       {/* Tab 1: Live 1v1 Brain Duel */}
       {activeTab === "duel" && (

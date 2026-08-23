@@ -115,44 +115,41 @@ export default function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden pt-24 sm:pt-32">
+      <section className="relative overflow-hidden pt-20 sm:pt-28 pb-16">
         <div className="absolute inset-0 bg-dot-grid opacity-40" />
-        <div className="absolute left-1/2 top-0 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-primary/5 blur-3xl" />
-        <div className="relative mx-auto max-w-7xl px-4 pb-24 text-center sm:px-6 sm:pb-32 lg:px-8">
+        <div className="absolute left-1/2 top-0 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
+        <div className="relative mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="mx-auto max-w-3xl"
+            className="mx-auto max-w-4xl"
           >
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm text-primary">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs sm:text-sm font-bold text-primary">
               <Sparkles className="h-3.5 w-3.5" />
-              <span>Train Your Brain For Real Life</span>
+              <span>THE DAILY GYM FOR YOUR MIND</span>
             </div>
-            <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-              Real cognitive training.
+            <h1 className="text-4xl font-black leading-tight tracking-tight sm:text-6xl lg:text-7xl">
+              TRAIN YOUR BRAIN.
               <br />
-              <span className="text-primary">Not brain games.</span>
+              <span className="bg-gradient-to-r from-primary via-violet-500 to-indigo-500 bg-clip-text text-transparent">EVERY DAY.</span>
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl">
-              BrainGym helps you improve focus, memory, decision-making, and
-              emotional intelligence through daily real-world activities —
-              meditation, reading, walking, and reflection. No puzzles. No
-              gimmicks.
+            <p className="mx-auto mt-5 max-w-2xl text-base sm:text-xl text-muted-foreground leading-relaxed font-medium">
+              BrainGym is to the brain what a gym is to the body. Build a morning habit that makes you think faster, focus deeper, remember accurately, and stay razor sharp for life.
             </p>
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <div className="mt-8 flex flex-col items-center justify-center gap-3.5 sm:flex-row">
               <Link
                 href="/signup"
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-8 text-sm font-medium text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30 sm:w-auto"
+                className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary via-violet-600 to-indigo-600 px-8 text-base font-black text-white shadow-xl shadow-primary/30 transition-all hover:brightness-110 active:scale-[0.98] sm:w-auto touch-manipulation"
               >
-                Start Free Training
-                <ArrowRight className="h-4 w-4" />
+                <span>START TRAINING YOUR BRAIN</span>
+                <ArrowRight className="h-5 w-5" />
               </Link>
               <Link
-                href="/features"
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-border bg-background px-8 text-sm font-medium transition-all hover:bg-accent sm:w-auto"
+                href="/onboarding"
+                className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl border-2 border-border bg-card/80 px-8 text-base font-bold transition-all hover:bg-accent sm:w-auto touch-manipulation"
               >
-                See All Features
+                <span>TAKE THE BRAIN TEST (2 MIN)</span>
               </Link>
             </div>
           </motion.div>
@@ -162,12 +159,12 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
-            className="mt-16 flex flex-wrap justify-center gap-3"
+            className="mt-12 flex flex-wrap justify-center gap-2.5"
           >
-            {categories.map((cat, i) => (
+            {categories.map((cat) => (
               <div
                 key={cat.label}
-                className={`inline-flex items-center gap-2 rounded-full bg-gradient-to-r ${cat.color} px-4 py-2 text-sm font-medium text-white shadow-lg ${cat.shadow}`}
+                className={`inline-flex items-center gap-2 rounded-full bg-gradient-to-r ${cat.color} px-4 py-2 text-xs sm:text-sm font-bold text-white shadow-md ${cat.shadow}`}
               >
                 <cat.icon className="h-4 w-4" />
                 {cat.label}
@@ -177,8 +174,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Features */}
-      <section className="border-t border-border/40 bg-muted/30 py-24">
+      {/* 5-Step How It Works Section */}
+      <section className="border-t border-border/40 bg-muted/20 py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0 }}
@@ -186,32 +183,36 @@ export default function HomePage() {
             viewport={{ once: true }}
             className="mx-auto max-w-2xl text-center"
           >
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Everything you need to grow
+            <span className="text-xs font-bold uppercase tracking-wider text-primary">Simple Daily Habit Loop</span>
+            <h2 className="text-3xl sm:text-4xl font-black tracking-tight mt-1">
+              HOW BRAINGYM WORKS
             </h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              BrainGym combines proven cognitive science with daily habits to
-              build lasting mental fitness.
+            <p className="mt-3 text-sm sm:text-base text-muted-foreground">
+              A 5-step scientifically structured habit that fits effortlessly into your morning routine.
             </p>
           </motion.div>
 
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {features.map((feature, i) => (
+          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {[
+              { step: "1", title: "Wake-Up Prompt", desc: "Receive your morning brain activation reminder." },
+              { step: "2", title: "5–10 Min Workout", desc: "Complete 5 balanced cognitive drills tailored to you." },
+              { step: "3", title: "Brain Momentum", desc: "Watch your Brain Score (0–100) & Momentum rise." },
+              { step: "4", title: "Beat Yourself", desc: "Outperform yesterday's personal best baseline." },
+              { step: "5", title: "Come Back Sharper", desc: "Lock in your streak and return sharper tomorrow." },
+            ].map((item, i) => (
               <motion.div
-                key={feature.title}
+                key={item.step}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.5 }}
-                className="group rounded-2xl border border-border/50 bg-card p-6 transition-all hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5"
+                className="rounded-2xl border border-border/80 bg-card p-5 space-y-2 relative shadow-sm"
               >
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                  <feature.icon className="h-5 w-5" />
-                </div>
-                <h3 className="mb-2 font-semibold">{feature.title}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {feature.description}
-                </p>
+                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary font-black text-sm">
+                  {item.step}
+                </span>
+                <h3 className="font-bold text-sm text-foreground">{item.title}</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
           </div>

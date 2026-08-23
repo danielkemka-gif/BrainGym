@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useAuth } from "@/lib/auth";
 import { fetchHabitEngineState, HabitMetricState } from "@/lib/habit-engine";
 import { MorningHabitHero } from "@/components/dashboard/morning-habit-hero";
+import { LiveHabitPointer } from "@/components/dashboard/live-habit-pointer";
 import { DailyHabitMission } from "@/components/dashboard/daily-habit-mission";
 import { BeatYourselfCard } from "@/components/dashboard/beat-yourself-card";
 import { BrainAgeMilestones } from "@/components/dashboard/brain-age-milestones";
@@ -64,22 +65,25 @@ export default function DashboardPage() {
       {/* ─── 1. MORNING HABIT HERO (Greeting, 4 Core Metrics & TODAY'S WORKOUT) ─ */}
       <MorningHabitHero habit={habit} />
 
-      {/* ─── 2. TODAY'S DAILY HABIT MISSION ─────────────────────────────────── */}
-      <DailyHabitMission habit={habit} />
+      {/* ─── 2. LIVE NEXT-STEP POINTER (Zero trial & error guidance) ─────────── */}
+      <LiveHabitPointer habit={habit} />
 
-      {/* ─── 3. BEAT YOURSELF & BRAIN SCORE BREAKDOWN ──────────────────────── */}
-      <BeatYourselfCard habit={habit} />
-
-      {/* ─── 4. BRAIN AGE JOURNEY & STREAK MILESTONES ───────────────────────── */}
-      <BrainAgeMilestones habit={habit} />
-
-      {/* ─── 5. WEEKLY BRAIN REPORT & NEXT WEEK'S GOAL ───────────────────────── */}
-      <WeeklyBrainReportCard habit={habit} />
-
-      {/* ─── 6. PRO MEMBERSHIP PERKS ────────────────────────────────────────── */}
+      {/* ─── 3. PRO MEMBERSHIP PERKS & BENEFITS HERO ─────────────────────────── */}
       <Suspense fallback={<div className="h-32 bg-muted rounded-2xl animate-pulse" />}>
         <DashboardPremiumHero />
       </Suspense>
+
+      {/* ─── 4. TODAY'S DAILY HABIT MISSION ─────────────────────────────────── */}
+      <DailyHabitMission habit={habit} />
+
+      {/* ─── 4. BEAT YOURSELF & BRAIN SCORE BREAKDOWN ──────────────────────── */}
+      <BeatYourselfCard habit={habit} />
+
+      {/* ─── 5. BRAIN AGE JOURNEY & STREAK MILESTONES ───────────────────────── */}
+      <BrainAgeMilestones habit={habit} />
+
+      {/* ─── 6. WEEKLY BRAIN REPORT & NEXT WEEK'S GOAL ───────────────────────── */}
+      <WeeklyBrainReportCard habit={habit} />
 
       {/* ─── 7. SECONDARY QUICK ACCESS BAR ──────────────────────────────────── */}
       <div className="rounded-3xl border border-border bg-card p-4 sm:p-5 space-y-3">

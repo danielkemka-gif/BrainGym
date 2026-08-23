@@ -533,6 +533,29 @@ export default function SettingsPage() {
         </div>
       </section>
 
+      {/* Install PWA App */}
+      <section className="rounded-2xl border border-primary/30 bg-primary/5 p-4 sm:p-6 space-y-3">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-md">
+            📱
+          </div>
+          <div>
+            <h2 className="text-base font-bold text-foreground">Install BrainGym App</h2>
+            <p className="text-xs text-muted-foreground">
+              Add BrainGym directly to your phone&apos;s home screen for fast 1-tap daily workouts
+            </p>
+          </div>
+        </div>
+        <div className="rounded-xl bg-background/80 border border-border p-3 text-xs text-muted-foreground space-y-1">
+          <p>
+            <strong className="text-foreground">Android:</strong> Tap the browser menu (⋮) and tap <strong>&ldquo;Install App&rdquo;</strong>.
+          </p>
+          <p>
+            <strong className="text-foreground">iPhone / iPad:</strong> Tap the <strong>Share button</strong> in Safari and tap <strong>&ldquo;Add to Home Screen&rdquo;</strong>.
+          </p>
+        </div>
+      </section>
+
       {/* Referral */}
       <ReferralSection />
 

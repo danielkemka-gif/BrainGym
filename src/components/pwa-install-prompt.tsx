@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Download, X, Smartphone } from 'lucide-react';
+import { Download, X, Smartphone, Share, PlusSquare } from 'lucide-react';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -12,26 +12,35 @@ interface BeforeInstallPromptEvent extends Event {
 export function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
-    // Check if already dismissed
-    const wasDismissed = localStorage.getItem('pwa-install-dismissed');
-    if (wasDismissed) {
-      setDismissed(true);
+    // Check if already in standalone (installed) mode
+    if (
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone === true
+    ) {
+      setIsStandalone(true);
       return;
     }
 
-    // Check if already installed
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-      return;
+    // Detect iOS
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
+    setIsIOS(isIosDevice);
+
+    // If iOS and not standalone, show prompt after 2 seconds
+    if (isIosDevice) {
+      const timer = setTimeout(() => setShowPrompt(true), 2000);
+      return () => clearTimeout(timer);
     }
 
+    // For Android / Chrome
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      // Show prompt after 3 seconds
-      setTimeout(() => setShowPrompt(true), 3000);
+      setShowPrompt(true);
     };
 
     window.addEventListener('beforeinstallprompt', handler);
@@ -50,54 +59,69 @@ export function PWAInstallPrompt() {
 
   const handleDismiss = () => {
     setShowPrompt(false);
-    setDismissed(true);
-    localStorage.setItem('pwa-install-dismissed', 'true');
   };
 
-  if (dismissed || !showPrompt) return null;
+  if (isStandalone || !showPrompt) return null;
 
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ opacity: 0, y: 100 }}
+        initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 100 }}
-        className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-4 md:w-80"
+        exit={{ opacity: 0, y: 50 }}
+        className="fixed bottom-16 sm:bottom-6 left-3 right-3 sm:left-auto sm:right-6 sm:w-96 z-50 pointer-events-auto"
       >
-        <div className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-2xl p-4">
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shrink-0">
-              <Smartphone className="w-5 h-5 text-white" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h4 className="font-semibold text-gray-900 dark:text-white text-sm">
-                Install BrainGym
-              </h4>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                Add to your home screen for quick access and offline support
-              </p>
-              <div className="flex items-center gap-2 mt-3">
-                <button
-                  onClick={handleInstall}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-purple-500 to-indigo-600 text-white text-xs font-medium hover:opacity-90 transition"
-                >
-                  <Download className="w-3.5 h-3.5" /> Install
-                </button>
-                <button
-                  onClick={handleDismiss}
-                  className="px-3 py-1.5 rounded-lg text-gray-500 dark:text-gray-400 text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-                >
-                  Not now
-                </button>
+        <div className="rounded-3xl bg-card border-2 border-primary/40 shadow-2xl p-4 sm:p-5 backdrop-blur-lg space-y-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-primary to-violet-600 flex items-center justify-center shrink-0 text-white shadow-md shadow-primary/25">
+                <Smartphone className="w-6 h-6" />
+              </div>
+              <div>
+                <h4 className="font-black text-foreground text-sm sm:text-base">
+                  Install BrainGym App
+                </h4>
+                <p className="text-[11px] text-muted-foreground">
+                  Install on your smartphone for faster daily training
+                </p>
               </div>
             </div>
+
             <button
               onClick={handleDismiss}
-              className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition shrink-0"
+              className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-muted-foreground hover:text-foreground"
             >
-              <X className="w-4 h-4 text-gray-400" />
+              <X className="w-4 h-4" />
             </button>
           </div>
+
+          {/* Android 1-Click Install */}
+          {deferredPrompt && (
+            <button
+              onClick={handleInstall}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-gradient-to-r from-primary via-violet-600 to-indigo-600 text-white text-xs sm:text-sm font-black shadow-lg shadow-primary/25 active:scale-[0.98] transition touch-manipulation min-h-[44px]"
+            >
+              <Download className="w-4 h-4" />
+              <span>Install to Home Screen Now</span>
+            </button>
+          )}
+
+          {/* iOS Safari Instructions */}
+          {isIOS && !deferredPrompt && (
+            <div className="rounded-2xl bg-muted/60 border border-border p-3 text-xs space-y-1.5 text-left">
+              <div className="flex items-center gap-1.5 font-bold text-foreground">
+                <span>To install on iPhone / iPad:</span>
+              </div>
+              <ol className="list-decimal list-inside text-muted-foreground space-y-1 text-[11px]">
+                <li>
+                  Tap the <Share className="inline h-3.5 w-3.5 text-primary" /> <strong>Share</strong> button at the bottom of Safari.
+                </li>
+                <li>
+                  Scroll down and tap <PlusSquare className="inline h-3.5 w-3.5 text-primary" /> <strong>Add to Home Screen</strong>.
+                </li>
+              </ol>
+            </div>
+          )}
         </div>
       </motion.div>
     </AnimatePresence>

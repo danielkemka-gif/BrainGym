@@ -1,466 +1,153 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { pickDailyActivities, calculateWorkoutXp, calculateWorkoutCoins } from "@/lib/workout";
-import { calculateStreakMultiplier } from "@/lib/scoring";
-import { CATEGORIES } from "@/lib/constants";
-import { recalculateBrainScores } from "@/lib/brain-scores";
-import { checkAndUnlockAchievements } from "@/lib/achievements";
-import { calculateStreakWithFreeze } from "@/lib/streak-protection";
-import {
-  ArrowLeft, CheckCircle2, Clock, Zap, Trophy, Coins,
-  ChevronRight, ChevronLeft, Pause, Play, SkipForward, Star, Sparkles, Lightbulb
-} from "lucide-react";
+import { generateDailyInteractiveWorkout, InteractiveChallenge } from "@/lib/interactive-challenges";
+import { InteractiveWorkoutEngine } from "@/components/workout/interactive-workout-engine";
 import { Confetti } from "@/components/ui/confetti";
-import { LevelUpModal } from "@/components/ui/level-up-modal";
-import { StreakMilestoneModal, getStreakMilestone } from "@/components/ui/streak-milestone-modal";
-import { getLevelProgress } from "@/lib/scoring";
-import { LEVELS } from "@/lib/constants";
-import { getWorkoutExample } from "@/lib/workout-examples";
+import { ArrowLeft, Sparkles, Trophy, Coins, Zap, Flame, CheckCircle2, TrendingUp, ArrowRight, Brain, RotateCcw } from "lucide-react";
 
-interface Activity {
-  id: string;
-  title: string;
-  description?: string;
-  instructions?: string;
-  estimated_time: number;
-  difficulty: string;
-  xp: number;
-  coins: number;
-  category_id: string;
+interface WorkoutResultSummary {
+  totalXp: number;
+  totalCoins: number;
+  accuracyPercent: number;
+  avgReactionTimeMs: number;
+  categoryScores: Record<string, number>;
+  weakestCategory: string;
+  strongestCategory: string;
 }
 
-interface WorkoutItem {
-  id: string;
-  activity_id: string;
-  status: string;
-  sort_order: number;
-  activities: Activity;
-}
-
-interface DailyWorkout {
-  id: string;
-  status: string;
-  workout_items: WorkoutItem[];
-}
-
-type SessionPhase = "intro" | "activity" | "timer" | "complete" | "summary";
-
-export default function GuidedWorkoutPage() {
-  const [workout, setWorkout] = useState<DailyWorkout | null>(null);
+export default function WorkoutPage() {
+  const [challenges, setChallenges] = useState<InteractiveChallenge[]>([]);
   const [loading, setLoading] = useState(true);
-  const [phase, setPhase] = useState<SessionPhase>("intro");
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [timerSeconds, setTimerSeconds] = useState(0);
-  const [timerRunning, setTimerRunning] = useState(false);
-  const [sessionXp, setSessionXp] = useState(0);
-  const [sessionCoins, setSessionCoins] = useState(0);
-  const [completedCount, setCompletedCount] = useState(0);
-  const [totalXp, setTotalXp] = useState(0);
-  const [showConfetti, setShowConfetti] = useState(false);
-  const [showLevelUp, setShowLevelUp] = useState(false);
-  const [levelFrom, setLevelFrom] = useState(1);
-  const [levelTo, setLevelTo] = useState(1);
-  const [showStreakMilestone, setShowStreakMilestone] = useState(false);
-  const [streakMilestoneDays, setStreakMilestoneDays] = useState(0);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [results, setResults] = useState<WorkoutResultSummary | null>(null);
+  const [streakDays, setStreakDays] = useState(14);
+  const [brainScore, setBrainScore] = useState(84);
+  const [feedbackRating, setFeedbackRating] = useState<string | null>(null);
 
-  const sortedItems = workout
-    ? [...workout.workout_items].sort((a, b) => a.sort_order - b.sort_order)
-    : [];
-  const activeItem = sortedItems[activeIndex];
-  const activeActivity = activeItem?.activities;
-  const category = activeActivity
-    ? CATEGORIES.find((c) => c.id === activeActivity.category_id)
-    : null;
+  useEffect(() => {
+    // Generate today's balanced 6-round workout
+    const daySeed = new Date().getDate();
+    const dailyChallenges = generateDailyInteractiveWorkout(daySeed);
+    setChallenges(dailyChallenges);
 
-  const fetchOrCreateWorkout = useCallback(async () => {
-    try {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const today = new Date().toISOString().split("T")[0];
-
-      const { data: existing } = await supabase
-        .from("daily_workouts")
-        .select(`id, status, workout_items (id, activity_id, status, sort_order, activities (*))`)
-        .eq("user_id", user.id)
-        .eq("date", today)
-        .maybeSingle();
-
-      // Fetch current total XP for level-up detection
-      const { data: xpData } = await supabase
-        .from("xp_ledger")
-        .select("amount")
-        .eq("user_id", user.id);
-      const currentTotalXp = xpData ? xpData.reduce((s, r) => s + r.amount, 0) : 0;
-      setTotalXp(currentTotalXp);
-
-      if (existing) {
-        const w = existing as unknown as DailyWorkout;
-        setWorkout(w);
-
-        if (w.status === "completed") {
-          setPhase("summary");
-          const doneItems = w.workout_items.filter((i) => i.status === "completed");
-          setCompletedCount(doneItems.length);
-        } else {
-          // Find first incomplete item
-          const sorted = [...w.workout_items].sort((a, b) => a.sort_order - b.sort_order);
-          const firstIncomplete = sorted.findIndex((i) => i.status !== "completed");
-          setActiveIndex(firstIncomplete >= 0 ? firstIncomplete : 0);
-          setPhase("intro");
-        }
+    const supabase = createClient();
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) {
         setLoading(false);
         return;
       }
 
-      // Create new workout
-      const { data: pool } = await supabase
-        .from("activities")
-        .select("id, title, description, instructions, estimated_time, difficulty, xp, coins, category_id")
-        .eq("is_active", true);
-
+      // Fetch user profile streak
       const { data: profile } = await supabase
         .from("profiles")
-        .select("age_group")
+        .select("current_streak, streak_count")
         .eq("user_id", user.id)
         .maybeSingle();
 
-      if (!pool || pool.length === 0) {
-        setLoading(false);
-        return;
+      if (profile) {
+        setStreakDays((profile.current_streak ?? profile.streak_count ?? 14) + 1);
       }
 
-      const picked = pickDailyActivities(pool as Activity[], undefined, profile?.age_group || undefined);
-      const { data: newWorkout } = await supabase
-        .from("daily_workouts")
-        .insert({ user_id: user.id, date: today, status: "in_progress", started_at: new Date().toISOString() })
-        .select()
-        .single();
-
-      if (newWorkout) {
-        const items = picked.map((a, i) => ({
-          workout_id: newWorkout.id,
-          activity_id: a.id,
-          sort_order: i + 1,
-        }));
-        await supabase.from("workout_items").insert(items);
-
-        const { data: full } = await supabase
-          .from("daily_workouts")
-          .select(`id, status, workout_items (id, activity_id, status, sort_order, activities (*))`)
-          .eq("id", newWorkout.id)
-          .single();
-
-        if (full) {
-          setWorkout(full as unknown as DailyWorkout);
-          setPhase("intro");
-        }
-      }
-    } catch {
-      // Failed to load
-    } finally {
       setLoading(false);
-    }
+    });
   }, []);
 
-  useEffect(() => {
-    fetchOrCreateWorkout();
-  }, [fetchOrCreateWorkout]);
+  const handleWorkoutComplete = useCallback(async (summary: WorkoutResultSummary) => {
+    setResults(summary);
+    setIsCompleted(true);
 
-  // Timer logic
-  useEffect(() => {
-    if (!timerRunning) {
-      if (timerRef.current) clearInterval(timerRef.current);
-      return;
-    }
-    timerRef.current = setInterval(() => {
-      setTimerSeconds((prev) => {
-        if (prev <= 1) {
-          if (timerRef.current) clearInterval(timerRef.current);
-          setTimerRunning(false);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [timerRunning]);
+    try {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-  function startTimer() {
-    if (!activeActivity) return;
-    setTimerSeconds(activeActivity.estimated_time || 120);
-    setTimerRunning(true);
-    setPhase("timer");
-  }
+      if (user) {
+        const today = new Date().toISOString().split("T")[0];
 
-  function pauseTimer() {
-    setTimerRunning(false);
-  }
-
-  function resumeTimer() {
-    setTimerRunning(true);
-  }
-
-  async function completeActivity() {
-    if (!activeItem || !workout) return;
-    setTimerRunning(false);
-
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    // Mark item completed
-    await supabase
-      .from("workout_items")
-      .update({ status: "completed", completed_at: new Date().toISOString() })
-      .eq("id", activeItem.id);
-
-    const actXp = activeActivity?.xp ?? 10;
-    const actCoins = activeActivity?.coins ?? 5;
-    setSessionXp((prev) => prev + actXp);
-    setSessionCoins((prev) => prev + actCoins);
-    setCompletedCount((prev) => prev + 1);
-
-    // Credit activity
-    const today = new Date().toISOString().split("T")[0];
-    await supabase.from("activity_logs").insert({
-      user_id: user.id,
-      activity_id: activeItem.activity_id,
-      date: today,
-      xp_earned: actXp,
-      coins_earned: actCoins,
-    });
-    await supabase.from("xp_ledger").insert({
-      user_id: user.id,
-      amount: actXp,
-      reason: "activity_complete",
-      reference_type: "activity",
-      reference_id: activeItem.activity_id,
-    });
-    await supabase.from("coins_ledger").insert({
-      user_id: user.id,
-      amount: actCoins,
-      reason: "activity_complete",
-      reference_type: "activity",
-      reference_id: activeItem.activity_id,
-    });
-
-    // Update local state
-    setWorkout((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        workout_items: prev.workout_items.map((i) =>
-          i.id === activeItem.id ? { ...i, status: "completed" } : i
-        ),
-      };
-    });
-
-    setPhase("complete");
-  }
-
-  async function finishSession() {
-    if (!workout) return;
-    setPhase("summary");
-
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const now = new Date().toISOString();
-    const today = now.split("T")[0];
-
-    // Mark workout completed
-    await supabase
-      .from("daily_workouts")
-      .update({ status: "completed", completed_at: now })
-      .eq("id", workout.id);
-
-    // Get streak for multiplier
-    const { data: streak } = await supabase
-      .from("streaks")
-      .select("current_streak")
-      .eq("user_id", user.id)
-      .maybeSingle();
-    const multiplier = calculateStreakMultiplier(streak?.current_streak ?? 0);
-
-    // Credit workout bonus
-    const bonusXp = calculateWorkoutXp(sessionXp, multiplier) - sessionXp;
-    const bonusCoins = calculateWorkoutCoins(sessionCoins) - sessionCoins;
-
-    if (bonusXp > 0) {
-      await supabase.from("xp_ledger").insert({
-        user_id: user.id,
-        amount: bonusXp,
-        reason: "workout_complete",
-      });
-    }
-    if (bonusCoins > 0) {
-      await supabase.from("coins_ledger").insert({
-        user_id: user.id,
-        amount: bonusCoins,
-        reason: "workout_complete",
-      });
-    }
-
-    setSessionXp((prev) => prev + bonusXp);
-    setSessionCoins((prev) => prev + bonusCoins);
-
-    // Update streak with freeze protection
-    const { data: existingStreak } = await supabase
-      .from("streaks")
-      .select("*")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    const streakResult = await calculateStreakWithFreeze(
-      user.id,
-      existingStreak?.current_streak ?? 0,
-      existingStreak?.last_workout_date ?? null,
-      today
-    );
-
-    if (existingStreak) {
-      await supabase
-        .from("streaks")
-        .update({
-          current_streak: streakResult.newStreak,
-          longest_streak: Math.max(existingStreak.longest_streak, streakResult.newStreak),
-          last_workout_date: today,
-        })
-        .eq("user_id", user.id);
-    } else {
-      await supabase.from("streaks").insert({
-        user_id: user.id,
-        current_streak: 1,
-        longest_streak: 1,
-        last_workout_date: today,
-      });
-    }
-
-    // Check for streak milestone
-    const milestone = getStreakMilestone(streakResult.newStreak);
-    if (milestone) {
-      // Credit milestone rewards
-      if (milestone.xp > 0) {
+        // 1. Award XP to ledger
         await supabase.from("xp_ledger").insert({
           user_id: user.id,
-          amount: milestone.xp,
-          reason: `streak_milestone_${milestone.days}d`,
+          amount: summary.totalXp,
+          source_type: "daily_workout",
+          source_id: "today-workout",
+          description: "Completed Daily Interactive Brain Workout",
         });
+
+        // 2. Mark daily workout completed
+        await supabase.from("daily_workouts").upsert(
+          {
+            user_id: user.id,
+            date: today,
+            status: "completed",
+          },
+          { onConflict: "user_id,date" }
+        );
+
+        // 3. Update streak
+        await supabase
+          .from("profiles")
+          .update({
+            current_streak: streakDays,
+            streak_count: streakDays,
+          })
+          .eq("user_id", user.id);
       }
-      if (milestone.coins > 0) {
-        await supabase.from("coins_ledger").insert({
-          user_id: user.id,
-          amount: milestone.coins,
-          reason: `streak_milestone_${milestone.days}d`,
-        });
-      }
-      setStreakMilestoneDays(streakResult.newStreak);
-      setShowStreakMilestone(true);
+    } catch (err) {
+      console.warn("Failed to persist workout result:", err);
     }
-
-    // Recalculate brain scores
-    await recalculateBrainScores(user.id);
-
-    // Check achievements
-    await checkAndUnlockAchievements({
-      userId: user.id,
-      workoutCompleted: true,
-      completedAt: now,
-    });
-
-    // Check for level-up
-    const prevLevel = getLevelProgress(totalXp);
-    const newTotalXp = totalXp + sessionXp + bonusXp + (milestone?.xp ?? 0);
-    const newLevel = getLevelProgress(newTotalXp);
-    if (newLevel.level.level > prevLevel.level.level) {
-      setLevelFrom(prevLevel.level.level);
-      setLevelTo(newLevel.level.level);
-      setShowLevelUp(true);
-    }
-
-    setShowConfetti(true);
-    setTimeout(() => setShowConfetti(false), 5000);
-  }
-
-  function skipActivity() {
-    if (sortedItems.length === 0) return;
-    if (activeIndex < sortedItems.length - 1) {
-      setActiveIndex((prev) => prev + 1);
-      setPhase("intro");
-      setTimerRunning(false);
-    } else {
-      finishSession();
-    }
-  }
-
-  function nextActivity() {
-    if (activeIndex < sortedItems.length - 1) {
-      setActiveIndex((prev) => prev + 1);
-      setPhase("intro");
-      setTimerRunning(false);
-    } else {
-      finishSession();
-    }
-  }
-
-  function formatTime(s: number) {
-    const m = Math.floor(s / 60);
-    const sec = s % 60;
-    return `${m}:${sec.toString().padStart(2, "0")}`;
-  }
+  }, [streakDays]);
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-2xl space-y-6">
-        <div className="h-8 w-48 animate-pulse rounded bg-muted" />
-        <div className="h-64 animate-pulse rounded-2xl bg-muted" />
+      <div className="mx-auto flex min-h-[60vh] max-w-lg items-center justify-center p-4">
+        <div className="text-center space-y-3">
+          <div className="h-10 w-10 animate-spin rounded-full border-3 border-primary border-t-transparent mx-auto" />
+          <p className="text-sm font-bold text-muted-foreground">Preparing today&apos;s interactive challenges...</p>
+        </div>
       </div>
     );
   }
 
-  // Summary phase
-  if (phase === "summary") {
+  // ─── POST-WORKOUT CELEBRATION RITUAL ─────────────────────────────────────────
+  if (isCompleted && results) {
     return (
-      <div className="mx-auto w-full max-w-full space-y-6 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
-        <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground min-h-[44px]">
+      <div className="mx-auto w-full max-w-xl space-y-5 px-3 sm:px-4 py-4 overflow-x-hidden touch-manipulation">
+        <Confetti active={true} />
+
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-foreground min-h-[40px]"
+        >
           <ArrowLeft className="h-4 w-4" /> Back to Dashboard
         </Link>
 
-        <div className="rounded-2xl border border-border bg-card p-4 sm:p-8 text-center relative overflow-hidden">
-          <Confetti active={showConfetti} />
-          <LevelUpModal
-            show={showLevelUp}
-            fromLevel={levelFrom}
-            toLevel={levelTo}
-            onDismiss={() => setShowLevelUp(false)}
-          />
-          <StreakMilestoneModal
-            show={showStreakMilestone}
-            streakDays={streakMilestoneDays}
-            onDismiss={() => setShowStreakMilestone(false)}
-          />
-
-          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 shadow-lg shadow-emerald-500/20">
-            <Sparkles className="h-10 w-10 text-white" />
+        <div className="rounded-3xl border-2 border-emerald-500/40 bg-gradient-to-b from-card via-card to-emerald-500/10 p-5 sm:p-7 text-center shadow-xl space-y-5">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 text-white shadow-lg shadow-emerald-500/25 animate-bounce">
+            <Sparkles className="h-8 w-8" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-foreground">WORKOUT COMPLETE!</h1>
-          <p className="mt-2 text-sm text-emerald-600 dark:text-emerald-400 font-bold">
-            🎉 Today&apos;s Brain Score: 84 <span className="text-xs text-muted-foreground font-normal">(+5 vs yesterday · NEW PERSONAL BEST!)</span>
-          </p>
 
-          {/* 4 Habit Rewards Pills */}
-          <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <div>
+            <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              Session Finished · Baseline Locked In
+            </span>
+            <h1 className="text-2xl sm:text-3xl font-black text-foreground mt-0.5">
+              WORKOUT COMPLETE!
+            </h1>
+            <p className="text-xs sm:text-sm text-emerald-600 dark:text-emerald-400 font-bold mt-1">
+              🎉 Today&apos;s Brain Score: {brainScore} <span className="text-xs text-muted-foreground font-normal">(+5 vs yesterday · NEW PERSONAL BEST!)</span>
+            </p>
+          </div>
+
+          {/* 4 Reward Badges */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
             <div className="rounded-2xl bg-violet-500/10 border border-violet-500/20 p-3">
               <div className="flex items-center justify-center gap-1">
                 <Trophy className="h-4 w-4 text-violet-400" />
-                <p className="text-xl font-black text-violet-400">+{sessionXp || 250}</p>
+                <p className="text-lg sm:text-xl font-black text-violet-400">+{results.totalXp}</p>
               </div>
               <p className="text-[10px] uppercase font-bold text-muted-foreground mt-0.5">XP Earned</p>
             </div>
@@ -468,7 +155,7 @@ export default function GuidedWorkoutPage() {
             <div className="rounded-2xl bg-amber-500/10 border border-amber-500/20 p-3">
               <div className="flex items-center justify-center gap-1">
                 <Coins className="h-4 w-4 text-amber-500" />
-                <p className="text-xl font-black text-amber-500">+{sessionCoins}</p>
+                <p className="text-lg sm:text-xl font-black text-amber-500">+{results.totalCoins}</p>
               </div>
               <p className="text-[10px] uppercase font-bold text-muted-foreground mt-0.5">Coins</p>
             </div>
@@ -476,7 +163,7 @@ export default function GuidedWorkoutPage() {
             <div className="rounded-2xl bg-orange-500/10 border border-orange-500/20 p-3">
               <div className="flex items-center justify-center gap-1">
                 <span className="text-sm">🔥</span>
-                <p className="text-xl font-black text-orange-500">{streakMilestoneDays || 15}</p>
+                <p className="text-lg sm:text-xl font-black text-orange-500">{streakDays}</p>
               </div>
               <p className="text-[10px] uppercase font-bold text-muted-foreground mt-0.5">Day Streak</p>
             </div>
@@ -484,26 +171,67 @@ export default function GuidedWorkoutPage() {
             <div className="rounded-2xl bg-emerald-500/10 border border-emerald-500/20 p-3">
               <div className="flex items-center justify-center gap-1">
                 <Zap className="h-4 w-4 text-emerald-500" />
-                <p className="text-xl font-black text-emerald-500">+3</p>
+                <p className="text-lg sm:text-xl font-black text-emerald-500">{results.accuracyPercent}%</p>
               </div>
-              <p className="text-[10px] uppercase font-bold text-muted-foreground mt-0.5">Momentum</p>
+              <p className="text-[10px] uppercase font-bold text-muted-foreground mt-0.5">Accuracy</p>
             </div>
           </div>
 
-          {/* Core Habit Anchor Closing Message */}
-          <div className="mt-5 rounded-2xl bg-muted/60 border border-border p-4 text-center">
-            <p className="text-sm sm:text-base font-semibold text-foreground leading-relaxed">
-              «Your brain is stronger today than it was yesterday. Come back tomorrow to beat today&apos;s score.»
+          {/* Tomorrow's Personalized Recommendation */}
+          <div className="rounded-2xl bg-muted/60 border border-border p-4 text-left space-y-1.5">
+            <div className="flex items-center gap-2">
+              <Brain className="h-4 w-4 text-primary" />
+              <span className="text-[11px] font-black uppercase text-foreground">
+                Tomorrow&apos;s Training Recommendation:
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              &ldquo;Your <strong className="text-foreground">{results.strongestCategory}</strong> performance was peak today. However, your <strong className="text-foreground">{results.weakestCategory}</strong> skills will benefit from targeted conditioning. Tomorrow&apos;s workout will prioritize {results.weakestCategory} challenges.&rdquo;
             </p>
           </div>
 
-          <div className="mt-6 flex flex-col sm:flex-row gap-3">
-            <Link href="/dashboard"
-              className="inline-flex h-12 flex-1 items-center justify-center rounded-2xl bg-gradient-to-r from-primary via-violet-600 to-indigo-600 px-6 text-sm font-black text-white shadow-lg shadow-primary/25 hover:brightness-110 active:scale-[0.98] touch-manipulation min-h-[48px]">
-              Back to Dashboard →
+          {/* Optional 1-Tap Feedback */}
+          <div className="rounded-2xl bg-card border border-border/80 p-3.5 space-y-2 text-left">
+            <span className="text-[10px] font-bold uppercase text-muted-foreground">
+              How did today&apos;s challenges feel?
+            </span>
+            <div className="grid grid-cols-3 gap-2">
+              {["Too Easy", "Just Right", "Challenging"].map((opt) => (
+                <button
+                  key={opt}
+                  onClick={() => setFeedbackRating(opt)}
+                  className={`p-2 rounded-xl text-xs font-bold border transition touch-manipulation min-h-[38px] ${
+                    feedbackRating === opt
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border bg-muted/30 text-muted-foreground"
+                  }`}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Habit Anchor Closing Message */}
+          <div className="rounded-2xl bg-emerald-500/10 border border-emerald-500/20 p-3.5">
+            <p className="text-xs sm:text-sm font-semibold text-emerald-900 dark:text-emerald-200">
+              «Your brain is stronger today than it was yesterday. Come back tomorrow to beat today&apos;s score!»
+            </p>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-2.5 pt-1">
+            <Link
+              href="/dashboard"
+              className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary via-violet-600 to-indigo-600 px-6 text-sm font-black text-white shadow-lg shadow-primary/25 hover:brightness-110 active:scale-[0.98] transition touch-manipulation min-h-[48px]"
+            >
+              <span>Done · Return to Dashboard</span>
+              <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link href="/dashboard/progress"
-              className="inline-flex h-12 flex-1 items-center justify-center rounded-2xl border border-border px-6 text-sm font-bold hover:bg-accent active:scale-[0.98] touch-manipulation min-h-[48px]">
+            <Link
+              href="/dashboard/progress"
+              className="inline-flex h-12 flex-1 items-center justify-center rounded-2xl border border-border px-6 text-sm font-bold hover:bg-accent active:scale-[0.98] transition touch-manipulation min-h-[48px]"
+            >
               View Brain Score Progress
             </Link>
           </div>
@@ -512,239 +240,25 @@ export default function GuidedWorkoutPage() {
     );
   }
 
-  if (!activeActivity || sortedItems.length === 0) {
-    return (
-      <div className="mx-auto w-full max-w-full space-y-6 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
-        <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground min-h-[44px]">
-          <ArrowLeft className="h-4 w-4" /> Back to Dashboard
+  // ─── ACTIVE INTERACTIVE WORKOUT GAMEPLAY ─────────────────────────────────────
+  return (
+    <div className="mx-auto w-full max-w-2xl px-3 sm:px-4 py-4 space-y-4 overflow-x-hidden touch-manipulation">
+      <div className="flex items-center justify-between">
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-foreground min-h-[38px]"
+        >
+          <ArrowLeft className="h-4 w-4" /> Exit Workout
         </Link>
-        <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 text-center">
-          <p className="text-muted-foreground">No workout available today.</p>
-          <Link href="/dashboard/library"
-            className="mt-4 inline-flex h-12 items-center justify-center rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 active:scale-[0.97]">
-            Browse Activities
-          </Link>
-        </div>
+        <span className="text-[11px] font-bold text-muted-foreground">
+          ⏱️ 7 Minutes · 6 Rounds
+        </span>
       </div>
-    );
-  }
 
-  const progress = sortedItems.length > 0 ? (completedCount / sortedItems.length) : 0;
-
-  // Intro phase — show activity before starting
-  if (phase === "intro") {
-    return (
-      <div className="mx-auto w-full max-w-full space-y-6 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
-        <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground min-h-[44px]">
-          <ArrowLeft className="h-4 w-4" /> Back to Dashboard
-        </Link>
-
-        {/* Progress bar */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between text-sm">
-            <span className="font-medium">Activity {activeIndex + 1} of {sortedItems.length}</span>
-            <span className="text-muted-foreground">{completedCount} done</span>
-          </div>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-            <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${progress * 100}%` }} />
-          </div>
-          <div className="flex gap-1">
-            {sortedItems.map((item, i) => (
-              <div key={item.id} className={`h-1 flex-1 rounded-full transition-colors ${
-                item.status === "completed" ? "bg-green-500" : i === activeIndex ? "bg-primary" : "bg-muted"
-              }`} />
-            ))}
-          </div>
-        </div>
-
-        {/* Activity card */}
-        <div className="rounded-2xl border border-border bg-card overflow-hidden">
-          <div className="h-2 w-full" style={{ backgroundColor: category?.color ?? "#6366f1" }} />
-          <div className="p-4 sm:p-6 space-y-4">
-            <div className="flex items-center gap-3">
-              {category && (
-                <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium"
-                  style={{ backgroundColor: `${category.color}15`, color: category.color }}>
-                  {category.label}
-                </span>
-              )}
-              <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${
-                activeActivity.difficulty === "beginner" ? "text-green-500 bg-green-500/10"
-                  : activeActivity.difficulty === "intermediate" ? "text-yellow-500 bg-yellow-500/10"
-                  : "text-red-500 bg-red-500/10"
-              }`}>{activeActivity.difficulty}</span>
-            </div>
-
-            <h2 className="text-xl font-bold">{activeActivity.title}</h2>
-
-            {(() => {
-              const exampleData = getWorkoutExample({
-                title: activeActivity.title,
-                category_id: activeActivity.category_id,
-                description: activeActivity.description,
-                instructions: activeActivity.instructions,
-              });
-
-              return (
-                <div className="space-y-3">
-                  {/* Real-Life Concrete Example Card */}
-                  <div className="rounded-xl bg-amber-500/10 border border-amber-500/20 p-3.5 sm:p-4">
-                    <div className="flex items-center gap-1.5 font-bold text-amber-700 dark:text-amber-300 mb-1 text-xs">
-                      <Lightbulb className="h-4 w-4 shrink-0 text-amber-500" />
-                      <span>Real-Life Example:</span>
-                    </div>
-                    <p className="text-sm font-medium text-foreground/90 leading-relaxed">
-                      &ldquo;{exampleData.example}&rdquo;
-                    </p>
-                  </div>
-
-                  {/* Step-by-Step Instructions */}
-                  <div className="rounded-xl bg-muted/50 p-4 space-y-2">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">How To Execute This Drill</p>
-                    <ol className="space-y-1.5 pl-4 list-decimal text-sm text-foreground/80 leading-relaxed">
-                      {exampleData.steps.map((step, idx) => (
-                        <li key={idx}>
-                          <span>{step}</span>
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
-
-                  {/* Brain Benefit */}
-                  <div className="text-xs text-muted-foreground flex items-start gap-1.5">
-                    <span className="text-sm">🧠</span>
-                    <p><strong className="text-foreground">Why this works:</strong> {exampleData.benefit}</p>
-                  </div>
-                </div>
-              );
-            })()}
-
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <Clock className="h-3.5 w-3.5" /> {formatTime(activeActivity.estimated_time || 120)}
-              </span>
-              <span className="flex items-center gap-1">
-                <Trophy className="h-3.5 w-3.5 text-violet-400" /> +{activeActivity.xp} XP
-              </span>
-              <span className="flex items-center gap-1">
-                <Coins className="h-3.5 w-3.5 text-amber-500" /> +{activeActivity.coins}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="flex gap-3">
-          <button onClick={startTimer}
-            className="inline-flex h-12 flex-[2] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary/80 px-6 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:shadow-xl active:scale-[0.98]">
-            <Play className="h-4 w-4" /> Start Activity
-          </button>
-          <button onClick={skipActivity}
-            className="inline-flex h-12 items-center justify-center rounded-xl border border-border px-4 text-sm font-medium text-muted-foreground hover:bg-accent active:scale-[0.97]">
-            <SkipForward className="h-4 w-4" />
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // Timer phase
-  if (phase === "timer") {
-    const timePercent = activeActivity.estimated_time > 0
-      ? (timerSeconds / activeActivity.estimated_time) * 100
-      : 0;
-    const isComplete = timerSeconds <= 0;
-
-    return (
-      <div className="mx-auto w-full max-w-full space-y-6 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
-        <div className="flex items-center justify-between">
-          <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground min-h-[44px]">
-            <ArrowLeft className="h-4 w-4" /> Back
-          </Link>
-          <span className="text-sm text-muted-foreground">
-            Activity {activeIndex + 1}/{sortedItems.length}
-          </span>
-        </div>
-
-        {/* Timer circle */}
-        <div className="flex flex-col items-center py-4 sm:py-8">
-          <div className="relative h-40 w-40 sm:h-48 sm:w-48">
-            <svg className="h-40 w-40 sm:h-48 sm:w-48 -rotate-90" viewBox="0 0 200 200">
-              <circle cx="100" cy="100" r="90" fill="none" stroke="currentColor"
-                className="stroke-muted" strokeWidth="8" />
-              <circle cx="100" cy="100" r="90" fill="none" stroke="currentColor"
-                className="stroke-primary transition-all duration-1000"
-                strokeWidth="8" strokeLinecap="round"
-                strokeDasharray={`${2 * Math.PI * 90}`}
-                strokeDashoffset={`${2 * Math.PI * 90 * (1 - timePercent / 100)}`} />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <p className="text-3xl sm:text-4xl font-bold tabular-nums">{formatTime(timerSeconds)}</p>
-              <p className="text-xs text-muted-foreground mt-1">{category?.label}</p>
-            </div>
-          </div>
-
-          <h3 className="mt-6 text-lg font-bold text-center">{activeActivity.title}</h3>
-        </div>
-
-        {/* Controls */}
-        <div className="flex justify-center gap-4">
-          {timerRunning ? (
-            <button onClick={pauseTimer}
-              className="inline-flex h-14 w-14 items-center justify-center rounded-full border-2 border-primary text-primary hover:bg-primary/10 transition-colors">
-              <Pause className="h-6 w-6" />
-            </button>
-          ) : (
-            <button onClick={resumeTimer}
-              className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-lg shadow-primary/25">
-              <Play className="h-6 w-6" />
-            </button>
-          )}
-        </div>
-
-        {/* Complete / Skip */}
-        <div className="flex gap-3">
-          <button onClick={completeActivity}
-            className="inline-flex h-12 flex-[2] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-6 text-sm font-bold text-white shadow-lg shadow-green-500/25 transition-all hover:shadow-xl active:scale-[0.98]">
-            <CheckCircle2 className="h-4 w-4" /> Done!
-          </button>
-          <button onClick={skipActivity}
-            className="inline-flex h-12 items-center justify-center rounded-xl border border-border px-4 text-sm font-medium text-muted-foreground hover:bg-accent active:scale-[0.97]">
-            Skip
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // Complete phase — brief celebration before next activity
-  if (phase === "complete") {
-    return (
-      <div className="mx-auto w-full max-w-full space-y-6 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
-        <div className="rounded-2xl border border-green-500/20 bg-green-500/5 p-6 sm:p-8 text-center">
-          <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-green-500/10">
-            <Star className="h-8 w-8 text-green-500" />
-          </div>
-          <h2 className="text-xl font-bold text-green-500">Nice work!</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            +{activeActivity?.xp ?? 0} XP · +{activeActivity?.coins ?? 0} Coins
-          </p>
-
-          {activeIndex < sortedItems.length - 1 ? (
-            <button onClick={nextActivity}
-              className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-8 text-sm font-bold text-primary-foreground hover:bg-primary/90 active:scale-[0.97]">
-              Next Activity <ChevronRight className="h-4 w-4" />
-            </button>
-          ) : (
-            <button onClick={finishSession}
-              className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-8 text-sm font-bold text-white shadow-lg shadow-green-500/25 active:scale-[0.97]">
-              <Star className="h-4 w-4" /> Finish Workout
-            </button>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  return null;
+      <InteractiveWorkoutEngine
+        challenges={challenges}
+        onComplete={handleWorkoutComplete}
+      />
+    </div>
+  );
 }

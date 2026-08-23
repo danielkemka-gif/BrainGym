@@ -8,10 +8,16 @@ const inter = Inter({
   variable: "--font-sans",
 });
 
+let appUrl = "https://braingym-live.vercel.app";
+if (
+  process.env.NEXT_PUBLIC_APP_URL &&
+  process.env.NEXT_PUBLIC_APP_URL.startsWith("http")
+) {
+  appUrl = process.env.NEXT_PUBLIC_APP_URL;
+}
+
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL || "https://brain-gym-nsu6.vercel.app"
-  ),
+  metadataBase: new URL(appUrl),
   title: "BrainGym — Train Your Brain For Real Life",
   description:
     "BrainGym helps you improve memory, focus, thinking, and emotional intelligence through daily real-life brain workouts.",

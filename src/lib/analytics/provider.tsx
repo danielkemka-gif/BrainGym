@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import posthog from "posthog-js";
 
@@ -8,44 +8,51 @@ const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 const POSTHOG_HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST;
 
 if (POSTHOG_KEY && POSTHOG_HOST && typeof window !== "undefined") {
-  posthog.init(POSTHOG_KEY, {
-    api_host: POSTHOG_HOST,
-    capture_pageview: false,
-    capture_pageleave: true,
-    autocapture: true,
-    persistence: "localStorage",
-  });
+  try {
+    posthog.init(POSTHOG_KEY, {
+      api_host: POSTHOG_HOST,
+      capture_pageview: false,
+      capture_pageleave: true,
+      autocapture: true,
+      persistence: "localStorage",
+    });
+  } catch (e) {
+    console.warn("PostHog initialization skipped:", e);
+  }
 }
 
-export function PostHogProvider({ children }: { children: React.ReactNode }) {
+function PostHogTracker() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   useEffect(() => {
     if (!POSTHOG_KEY) return;
 
-    let url = pathname;
-    if (searchParams?.toString()) {
-      url += `?${searchParams.toString()}`;
-    }
-
-    posthog.capture("$pageview", { $current_url: url });
+    try {
+      let url = pathname;
+      if (searchParams?.toString()) {
+        url += `?${searchParams.toString()}`;
+      }
+      posthog.capture("$pageview", { $current_url: url });
+    } catch {}
   }, [pathname, searchParams]);
 
-  useEffect(() => {
-    if (!POSTHOG_KEY) return;
+  return null;
+}
 
-    const handleRouteChange = () => {
-      posthog.capture("$pageleave", {
-        $current_url: window.location.href,
-      });
-    };
+export function PostHogProvider({ children }: { children: React.ReactNode }) {
+  if (!POSTHOG_KEY) {
+    return <>{children}</>;
+  }
 
-    window.addEventListener("beforeunload", handleRouteChange);
-    return () => window.removeEventListener("beforeunload", handleRouteChange);
-  }, []);
-
-  return <>{children}</>;
+  return (
+    <>
+      <Suspense fallback={null}>
+        <PostHogTracker />
+      </Suspense>
+      {children}
+    </>
+  );
 }
 
 export { posthog };

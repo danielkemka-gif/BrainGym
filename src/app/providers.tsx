@@ -15,17 +15,17 @@ function ReducedMotionProvider({ children }: { children: ReactNode }) {
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider>
-      <Suspense>
-        <PostHogProvider>
-          <ReducedMotionProvider>
-            <Suspense>
+      <ReducedMotionProvider>
+        <Suspense fallback={null}>
+          <PostHogProvider>
+            <Suspense fallback={null}>
               <I18nProvider>{children}</I18nProvider>
             </Suspense>
             <ServiceWorkerRegistration />
             <PWAInstallPrompt />
-          </ReducedMotionProvider>
-        </PostHogProvider>
-      </Suspense>
+          </PostHogProvider>
+        </Suspense>
+      </ReducedMotionProvider>
     </ThemeProvider>
   );
 }

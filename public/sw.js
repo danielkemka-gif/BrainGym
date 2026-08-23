@@ -10,6 +10,13 @@ const STATIC_ASSETS = [
   '/logo.png',
 ];
 
+// Message listener to trigger immediate activation
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
 // Install: immediately take over
 self.addEventListener('install', (event) => {
   self.skipWaiting();

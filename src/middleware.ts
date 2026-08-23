@@ -1,13 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { updateSession } from "@/lib/supabase/middleware";
-
-const SUPABASE_URL =
-  process.env.NEXT_PUBLIC_SUPABASE_URL ||
-  "https://qxivwyyompzpipfzcufl.supabase.co";
-const SUPABASE_ANON_KEY =
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  "sb_publishable_2AwU9whNSoohKmLAdq6wtw_VC7Oydiu";
 
 const publicPaths = [
   "/",
@@ -22,85 +14,34 @@ const publicPaths = [
   "/join",
 ];
 
-const authPaths = ["/login", "/signup", "/forgot-password"];
-const onboardingPath = "/onboarding";
 const adminPattern = /^\/admin(\/|$)/;
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // 1. Whitelist API endpoints
+  if (pathname.startsWith("/api/")) {
+    return NextResponse.next();
+  }
+
+  // 2. Immediately allow public paths without edge session blocking
+  if (publicPaths.includes(pathname)) {
+    return NextResponse.next();
+  }
+
+  // 3. For protected routes (like /dashboard or /admin), check session
   try {
-    const apiWhitelist = ["/api/paystack/webhook", "/api/health"];
-
-    if (pathname.startsWith("/api/")) {
-      if (apiWhitelist.some((p) => pathname.startsWith(p))) {
-        return NextResponse.next();
-      }
-      const { supabaseResponse } = await updateSession(request);
-      return supabaseResponse;
-    }
-
     const { supabaseResponse, user } = await updateSession(request);
 
-    if (user && authPaths.includes(pathname)) {
-      const ref = request.nextUrl.searchParams.get("ref");
-      const target = ref ? `/dashboard?ref=${encodeURIComponent(ref)}` : "/dashboard";
-      return NextResponse.redirect(new URL(target, request.url));
-    }
-
-    if (!user && !publicPaths.includes(pathname)) {
+    if (!user) {
       const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(loginUrl);
     }
 
-    // Admin guard — non-admins redirected to dashboard
-    if (user && adminPattern.test(pathname)) {
-      const supabase = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-        cookies: {
-          getAll() {
-            return request.cookies.getAll();
-          },
-          setAll() {},
-        },
-      });
-
-      const { data: adminRow } = await supabase
-        .from("admins")
-        .select("user_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!adminRow) {
-        return NextResponse.redirect(new URL("/dashboard", request.url));
-      }
-    }
-
-    // Onboarding guard
-    if (user && pathname === onboardingPath) {
-      const supabase = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-        cookies: {
-          getAll() {
-            return request.cookies.getAll();
-          },
-          setAll() {},
-        },
-      });
-
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("onboarding_complete")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (profile?.onboarding_complete === true) {
-        return NextResponse.redirect(new URL("/dashboard", request.url));
-      }
-    }
-
     return supabaseResponse;
   } catch (err) {
-    console.warn("Middleware error fallback:", err);
+    console.warn("Session check fallback:", err);
     return NextResponse.next();
   }
 }

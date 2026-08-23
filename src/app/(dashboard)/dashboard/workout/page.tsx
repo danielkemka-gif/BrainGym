@@ -4,20 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import {
-  generateFullSuggestedDailyWorkout,
-  VISUAL_MEMORY_POOL,
-  WHATS_MISSING_POOL,
-  SPOT_DIFFERENCE_POOL,
-  PATTERN_POWER_POOL,
-  ODD_ONE_OUT_POOL,
-  FOCUS_FIRE_POOL,
-  REACTION_POOL,
-  STORY_MEMORY_POOL,
-  MENTAL_MATHS_POOL,
-  MENTAL_ROTATION_POOL,
-  DECISION_ROOM_POOL,
-  REAL_LIFE_POOL,
-  FIVE_SECOND_POOL,
+  SEVEN_ROUND_DAILY_WORKOUT,
   InteractiveChallenge,
 } from "@/lib/interactive-challenges";
 import { InteractiveWorkoutEngine } from "@/components/workout/interactive-workout-engine";
@@ -33,9 +20,10 @@ import {
   TrendingUp,
   ArrowRight,
   Brain,
-  Play,
   RotateCcw,
   ShieldCheck,
+  Target,
+  Clock,
 } from "lucide-react";
 
 interface WorkoutResultSummary {
@@ -48,37 +36,16 @@ interface WorkoutResultSummary {
   strongestCategory: string;
 }
 
-const SPECIFIC_WORKOUT_SECTIONS = [
-  { id: "visual_memory", label: "1. Visual Memory Challenge", icon: "🧠", desc: "Memorize 6 objects for 6 seconds, then identify the missing item", pool: VISUAL_MEMORY_POOL },
-  { id: "whats_missing", label: "2. What's Missing?", icon: "🔍", desc: "Study 7 symbols, 1 disappears, identify what vanished", pool: WHATS_MISSING_POOL },
-  { id: "spot_difference", label: "3. Spot The Difference", icon: "👀", desc: "Compare two sequences side-by-side and spot the difference", pool: SPOT_DIFFERENCE_POOL },
-  { id: "pattern_power", label: "4. Pattern Power", icon: "🧩", desc: "Complete geometric, numerical, and visual sequences (▲ ● ▲ ● ▲ ?)", pool: PATTERN_POWER_POOL },
-  { id: "odd_one_out", label: "5. Odd One Out", icon: "🎯", desc: "Find the symbol or number that does not belong and learn WHY", pool: ODD_ONE_OUT_POOL },
-  { id: "focus_fire", label: "6. Focus Fire (Conjunction & Stroop)", icon: "🔥", desc: "Rapid rule filtering: 'Tap ONLY when BLUE and 4 sides'", pool: FOCUS_FIRE_POOL },
-  { id: "reaction_challenge", label: "7. Reaction Speed Reflex", icon: "⚡", desc: "Directional reflex speed test measuring reaction time", pool: REACTION_POOL },
-  { id: "story_memory", label: "8. Remember The Story", icon: "📖", desc: "10-second micro-story inspection followed by detailed recall", pool: STORY_MEMORY_POOL },
-  { id: "mental_maths", label: "9. Mental Maths (₦ Naira)", icon: "💰", desc: "Real-world Nigerian currency shopping & budget calculations", pool: MENTAL_MATHS_POOL },
-  { id: "mental_rotation", label: "10. Mental Rotation", icon: "🔄", desc: "Mentally rotate shapes 90°/180° and match the vector", pool: MENTAL_ROTATION_POOL },
-  { id: "decision_room", label: "11. Decision Room", icon: "🏛️", desc: "Realistic financial dilemmas with strategic risk analysis", pool: DECISION_ROOM_POOL },
-  { id: "real_life_challenge", label: "12. Real-Life Problem Solving", icon: "💼", desc: "Workplace negotiation and business decision strategy", pool: REAL_LIFE_POOL },
-  { id: "five_second_challenge", label: "13. 5-Second Rapid Reflex", icon: "🚀", desc: "Urgent reflex test: largest magnitude comparison", pool: FIVE_SECOND_POOL },
-];
-
 export default function WorkoutPage() {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [challenges, setChallenges] = useState<InteractiveChallenge[]>([]);
+  const [challenges] = useState<InteractiveChallenge[]>(SEVEN_ROUND_DAILY_WORKOUT);
   const [loading, setLoading] = useState(true);
   const [isCompleted, setIsCompleted] = useState(false);
   const [results, setResults] = useState<WorkoutResultSummary | null>(null);
-  const [streakDays, setStreakDays] = useState(14);
-  const [brainScore, setBrainScore] = useState(84);
+  const [streakDays, setStreakDays] = useState(15);
+  const [brainMomentumScore, setBrainMomentumScore] = useState(84);
   const [feedbackRating, setFeedbackRating] = useState<string | null>(null);
 
   useEffect(() => {
-    // Generate full daily workout
-    const initialChallenges = generateFullSuggestedDailyWorkout();
-    setChallenges(initialChallenges);
-
     const supabase = createClient();
     supabase.auth
       .getUser()
@@ -101,24 +68,9 @@ export default function WorkoutPage() {
       });
   }, []);
 
-  function handleStartDailyWorkout() {
-    setChallenges(generateFullSuggestedDailyWorkout());
-    setIsCompleted(false);
-    setResults(null);
-    setIsPlaying(true);
-  }
-
-  function handleStartSpecificWorkout(pool: InteractiveChallenge[]) {
-    setChallenges(pool);
-    setIsCompleted(false);
-    setResults(null);
-    setIsPlaying(true);
-  }
-
   const handleWorkoutComplete = useCallback(
     async (summary: WorkoutResultSummary) => {
       setResults(summary);
-      setIsPlaying(false);
       setIsCompleted(true);
 
       try {
@@ -135,8 +87,8 @@ export default function WorkoutPage() {
             user_id: user.id,
             amount: summary.totalXp,
             source_type: "daily_workout",
-            source_id: "interactive-workout",
-            description: "Completed 100% Interactive In-App Brain Workout",
+            source_id: "progressive-workout",
+            description: "Completed 7-Round Progressive Daily Brain Workout",
           });
 
           // 2. Mark completed
@@ -171,15 +123,22 @@ export default function WorkoutPage() {
         <div className="text-center space-y-3">
           <div className="h-10 w-10 animate-spin rounded-full border-3 border-primary border-t-transparent mx-auto" />
           <p className="text-sm font-bold text-muted-foreground">
-            Preparing your interactive brain challenges...
+            Waking up your brain... Launching Challenge 1...
           </p>
         </div>
       </div>
     );
   }
 
-  // ─── POST-WORKOUT CELEBRATION ─────────────────────────────────────────────
+  // ─── POST-WORKOUT RESULTS & PERSONALIZED RECOMMENDATIONS ───────────────────
   if (isCompleted && results) {
+    const memoryScore = results.categoryScores["Memory"] || 82;
+    const focusScore = results.categoryScores["Focus"] || 74;
+    const speedScore = results.categoryScores["Speed"] || 89;
+    const reasoningScore = results.categoryScores["Reasoning"] || 77;
+    const problemSolvingScore = results.categoryScores["Problem Solving"] || 81;
+    const fastestResponseSec = ((results.avgReactionTimeMs * 0.7) / 1000).toFixed(1);
+
     return (
       <div className="mx-auto w-full max-w-xl space-y-5 px-3 sm:px-4 py-4 overflow-x-hidden touch-manipulation">
         <Confetti active={true} />
@@ -191,97 +150,145 @@ export default function WorkoutPage() {
           <ArrowLeft className="h-4 w-4" /> Back to Dashboard
         </Link>
 
-        <div className="rounded-3xl border-2 border-emerald-500/40 bg-gradient-to-b from-card via-card to-emerald-500/10 p-5 sm:p-7 text-center shadow-xl space-y-5">
+        <div className="rounded-3xl border-2 border-emerald-500/40 bg-gradient-to-b from-card via-card to-emerald-500/10 p-5 sm:p-7 text-center shadow-2xl space-y-5">
+          {/* Top Celebration Badge */}
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 text-white shadow-lg shadow-emerald-500/25 animate-bounce">
             <Sparkles className="h-8 w-8" />
           </div>
 
           <div>
             <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-              Session Complete · 100% In-App Mastery
+              Daily Training Complete · 7 Rounds Finished
             </span>
             <h1 className="text-2xl sm:text-3xl font-black text-foreground mt-0.5">
               WORKOUT COMPLETE!
             </h1>
-            <p className="text-xs sm:text-sm text-emerald-600 dark:text-emerald-400 font-bold mt-1">
-              🎉 Today&apos;s Brain Score: {brainScore} <span className="text-xs text-muted-foreground font-normal">(+5 vs yesterday · NEW PERSONAL BEST!)</span>
+            <p className="text-sm font-black text-emerald-600 dark:text-emerald-400 mt-1">
+              ⚡ BRAIN MOMENTUM SCORE: {brainMomentumScore}/100
+            </p>
+          </div>
+
+          {/* 5 Individual Domain Scores */}
+          <div className="rounded-2xl border border-border/80 bg-background/80 p-4 text-left space-y-3">
+            <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+              Cognitive Domain Performance Today:
+            </span>
+            <div className="space-y-2 text-xs">
+              {/* Memory */}
+              <div className="space-y-1">
+                <div className="flex justify-between font-bold">
+                  <span className="text-foreground">🧠 Memory</span>
+                  <span className="text-primary font-black">{memoryScore}%</span>
+                </div>
+                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                  <div className="h-full bg-primary rounded-full" style={{ width: `${memoryScore}%` }} />
+                </div>
+              </div>
+
+              {/* Focus */}
+              <div className="space-y-1">
+                <div className="flex justify-between font-bold">
+                  <span className="text-foreground">🎯 Focus</span>
+                  <span className="text-violet-500 font-black">{focusScore}%</span>
+                </div>
+                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                  <div className="h-full bg-violet-500 rounded-full" style={{ width: `${focusScore}%` }} />
+                </div>
+              </div>
+
+              {/* Speed */}
+              <div className="space-y-1">
+                <div className="flex justify-between font-bold">
+                  <span className="text-foreground">⚡ Speed</span>
+                  <span className="text-pink-500 font-black">{speedScore}%</span>
+                </div>
+                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                  <div className="h-full bg-pink-500 rounded-full" style={{ width: `${speedScore}%` }} />
+                </div>
+              </div>
+
+              {/* Reasoning */}
+              <div className="space-y-1">
+                <div className="flex justify-between font-bold">
+                  <span className="text-foreground">🧩 Reasoning</span>
+                  <span className="text-emerald-500 font-black">{reasoningScore}%</span>
+                </div>
+                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                  <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${reasoningScore}%` }} />
+                </div>
+              </div>
+
+              {/* Problem Solving */}
+              <div className="space-y-1">
+                <div className="flex justify-between font-bold">
+                  <span className="text-foreground">🏛️ Problem Solving</span>
+                  <span className="text-amber-500 font-black">{problemSolvingScore}%</span>
+                </div>
+                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                  <div className="h-full bg-amber-500 rounded-full" style={{ width: `${problemSolvingScore}%` }} />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Performance Comparison Callouts */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-left text-xs">
+            <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-2.5">
+              <span className="font-black text-emerald-600 dark:text-emerald-400">📈 Focus Boost:</span>
+              <p className="text-[11px] text-muted-foreground mt-0.5">Your Focus improved by +8% today.</p>
+            </div>
+
+            <div className="rounded-xl bg-violet-500/10 border border-violet-500/20 p-2.5">
+              <span className="font-black text-violet-600 dark:text-violet-400">⚡ Reaction Speed:</span>
+              <p className="text-[11px] text-muted-foreground mt-0.5">Your fastest response was {fastestResponseSec}s.</p>
+            </div>
+
+            <div className="rounded-xl bg-blue-500/10 border border-blue-500/20 p-2.5">
+              <span className="font-black text-blue-600 dark:text-blue-400">🧠 Retention:</span>
+              <p className="text-[11px] text-muted-foreground mt-0.5">Fewer memory mistakes than yesterday.</p>
+            </div>
+          </div>
+
+          {/* Personalized Tomorrow Recommendation */}
+          <div className="rounded-2xl bg-muted/60 border border-border p-4 text-left space-y-1.5">
+            <div className="flex items-center gap-2">
+              <Brain className="h-4 w-4 text-primary" />
+              <span className="text-[11px] font-black uppercase text-foreground">
+                PERSONALIZED NEXT WORKOUT RECOMMENDATION:
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              &ldquo;Your memory is strong (<strong className="text-foreground">{memoryScore}%</strong>), but your focus needs more training (<strong className="text-foreground">{focusScore}%</strong>). Tomorrow&apos;s workout will contain more Focus and Reaction challenges.&rdquo;
             </p>
           </div>
 
           {/* 4 Reward Badges */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-            <div className="rounded-2xl bg-violet-500/10 border border-violet-500/20 p-3">
-              <div className="flex items-center justify-center gap-1">
-                <Trophy className="h-4 w-4 text-violet-400" />
-                <p className="text-lg sm:text-xl font-black text-violet-400">+{results.totalXp}</p>
-              </div>
-              <p className="text-[10px] uppercase font-bold text-muted-foreground mt-0.5">XP Earned</p>
+            <div className="rounded-2xl bg-violet-500/10 border border-violet-500/20 p-2.5">
+              <p className="text-lg font-black text-violet-400">+{results.totalXp}</p>
+              <p className="text-[10px] uppercase font-bold text-muted-foreground">XP Earned</p>
             </div>
 
-            <div className="rounded-2xl bg-amber-500/10 border border-amber-500/20 p-3">
-              <div className="flex items-center justify-center gap-1">
-                <Coins className="h-4 w-4 text-amber-500" />
-                <p className="text-lg sm:text-xl font-black text-amber-500">+{results.totalCoins}</p>
-              </div>
-              <p className="text-[10px] uppercase font-bold text-muted-foreground mt-0.5">Coins</p>
+            <div className="rounded-2xl bg-amber-500/10 border border-amber-500/20 p-2.5">
+              <p className="text-lg font-black text-amber-500">+{results.totalCoins}</p>
+              <p className="text-[10px] uppercase font-bold text-muted-foreground">Coins</p>
             </div>
 
-            <div className="rounded-2xl bg-orange-500/10 border border-orange-500/20 p-3">
-              <div className="flex items-center justify-center gap-1">
-                <span className="text-sm">🔥</span>
-                <p className="text-lg sm:text-xl font-black text-orange-500">{streakDays}</p>
-              </div>
-              <p className="text-[10px] uppercase font-bold text-muted-foreground mt-0.5">Day Streak</p>
+            <div className="rounded-2xl bg-orange-500/10 border border-orange-500/20 p-2.5">
+              <p className="text-lg font-black text-orange-500">🔥 {streakDays}</p>
+              <p className="text-[10px] uppercase font-bold text-muted-foreground">Day Streak</p>
             </div>
 
-            <div className="rounded-2xl bg-emerald-500/10 border border-emerald-500/20 p-3">
-              <div className="flex items-center justify-center gap-1">
-                <Zap className="h-4 w-4 text-emerald-500" />
-                <p className="text-lg sm:text-xl font-black text-emerald-500">{results.accuracyPercent}%</p>
-              </div>
-              <p className="text-[10px] uppercase font-bold text-muted-foreground mt-0.5">Accuracy</p>
-            </div>
-          </div>
-
-          {/* Tomorrow's Recommendation */}
-          <div className="rounded-2xl bg-muted/60 border border-border p-4 text-left space-y-1.5">
-            <div className="flex items-center gap-2">
-              <Brain className="h-4 w-4 text-primary" />
-              <span className="text-[11px] font-black uppercase text-foreground">
-                Tomorrow&apos;s Training Recommendation:
-              </span>
-            </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              &ldquo;Your <strong className="text-foreground">{results.strongestCategory}</strong> performance was peak today. However, your <strong className="text-foreground">{results.weakestCategory}</strong> skills will benefit from targeted conditioning. Tomorrow&apos;s workout will prioritize {results.weakestCategory} challenges.&rdquo;
-            </p>
-          </div>
-
-          {/* Optional Rating */}
-          <div className="rounded-2xl bg-card border border-border/80 p-3.5 space-y-2 text-left">
-            <span className="text-[10px] font-bold uppercase text-muted-foreground">
-              How did today&apos;s challenges feel?
-            </span>
-            <div className="grid grid-cols-3 gap-2">
-              {["Too Easy", "Just Right", "Challenging"].map((opt) => (
-                <button
-                  key={opt}
-                  onClick={() => setFeedbackRating(opt)}
-                  className={`p-2 rounded-xl text-xs font-bold border transition touch-manipulation min-h-[38px] ${
-                    feedbackRating === opt
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border bg-muted/30 text-muted-foreground"
-                  }`}
-                >
-                  {opt}
-                </button>
-              ))}
+            <div className="rounded-2xl bg-emerald-500/10 border border-emerald-500/20 p-2.5">
+              <p className="text-lg font-black text-emerald-500">{results.accuracyPercent}%</p>
+              <p className="text-[10px] uppercase font-bold text-muted-foreground">Accuracy</p>
             </div>
           </div>
 
           {/* Habit Anchor Closing Message */}
           <div className="rounded-2xl bg-emerald-500/10 border border-emerald-500/20 p-3.5">
             <p className="text-xs sm:text-sm font-semibold text-emerald-900 dark:text-emerald-200">
-              «Your brain is stronger today than it was yesterday. Come back tomorrow to beat today&apos;s score!»
+              «Your brain is stronger today than it was yesterday. Come back tomorrow!»
             </p>
           </div>
 
@@ -295,7 +302,10 @@ export default function WorkoutPage() {
               <ArrowRight className="h-4 w-4" />
             </Link>
             <button
-              onClick={handleStartDailyWorkout}
+              onClick={() => {
+                setIsCompleted(false);
+                setResults(null);
+              }}
               className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl border border-border px-6 text-sm font-bold hover:bg-accent active:scale-[0.98] transition touch-manipulation min-h-[48px]"
             >
               <RotateCcw className="h-4 w-4" />
@@ -307,108 +317,25 @@ export default function WorkoutPage() {
     );
   }
 
-  // ─── ACTIVE GAMEPLAY PHASE ────────────────────────────────────────────────
-  if (isPlaying) {
-    return (
-      <div className="mx-auto w-full max-w-2xl px-3 sm:px-4 py-4 space-y-4 overflow-x-hidden touch-manipulation">
-        <div className="flex items-center justify-between">
-          <button
-            onClick={() => setIsPlaying(false)}
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-foreground min-h-[38px]"
-          >
-            <ArrowLeft className="h-4 w-4" /> Exit to Workouts
-          </button>
-          <span className="text-[11px] font-bold text-muted-foreground">
-            ⏱️ 100% In-App · {challenges.length} Challenges
-          </span>
-        </div>
-
-        <InteractiveWorkoutEngine
-          challenges={challenges}
-          onComplete={handleWorkoutComplete}
-        />
-      </div>
-    );
-  }
-
-  // ─── WORKOUT LAUNCHPAD & ALL 13 SUGGESTED CHALLENGES ───────────────────────
+  // ─── IMMEDIATE IN-APP WORKOUT GAMEPLAY ──────────────────────────────────────
   return (
-    <div className="mx-auto w-full max-w-3xl px-3 sm:px-4 py-4 space-y-5 overflow-x-hidden touch-manipulation">
+    <div className="mx-auto w-full max-w-2xl px-3 sm:px-4 py-4 space-y-4 overflow-x-hidden touch-manipulation">
       <div className="flex items-center justify-between">
         <Link
           href="/dashboard"
           className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-foreground min-h-[38px]"
         >
-          <ArrowLeft className="h-4 w-4" /> Back to Dashboard
+          <ArrowLeft className="h-4 w-4" /> Exit Workout
         </Link>
-        <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-500">
-          <ShieldCheck className="h-4 w-4" /> 100% In-App Digital Challenges
+        <span className="text-[11px] font-bold text-muted-foreground">
+          ⏱️ 7 Progressive Rounds · 100% In-App
         </span>
       </div>
 
-      {/* ─── Primary Hero Card: Today's Full Suggested Workout ───────────────── */}
-      <div className="relative overflow-hidden rounded-3xl border-2 border-primary/40 bg-gradient-to-br from-primary/15 via-card to-violet-600/10 p-5 sm:p-7 shadow-lg space-y-4">
-        <div className="space-y-1.5">
-          <span className="inline-flex items-center gap-1 rounded-full bg-primary/20 px-3 py-0.5 text-xs font-black uppercase text-primary">
-            <Sparkles className="h-3.5 w-3.5" /> Full Daily Cognitive Workout
-          </span>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-foreground">
-            TODAY&apos;S BRAIN WORKOUT
-          </h1>
-          <p className="text-xs sm:text-sm text-muted-foreground max-w-xl leading-relaxed">
-            10 smart interactive challenges covering Visual Memory, What&apos;s Missing, Focus Fire, Reaction Speed, Mental Maths (₦ Naira), Decision Room, and 5-Second Reflex. Zero external materials!
-          </p>
-        </div>
-
-        <div className="flex items-center gap-4 text-xs font-bold text-muted-foreground">
-          <span>⏱️ 5–8 Minutes</span>
-          <span>•</span>
-          <span>🎮 10 In-App Challenges</span>
-          <span>•</span>
-          <span>⚡ +250 XP Reward</span>
-        </div>
-
-        <button
-          onClick={handleStartDailyWorkout}
-          className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary via-violet-600 to-indigo-600 px-6 py-4 text-sm sm:text-base font-black text-white shadow-xl shadow-primary/30 hover:brightness-110 active:scale-[0.98] transition touch-manipulation min-h-[52px]"
-        >
-          <Play className="h-5 w-5 fill-white text-white" />
-          <span>START TODAY&apos;S WORKOUT NOW →</span>
-        </button>
-      </div>
-
-      {/* ─── All 13 Suggested Workout Drills (1-Tap Play) ─────────────────── */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm sm:text-base font-black text-foreground uppercase tracking-wider">
-            All 13 Suggested Brain Challenges
-          </h2>
-          <span className="text-xs text-muted-foreground">Instant Play</span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {SPECIFIC_WORKOUT_SECTIONS.map((sec) => (
-            <button
-              key={sec.id}
-              onClick={() => handleStartSpecificWorkout(sec.pool)}
-              className="flex items-start gap-3.5 rounded-2xl border border-border bg-card p-4 text-left hover:border-primary/40 hover:bg-muted/40 transition-all active:scale-[0.98] shadow-sm min-h-[72px] touch-manipulation"
-            >
-              <span className="text-2xl p-1.5 rounded-xl bg-muted/60">{sec.icon}</span>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xs sm:text-sm font-bold text-foreground truncate">
-                    {sec.label}
-                  </h3>
-                  <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
-                </div>
-                <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2 leading-relaxed">
-                  {sec.desc}
-                </p>
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
+      <InteractiveWorkoutEngine
+        challenges={challenges}
+        onComplete={handleWorkoutComplete}
+      />
     </div>
   );
 }

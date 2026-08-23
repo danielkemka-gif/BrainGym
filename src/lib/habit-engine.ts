@@ -263,11 +263,11 @@ export async function fetchHabitEngineState(userId?: string): Promise<HabitMetri
   const todayObjective = DEFAULT_OBJECTIVES[dayIndex];
 
   const balancedActivities = [
-    { id: "act-1", title: "Dual N-Back Recall", category: "Memory", color: "#3B82F6", durationSec: 90, difficulty: "intermediate", xp: 50, coins: 15 },
-    { id: "act-2", title: "Stroop Speed Filter", category: "Focus", color: "#8B5CF6", durationSec: 60, difficulty: "intermediate", xp: 45, coins: 12 },
-    { id: "act-3", title: "Rapid Visual Reflex", category: "Speed", color: "#EC4899", durationSec: 60, difficulty: "beginner", xp: 40, coins: 10 },
-    { id: "act-4", title: "Syllogism Logic Gate", category: "Logic", color: "#10B981", durationSec: 90, difficulty: "intermediate", xp: 55, coins: 18 },
-    { id: "act-5", title: "Rule-Switch Flex", category: "Flexibility", color: "#F59E0B", durationSec: 90, difficulty: "intermediate", xp: 50, coins: 15 },
+    { id: "act-1", title: "Visual Memory Grid", category: "Memory", color: "#3B82F6", durationSec: 60, difficulty: "intermediate", xp: 50, coins: 15 },
+    { id: "act-2", title: "Focus Fire Filter", category: "Focus", color: "#8B5CF6", durationSec: 60, difficulty: "intermediate", xp: 45, coins: 12 },
+    { id: "act-3", title: "Reaction Reflex Speed", category: "Speed", color: "#EC4899", durationSec: 45, difficulty: "beginner", xp: 40, coins: 10 },
+    { id: "act-4", title: "Pattern Power & Logic", category: "Logic", color: "#10B981", durationSec: 60, difficulty: "intermediate", xp: 55, coins: 18 },
+    { id: "act-5", title: "Decision Room Strategy", category: "Decision", color: "#F59E0B", durationSec: 90, difficulty: "intermediate", xp: 60, coins: 20 },
   ];
 
   // Daily Habit Mission (1 Clear mission for today)

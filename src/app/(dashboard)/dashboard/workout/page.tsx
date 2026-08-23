@@ -3,10 +3,28 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { generateDailyInteractiveWorkout, InteractiveChallenge } from "@/lib/interactive-challenges";
+import {
+  generateDailyInteractiveWorkout,
+  WORKOUT_CATEGORIES,
+  InteractiveChallenge,
+} from "@/lib/interactive-challenges";
 import { InteractiveWorkoutEngine } from "@/components/workout/interactive-workout-engine";
 import { Confetti } from "@/components/ui/confetti";
-import { ArrowLeft, Sparkles, Trophy, Coins, Zap, Flame, CheckCircle2, TrendingUp, ArrowRight, Brain, RotateCcw } from "lucide-react";
+import {
+  ArrowLeft,
+  Sparkles,
+  Trophy,
+  Coins,
+  Zap,
+  Flame,
+  CheckCircle2,
+  TrendingUp,
+  ArrowRight,
+  Brain,
+  Play,
+  RotateCcw,
+  ShieldCheck,
+} from "lucide-react";
 
 interface WorkoutResultSummary {
   totalXp: number;
@@ -19,6 +37,8 @@ interface WorkoutResultSummary {
 }
 
 export default function WorkoutPage() {
+  const [selectedCategory, setSelectedCategory] = useState<string>("daily");
+  const [isPlaying, setIsPlaying] = useState(false);
   const [challenges, setChallenges] = useState<InteractiveChallenge[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCompleted, setIsCompleted] = useState(false);
@@ -28,9 +48,8 @@ export default function WorkoutPage() {
   const [feedbackRating, setFeedbackRating] = useState<string | null>(null);
 
   useEffect(() => {
-    // Generate today's balanced 6-round workout
-    const daySeed = new Date().getDate();
-    const dailyChallenges = generateDailyInteractiveWorkout(daySeed);
+    // Generate initial challenges
+    const dailyChallenges = generateDailyInteractiveWorkout();
     setChallenges(dailyChallenges);
 
     const supabase = createClient();
@@ -39,7 +58,6 @@ export default function WorkoutPage() {
       .then(async ({ data: { user } }) => {
         if (!user) return;
 
-        // Fetch user profile streak
         const { data: profile } = await supabase
           .from("profiles")
           .select("current_streak, streak_count")
@@ -50,72 +68,93 @@ export default function WorkoutPage() {
           setStreakDays((profile.current_streak ?? profile.streak_count ?? 14) + 1);
         }
       })
-      .catch((err) => {
-        console.warn("User auth fetch fallback:", err);
-      })
+      .catch((err) => console.warn("Profile fetch fallback:", err))
       .finally(() => {
         setLoading(false);
       });
   }, []);
 
-  const handleWorkoutComplete = useCallback(async (summary: WorkoutResultSummary) => {
-    setResults(summary);
-    setIsCompleted(true);
-
-    try {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (user) {
-        const today = new Date().toISOString().split("T")[0];
-
-        // 1. Award XP to ledger
-        await supabase.from("xp_ledger").insert({
-          user_id: user.id,
-          amount: summary.totalXp,
-          source_type: "daily_workout",
-          source_id: "today-workout",
-          description: "Completed Daily Interactive Brain Workout",
-        });
-
-        // 2. Mark daily workout completed
-        await supabase.from("daily_workouts").upsert(
-          {
-            user_id: user.id,
-            date: today,
-            status: "completed",
-          },
-          { onConflict: "user_id,date" }
-        );
-
-        // 3. Update streak
-        await supabase
-          .from("profiles")
-          .update({
-            current_streak: streakDays,
-            streak_count: streakDays,
-          })
-          .eq("user_id", user.id);
+  function handleStartWorkout(catId: string = "daily") {
+    setSelectedCategory(catId);
+    if (catId === "daily") {
+      setChallenges(generateDailyInteractiveWorkout());
+    } else {
+      const found = WORKOUT_CATEGORIES.find((c) => c.id === catId);
+      if (found && (found as any).challenges) {
+        setChallenges((found as any).challenges);
+      } else {
+        setChallenges(generateDailyInteractiveWorkout());
       }
-    } catch (err) {
-      console.warn("Failed to persist workout result:", err);
     }
-  }, [streakDays]);
+    setIsCompleted(false);
+    setResults(null);
+    setIsPlaying(true);
+  }
+
+  const handleWorkoutComplete = useCallback(
+    async (summary: WorkoutResultSummary) => {
+      setResults(summary);
+      setIsPlaying(false);
+      setIsCompleted(true);
+
+      try {
+        const supabase = createClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (user) {
+          const today = new Date().toISOString().split("T")[0];
+
+          // 1. Award XP
+          await supabase.from("xp_ledger").insert({
+            user_id: user.id,
+            amount: summary.totalXp,
+            source_type: "daily_workout",
+            source_id: "interactive-workout",
+            description: "Completed 100% Interactive In-App Brain Workout",
+          });
+
+          // 2. Mark completed
+          await supabase.from("daily_workouts").upsert(
+            {
+              user_id: user.id,
+              date: today,
+              status: "completed",
+            },
+            { onConflict: "user_id,date" }
+          );
+
+          // 3. Update streak
+          await supabase
+            .from("profiles")
+            .update({
+              current_streak: streakDays,
+              streak_count: streakDays,
+            })
+            .eq("user_id", user.id);
+        }
+      } catch (err) {
+        console.warn("Failed to persist workout result:", err);
+      }
+    },
+    [streakDays]
+  );
 
   if (loading) {
     return (
       <div className="mx-auto flex min-h-[60vh] max-w-lg items-center justify-center p-4">
         <div className="text-center space-y-3">
           <div className="h-10 w-10 animate-spin rounded-full border-3 border-primary border-t-transparent mx-auto" />
-          <p className="text-sm font-bold text-muted-foreground">Preparing today&apos;s interactive challenges...</p>
+          <p className="text-sm font-bold text-muted-foreground">
+            Preparing your interactive brain workouts...
+          </p>
         </div>
       </div>
     );
   }
 
-  // ─── POST-WORKOUT CELEBRATION RITUAL ─────────────────────────────────────────
+  // ─── POST-WORKOUT CELEBRATION ─────────────────────────────────────────────
   if (isCompleted && results) {
     return (
       <div className="mx-auto w-full max-w-xl space-y-5 px-3 sm:px-4 py-4 overflow-x-hidden touch-manipulation">
@@ -135,7 +174,7 @@ export default function WorkoutPage() {
 
           <div>
             <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-              Session Finished · Baseline Locked In
+              Session Complete · 100% In-App Mastery
             </span>
             <h1 className="text-2xl sm:text-3xl font-black text-foreground mt-0.5">
               WORKOUT COMPLETE!
@@ -180,7 +219,7 @@ export default function WorkoutPage() {
             </div>
           </div>
 
-          {/* Tomorrow's Personalized Recommendation */}
+          {/* Tomorrow's Recommendation */}
           <div className="rounded-2xl bg-muted/60 border border-border p-4 text-left space-y-1.5">
             <div className="flex items-center gap-2">
               <Brain className="h-4 w-4 text-primary" />
@@ -193,7 +232,7 @@ export default function WorkoutPage() {
             </p>
           </div>
 
-          {/* Optional 1-Tap Feedback */}
+          {/* Optional Rating */}
           <div className="rounded-2xl bg-card border border-border/80 p-3.5 space-y-2 text-left">
             <span className="text-[10px] font-bold uppercase text-muted-foreground">
               How did today&apos;s challenges feel?
@@ -231,37 +270,121 @@ export default function WorkoutPage() {
               <span>Done · Return to Dashboard</span>
               <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link
-              href="/dashboard/progress"
-              className="inline-flex h-12 flex-1 items-center justify-center rounded-2xl border border-border px-6 text-sm font-bold hover:bg-accent active:scale-[0.98] transition touch-manipulation min-h-[48px]"
+            <button
+              onClick={() => handleStartWorkout("daily")}
+              className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl border border-border px-6 text-sm font-bold hover:bg-accent active:scale-[0.98] transition touch-manipulation min-h-[48px]"
             >
-              View Brain Score Progress
-            </Link>
+              <RotateCcw className="h-4 w-4" />
+              <span>Train Again (Extra XP)</span>
+            </button>
           </div>
         </div>
       </div>
     );
   }
 
-  // ─── ACTIVE INTERACTIVE WORKOUT GAMEPLAY ─────────────────────────────────────
+  // ─── ACTIVE GAMEPLAY PHASE ────────────────────────────────────────────────
+  if (isPlaying) {
+    return (
+      <div className="mx-auto w-full max-w-2xl px-3 sm:px-4 py-4 space-y-4 overflow-x-hidden touch-manipulation">
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => setIsPlaying(false)}
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-foreground min-h-[38px]"
+          >
+            <ArrowLeft className="h-4 w-4" /> Exit to Workouts
+          </button>
+          <span className="text-[11px] font-bold text-muted-foreground">
+            ⏱️ 100% In-App · {challenges.length} Rounds
+          </span>
+        </div>
+
+        <InteractiveWorkoutEngine
+          challenges={challenges}
+          onComplete={handleWorkoutComplete}
+        />
+      </div>
+    );
+  }
+
+  // ─── WORKOUT LAUNCHPAD & CATEGORY SELECTOR ─────────────────────────────────
   return (
-    <div className="mx-auto w-full max-w-2xl px-3 sm:px-4 py-4 space-y-4 overflow-x-hidden touch-manipulation">
+    <div className="mx-auto w-full max-w-3xl px-3 sm:px-4 py-4 space-y-5 overflow-x-hidden touch-manipulation">
       <div className="flex items-center justify-between">
         <Link
           href="/dashboard"
           className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-foreground min-h-[38px]"
         >
-          <ArrowLeft className="h-4 w-4" /> Exit Workout
+          <ArrowLeft className="h-4 w-4" /> Back to Dashboard
         </Link>
-        <span className="text-[11px] font-bold text-muted-foreground">
-          ⏱️ 7 Minutes · 6 Rounds
+        <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-500">
+          <ShieldCheck className="h-4 w-4" /> 100% Digital In-App Training
         </span>
       </div>
 
-      <InteractiveWorkoutEngine
-        challenges={challenges}
-        onComplete={handleWorkoutComplete}
-      />
+      {/* ─── Primary Hero Card: Today's Balanced Workout ───────────────────── */}
+      <div className="relative overflow-hidden rounded-3xl border-2 border-primary/40 bg-gradient-to-br from-primary/15 via-card to-violet-600/10 p-5 sm:p-7 shadow-lg space-y-4">
+        <div className="space-y-1.5">
+          <span className="inline-flex items-center gap-1 rounded-full bg-primary/20 px-3 py-0.5 text-xs font-black uppercase text-primary">
+            <Sparkles className="h-3.5 w-3.5" /> Recommended Morning Routine
+          </span>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-foreground">
+            TODAY&apos;S BRAIN WORKOUT
+          </h1>
+          <p className="text-xs sm:text-sm text-muted-foreground max-w-xl leading-relaxed">
+            6 interactive challenges covering Visual Memory, Focus Fire, Reaction Speed, Pattern Logic, and Real-Life Decision Making. Zero physical materials required!
+          </p>
+        </div>
+
+        <div className="flex items-center gap-4 text-xs font-bold text-muted-foreground">
+          <span>⏱️ 5–7 Minutes</span>
+          <span>•</span>
+          <span>🎮 6 Mini-Games</span>
+          <span>•</span>
+          <span>⚡ +150 XP Reward</span>
+        </div>
+
+        <button
+          onClick={() => handleStartWorkout("daily")}
+          className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary via-violet-600 to-indigo-600 px-6 py-4 text-sm sm:text-base font-black text-white shadow-xl shadow-primary/30 hover:brightness-110 active:scale-[0.98] transition touch-manipulation min-h-[52px]"
+        >
+          <Play className="h-5 w-5 fill-white text-white" />
+          <span>START TODAY&apos;S WORKOUT NOW →</span>
+        </button>
+      </div>
+
+      {/* ─── Specific Cognitive Skill Workouts ─────────────────────────────── */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm sm:text-base font-black text-foreground uppercase tracking-wider">
+            Or Choose A Specific Skill Workout
+          </h2>
+          <span className="text-xs text-muted-foreground">Unlimited Practice</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {WORKOUT_CATEGORIES.filter((c) => c.id !== "daily").map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => handleStartWorkout(cat.id)}
+              className="flex items-start gap-3.5 rounded-2xl border border-border bg-card p-4 text-left hover:border-primary/40 hover:bg-muted/40 transition-all active:scale-[0.98] shadow-sm min-h-[72px] touch-manipulation"
+            >
+              <span className="text-2xl p-1.5 rounded-xl bg-muted/60">{cat.icon}</span>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs sm:text-sm font-bold text-foreground truncate">
+                    {cat.label}
+                  </h3>
+                  <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2 leading-relaxed">
+                  {cat.desc}
+                </p>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

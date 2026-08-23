@@ -10,7 +10,8 @@ export type ChallengeType =
   | "mental_rotation"
   | "decision_room"
   | "real_life_challenge"
-  | "five_second_challenge";
+  | "five_second_challenge"
+  | "rule_switch";
 
 export interface ChallengeOption {
   id: string;
@@ -25,11 +26,9 @@ export interface InteractiveChallenge {
   category: "Memory" | "Focus" | "Speed" | "Logic" | "Decision" | "Flexibility";
   title: string;
   instruction: string;
-  // For memory-based challenges with an inspection phase:
   memorizeDurationSec?: number;
   memorizeItems?: string[];
   memorizeStory?: string;
-  // The actual question to answer:
   question: string;
   options: ChallengeOption[];
   educationalWhy: string;
@@ -39,9 +38,9 @@ export interface InteractiveChallenge {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 1. VISUAL MEMORY POOL
+// 1. VISUAL MEMORY
 // ─────────────────────────────────────────────────────────────────────────────
-const VISUAL_MEMORY_POOL: InteractiveChallenge[] = [
+export const VISUAL_MEMORY_CHALLENGES: InteractiveChallenge[] = [
   {
     id: "vm-1",
     type: "visual_memory",
@@ -85,9 +84,9 @@ const VISUAL_MEMORY_POOL: InteractiveChallenge[] = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 2. WHAT'S MISSING POOL
+// 2. WHAT'S MISSING?
 // ─────────────────────────────────────────────────────────────────────────────
-const WHATS_MISSING_POOL: InteractiveChallenge[] = [
+export const WHATS_MISSING_CHALLENGES: InteractiveChallenge[] = [
   {
     id: "wm-1",
     type: "whats_missing",
@@ -108,12 +107,32 @@ const WHATS_MISSING_POOL: InteractiveChallenge[] = [
     coinReward: 15,
     difficulty: "intermediate",
   },
+  {
+    id: "wm-2",
+    type: "whats_missing",
+    category: "Memory",
+    title: "Night Sky Vanish",
+    instruction: "Study these 8 celestial symbols closely.",
+    memorizeDurationSec: 6,
+    memorizeItems: ["⭐ Star", "🌙 Moon", "☀️ Sun", "🛸 UFO", "☄️ Comet", "🔭 Telescope", "🛰️ Satellite", "🌌 Galaxy"],
+    question: "Which celestial symbol vanished from the night sky?",
+    options: [
+      { id: "o1", label: "🛸 UFO", isCorrect: true },
+      { id: "o2", label: "🌙 Moon", isCorrect: false },
+      { id: "o3", label: "⭐ Star", isCorrect: false },
+      { id: "o4", label: "☀️ Sun", isCorrect: false },
+    ],
+    educationalWhy: "UFO was removed. Visual scanning speed and working memory capacity directly enhance rapid recognition.",
+    xpReward: 55,
+    coinReward: 18,
+    difficulty: "advanced",
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 3. PATTERN POWER & LOGIC SEQUENCES
+// 3. PATTERN POWER
 // ─────────────────────────────────────────────────────────────────────────────
-const PATTERN_POWER_POOL: InteractiveChallenge[] = [
+export const PATTERN_POWER_CHALLENGES: InteractiveChallenge[] = [
   {
     id: "pp-1",
     type: "pattern_power",
@@ -171,16 +190,16 @@ const PATTERN_POWER_POOL: InteractiveChallenge[] = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 4. ODD ONE OUT & ANOMALY DETECTION
+// 4. ODD ONE OUT
 // ─────────────────────────────────────────────────────────────────────────────
-const ODD_ONE_OUT_POOL: InteractiveChallenge[] = [
+export const ODD_ONE_OUT_CHALLENGES: InteractiveChallenge[] = [
   {
     id: "ooo-1",
     type: "odd_one_out",
     category: "Logic",
-    title: "Odd One Out",
-    instruction: "Select the item that does not share the common underlying rule.",
-    question: "Which of these numbers does NOT belong with the others?",
+    title: "Prime vs Composite Anomaly",
+    instruction: "Select the item that does not share the common mathematical rule.",
+    question: "Which of these numbers does NOT belong with the others: 11, 13, 15, 17 ?",
     options: [
       { id: "o1", label: "15", isCorrect: true },
       { id: "o2", label: "11", isCorrect: false },
@@ -192,12 +211,30 @@ const ODD_ONE_OUT_POOL: InteractiveChallenge[] = [
     coinReward: 12,
     difficulty: "intermediate",
   },
+  {
+    id: "ooo-2",
+    type: "odd_one_out",
+    category: "Logic",
+    title: "Geometric Symmetry Anomaly",
+    instruction: "Which geometric shape does not belong?",
+    question: "Which shape has a different number of sides from the others: Square, Rectangle, Rhombus, Pentagon?",
+    options: [
+      { id: "o1", label: "Pentagon (5 sides)", isCorrect: true },
+      { id: "o2", label: "Square (4 sides)", isCorrect: false },
+      { id: "o3", label: "Rectangle (4 sides)", isCorrect: false },
+      { id: "o4", label: "Rhombus (4 sides)", isCorrect: false },
+    ],
+    educationalWhy: "Square, Rectangle, and Rhombus are all 4-sided quadrilaterals, while a Pentagon has 5 sides.",
+    xpReward: 40,
+    coinReward: 10,
+    difficulty: "beginner",
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5. FOCUS FIRE (GO / NO-GO CONCENTRATION)
+// 5. FOCUS FIRE & CONCENTRATION
 // ─────────────────────────────────────────────────────────────────────────────
-const FOCUS_FIRE_POOL: InteractiveChallenge[] = [
+export const FOCUS_FIRE_CHALLENGES: InteractiveChallenge[] = [
   {
     id: "ff-1",
     type: "focus_fire",
@@ -234,12 +271,30 @@ const FOCUS_FIRE_POOL: InteractiveChallenge[] = [
     coinReward: 18,
     difficulty: "advanced",
   },
+  {
+    id: "ff-3",
+    type: "focus_fire",
+    category: "Focus",
+    title: "Number Exclusion Rule",
+    instruction: "Apply the exclusion filter rapidly.",
+    question: "RULE: Select every number except multiples of 7. Which number is valid?",
+    options: [
+      { id: "o1", label: "36", isCorrect: true },
+      { id: "o2", label: "28 (4 × 7)", isCorrect: false },
+      { id: "o3", label: "42 (6 × 7)", isCorrect: false },
+      { id: "o4", label: "49 (7 × 7)", isCorrect: false },
+    ],
+    educationalWhy: "36 is not divisible by 7, while 28, 42, and 49 are all multiples of 7.",
+    xpReward: 50,
+    coinReward: 15,
+    difficulty: "intermediate",
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 6. REACTION CHALLENGE
 // ─────────────────────────────────────────────────────────────────────────────
-const REACTION_POOL: InteractiveChallenge[] = [
+export const REACTION_CHALLENGES: InteractiveChallenge[] = [
   {
     id: "rc-1",
     type: "reaction_challenge",
@@ -258,12 +313,30 @@ const REACTION_POOL: InteractiveChallenge[] = [
     coinReward: 10,
     difficulty: "beginner",
   },
+  {
+    id: "rc-2",
+    type: "reaction_challenge",
+    category: "Speed",
+    title: "Color Speed Match",
+    instruction: "React to the matching color pair immediately.",
+    question: "Which pair has matching colors: 🔴🔵, 🟡🟡, 🟢🟣, 🟤⚪ ?",
+    options: [
+      { id: "o1", label: "🟡🟡 Yellow Pair", isCorrect: true },
+      { id: "o2", label: "🔴🔵 Red & Blue", isCorrect: false },
+      { id: "o3", label: "🟢🟣 Green & Purple", isCorrect: false },
+      { id: "o4", label: "🟤⚪ Brown & White", isCorrect: false },
+    ],
+    educationalWhy: "🟡🟡 is the only identical pair. Fast visual matching exercises sensory visual pathways.",
+    xpReward: 40,
+    coinReward: 10,
+    difficulty: "beginner",
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 7. REMEMBER THE STORY
 // ─────────────────────────────────────────────────────────────────────────────
-const STORY_MEMORY_POOL: InteractiveChallenge[] = [
+export const STORY_MEMORY_CHALLENGES: InteractiveChallenge[] = [
   {
     id: "sm-1",
     type: "story_memory",
@@ -284,12 +357,32 @@ const STORY_MEMORY_POOL: InteractiveChallenge[] = [
     coinReward: 18,
     difficulty: "intermediate",
   },
+  {
+    id: "sm-2",
+    type: "story_memory",
+    category: "Memory",
+    title: "Story Recall: Tech Conference",
+    instruction: "Memorize the schedule details in 10 seconds.",
+    memorizeDurationSec: 10,
+    memorizeStory: "Amaka arrived at the Abuja Tech Summit on Thursday wearing a yellow blazer. Her presentation on AI Neural Networks was scheduled for Hall B at 2:30 PM, right after the keynote address by Dr. Ojo.",
+    question: "In which Hall was Amaka scheduled to present?",
+    options: [
+      { id: "o1", label: "Hall B", isCorrect: true },
+      { id: "o2", label: "Hall A", isCorrect: false },
+      { id: "o3", label: "Hall C", isCorrect: false },
+      { id: "o4", label: "Main Auditorium", isCorrect: false },
+    ],
+    educationalWhy: "Amaka was scheduled in Hall B. Verbal comprehension and spatial narrative indexing test temporal lobe recall.",
+    xpReward: 55,
+    coinReward: 18,
+    difficulty: "intermediate",
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 8. MENTAL MATHS (REAL-WORLD ₦ NAIRA SCENARIOS)
 // ─────────────────────────────────────────────────────────────────────────────
-const MENTAL_MATHS_POOL: InteractiveChallenge[] = [
+export const MENTAL_MATHS_CHALLENGES: InteractiveChallenge[] = [
   {
     id: "mm-1",
     type: "mental_maths",
@@ -329,9 +422,9 @@ const MENTAL_MATHS_POOL: InteractiveChallenge[] = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 9. DECISION ROOM & REAL-LIFE PROBLEM SOLVING
+// 9. DECISION ROOM & STRATEGY
 // ─────────────────────────────────────────────────────────────────────────────
-const DECISION_ROOM_POOL: InteractiveChallenge[] = [
+export const DECISION_ROOM_CHALLENGES: InteractiveChallenge[] = [
   {
     id: "dr-1",
     type: "decision_room",
@@ -373,7 +466,7 @@ const DECISION_ROOM_POOL: InteractiveChallenge[] = [
 // ─────────────────────────────────────────────────────────────────────────────
 // 10. 5-SECOND RAPID REFLEX
 // ─────────────────────────────────────────────────────────────────────────────
-const FIVE_SECOND_POOL: InteractiveChallenge[] = [
+export const FIVE_SECOND_CHALLENGES: InteractiveChallenge[] = [
   {
     id: "fs-1",
     type: "five_second_challenge",
@@ -412,22 +505,28 @@ const FIVE_SECOND_POOL: InteractiveChallenge[] = [
   },
 ];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// DAILY WORKOUT GENERATOR (Balanced 5-7 Rounds)
-// ─────────────────────────────────────────────────────────────────────────────
+// All workouts database grouped by category for targeted practice
+export const WORKOUT_CATEGORIES = [
+  { id: "daily", label: "Daily Balanced Workout", icon: "⭐", desc: "6 rounds across Memory, Focus, Speed, Logic & Decision", count: 6 },
+  { id: "memory", label: "Visual Memory & Recall", icon: "🧠", desc: "Grid memorization, vanish tests, and story recall", challenges: [...VISUAL_MEMORY_CHALLENGES, ...WHATS_MISSING_CHALLENGES, ...STORY_MEMORY_CHALLENGES] },
+  { id: "focus", label: "Focus Fire & Concentration", icon: "🎯", desc: "Go/No-Go rule filtering and Stroop interference", challenges: FOCUS_FIRE_CHALLENGES },
+  { id: "speed", label: "Reaction Speed & Reflex", icon: "⚡", desc: "Millisecond reflex response and directional speed", challenges: [...REACTION_CHALLENGES, ...FIVE_SECOND_CHALLENGES] },
+  { id: "logic", label: "Pattern Power & Mental Maths", icon: "🧩", desc: "Sequence solvers and practical ₦ Naira calculations", challenges: [...PATTERN_POWER_CHALLENGES, ...ODD_ONE_OUT_CHALLENGES, ...MENTAL_MATHS_CHALLENGES] },
+  { id: "decision", label: "Decision Room & Strategy", icon: "🏛️", desc: "High-stakes real-world risk management and negotiation", challenges: DECISION_ROOM_CHALLENGES },
+];
+
 export function generateDailyInteractiveWorkout(daySeed?: number): InteractiveChallenge[] {
   const day = daySeed ?? new Date().getDate();
 
-  // Pick 1 from each core cognitive pillar to ensure 100% balance
   const memoryRound = day % 2 === 0
-    ? VISUAL_MEMORY_POOL[day % VISUAL_MEMORY_POOL.length]
-    : WHATS_MISSING_POOL[day % WHATS_MISSING_POOL.length];
+    ? VISUAL_MEMORY_CHALLENGES[day % VISUAL_MEMORY_CHALLENGES.length]
+    : WHATS_MISSING_CHALLENGES[day % WHATS_MISSING_CHALLENGES.length];
 
-  const focusRound = FOCUS_FIRE_POOL[day % FOCUS_FIRE_POOL.length];
-  const speedRound = REACTION_POOL[day % REACTION_POOL.length];
-  const logicRound = PATTERN_POWER_POOL[day % PATTERN_POWER_POOL.length];
-  const decisionRound = DECISION_ROOM_POOL[day % DECISION_ROOM_POOL.length];
-  const rapidRound = FIVE_SECOND_POOL[day % FIVE_SECOND_POOL.length];
+  const focusRound = FOCUS_FIRE_CHALLENGES[day % FOCUS_FIRE_CHALLENGES.length];
+  const speedRound = REACTION_CHALLENGES[day % REACTION_CHALLENGES.length];
+  const logicRound = PATTERN_POWER_CHALLENGES[day % PATTERN_POWER_CHALLENGES.length];
+  const decisionRound = DECISION_ROOM_CHALLENGES[day % DECISION_ROOM_CHALLENGES.length];
+  const rapidRound = FIVE_SECOND_CHALLENGES[day % FIVE_SECOND_CHALLENGES.length];
 
   return [memoryRound, focusRound, speedRound, logicRound, decisionRound, rapidRound].filter(Boolean);
 }

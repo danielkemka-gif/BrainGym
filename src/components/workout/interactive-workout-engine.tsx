@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { InteractiveChallenge, ChallengeOption } from "@/lib/interactive-challenges";
-import { Sparkles, CheckCircle2, XCircle, Clock, Zap, Trophy, Coins, ArrowRight, Eye, Brain } from "lucide-react";
+import { Sparkles, CheckCircle2, XCircle, Clock, Zap, Trophy, Coins, ArrowRight, Eye, Brain, Scale, Target, Compass } from "lucide-react";
 
 interface WorkoutResultSummary {
   totalXp: number;
@@ -101,7 +101,7 @@ export function InteractiveWorkoutEngine({ challenges, onComplete }: Interactive
       const totalXp = allStats.reduce((acc, curr) => acc + curr.xp, 0);
       const totalCoins = allStats.reduce((acc, curr) => acc + curr.coins, 0);
       const correctCount = allStats.filter((s) => s.isCorrect).length;
-      const accuracyPercent = Math.round((correctCount / allStats.length) * 100);
+      const accuracyPercent = Math.round((correctCount / (allStats.length || 1)) * 100);
       const avgReactionTimeMs = Math.round(
         allStats.reduce((acc, curr) => acc + curr.reactionTimeMs, 0) / (allStats.length || 1)
       );
@@ -131,12 +131,11 @@ export function InteractiveWorkoutEngine({ challenges, onComplete }: Interactive
         }
         if (score > maxRatio) {
           maxRatio = score;
-          strongestCategory = cat;
         }
       }
 
       onComplete({
-        totalXp: totalXp + 100, // Session bonus
+        totalXp: totalXp + 100, // Session completion bonus
         totalCoins: totalCoins + 25,
         accuracyPercent,
         avgReactionTimeMs,
@@ -201,7 +200,7 @@ export function InteractiveWorkoutEngine({ challenges, onComplete }: Interactive
               <span>MEMORIZE NOW: {memorizeCountdown}s</span>
             </div>
 
-            {/* If Items Grid */}
+            {/* Items Grid */}
             {currentChallenge.memorizeItems && (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 py-2">
                 {currentChallenge.memorizeItems.map((item, i) => (
@@ -215,7 +214,7 @@ export function InteractiveWorkoutEngine({ challenges, onComplete }: Interactive
               </div>
             )}
 
-            {/* If Story Text */}
+            {/* Micro Story Text */}
             {currentChallenge.memorizeStory && (
               <div className="rounded-2xl bg-card/90 border border-border p-4 text-left text-sm sm:text-base font-medium text-foreground leading-relaxed">
                 &ldquo;{currentChallenge.memorizeStory}&rdquo;
@@ -231,6 +230,35 @@ export function InteractiveWorkoutEngine({ challenges, onComplete }: Interactive
         {/* ─── Phase 2: Question & Interactive Options ──────────────────── */}
         {(phase === "question" || phase === "feedback") && (
           <div className="space-y-4 animate-in fade-in duration-200">
+            {/* Visual Prompts (if Spot the Difference or What's Missing) */}
+            {currentChallenge.remainingItems && (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 p-3 rounded-2xl bg-muted/40 border border-border">
+                {currentChallenge.remainingItems.map((item, i) => (
+                  <div
+                    key={i}
+                    className={`flex items-center justify-center rounded-xl p-2.5 text-xs sm:text-sm font-bold border ${
+                      item.includes("[EMPTY")
+                        ? "border-amber-500 bg-amber-500/20 text-amber-600 dark:text-amber-400 animate-pulse font-black"
+                        : "border-border bg-card"
+                    }`}
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {currentChallenge.visualPromptA && (
+              <div className="space-y-2 p-3 rounded-2xl bg-muted/40 border border-border text-xs sm:text-sm font-bold">
+                <div className="p-2 rounded-xl bg-card border border-border">
+                  {currentChallenge.visualPromptA}
+                </div>
+                <div className="p-2 rounded-xl bg-card border border-border">
+                  {currentChallenge.visualPromptB}
+                </div>
+              </div>
+            )}
+
             {/* Question Text */}
             <div className="rounded-2xl bg-muted/40 border border-border p-4">
               <p className="text-sm sm:text-base font-bold text-foreground leading-relaxed">
@@ -270,7 +298,7 @@ export function InteractiveWorkoutEngine({ challenges, onComplete }: Interactive
                       <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-xl text-xs font-black ${badgeStyle}`}>
                         {String.fromCharCode(65 + idx)}
                       </span>
-                      <span className="text-xs sm:text-sm font-medium">{option.label}</span>
+                      <span className="text-xs sm:text-sm font-medium leading-snug">{option.label}</span>
                     </div>
 
                     {phase === "feedback" && isThisOptionCorrect && (

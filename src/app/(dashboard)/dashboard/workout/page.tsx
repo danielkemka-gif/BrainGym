@@ -4,8 +4,20 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import {
-  generateDailyInteractiveWorkout,
-  WORKOUT_CATEGORIES,
+  generateFullSuggestedDailyWorkout,
+  VISUAL_MEMORY_POOL,
+  WHATS_MISSING_POOL,
+  SPOT_DIFFERENCE_POOL,
+  PATTERN_POWER_POOL,
+  ODD_ONE_OUT_POOL,
+  FOCUS_FIRE_POOL,
+  REACTION_POOL,
+  STORY_MEMORY_POOL,
+  MENTAL_MATHS_POOL,
+  MENTAL_ROTATION_POOL,
+  DECISION_ROOM_POOL,
+  REAL_LIFE_POOL,
+  FIVE_SECOND_POOL,
   InteractiveChallenge,
 } from "@/lib/interactive-challenges";
 import { InteractiveWorkoutEngine } from "@/components/workout/interactive-workout-engine";
@@ -36,8 +48,23 @@ interface WorkoutResultSummary {
   strongestCategory: string;
 }
 
+const SPECIFIC_WORKOUT_SECTIONS = [
+  { id: "visual_memory", label: "1. Visual Memory Challenge", icon: "🧠", desc: "Memorize 6 objects for 6 seconds, then identify the missing item", pool: VISUAL_MEMORY_POOL },
+  { id: "whats_missing", label: "2. What's Missing?", icon: "🔍", desc: "Study 7 symbols, 1 disappears, identify what vanished", pool: WHATS_MISSING_POOL },
+  { id: "spot_difference", label: "3. Spot The Difference", icon: "👀", desc: "Compare two sequences side-by-side and spot the difference", pool: SPOT_DIFFERENCE_POOL },
+  { id: "pattern_power", label: "4. Pattern Power", icon: "🧩", desc: "Complete geometric, numerical, and visual sequences (▲ ● ▲ ● ▲ ?)", pool: PATTERN_POWER_POOL },
+  { id: "odd_one_out", label: "5. Odd One Out", icon: "🎯", desc: "Find the symbol or number that does not belong and learn WHY", pool: ODD_ONE_OUT_POOL },
+  { id: "focus_fire", label: "6. Focus Fire (Conjunction & Stroop)", icon: "🔥", desc: "Rapid rule filtering: 'Tap ONLY when BLUE and 4 sides'", pool: FOCUS_FIRE_POOL },
+  { id: "reaction_challenge", label: "7. Reaction Speed Reflex", icon: "⚡", desc: "Directional reflex speed test measuring reaction time", pool: REACTION_POOL },
+  { id: "story_memory", label: "8. Remember The Story", icon: "📖", desc: "10-second micro-story inspection followed by detailed recall", pool: STORY_MEMORY_POOL },
+  { id: "mental_maths", label: "9. Mental Maths (₦ Naira)", icon: "💰", desc: "Real-world Nigerian currency shopping & budget calculations", pool: MENTAL_MATHS_POOL },
+  { id: "mental_rotation", label: "10. Mental Rotation", icon: "🔄", desc: "Mentally rotate shapes 90°/180° and match the vector", pool: MENTAL_ROTATION_POOL },
+  { id: "decision_room", label: "11. Decision Room", icon: "🏛️", desc: "Realistic financial dilemmas with strategic risk analysis", pool: DECISION_ROOM_POOL },
+  { id: "real_life_challenge", label: "12. Real-Life Problem Solving", icon: "💼", desc: "Workplace negotiation and business decision strategy", pool: REAL_LIFE_POOL },
+  { id: "five_second_challenge", label: "13. 5-Second Rapid Reflex", icon: "🚀", desc: "Urgent reflex test: largest magnitude comparison", pool: FIVE_SECOND_POOL },
+];
+
 export default function WorkoutPage() {
-  const [selectedCategory, setSelectedCategory] = useState<string>("daily");
   const [isPlaying, setIsPlaying] = useState(false);
   const [challenges, setChallenges] = useState<InteractiveChallenge[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,9 +75,9 @@ export default function WorkoutPage() {
   const [feedbackRating, setFeedbackRating] = useState<string | null>(null);
 
   useEffect(() => {
-    // Generate initial challenges
-    const dailyChallenges = generateDailyInteractiveWorkout();
-    setChallenges(dailyChallenges);
+    // Generate full daily workout
+    const initialChallenges = generateFullSuggestedDailyWorkout();
+    setChallenges(initialChallenges);
 
     const supabase = createClient();
     supabase.auth
@@ -74,18 +101,15 @@ export default function WorkoutPage() {
       });
   }, []);
 
-  function handleStartWorkout(catId: string = "daily") {
-    setSelectedCategory(catId);
-    if (catId === "daily") {
-      setChallenges(generateDailyInteractiveWorkout());
-    } else {
-      const found = WORKOUT_CATEGORIES.find((c) => c.id === catId);
-      if (found && (found as any).challenges) {
-        setChallenges((found as any).challenges);
-      } else {
-        setChallenges(generateDailyInteractiveWorkout());
-      }
-    }
+  function handleStartDailyWorkout() {
+    setChallenges(generateFullSuggestedDailyWorkout());
+    setIsCompleted(false);
+    setResults(null);
+    setIsPlaying(true);
+  }
+
+  function handleStartSpecificWorkout(pool: InteractiveChallenge[]) {
+    setChallenges(pool);
     setIsCompleted(false);
     setResults(null);
     setIsPlaying(true);
@@ -147,7 +171,7 @@ export default function WorkoutPage() {
         <div className="text-center space-y-3">
           <div className="h-10 w-10 animate-spin rounded-full border-3 border-primary border-t-transparent mx-auto" />
           <p className="text-sm font-bold text-muted-foreground">
-            Preparing your interactive brain workouts...
+            Preparing your interactive brain challenges...
           </p>
         </div>
       </div>
@@ -271,7 +295,7 @@ export default function WorkoutPage() {
               <ArrowRight className="h-4 w-4" />
             </Link>
             <button
-              onClick={() => handleStartWorkout("daily")}
+              onClick={handleStartDailyWorkout}
               className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl border border-border px-6 text-sm font-bold hover:bg-accent active:scale-[0.98] transition touch-manipulation min-h-[48px]"
             >
               <RotateCcw className="h-4 w-4" />
@@ -295,7 +319,7 @@ export default function WorkoutPage() {
             <ArrowLeft className="h-4 w-4" /> Exit to Workouts
           </button>
           <span className="text-[11px] font-bold text-muted-foreground">
-            ⏱️ 100% In-App · {challenges.length} Rounds
+            ⏱️ 100% In-App · {challenges.length} Challenges
           </span>
         </div>
 
@@ -307,7 +331,7 @@ export default function WorkoutPage() {
     );
   }
 
-  // ─── WORKOUT LAUNCHPAD & CATEGORY SELECTOR ─────────────────────────────────
+  // ─── WORKOUT LAUNCHPAD & ALL 13 SUGGESTED CHALLENGES ───────────────────────
   return (
     <div className="mx-auto w-full max-w-3xl px-3 sm:px-4 py-4 space-y-5 overflow-x-hidden touch-manipulation">
       <div className="flex items-center justify-between">
@@ -318,34 +342,34 @@ export default function WorkoutPage() {
           <ArrowLeft className="h-4 w-4" /> Back to Dashboard
         </Link>
         <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-500">
-          <ShieldCheck className="h-4 w-4" /> 100% Digital In-App Training
+          <ShieldCheck className="h-4 w-4" /> 100% In-App Digital Challenges
         </span>
       </div>
 
-      {/* ─── Primary Hero Card: Today's Balanced Workout ───────────────────── */}
+      {/* ─── Primary Hero Card: Today's Full Suggested Workout ───────────────── */}
       <div className="relative overflow-hidden rounded-3xl border-2 border-primary/40 bg-gradient-to-br from-primary/15 via-card to-violet-600/10 p-5 sm:p-7 shadow-lg space-y-4">
         <div className="space-y-1.5">
           <span className="inline-flex items-center gap-1 rounded-full bg-primary/20 px-3 py-0.5 text-xs font-black uppercase text-primary">
-            <Sparkles className="h-3.5 w-3.5" /> Recommended Morning Routine
+            <Sparkles className="h-3.5 w-3.5" /> Full Daily Cognitive Workout
           </span>
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-foreground">
             TODAY&apos;S BRAIN WORKOUT
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground max-w-xl leading-relaxed">
-            6 interactive challenges covering Visual Memory, Focus Fire, Reaction Speed, Pattern Logic, and Real-Life Decision Making. Zero physical materials required!
+            10 smart interactive challenges covering Visual Memory, What&apos;s Missing, Focus Fire, Reaction Speed, Mental Maths (₦ Naira), Decision Room, and 5-Second Reflex. Zero external materials!
           </p>
         </div>
 
         <div className="flex items-center gap-4 text-xs font-bold text-muted-foreground">
-          <span>⏱️ 5–7 Minutes</span>
+          <span>⏱️ 5–8 Minutes</span>
           <span>•</span>
-          <span>🎮 6 Mini-Games</span>
+          <span>🎮 10 In-App Challenges</span>
           <span>•</span>
-          <span>⚡ +150 XP Reward</span>
+          <span>⚡ +250 XP Reward</span>
         </div>
 
         <button
-          onClick={() => handleStartWorkout("daily")}
+          onClick={handleStartDailyWorkout}
           className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary via-violet-600 to-indigo-600 px-6 py-4 text-sm sm:text-base font-black text-white shadow-xl shadow-primary/30 hover:brightness-110 active:scale-[0.98] transition touch-manipulation min-h-[52px]"
         >
           <Play className="h-5 w-5 fill-white text-white" />
@@ -353,32 +377,32 @@ export default function WorkoutPage() {
         </button>
       </div>
 
-      {/* ─── Specific Cognitive Skill Workouts ─────────────────────────────── */}
+      {/* ─── All 13 Suggested Workout Drills (1-Tap Play) ─────────────────── */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-sm sm:text-base font-black text-foreground uppercase tracking-wider">
-            Or Choose A Specific Skill Workout
+            All 13 Suggested Brain Challenges
           </h2>
-          <span className="text-xs text-muted-foreground">Unlimited Practice</span>
+          <span className="text-xs text-muted-foreground">Instant Play</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {WORKOUT_CATEGORIES.filter((c) => c.id !== "daily").map((cat) => (
+          {SPECIFIC_WORKOUT_SECTIONS.map((sec) => (
             <button
-              key={cat.id}
-              onClick={() => handleStartWorkout(cat.id)}
+              key={sec.id}
+              onClick={() => handleStartSpecificWorkout(sec.pool)}
               className="flex items-start gap-3.5 rounded-2xl border border-border bg-card p-4 text-left hover:border-primary/40 hover:bg-muted/40 transition-all active:scale-[0.98] shadow-sm min-h-[72px] touch-manipulation"
             >
-              <span className="text-2xl p-1.5 rounded-xl bg-muted/60">{cat.icon}</span>
+              <span className="text-2xl p-1.5 rounded-xl bg-muted/60">{sec.icon}</span>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs sm:text-sm font-bold text-foreground truncate">
-                    {cat.label}
+                    {sec.label}
                   </h3>
                   <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
                 </div>
                 <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2 leading-relaxed">
-                  {cat.desc}
+                  {sec.desc}
                 </p>
               </div>
             </button>

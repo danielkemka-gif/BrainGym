@@ -1,8 +1,9 @@
 export type ChallengeType =
   | "visual_memory"
   | "whats_missing"
-  | "odd_one_out"
+  | "spot_difference"
   | "pattern_power"
+  | "odd_one_out"
   | "focus_fire"
   | "reaction_challenge"
   | "story_memory"
@@ -10,8 +11,7 @@ export type ChallengeType =
   | "mental_rotation"
   | "decision_room"
   | "real_life_challenge"
-  | "five_second_challenge"
-  | "rule_switch";
+  | "five_second_challenge";
 
 export interface ChallengeOption {
   id: string;
@@ -28,7 +28,11 @@ export interface InteractiveChallenge {
   instruction: string;
   memorizeDurationSec?: number;
   memorizeItems?: string[];
+  remainingItems?: string[]; // for whats_missing
   memorizeStory?: string;
+  // Visual comparison or rotation
+  visualPromptA?: string;
+  visualPromptB?: string;
   question: string;
   options: ChallengeOption[];
   educationalWhy: string;
@@ -40,13 +44,13 @@ export interface InteractiveChallenge {
 // ─────────────────────────────────────────────────────────────────────────────
 // 1. VISUAL MEMORY
 // ─────────────────────────────────────────────────────────────────────────────
-export const VISUAL_MEMORY_CHALLENGES: InteractiveChallenge[] = [
+export const VISUAL_MEMORY_POOL: InteractiveChallenge[] = [
   {
     id: "vm-1",
     type: "visual_memory",
     category: "Memory",
-    title: "Visual Memory Grid",
-    instruction: "Study these 6 objects carefully for 6 seconds. Remember what they are.",
+    title: "1. Visual Memory Challenge",
+    instruction: "Study these 6 items for 6 seconds. Remember what they are.",
     memorizeDurationSec: 6,
     memorizeItems: ["🎒 Backpack", "⚡ Lightning", "🎨 Palette", "🚀 Rocket", "💎 Diamond", "🧩 Puzzle"],
     question: "Which of these objects was NOT in the picture you just studied?",
@@ -65,7 +69,7 @@ export const VISUAL_MEMORY_CHALLENGES: InteractiveChallenge[] = [
     id: "vm-2",
     type: "visual_memory",
     category: "Memory",
-    title: "Spatial Location Recall",
+    title: "1. Visual Memory: Location Recall",
     instruction: "Remember the objects and their positions.",
     memorizeDurationSec: 6,
     memorizeItems: ["🦁 Lion", "🌊 Wave", "📱 Phone", "⚽ Football", "🔥 Fire", "🔑 Key"],
@@ -76,7 +80,7 @@ export const VISUAL_MEMORY_CHALLENGES: InteractiveChallenge[] = [
       { id: "o3", label: "🚗 Car", isCorrect: false },
       { id: "o4", label: "🎸 Guitar", isCorrect: false },
     ],
-    educationalWhy: "Great job! Associating visual icons with their positions strengthens spatial synaptic retention.",
+    educationalWhy: "Associating visual icons with their positions strengthens spatial synaptic retention in the parietal-temporal network.",
     xpReward: 50,
     coinReward: 15,
     difficulty: "beginner",
@@ -86,58 +90,65 @@ export const VISUAL_MEMORY_CHALLENGES: InteractiveChallenge[] = [
 // ─────────────────────────────────────────────────────────────────────────────
 // 2. WHAT'S MISSING?
 // ─────────────────────────────────────────────────────────────────────────────
-export const WHATS_MISSING_CHALLENGES: InteractiveChallenge[] = [
+export const WHATS_MISSING_POOL: InteractiveChallenge[] = [
   {
     id: "wm-1",
     type: "whats_missing",
     category: "Memory",
-    title: "What's Missing?",
-    instruction: "Study these 7 symbols. One of them will vanish in the next step!",
+    title: "2. What's Missing?",
+    instruction: "Study these 7 symbols. One will disappear in the next step!",
     memorizeDurationSec: 6,
     memorizeItems: ["🏆 Trophy", "🪐 Planet", "⚡ Lightning", "🎧 Headphones", "🍕 Pizza", "🌺 Flower", "⚓ Anchor"],
-    question: "One item disappeared from the grid! Which object is missing?",
+    remainingItems: ["🏆 Trophy", "🪐 Planet", "⚡ Lightning", "❓ [EMPTY SLOT]", "🍕 Pizza", "🌺 Flower", "⚓ Anchor"],
+    question: "One item disappeared from the grid! What is missing from the empty slot?",
     options: [
       { id: "o1", label: "🎧 Headphones", isCorrect: true },
       { id: "o2", label: "⚡ Lightning", isCorrect: false },
       { id: "o3", label: "🏆 Trophy", isCorrect: false },
       { id: "o4", label: "🍕 Pizza", isCorrect: false },
     ],
-    educationalWhy: "Headphones was removed. 'Change detection' exercises activate parietal lobes that scan for missing visual anchors.",
+    educationalWhy: "Headphones vanished. 'Change detection' activates the dorsal visual stream to identify missing visual anchors.",
     xpReward: 50,
     coinReward: 15,
     difficulty: "intermediate",
   },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 3. SPOT THE DIFFERENCE
+// ─────────────────────────────────────────────────────────────────────────────
+export const SPOT_DIFFERENCE_POOL: InteractiveChallenge[] = [
   {
-    id: "wm-2",
-    type: "whats_missing",
-    category: "Memory",
-    title: "Night Sky Vanish",
-    instruction: "Study these 8 celestial symbols closely.",
-    memorizeDurationSec: 6,
-    memorizeItems: ["⭐ Star", "🌙 Moon", "☀️ Sun", "🛸 UFO", "☄️ Comet", "🔭 Telescope", "🛰️ Satellite", "🌌 Galaxy"],
-    question: "Which celestial symbol vanished from the night sky?",
+    id: "sd-1",
+    type: "spot_difference",
+    category: "Focus",
+    title: "3. Spot The Difference",
+    instruction: "Compare Sequence A and Sequence B carefully.",
+    visualPromptA: "Sequence A: 🔵 🟢 🟡 🔴 🟣 🟠",
+    visualPromptB: "Sequence B: 🔵 🟢 🟡 🔴 🟤 🟠",
+    question: "Which position contains the difference between Sequence A and Sequence B?",
     options: [
-      { id: "o1", label: "🛸 UFO", isCorrect: true },
-      { id: "o2", label: "🌙 Moon", isCorrect: false },
-      { id: "o3", label: "⭐ Star", isCorrect: false },
-      { id: "o4", label: "☀️ Sun", isCorrect: false },
+      { id: "o1", label: "5th Position (🟣 Purple in A vs 🟤 Brown in B)", isCorrect: true },
+      { id: "o2", label: "3rd Position (🟡 Yellow)", isCorrect: false },
+      { id: "o3", label: "2nd Position (🟢 Green)", isCorrect: false },
+      { id: "o4", label: "6th Position (🟠 Orange)", isCorrect: false },
     ],
-    educationalWhy: "UFO was removed. Visual scanning speed and working memory capacity directly enhance rapid recognition.",
-    xpReward: 55,
-    coinReward: 18,
-    difficulty: "advanced",
+    educationalWhy: "The 5th item changed from Purple to Brown. Scanning side-by-side elements strengthens saccadic visual discrimination.",
+    xpReward: 50,
+    coinReward: 15,
+    difficulty: "intermediate",
   },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 3. PATTERN POWER
+// 4. PATTERN POWER
 // ─────────────────────────────────────────────────────────────────────────────
-export const PATTERN_POWER_CHALLENGES: InteractiveChallenge[] = [
+export const PATTERN_POWER_POOL: InteractiveChallenge[] = [
   {
     id: "pp-1",
     type: "pattern_power",
     category: "Logic",
-    title: "Visual Pattern Sequence",
+    title: "4. Pattern Power",
     instruction: "Identify the geometric rule governing this pattern.",
     question: "Complete the sequence: ▲  ●  ▲  ●  ▲  ?",
     options: [
@@ -155,7 +166,7 @@ export const PATTERN_POWER_CHALLENGES: InteractiveChallenge[] = [
     id: "pp-2",
     type: "pattern_power",
     category: "Logic",
-    title: "Numerical Growth Pattern",
+    title: "4. Pattern Power: Number Progression",
     instruction: "Determine the mathematical progression.",
     question: "What number comes next in the series: 3, 6, 12, 24, ?",
     options: [
@@ -169,36 +180,18 @@ export const PATTERN_POWER_CHALLENGES: InteractiveChallenge[] = [
     coinReward: 18,
     difficulty: "intermediate",
   },
-  {
-    id: "pp-3",
-    type: "pattern_power",
-    category: "Logic",
-    title: "Matrix Logic Deduction",
-    instruction: "Find the symbol that logically satisfies the grid.",
-    question: "Row 1: 🔴 🔵 🟢 | Row 2: 🔵 🟢 🔴 | Row 3: 🟢 🔴 ?",
-    options: [
-      { id: "o1", label: "🔵 Blue", isCorrect: true },
-      { id: "o2", label: "🔴 Red", isCorrect: false },
-      { id: "o3", label: "🟢 Green", isCorrect: false },
-      { id: "o4", label: "🟡 Yellow", isCorrect: false },
-    ],
-    educationalWhy: "Every row and column must contain one Red, one Blue, and one Green element (Latin Square rule).",
-    xpReward: 60,
-    coinReward: 20,
-    difficulty: "advanced",
-  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 4. ODD ONE OUT
+// 5. ODD ONE OUT
 // ─────────────────────────────────────────────────────────────────────────────
-export const ODD_ONE_OUT_CHALLENGES: InteractiveChallenge[] = [
+export const ODD_ONE_OUT_POOL: InteractiveChallenge[] = [
   {
     id: "ooo-1",
     type: "odd_one_out",
     category: "Logic",
-    title: "Prime vs Composite Anomaly",
-    instruction: "Select the item that does not share the common mathematical rule.",
+    title: "5. Odd One Out",
+    instruction: "Select the item that does not share the common underlying rule.",
     question: "Which of these numbers does NOT belong with the others: 11, 13, 15, 17 ?",
     options: [
       { id: "o1", label: "15", isCorrect: true },
@@ -211,35 +204,17 @@ export const ODD_ONE_OUT_CHALLENGES: InteractiveChallenge[] = [
     coinReward: 12,
     difficulty: "intermediate",
   },
-  {
-    id: "ooo-2",
-    type: "odd_one_out",
-    category: "Logic",
-    title: "Geometric Symmetry Anomaly",
-    instruction: "Which geometric shape does not belong?",
-    question: "Which shape has a different number of sides from the others: Square, Rectangle, Rhombus, Pentagon?",
-    options: [
-      { id: "o1", label: "Pentagon (5 sides)", isCorrect: true },
-      { id: "o2", label: "Square (4 sides)", isCorrect: false },
-      { id: "o3", label: "Rectangle (4 sides)", isCorrect: false },
-      { id: "o4", label: "Rhombus (4 sides)", isCorrect: false },
-    ],
-    educationalWhy: "Square, Rectangle, and Rhombus are all 4-sided quadrilaterals, while a Pentagon has 5 sides.",
-    xpReward: 40,
-    coinReward: 10,
-    difficulty: "beginner",
-  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5. FOCUS FIRE & CONCENTRATION
+// 6. FOCUS FIRE
 // ─────────────────────────────────────────────────────────────────────────────
-export const FOCUS_FIRE_CHALLENGES: InteractiveChallenge[] = [
+export const FOCUS_FIRE_POOL: InteractiveChallenge[] = [
   {
     id: "ff-1",
     type: "focus_fire",
     category: "Focus",
-    title: "Focus Fire: Rule Filter",
+    title: "6. Focus Fire: Conjunction Rule",
     instruction: "Read the target rule carefully before answering.",
     question: "RULE: Tap ONLY if the shape is BLUE and has 4 sides.",
     options: [
@@ -248,7 +223,7 @@ export const FOCUS_FIRE_CHALLENGES: InteractiveChallenge[] = [
       { id: "o3", label: "🟥 Red Square", isCorrect: false },
       { id: "o4", label: "🔺 Blue Triangle", isCorrect: false },
     ],
-    educationalWhy: "Only the Blue Square meets BOTH conditions (Blue color + 4 sides). Conjunction search trains prefrontal focus filtering.",
+    educationalWhy: "Only the Blue Square meets BOTH conditions (Blue color + 4 sides). Conjunction filtering trains prefrontal cognitive control.",
     xpReward: 50,
     coinReward: 15,
     difficulty: "intermediate",
@@ -257,7 +232,7 @@ export const FOCUS_FIRE_CHALLENGES: InteractiveChallenge[] = [
     id: "ff-2",
     type: "focus_fire",
     category: "Focus",
-    title: "Stroop Interference Filter",
+    title: "6. Focus Fire: Stroop Filter",
     instruction: "Focus on the COLOR of the word, NOT what the word spells!",
     question: "The word is written in GREEN font: \"RED\". What COLOR is the font?",
     options: [
@@ -271,37 +246,19 @@ export const FOCUS_FIRE_CHALLENGES: InteractiveChallenge[] = [
     coinReward: 18,
     difficulty: "advanced",
   },
-  {
-    id: "ff-3",
-    type: "focus_fire",
-    category: "Focus",
-    title: "Number Exclusion Rule",
-    instruction: "Apply the exclusion filter rapidly.",
-    question: "RULE: Select every number except multiples of 7. Which number is valid?",
-    options: [
-      { id: "o1", label: "36", isCorrect: true },
-      { id: "o2", label: "28 (4 × 7)", isCorrect: false },
-      { id: "o3", label: "42 (6 × 7)", isCorrect: false },
-      { id: "o4", label: "49 (7 × 7)", isCorrect: false },
-    ],
-    educationalWhy: "36 is not divisible by 7, while 28, 42, and 49 are all multiples of 7.",
-    xpReward: 50,
-    coinReward: 15,
-    difficulty: "intermediate",
-  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 6. REACTION CHALLENGE
+// 7. REACTION CHALLENGE
 // ─────────────────────────────────────────────────────────────────────────────
-export const REACTION_CHALLENGES: InteractiveChallenge[] = [
+export const REACTION_POOL: InteractiveChallenge[] = [
   {
     id: "rc-1",
     type: "reaction_challenge",
     category: "Speed",
-    title: "Rapid Visual Reflex",
-    instruction: "Identify the fastest target match as quickly as possible.",
-    question: "Which arrow is pointing in the OPPOSITE direction to the others: ➡️ ➡️ ⬅️ ➡️ ?",
+    title: "7. Reaction Speed Challenge",
+    instruction: "Identify the directional anomaly as fast as possible.",
+    question: "Which arrow is pointing in the OPPOSITE direction: ➡️ ➡️ ⬅️ ➡️ ?",
     options: [
       { id: "o1", label: "3rd Arrow (⬅️ Left)", isCorrect: true },
       { id: "o2", label: "1st Arrow (➡️ Right)", isCorrect: false },
@@ -313,35 +270,17 @@ export const REACTION_CHALLENGES: InteractiveChallenge[] = [
     coinReward: 10,
     difficulty: "beginner",
   },
-  {
-    id: "rc-2",
-    type: "reaction_challenge",
-    category: "Speed",
-    title: "Color Speed Match",
-    instruction: "React to the matching color pair immediately.",
-    question: "Which pair has matching colors: 🔴🔵, 🟡🟡, 🟢🟣, 🟤⚪ ?",
-    options: [
-      { id: "o1", label: "🟡🟡 Yellow Pair", isCorrect: true },
-      { id: "o2", label: "🔴🔵 Red & Blue", isCorrect: false },
-      { id: "o3", label: "🟢🟣 Green & Purple", isCorrect: false },
-      { id: "o4", label: "🟤⚪ Brown & White", isCorrect: false },
-    ],
-    educationalWhy: "🟡🟡 is the only identical pair. Fast visual matching exercises sensory visual pathways.",
-    xpReward: 40,
-    coinReward: 10,
-    difficulty: "beginner",
-  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 7. REMEMBER THE STORY
+// 8. REMEMBER THE STORY
 // ─────────────────────────────────────────────────────────────────────────────
-export const STORY_MEMORY_CHALLENGES: InteractiveChallenge[] = [
+export const STORY_MEMORY_POOL: InteractiveChallenge[] = [
   {
     id: "sm-1",
     type: "story_memory",
     category: "Memory",
-    title: "Story Recall: The Morning Errand",
+    title: "8. Remember The Story",
     instruction: "Read and memorize the story details carefully in 10 seconds.",
     memorizeDurationSec: 10,
     memorizeStory: "David left his apartment in Lagos at 8:15 AM carrying a blue backpack. On his way to work, he stopped at a bakery, purchased 2 loaves of wheat bread and 1 bottle of juice, then boarded a red express bus at 8:35 AM.",
@@ -357,38 +296,18 @@ export const STORY_MEMORY_CHALLENGES: InteractiveChallenge[] = [
     coinReward: 18,
     difficulty: "intermediate",
   },
-  {
-    id: "sm-2",
-    type: "story_memory",
-    category: "Memory",
-    title: "Story Recall: Tech Conference",
-    instruction: "Memorize the schedule details in 10 seconds.",
-    memorizeDurationSec: 10,
-    memorizeStory: "Amaka arrived at the Abuja Tech Summit on Thursday wearing a yellow blazer. Her presentation on AI Neural Networks was scheduled for Hall B at 2:30 PM, right after the keynote address by Dr. Ojo.",
-    question: "In which Hall was Amaka scheduled to present?",
-    options: [
-      { id: "o1", label: "Hall B", isCorrect: true },
-      { id: "o2", label: "Hall A", isCorrect: false },
-      { id: "o3", label: "Hall C", isCorrect: false },
-      { id: "o4", label: "Main Auditorium", isCorrect: false },
-    ],
-    educationalWhy: "Amaka was scheduled in Hall B. Verbal comprehension and spatial narrative indexing test temporal lobe recall.",
-    xpReward: 55,
-    coinReward: 18,
-    difficulty: "intermediate",
-  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 8. MENTAL MATHS (REAL-WORLD ₦ NAIRA SCENARIOS)
+// 9. MENTAL MATHS (REAL-WORLD ₦ NAIRA SCENARIOS)
 // ─────────────────────────────────────────────────────────────────────────────
-export const MENTAL_MATHS_CHALLENGES: InteractiveChallenge[] = [
+export const MENTAL_MATHS_POOL: InteractiveChallenge[] = [
   {
     id: "mm-1",
     type: "mental_maths",
     category: "Logic",
-    title: "Market Budget Calculation",
-    instruction: "Calculate the remaining balance mentally without using a calculator.",
+    title: "9. Mental Maths (₦ Naira)",
+    instruction: "Calculate the remaining balance mentally without a calculator.",
     question: "You have ₦5,000. You buy lunch for ₦1,800, transport for ₦1,200, and a fruit drink for ₦700. How much change remains?",
     options: [
       { id: "o1", label: "₦1,300", isCorrect: true },
@@ -401,35 +320,41 @@ export const MENTAL_MATHS_CHALLENGES: InteractiveChallenge[] = [
     coinReward: 15,
     difficulty: "intermediate",
   },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 10. MENTAL ROTATION & SPATIAL REASONING
+// ─────────────────────────────────────────────────────────────────────────────
+export const MENTAL_ROTATION_POOL: InteractiveChallenge[] = [
   {
-    id: "mm-2",
-    type: "mental_maths",
+    id: "mr-1",
+    type: "mental_rotation",
     category: "Logic",
-    title: "Percentage Discount Speed",
-    instruction: "Compute the final discounted price mentally.",
-    question: "A training course costs ₦20,000. There is a 25% discount today. What is the final price?",
+    title: "10. Mental Rotation",
+    instruction: "Mentally rotate the reference arrow 90° Clockwise.",
+    question: "If an arrow pointing UP (⬆️) is rotated 90° clockwise, which direction does it point?",
     options: [
-      { id: "o1", label: "₦15,000", isCorrect: true },
-      { id: "o2", label: "₦16,000", isCorrect: false },
-      { id: "o3", label: "₦14,500", isCorrect: false },
-      { id: "o4", label: "₦17,500", isCorrect: false },
+      { id: "o1", label: "➡️ Points Right", isCorrect: true },
+      { id: "o2", label: "⬇️ Points Down", isCorrect: false },
+      { id: "o3", label: "⬅️ Points Left", isCorrect: false },
+      { id: "o4", label: "↖️ Points Up-Left", isCorrect: false },
     ],
-    educationalWhy: "25% of ₦20,000 is ₦5,000 (20,000 ÷ 4). ₦20,000 - ₦5,000 = ₦15,000.",
-    xpReward: 55,
-    coinReward: 18,
-    difficulty: "intermediate",
+    educationalWhy: "90° clockwise rotation turns an upward vector directly to the right. Mental transformation exercises right-hemisphere spatial imagery.",
+    xpReward: 45,
+    coinReward: 12,
+    difficulty: "beginner",
   },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 9. DECISION ROOM & STRATEGY
+// 11. DECISION ROOM
 // ─────────────────────────────────────────────────────────────────────────────
-export const DECISION_ROOM_CHALLENGES: InteractiveChallenge[] = [
+export const DECISION_ROOM_POOL: InteractiveChallenge[] = [
   {
     id: "dr-1",
     type: "decision_room",
     category: "Decision",
-    title: "Strategic Decision: Cash vs Emergency",
+    title: "11. Decision Room: Financial Risk",
     instruction: "Evaluate the scenario and pick the optimal decision based on risk management.",
     question: "You have ₦20,000 remaining for weekly essentials. A close acquaintance asks to borrow ₦15,000 until 'tomorrow morning'. What is the smartest decision?",
     options: [
@@ -438,16 +363,22 @@ export const DECISION_ROOM_CHALLENGES: InteractiveChallenge[] = [
       { id: "o3", label: "Borrow money from someone else to lend them ₦15,000", isCorrect: false },
       { id: "o4", label: "Ignore their message completely without responding", isCorrect: false },
     ],
-    educationalWhy: "Financial risk management principle: Never lend capital required for immediate survival on unsecured promises, as loan defaults immediately jeopardize your own essential cash flow.",
+    educationalWhy: "Financial risk management: Never lend capital required for essential survival on unsecured promises.",
     xpReward: 60,
     coinReward: 20,
     difficulty: "intermediate",
   },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 12. REAL-LIFE BRAIN CHALLENGE
+// ─────────────────────────────────────────────────────────────────────────────
+export const REAL_LIFE_POOL: InteractiveChallenge[] = [
   {
-    id: "dr-2",
+    id: "rl-1",
     type: "real_life_challenge",
     category: "Decision",
-    title: "Workplace Negotiation",
+    title: "12. Real-Life Brain Challenge: Negotiation",
     instruction: "Choose the most professional strategic response.",
     question: "A client tells you: \"Your competitor is offering the exact same service for 20% cheaper.\" What is the best FIRST move?",
     options: [
@@ -456,7 +387,7 @@ export const DECISION_ROOM_CHALLENGES: InteractiveChallenge[] = [
       { id: "o3", label: "Tell the client that the competitor does low-quality work", isCorrect: false },
       { id: "o4", label: "End the conversation and refuse to work with them", isCorrect: false },
     ],
-    educationalWhy: "Value-based negotiation: Clarifying the scope prevents a race to the bottom while positioning your service on reliability, warranty, and return on investment rather than price alone.",
+    educationalWhy: "Value-based negotiation: Clarifying the scope prevents an unnecessary race to the bottom.",
     xpReward: 60,
     coinReward: 20,
     difficulty: "advanced",
@@ -464,15 +395,15 @@ export const DECISION_ROOM_CHALLENGES: InteractiveChallenge[] = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 10. 5-SECOND RAPID REFLEX
+// 13. 5-SECOND RAPID CHALLENGE
 // ─────────────────────────────────────────────────────────────────────────────
-export const FIVE_SECOND_CHALLENGES: InteractiveChallenge[] = [
+export const FIVE_SECOND_POOL: InteractiveChallenge[] = [
   {
     id: "fs-1",
     type: "five_second_challenge",
     category: "Speed",
-    title: "5-Second Rapid Magnitude",
-    instruction: "Quick! Select the largest number immediately.",
+    title: "13. 5-Second Rapid Challenge",
+    instruction: "Quick! Select the highest value number immediately.",
     question: "Which of these numbers has the highest value: 37, 73, 27, 63 ?",
     options: [
       { id: "o1", label: "73", isCorrect: true },
@@ -480,53 +411,42 @@ export const FIVE_SECOND_CHALLENGES: InteractiveChallenge[] = [
       { id: "o3", label: "37", isCorrect: false },
       { id: "o4", label: "27", isCorrect: false },
     ],
-    educationalWhy: "73 is the largest value. Rapid visual magnitude comparison strengthens parietal number processing.",
+    educationalWhy: "73 is the largest value. Rapid magnitude comparison exercises parietal number processing.",
     xpReward: 35,
     coinReward: 8,
     difficulty: "beginner",
   },
-  {
-    id: "fs-2",
-    type: "five_second_challenge",
-    category: "Flexibility",
-    title: "5-Second Anagram Match",
-    instruction: "Find the exact anagram of the word LISTEN.",
-    question: "Which word contains the exact same letters as 'LISTEN'?",
-    options: [
-      { id: "o1", label: "SILENT", isCorrect: true },
-      { id: "o2", label: "TINSEL", isCorrect: false },
-      { id: "o3", label: "ENLIST", isCorrect: false },
-      { id: "o4", label: "INLETS", isCorrect: false },
-    ],
-    educationalWhy: "SILENT uses all 6 letters (L-I-S-T-E-N). Rapid mental anagramming exercises lexical working memory.",
-    xpReward: 45,
-    coinReward: 12,
-    difficulty: "intermediate",
-  },
 ];
 
-// All workouts database grouped by category for targeted practice
-export const WORKOUT_CATEGORIES = [
-  { id: "daily", label: "Daily Balanced Workout", icon: "⭐", desc: "6 rounds across Memory, Focus, Speed, Logic & Decision", count: 6 },
-  { id: "memory", label: "Visual Memory & Recall", icon: "🧠", desc: "Grid memorization, vanish tests, and story recall", challenges: [...VISUAL_MEMORY_CHALLENGES, ...WHATS_MISSING_CHALLENGES, ...STORY_MEMORY_CHALLENGES] },
-  { id: "focus", label: "Focus Fire & Concentration", icon: "🎯", desc: "Go/No-Go rule filtering and Stroop interference", challenges: FOCUS_FIRE_CHALLENGES },
-  { id: "speed", label: "Reaction Speed & Reflex", icon: "⚡", desc: "Millisecond reflex response and directional speed", challenges: [...REACTION_CHALLENGES, ...FIVE_SECOND_CHALLENGES] },
-  { id: "logic", label: "Pattern Power & Mental Maths", icon: "🧩", desc: "Sequence solvers and practical ₦ Naira calculations", challenges: [...PATTERN_POWER_CHALLENGES, ...ODD_ONE_OUT_CHALLENGES, ...MENTAL_MATHS_CHALLENGES] },
-  { id: "decision", label: "Decision Room & Strategy", icon: "🏛️", desc: "High-stakes real-world risk management and negotiation", challenges: DECISION_ROOM_CHALLENGES },
+// All workouts database grouped by category for practice
+export const ALL_SUGGESTED_WORKOUTS = [
+  ...VISUAL_MEMORY_POOL,
+  ...WHATS_MISSING_POOL,
+  ...SPOT_DIFFERENCE_POOL,
+  ...PATTERN_POWER_POOL,
+  ...ODD_ONE_OUT_POOL,
+  ...FOCUS_FIRE_POOL,
+  ...REACTION_POOL,
+  ...STORY_MEMORY_POOL,
+  ...MENTAL_MATHS_POOL,
+  ...MENTAL_ROTATION_POOL,
+  ...DECISION_ROOM_POOL,
+  ...REAL_LIFE_POOL,
+  ...FIVE_SECOND_POOL,
 ];
 
-export function generateDailyInteractiveWorkout(daySeed?: number): InteractiveChallenge[] {
-  const day = daySeed ?? new Date().getDate();
-
-  const memoryRound = day % 2 === 0
-    ? VISUAL_MEMORY_CHALLENGES[day % VISUAL_MEMORY_CHALLENGES.length]
-    : WHATS_MISSING_CHALLENGES[day % WHATS_MISSING_CHALLENGES.length];
-
-  const focusRound = FOCUS_FIRE_CHALLENGES[day % FOCUS_FIRE_CHALLENGES.length];
-  const speedRound = REACTION_CHALLENGES[day % REACTION_CHALLENGES.length];
-  const logicRound = PATTERN_POWER_CHALLENGES[day % PATTERN_POWER_CHALLENGES.length];
-  const decisionRound = DECISION_ROOM_CHALLENGES[day % DECISION_ROOM_CHALLENGES.length];
-  const rapidRound = FIVE_SECOND_CHALLENGES[day % FIVE_SECOND_CHALLENGES.length];
-
-  return [memoryRound, focusRound, speedRound, logicRound, decisionRound, rapidRound].filter(Boolean);
+export function generateFullSuggestedDailyWorkout(): InteractiveChallenge[] {
+  // Returns a comprehensive workout covering the suggested challenge types
+  return [
+    VISUAL_MEMORY_POOL[0],
+    WHATS_MISSING_POOL[0],
+    SPOT_DIFFERENCE_POOL[0],
+    FOCUS_FIRE_POOL[0],
+    REACTION_POOL[0],
+    STORY_MEMORY_POOL[0],
+    MENTAL_MATHS_POOL[0],
+    MENTAL_ROTATION_POOL[0],
+    DECISION_ROOM_POOL[0],
+    FIVE_SECOND_POOL[0],
+  ];
 }

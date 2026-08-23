@@ -4,10 +4,12 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { CATEGORIES } from "@/lib/constants";
-import { ArrowLeft, Clock, Zap, Coins, CheckCircle2, Share2, BookOpen, Lightbulb, Star } from "lucide-react";
+import { ArrowLeft, Clock, Zap, Coins, CheckCircle2, Share2, BookOpen, Lightbulb, Star, Lock, Sparkles } from "lucide-react";
 import { CATEGORY_ILLUSTRATIONS } from "@/components/brain-illustrations";
 import { WhyThisMatters } from "@/components/ui/why-this-matters";
 import { ActivityCelebration } from "@/components/ui/activity-celebration";
+import { isActivityUnlocked } from "@/lib/activity-levels";
+import Link from "next/link";
 
 interface Activity {
   id: string;
@@ -44,9 +46,9 @@ const CATEGORY_EMOJIS: Record<string, string> = {
 };
 
 const DIFFICULTY_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  beginner: { label: "Beginner", color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20" },
-  intermediate: { label: "Intermediate", color: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/20" },
-  advanced: { label: "Advanced", color: "text-rose-400", bg: "bg-rose-500/10 border-rose-500/20" },
+  beginner: { label: "Level 1 · Novice", color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20" },
+  intermediate: { label: "Level 2 · Practitioner", color: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/20" },
+  advanced: { label: "Level 3 · Master", color: "text-rose-400", bg: "bg-rose-500/10 border-rose-500/20" },
 };
 
 export default function ActivityDetailPage() {
@@ -57,6 +59,7 @@ export default function ActivityDetailPage() {
   const [completed, setCompleted] = useState(false);
   const [completing, setCompleting] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [userCategoryPoints, setUserCategoryPoints] = useState(0);
 
   const dismissCelebration = useCallback(() => setShowCelebration(false), []);
 
@@ -67,8 +70,25 @@ export default function ActivityDetailPage() {
       .select("*")
       .eq("id", id)
       .single()
-      .then(({ data }) => {
-        setActivity(data);
+      .then(async ({ data }) => {
+        if (data) {
+          setActivity(data);
+
+          // Fetch user's category points
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            const { data: logs } = await supabase
+              .from("activity_logs")
+              .select("xp_earned, activities!inner(category_id)")
+              .eq("user_id", user.id)
+              .eq("activities.category_id", data.category_id);
+
+            if (logs) {
+              const total = logs.reduce((sum: number, log: any) => sum + (log.xp_earned || 40), 0);
+              setUserCategoryPoints(total);
+            }
+          }
+        }
         setLoading(false);
       });
   }, [id]);
@@ -111,7 +131,7 @@ export default function ActivityDetailPage() {
       setCompleted(true);
       setShowCelebration(true);
     } catch {
-      // silent
+      // ignore
     } finally {
       setCompleting(false);
     }
@@ -119,7 +139,7 @@ export default function ActivityDetailPage() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-2xl space-y-4">
+      <div className="mx-auto max-w-2xl space-y-4 p-4">
         <div className="h-8 w-48 animate-pulse rounded bg-muted" />
         <div className="h-64 animate-pulse rounded-2xl bg-muted" />
         <div className="h-40 animate-pulse rounded-2xl bg-muted" />
@@ -147,151 +167,10 @@ export default function ActivityDetailPage() {
   const gradient = CATEGORY_GRADIENTS[category?.slug || ""] || "from-gray-500 to-gray-600";
   const emoji = CATEGORY_EMOJIS[category?.slug || ""] || "🧠";
 
+  const lockStatus = isActivityUnlocked(activity.difficulty, userCategoryPoints);
+
   return (
     <div className="mx-auto w-full max-w-full space-y-5 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
-      {/* Hero */}
-      <div className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${gradient} p-4 sm:p-6`}>
-        <div className="absolute inset-0 bg-black/20" />
-        <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
-        <div className="absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-black/10 blur-3xl" />
-
-        <div className="relative">
-          <button
-            onClick={() => router.back()}
-            className="mb-4 inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-4 py-2.5 text-sm font-medium text-white backdrop-blur-sm hover:bg-white/20 transition-all min-h-[44px]"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </button>
-
-          <div className="flex items-start gap-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15 text-3xl backdrop-blur-sm overflow-hidden">
-              {(() => { const Illust = CATEGORY_ILLUSTRATIONS[category?.slug || ""]; return Illust ? <Illust className="h-12 w-12" /> : emoji; })()}
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs text-white/70">{category?.label}</span>
-                <span className="text-white/30">·</span>
-                <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${diff.bg} ${diff.color}`}>
-                  {diff.label}
-                </span>
-              </div>
-              <h1 className="text-balance text-xl font-bold text-white break-words sm:text-2xl">{activity.title}</h1>
-            </div>
-          </div>
-
-          {/* Stats row */}
-          <div className="mt-4 flex flex-wrap gap-2">
-            <div className="flex items-center gap-1.5 rounded-lg bg-white/15 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm">
-              <Clock className="h-3.5 w-3.5" />
-              {activity.estimated_time}s
-            </div>
-            <div className="flex items-center gap-1.5 rounded-lg bg-white/15 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm">
-              <Zap className="h-3.5 w-3.5" />
-              +{activity.xp} XP
-            </div>
-            <div className="flex items-center gap-1.5 rounded-lg bg-white/15 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm">
-              <Coins className="h-3.5 w-3.5" />
-              +{activity.coins} coins
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Description */}
-      {activity.description && (
-        <div className="rounded-2xl border border-border bg-card p-5">
-          <p className="text-sm leading-relaxed text-muted-foreground">{activity.description}</p>
-          <div className="mt-3">
-            <WhyThisMatters categorySlug={category?.slug || ""} />
-          </div>
-        </div>
-      )}
-
-      {/* Instructions */}
-      {activity.instructions && (
-        <div className="rounded-2xl border border-primary/20 bg-primary/5 p-5">
-          <div className="mb-3 flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-              <BookOpen className="h-4 w-4 text-primary" />
-            </div>
-            <h2 className="font-semibold">How to do this</h2>
-          </div>
-          <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-line">
-            {activity.instructions}
-          </p>
-        </div>
-      )}
-
-      {/* Tips */}
-      {activity.tips && (
-        <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5">
-          <div className="mb-3 flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/10">
-              <Lightbulb className="h-4 w-4 text-amber-400" />
-            </div>
-            <h2 className="font-semibold">Pro Tips</h2>
-          </div>
-          <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-line">
-            {activity.tips}
-          </p>
-        </div>
-      )}
-
-      {/* Benefits */}
-      {activity.benefits && activity.benefits.length > 0 && (
-        <div className="rounded-2xl border border-border bg-card p-5">
-          <div className="mb-3 flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-500/10">
-              <Star className="h-4 w-4 text-violet-400" />
-            </div>
-            <h2 className="font-semibold">What you&apos;ll gain</h2>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {activity.benefits.map((b, i) => (
-              <span
-                key={i}
-                className="rounded-full bg-muted px-3 py-1.5 text-xs text-muted-foreground"
-              >
-                {b}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Action buttons */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        {completed ? (
-          <div className="flex w-full sm:flex-1 items-center justify-center gap-2 rounded-xl border border-green-500/30 bg-green-500/5 px-4 py-3 text-center text-xs font-medium text-green-500 sm:text-sm">
-            <CheckCircle2 className="h-4 w-4 flex-shrink-0" />
-            <span>Completed! +{activity.xp} XP +{activity.coins} coins</span>
-          </div>
-        ) : (
-          <button
-            onClick={markComplete}
-            disabled={completing}
-            className="w-full sm:flex-[2] inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-6 text-sm font-bold text-white shadow-lg shadow-green-500/25 transition-all hover:shadow-xl hover:shadow-green-500/30 disabled:opacity-50 active:scale-[0.97] touch-manipulation"
-          >
-            {completing ? (
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-            ) : (
-              <>
-                <CheckCircle2 className="h-4 w-4" />
-                Mark as Done
-              </>
-            )}
-          </button>
-        )}
-        <button
-          onClick={() => router.push("/dashboard/library")}
-          className="w-full sm:flex-1 inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-border px-4 text-sm font-medium hover:bg-accent active:scale-[0.97] touch-manipulation"
-        >
-          Browse More
-        </button>
-      </div>
-
-      {/* Celebration overlay */}
       <ActivityCelebration
         show={showCelebration}
         xp={activity.xp}
@@ -299,6 +178,159 @@ export default function ActivityDetailPage() {
         title={activity.title}
         onDismiss={dismissCelebration}
       />
+
+      {/* Hero */}
+      <div className={`relative overflow-hidden rounded-3xl bg-gradient-to-br ${gradient} p-5 sm:p-7 shadow-lg`}>
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
+        <div className="absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-black/10 blur-3xl" />
+
+        <div className="relative space-y-3">
+          <button
+            onClick={() => router.back()}
+            className="inline-flex items-center gap-1.5 rounded-xl bg-white/15 px-3.5 py-2 text-xs font-bold text-white backdrop-blur-sm hover:bg-white/25 transition-all min-h-[38px]"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Library
+          </button>
+
+          <div className="flex items-start gap-4">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/20 text-3xl backdrop-blur-sm overflow-hidden text-white shadow-md">
+              {(() => { const Illust = CATEGORY_ILLUSTRATIONS[category?.slug || ""]; return Illust ? <Illust className="h-12 w-12" /> : emoji; })()}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-xs font-bold text-white/80">{category?.label}</span>
+                <span className="text-white/40">·</span>
+                <span className={`rounded-full border px-2 py-0.5 text-[10px] font-black uppercase tracking-wider ${diff.bg} ${diff.color} backdrop-blur-sm`}>
+                  {diff.label}
+                </span>
+              </div>
+              <h1 className="text-balance text-xl sm:text-2xl font-black text-white">{activity.title}</h1>
+            </div>
+          </div>
+
+          {/* Stats row */}
+          <div className="flex flex-wrap gap-2 pt-1">
+            <div className="flex items-center gap-1.5 rounded-xl bg-white/15 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-sm">
+              <Clock className="h-3.5 w-3.5" />
+              {activity.estimated_time}s
+            </div>
+            <div className="flex items-center gap-1.5 rounded-xl bg-white/15 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-sm">
+              <Zap className="h-3.5 w-3.5" />
+              +{activity.xp} XP
+            </div>
+            <div className="flex items-center gap-1.5 rounded-xl bg-white/15 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-sm">
+              <Coins className="h-3.5 w-3.5" />
+              +{activity.coins} coins
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Level Lock Warning Card */}
+      {!lockStatus.unlocked && (
+        <div className="rounded-3xl border-2 border-amber-500/40 bg-gradient-to-r from-amber-500/10 via-card to-orange-500/10 p-5 shadow-lg space-y-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-500 text-white shadow-md">
+              <Lock className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className="text-base font-black text-foreground">
+                Locked at {lockStatus.levelTitle}
+              </h3>
+              <p className="text-xs text-muted-foreground">
+                You need <strong className="text-foreground">{lockStatus.pointsNeeded} more points</strong> in {category?.label} to unlock this activity.
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full transition-all"
+                style={{
+                  width: `${Math.min(100, Math.round((userCategoryPoints / lockStatus.requiredPoints) * 100))}%`,
+                }}
+              />
+            </div>
+            <div className="flex justify-between text-[11px] text-muted-foreground font-bold">
+              <span>{userCategoryPoints} pts earned</span>
+              <span>{lockStatus.requiredPoints} pts needed for Level {lockStatus.requiredLevel}</span>
+            </div>
+          </div>
+
+          <Link
+            href="/dashboard/workout"
+            className="flex items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3 text-xs sm:text-sm font-black text-primary-foreground shadow-md hover:brightness-110 active:scale-95 transition min-h-[44px]"
+          >
+            <Sparkles className="h-4 w-4" />
+            <span>Play Daily Workout to Earn Category Points →</span>
+          </Link>
+        </div>
+      )}
+
+      {/* Description */}
+      {activity.description && (
+        <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
+          <p className="text-xs sm:text-sm text-foreground/90 leading-relaxed">{activity.description}</p>
+        </div>
+      )}
+
+      {/* Why this matters */}
+      <WhyThisMatters categorySlug={category?.slug || ""} />
+
+      {/* Instructions */}
+      {activity.instructions && (
+        <div className="rounded-2xl border border-border bg-card p-4 sm:p-5 space-y-2">
+          <div className="flex items-center gap-2 font-bold text-foreground text-sm">
+            <BookOpen className="h-4 w-4 text-primary" />
+            <span>Instructions</span>
+          </div>
+          <p className="text-xs sm:text-sm text-muted-foreground whitespace-pre-line leading-relaxed">
+            {activity.instructions}
+          </p>
+        </div>
+      )}
+
+      {/* Benefits */}
+      {activity.benefits && activity.benefits.length > 0 && (
+        <div className="rounded-2xl border border-border bg-card p-4 sm:p-5 space-y-2">
+          <div className="flex items-center gap-2 font-bold text-foreground text-sm">
+            <Star className="h-4 w-4 text-amber-500" />
+            <span>Cognitive Benefits</span>
+          </div>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-muted-foreground">
+            {activity.benefits.map((b, i) => (
+              <li key={i} className="flex items-start gap-2">
+                <span className="text-emerald-500">✓</span>
+                <span>{b}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Completion button (only if unlocked) */}
+      {lockStatus.unlocked && (
+        <div className="pt-2">
+          {completed ? (
+            <div className="flex items-center justify-center gap-2 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 p-4 text-emerald-600 dark:text-emerald-400 font-bold text-sm">
+              <CheckCircle2 className="h-5 w-5" />
+              <span>Completed! +{activity.xp} XP Earned</span>
+            </div>
+          ) : (
+            <button
+              onClick={markComplete}
+              disabled={completing}
+              className="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary via-violet-600 to-indigo-600 py-4 px-6 text-sm sm:text-base font-black text-white shadow-lg shadow-primary/25 hover:brightness-110 active:scale-95 transition disabled:opacity-50 min-h-[52px] touch-manipulation"
+            >
+              <Zap className="h-5 w-5" />
+              <span>{completing ? "Recording Points..." : "Complete Activity (+XP)"}</span>
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

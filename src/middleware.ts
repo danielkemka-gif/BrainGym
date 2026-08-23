@@ -24,85 +24,85 @@ const publicPaths = [
 
 const authPaths = ["/login", "/signup", "/forgot-password"];
 const onboardingPath = "/onboarding";
-const dashboardPattern = /^\/dashboard(\/|$)/;
 const adminPattern = /^\/admin(\/|$)/;
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const apiWhitelist = ["/api/paystack/webhook", "/api/health"];
+  try {
+    const apiWhitelist = ["/api/paystack/webhook", "/api/health"];
 
-  if (pathname.startsWith("/api/")) {
-    if (apiWhitelist.some((p) => pathname.startsWith(p))) {
-      return NextResponse.next();
+    if (pathname.startsWith("/api/")) {
+      if (apiWhitelist.some((p) => pathname.startsWith(p))) {
+        return NextResponse.next();
+      }
+      const { supabaseResponse } = await updateSession(request);
+      return supabaseResponse;
     }
 
-    // For all other API routes, refresh session but don't redirect
-    const { supabaseResponse } = await updateSession(request);
+    const { supabaseResponse, user } = await updateSession(request);
+
+    if (user && authPaths.includes(pathname)) {
+      const ref = request.nextUrl.searchParams.get("ref");
+      const target = ref ? `/dashboard?ref=${encodeURIComponent(ref)}` : "/dashboard";
+      return NextResponse.redirect(new URL(target, request.url));
+    }
+
+    if (!user && !publicPaths.includes(pathname)) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    // Admin guard — non-admins redirected to dashboard
+    if (user && adminPattern.test(pathname)) {
+      const supabase = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll();
+          },
+          setAll() {},
+        },
+      });
+
+      const { data: adminRow } = await supabase
+        .from("admins")
+        .select("user_id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (!adminRow) {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
+    }
+
+    // Onboarding guard
+    if (user && pathname === onboardingPath) {
+      const supabase = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll();
+          },
+          setAll() {},
+        },
+      });
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("onboarding_complete")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (profile?.onboarding_complete === true) {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
+    }
+
     return supabaseResponse;
+  } catch (err) {
+    console.warn("Middleware error fallback:", err);
+    return NextResponse.next();
   }
-
-  const { supabaseResponse, user } = await updateSession(request);
-
-  if (user && authPaths.includes(pathname)) {
-    const ref = request.nextUrl.searchParams.get("ref");
-    const target = ref ? `/dashboard?ref=${encodeURIComponent(ref)}` : "/dashboard";
-    return NextResponse.redirect(new URL(target, request.url));
-  }
-
-  if (!user && !publicPaths.includes(pathname)) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
-  // Admin guard — non-admins redirected to dashboard
-  if (user && adminPattern.test(pathname)) {
-    const supabase = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll() {},
-      },
-    });
-
-    const { data: adminRow } = await supabase
-      .from("admins")
-      .select("user_id")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    if (!adminRow) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
-  }
-
-  // Onboarding guard — check profile only if needed
-  if (user) {
-    const supabase = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll() {},
-      },
-    });
-
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("onboarding_complete")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    const onboarded = profile?.onboarding_complete === true;
-
-    if (onboarded && pathname === onboardingPath) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
-  }
-
-  return supabaseResponse;
 }
 
 export const config = {

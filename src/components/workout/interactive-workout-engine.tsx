@@ -147,7 +147,15 @@ export function InteractiveWorkoutEngine({ challenges, onComplete }: Interactive
     }
   }
 
-  const progressPercent = Math.round(((currentIndex + 1) / challenges.length) * 100);
+  const progressPercent = Math.round(((currentIndex + 1) / (challenges.length || 1)) * 100);
+
+  if (!currentChallenge) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto w-full max-w-2xl space-y-4">

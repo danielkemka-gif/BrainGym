@@ -34,25 +34,28 @@ export default function WorkoutPage() {
     setChallenges(dailyChallenges);
 
     const supabase = createClient();
-    supabase.auth.getUser().then(async ({ data: { user } }) => {
-      if (!user) {
+    supabase.auth
+      .getUser()
+      .then(async ({ data: { user } }) => {
+        if (!user) return;
+
+        // Fetch user profile streak
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("current_streak, streak_count")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (profile) {
+          setStreakDays((profile.current_streak ?? profile.streak_count ?? 14) + 1);
+        }
+      })
+      .catch((err) => {
+        console.warn("User auth fetch fallback:", err);
+      })
+      .finally(() => {
         setLoading(false);
-        return;
-      }
-
-      // Fetch user profile streak
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("current_streak, streak_count")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (profile) {
-        setStreakDays((profile.current_streak ?? profile.streak_count ?? 14) + 1);
-      }
-
-      setLoading(false);
-    });
+      });
   }, []);
 
   const handleWorkoutComplete = useCallback(async (summary: WorkoutResultSummary) => {

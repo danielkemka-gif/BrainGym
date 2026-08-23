@@ -2,6 +2,13 @@ import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { updateSession } from "@/lib/supabase/middleware";
 
+const SUPABASE_URL =
+  process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  "https://qxivwyyompzpipfzcufl.supabase.co";
+const SUPABASE_ANON_KEY =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  "sb_publishable_2AwU9whNSoohKmLAdq6wtw_VC7Oydiu";
+
 const publicPaths = [
   "/",
   "/features",
@@ -43,7 +50,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(target, request.url));
   }
 
-
   if (!user && !publicPaths.includes(pathname)) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirect", pathname);
@@ -52,16 +58,14 @@ export async function middleware(request: NextRequest) {
 
   // Admin guard — non-admins redirected to dashboard
   if (user && adminPattern.test(pathname)) {
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() { return request.cookies.getAll(); },
-          setAll() {},
+    const supabase = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
         },
-      }
-    );
+        setAll() {},
+      },
+    });
 
     const { data: adminRow } = await supabase
       .from("admins")
@@ -76,16 +80,14 @@ export async function middleware(request: NextRequest) {
 
   // Onboarding guard — check profile only if needed
   if (user) {
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() { return request.cookies.getAll(); },
-          setAll() {},
+    const supabase = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
         },
-      }
-    );
+        setAll() {},
+      },
+    });
 
     const { data: profile } = await supabase
       .from("profiles")

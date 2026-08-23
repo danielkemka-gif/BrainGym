@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Download, X, Smartphone, Share, PlusSquare } from 'lucide-react';
+import { Download, X, Smartphone, Share, PlusSquare, MoreVertical } from 'lucide-react';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -14,9 +14,10 @@ export function PWAInstallPrompt() {
   const [showPrompt, setShowPrompt] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
+  const [showAndroidInstructions, setShowAndroidInstructions] = useState(false);
 
   useEffect(() => {
-    // Check if already in standalone (installed) mode
+    // Check if already running in standalone mode (already installed)
     if (
       window.matchMedia('(display-mode: standalone)').matches ||
       (window.navigator as any).standalone === true
@@ -30,13 +31,9 @@ export function PWAInstallPrompt() {
     const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
     setIsIOS(isIosDevice);
 
-    // If iOS and not standalone, show prompt after 2 seconds
-    if (isIosDevice) {
-      const timer = setTimeout(() => setShowPrompt(true), 2000);
-      return () => clearTimeout(timer);
-    }
+    // Show prompt after 1.5 seconds for all users
+    const timer = setTimeout(() => setShowPrompt(true), 1500);
 
-    // For Android / Chrome
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
@@ -44,17 +41,23 @@ export function PWAInstallPrompt() {
     };
 
     window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('beforeinstallprompt', handler);
+    };
   }, []);
 
   const handleInstall = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      setShowPrompt(false);
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setShowPrompt(false);
+      }
+      setDeferredPrompt(null);
+    } else {
+      setShowAndroidInstructions(true);
     }
-    setDeferredPrompt(null);
   };
 
   const handleDismiss = () => {
@@ -79,10 +82,10 @@ export function PWAInstallPrompt() {
               </div>
               <div>
                 <h4 className="font-black text-foreground text-sm sm:text-base">
-                  Install BrainGym App
+                  Install BrainGym on Phone
                 </h4>
                 <p className="text-[11px] text-muted-foreground">
-                  Install on your smartphone for faster daily training
+                  Train faster with 1-tap instant access
                 </p>
               </div>
             </div>
@@ -95,19 +98,33 @@ export function PWAInstallPrompt() {
             </button>
           </div>
 
-          {/* Android 1-Click Install */}
-          {deferredPrompt && (
-            <button
-              onClick={handleInstall}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-gradient-to-r from-primary via-violet-600 to-indigo-600 text-white text-xs sm:text-sm font-black shadow-lg shadow-primary/25 active:scale-[0.98] transition touch-manipulation min-h-[44px]"
-            >
-              <Download className="w-4 h-4" />
-              <span>Install to Home Screen Now</span>
-            </button>
+          {/* Android 1-Click Install or Manual Guide */}
+          {!isIOS && (
+            <div className="space-y-2">
+              <button
+                onClick={handleInstall}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-gradient-to-r from-primary via-violet-600 to-indigo-600 text-white text-xs sm:text-sm font-black shadow-lg shadow-primary/25 active:scale-[0.98] transition touch-manipulation min-h-[44px]"
+              >
+                <Download className="w-4 h-4" />
+                <span>Install BrainGym App</span>
+              </button>
+
+              {showAndroidInstructions && !deferredPrompt && (
+                <div className="rounded-2xl bg-muted/70 border border-border p-2.5 text-xs text-muted-foreground text-left space-y-1">
+                  <p className="font-bold text-foreground">How to install on Android:</p>
+                  <p>
+                    1. Tap the <MoreVertical className="inline h-3.5 w-3.5 text-primary" /> <strong>3 dots (menu)</strong> in your browser.
+                  </p>
+                  <p>
+                    2. Tap <strong>&ldquo;Install App&rdquo;</strong> or <strong>&ldquo;Add to Home screen&rdquo;</strong>.
+                  </p>
+                </div>
+              )}
+            </div>
           )}
 
           {/* iOS Safari Instructions */}
-          {isIOS && !deferredPrompt && (
+          {isIOS && (
             <div className="rounded-2xl bg-muted/60 border border-border p-3 text-xs space-y-1.5 text-left">
               <div className="flex items-center gap-1.5 font-bold text-foreground">
                 <span>To install on iPhone / iPad:</span>

@@ -12,6 +12,7 @@ import { BrainAgeMilestones } from "@/components/dashboard/brain-age-milestones"
 import { WeeklyBrainReportCard } from "@/components/dashboard/weekly-brain-report-card";
 import { WelcomeTour } from "@/components/dashboard/welcome-tour";
 import { LevelUpCelebration } from "@/components/dashboard/level-up-celebration";
+import { DashboardInstallCard } from "@/components/dashboard/dashboard-install-card";
 import { Swords, MessageCircle, Gamepad2, Scale, Compass, Crown, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
@@ -67,6 +68,9 @@ export default function DashboardPage() {
 
       {/* ─── 2. LIVE NEXT-STEP POINTER (Zero trial & error guidance) ─────────── */}
       <LiveHabitPointer habit={habit} />
+
+      {/* ─── 2.5 MOBILE PWA INSTALL CARD ───────────────────────────────────────── */}
+      <DashboardInstallCard />
 
       {/* ─── 3. PRO MEMBERSHIP PERKS & BENEFITS HERO ─────────────────────────── */}
       <Suspense fallback={<div className="h-32 bg-muted rounded-2xl animate-pulse" />}>

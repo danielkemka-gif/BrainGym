@@ -8,9 +8,9 @@ import { SIDEBAR_ICONS } from "@/lib/icons";
 const TABS = [
   { href: "/dashboard", labelKey: "nav_dashboard", iconKey: "dashboard" },
   { href: "/dashboard/workout", labelKey: "nav_workout", iconKey: "workout" },
-  { href: "/dashboard/challenges", labelKey: "nav_challenges", iconKey: "challenges" },
-  { href: "/dashboard/chat", labelKey: "nav_chat", iconKey: "chat" },
+  { href: "/dashboard/physical", labelKey: "nav_physical" as any, iconKey: "physical" },
   { href: "/dashboard/progress", labelKey: "nav_progress", iconKey: "progress" },
+  { href: "/dashboard/challenges", labelKey: "nav_challenges", iconKey: "challenges" },
 ] as const;
 
 export function MobileNav() {

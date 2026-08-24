@@ -1,0 +1,100 @@
+import { CognitiveChallenge } from "./types";
+
+export const EXECUTIVE_DECISION_CHALLENGES: CognitiveChallenge[] = [
+  {
+    id: "exec-01",
+    title: "The Sunk Cost Dilemma",
+    category: "Executive Decisions",
+    subcategory: "Resource Allocation",
+    difficulty: "intermediate",
+    type: "decision_room",
+    estimatedTimeSec: 25,
+    cognitiveSkill: "Rational Asset Allocation",
+    instruction: "Analyze this executive scenario and pick the most rational choice.",
+    question: "Your team spent $45,000 developing Feature A, but user demand just shifted 100% to Feature B. Should you finish Feature A to 'not waste money'?",
+    options: [
+      {
+        id: "o1",
+        label: "Pivot immediately to Feature B. Sunk costs cannot be recovered; only future returns matter.",
+        isCorrect: true,
+      },
+      {
+        id: "o2",
+        label: "Finish Feature A first so the $45k is not completely lost.",
+        isCorrect: false,
+      },
+      {
+        id: "o3",
+        label: "Split budget 50/50 between both to stay safe.",
+        isCorrect: false,
+      },
+    ],
+    educationalWhy: "The Sunk Cost Fallacy tricks our brains into throwing good resources after bad. Rational decision-makers only weigh future expected value.",
+    xpReward: 55,
+    coinReward: 15,
+  },
+  {
+    id: "exec-02",
+    title: "Crisis Triage Prioritization",
+    category: "Executive Decisions",
+    subcategory: "Incident Management",
+    difficulty: "advanced",
+    type: "decision_room",
+    estimatedTimeSec: 25,
+    cognitiveSkill: "Systemic Root-Cause Prioritization",
+    instruction: "Make a high-stakes operational decision under time pressure.",
+    question: "Your database latency spikes to 95% causing payment timeouts, while marketing is about to blast 50,000 push notifications. What must happen first?",
+    options: [
+      {
+        id: "o1",
+        label: "Immediately pause the push notification blast, scale database replicas, and verify payment gateways.",
+        isCorrect: true,
+      },
+      {
+        id: "o2",
+        label: "Let the push notifications go out to see if database fixes itself under load.",
+        isCorrect: false,
+      },
+      {
+        id: "o3",
+        label: "Ignore the payments and focus on writing marketing copy.",
+        isCorrect: false,
+      },
+    ],
+    educationalWhy: "Incident triage requires throttling incoming traffic surges to protect core transactional integrity.",
+    xpReward: 60,
+    coinReward: 15,
+  },
+  {
+    id: "exec-03",
+    title: "Opportunity Cost Evaluation",
+    category: "Executive Decisions",
+    subcategory: "Strategic Tradeoffs",
+    difficulty: "intermediate",
+    type: "decision_room",
+    estimatedTimeSec: 20,
+    cognitiveSkill: "Opportunity Cost Calculation",
+    instruction: "You have 1 senior engineer for 2 weeks.",
+    question: "Project Alpha brings $10k recurring revenue. Project Beta saves $3k one-time cost. What is the true opportunity cost of choosing Project Beta?",
+    options: [
+      {
+        id: "o1",
+        label: "Foregoing $10k recurring monthly revenue for a small one-time gain.",
+        isCorrect: true,
+      },
+      {
+        id: "o2",
+        label: "$3k savings.",
+        isCorrect: false,
+      },
+      {
+        id: "o3",
+        label: "Zero opportunity cost because both are productive.",
+        isCorrect: false,
+      },
+    ],
+    educationalWhy: "Opportunity cost is the highest-value alternative foregone when making a decision.",
+    xpReward: 55,
+    coinReward: 15,
+  },
+];

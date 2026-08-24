@@ -17,10 +17,15 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!user) return;
-    setUserName(user.user_metadata?.full_name || null);
+    const rawName =
+      user.user_metadata?.full_name ||
+      user.user_metadata?.name ||
+      (user.email ? user.email.split("@")[0].replace(/[0-9._-]/g, " ").trim() : null);
+    const formatted = rawName ? rawName.charAt(0).toUpperCase() + rawName.slice(1) : "Account";
+    setUserName(formatted);
     identifyUser(user.id, {
       email: user.email,
-      name: user.user_metadata?.full_name,
+      name: formatted,
       created_at: user.created_at,
     });
   }, [user]);

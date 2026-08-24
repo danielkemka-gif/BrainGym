@@ -1,0 +1,46 @@
+import { CognitiveChallenge } from "./types";
+
+export const SPATIAL_REASONING_CHALLENGES: CognitiveChallenge[] = [
+  {
+    id: "spt-01",
+    title: "90° Clockwise Mental Rotation",
+    category: "Spatial Reasoning",
+    subcategory: "Mental Rotation",
+    difficulty: "intermediate",
+    type: "spatial_rotation",
+    estimatedTimeSec: 18,
+    cognitiveSkill: "3D Mental Object Rotation",
+    instruction: "Mentally rotate this shape 90 degrees clockwise.",
+    question: "If an arrow pointing NORTH (⬆️) is rotated 90° clockwise, where does it point?",
+    options: [
+      { id: "o1", label: "EAST (➡️)", isCorrect: true },
+      { id: "o2", label: "SOUTH (⬇️)", isCorrect: false },
+      { id: "o3", label: "WEST (⬅️)", isCorrect: false },
+      { id: "o4", label: "NORTHEAST (↗️)", isCorrect: false },
+    ],
+    educationalWhy: "Shepard & Metzler mental rotation tests engage spatial manipulation networks in the right parietal lobe.",
+    xpReward: 50,
+    coinReward: 12,
+  },
+  {
+    id: "spt-02",
+    title: "Mirror Image Symmetry",
+    category: "Spatial Reasoning",
+    subcategory: "Mirror Transformation",
+    difficulty: "beginner",
+    type: "spatial_rotation",
+    estimatedTimeSec: 15,
+    cognitiveSkill: "Bilateral Symmetry Detection",
+    instruction: "Look at the letter 'E'.",
+    question: "When reflected across a vertical mirror line on its right, what does 'E' look like?",
+    options: [
+      { id: "o1", label: "Ǝ (Backwards facing horizontal arms)", isCorrect: true },
+      { id: "o2", label: "M (Rotated vertical)", isCorrect: false },
+      { id: "o3", label: "W (Inverted)", isCorrect: false },
+      { id: "o4", label: "E (Unchanged)", isCorrect: false },
+    ],
+    educationalWhy: "Mirror-plane transformation exercises bilateral coordinate inversion.",
+    xpReward: 45,
+    coinReward: 10,
+  },
+];

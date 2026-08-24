@@ -164,8 +164,23 @@ export async function fetchHabitEngineState(userId?: string): Promise<HabitMetri
         .eq("user_id", userId)
         .maybeSingle();
 
+      let rawName = profile?.name || profile?.full_name;
+      const { data: authData } = await supabase.auth.getUser();
+      const authUser = authData?.user;
+
+      if (!rawName && authUser) {
+        rawName = authUser.user_metadata?.full_name || authUser.user_metadata?.name;
+        if (!rawName && authUser.email) {
+          const emailPrefix = authUser.email.split("@")[0].replace(/[0-9._-]/g, " ").trim();
+          rawName = emailPrefix ? emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1) : undefined;
+        }
+      }
+
+      if (rawName) {
+        userName = rawName.trim();
+      }
+
       if (profile) {
-        userName = profile.name || profile.full_name || "Thinker";
         streak = profile.current_streak ?? profile.streak_count ?? 14;
         streakShields = profile.streak_freeze_count ?? 2;
       }

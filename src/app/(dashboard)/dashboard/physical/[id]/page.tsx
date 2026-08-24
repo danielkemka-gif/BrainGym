@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   PHYSICAL_ACTIVITIES_LIBRARY,
   PhysicalActivity,
@@ -26,16 +26,13 @@ import {
   Footprints,
 } from "lucide-react";
 
-export default function PhysicalActivityDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const resolvedParams = use(params);
+export default function PhysicalActivityDetailPage() {
+  const params = useParams();
   const router = useRouter();
+  const activityId = (params?.id as string) || "";
 
   const activity =
-    PHYSICAL_ACTIVITIES_LIBRARY.find((a) => a.id === resolvedParams.id) ||
+    PHYSICAL_ACTIVITIES_LIBRARY.find((a) => a.id === activityId) ||
     PHYSICAL_ACTIVITIES_LIBRARY[0];
 
   // Timer states

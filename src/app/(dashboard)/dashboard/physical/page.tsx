@@ -46,7 +46,7 @@ const CATEGORIES: { label: string; value: string; icon: string }[] = [
   { label: "Social Brain", value: "Social Brain & Leadership", icon: "🤝" },
 ];
 
-export function ActivityIllustrationBadge({ type }: { type: string }) {
+function ActivityIllustrationBadge({ type }: { type: string }) {
   const getEmoji = () => {
     switch (type) {
       case "meditation":

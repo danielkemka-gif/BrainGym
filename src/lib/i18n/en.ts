@@ -25,6 +25,8 @@ export const en: TranslationKeys = {
   nav_guide: "Feature Guide",
   nav_premium: "Premium Membership",
   nav_training: "Cognitive Training",
+  nav_physical: "Physical Activities",
+  nav_reminders: "Smart Reminders",
   nav_tagline: "Train Your Brain For Real Life",
 
   // Dashboard

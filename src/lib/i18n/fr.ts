@@ -25,6 +25,8 @@ export const fr: TranslationKeys = {
   nav_guide: "Guide des fonctionnalités",
   nav_premium: "Abonnement Premium",
   nav_training: "Entraînement Cognitif",
+  nav_physical: "Activités Physiques",
+  nav_reminders: "Rappels Intelligents",
   nav_tagline: "Entraîne ton cerveau pour la vraie vie",
 
   // Dashboard

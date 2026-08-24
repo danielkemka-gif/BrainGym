@@ -25,6 +25,8 @@ export const pcm: TranslationKeys = {
   nav_guide: "How App Dey Work",
   nav_premium: "Premium Member",
   nav_training: "Cognitive Training",
+  nav_physical: "Physical Activities",
+  nav_reminders: "Brain Reminders",
   nav_tagline: "Train Your Brain For Real Life",
 
   // Dashboard

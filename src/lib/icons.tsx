@@ -64,6 +64,8 @@ import {
   Snowflake,
   ShoppingCart,
   Globe,
+  Footprints,
+  Bell,
 } from "lucide-react";
 
 /* ── Sidebar Nav ──────────────────────────────────────────────── */
@@ -90,6 +92,8 @@ export const SIDEBAR_ICONS: Record<string, LucideIcon> = {
   guide: Compass,
   premium: Crown,
   training: Zap,
+  physical: Footprints,
+  reminders: Bell,
 };
 
 /* ── Category Icons ───────────────────────────────────────────── */

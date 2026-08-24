@@ -75,6 +75,14 @@ export function ChatUI() {
           content: row.message,
         }));
         setMessages(historyMessages);
+      } else {
+        setMessages([
+          {
+            id: "welcome-1",
+            role: "coach",
+            content: "Hello and welcome to BrainGym! 🧠 I am your AI Brain & Habit Coach. Whether you want to sharpen your focus for work, master deep memory techniques, improve sleep quality, or build unstoppable daily consistency, I am here to guide you. What cognitive goal or challenge would you like to work on today?",
+          },
+        ]);
       }
 
       setLoadingHistory(false);

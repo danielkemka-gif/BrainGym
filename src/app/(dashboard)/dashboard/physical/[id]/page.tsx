@@ -273,13 +273,21 @@ export default function PhysicalActivityDetailPage() {
             <p className="text-xs text-muted-foreground">
               +{activity.xpReward} XP and +{activity.coinReward} Coins have been added to your profile.
             </p>
-            <Link
-              href="/dashboard/physical"
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 text-white px-6 py-3.5 text-xs font-black shadow-md transition active:scale-95"
-            >
-              <span>Explore More Physical Activities</span>
-              <ArrowRight className="h-4 w-4" />
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-2.5 justify-center pt-2">
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary to-violet-600 text-white px-6 py-3.5 text-xs font-black shadow-md transition active:scale-95 min-h-[44px]"
+              >
+                <span>Return to Dashboard 🏠</span>
+              </Link>
+              <Link
+                href="/dashboard/physical"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border bg-card hover:bg-muted text-foreground px-6 py-3.5 text-xs font-bold transition active:scale-95 min-h-[44px]"
+              >
+                <span>Explore More Activities</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
         ) : (
           <button

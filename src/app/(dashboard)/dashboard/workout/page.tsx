@@ -293,22 +293,29 @@ export default function WorkoutPage() {
             </p>
           </div>
 
-          {/* Action CTAs */}
-          <div className="space-y-2 pt-2">
+          {/* Action CTAs: Natural progression to next activity */}
+          <div className="space-y-2.5 pt-2">
+            <Link
+              href="/dashboard/physical"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-teal-700 px-6 py-4 text-sm font-black text-white shadow-lg shadow-emerald-600/30 hover:brightness-110 active:scale-[0.98] transition min-h-[52px]"
+            >
+              <span>CONTINUE TO TODAY&apos;S PHYSICAL TASK 🏃</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+
             <Link
               href="/dashboard"
-              className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary via-violet-600 to-indigo-600 px-6 py-4 text-sm font-black text-white shadow-lg shadow-primary/30 hover:brightness-110 active:scale-[0.98] transition min-h-[50px]"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-2xl border border-border bg-card px-6 py-3 text-xs font-bold hover:bg-accent transition min-h-[44px]"
             >
               <span>Back to Dashboard</span>
-              <ArrowRight className="h-4 w-4" />
             </Link>
 
             <button
               onClick={handleShuffleNewWorkout}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-2xl border border-border bg-card px-6 py-3 text-xs font-bold hover:bg-accent transition min-h-[44px]"
+              className="w-full inline-flex items-center justify-center gap-1.5 text-[11px] font-semibold text-muted-foreground hover:text-foreground pt-1 min-h-[32px]"
             >
-              <RotateCcw className="h-4 w-4 text-muted-foreground" />
-              <span>Train Again with 7 Fresh Dynamic Challenges</span>
+              <RotateCcw className="h-3.5 w-3.5" />
+              <span>Or replay with 7 fresh dynamic challenges</span>
             </button>
           </div>
         </div>

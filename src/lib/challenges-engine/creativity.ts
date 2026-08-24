@@ -20,12 +20,17 @@ export const CREATIVITY_CHALLENGES: CognitiveChallenge[] = [
       },
       {
         id: "o2",
-        label: "Bury both pots directly under dry hot sand in direct sunlight.",
+        label: "Bury both pots directly under dry hot sand in direct sunlight to bake them.",
         isCorrect: false,
       },
       {
         id: "o3",
-        label: "Wrap the pots with dry newspaper and seal them airtight.",
+        label: "Wrap the pots with dry newspaper, seal them airtight, and keep in stagnant air.",
+        isCorrect: false,
+      },
+      {
+        id: "o4",
+        label: "Fill both pots with boiling water and invert them against each other.",
         isCorrect: false,
       },
     ],
@@ -52,12 +57,17 @@ export const CREATIVITY_CHALLENGES: CognitiveChallenge[] = [
       },
       {
         id: "o2",
-        label: "Melt the side of the candle and push it directly against the wall.",
+        label: "Melt the side of the candle and push it directly against the wall surface until cool.",
         isCorrect: false,
       },
       {
         id: "o3",
-        label: "Pin the wick directly with three tacks into the cork board.",
+        label: "Pin the wick directly with three tacks into the cork board and burn it horizontally.",
+        isCorrect: false,
+      },
+      {
+        id: "o4",
+        label: "Tie the matches together with wick thread to build an extended cantilever scaffold.",
         isCorrect: false,
       },
     ],
@@ -105,12 +115,17 @@ export const CREATIVITY_CHALLENGES: CognitiveChallenge[] = [
       },
       {
         id: "o2",
-        label: "Draw circular curved arcs between the outer corners.",
+        label: "Draw circular curved arcs between the outer corners and central dot.",
         isCorrect: false,
       },
       {
         id: "o3",
-        label: "Only connect the 4 outer corner dots and skip the center.",
+        label: "Only connect the 4 outer corner dots and skip the center dot entirely.",
+        isCorrect: false,
+      },
+      {
+        id: "o4",
+        label: "Fold the paper in half so that all nine dots overlap in a single point.",
         isCorrect: false,
       },
     ],
@@ -137,12 +152,17 @@ export const CREATIVITY_CHALLENGES: CognitiveChallenge[] = [
       },
       {
         id: "o2",
-        label: "It lowers the standards of the product so less effort is needed.",
+        label: "It lowers the standards of the product so that less engineering effort is needed overall.",
         isCorrect: false,
       },
       {
         id: "o3",
-        label: "It replaces all user testing with theoretical guesses.",
+        label: "It replaces all empirical user testing with theoretical designer guesses and assumptions.",
+        isCorrect: false,
+      },
+      {
+        id: "o4",
+        label: "It forces users to complete complicated manual verification steps before account setup.",
         isCorrect: false,
       },
     ],

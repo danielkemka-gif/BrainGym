@@ -20,17 +20,17 @@ export const EQ_CHALLENGES: CognitiveChallenge[] = [
       },
       {
         id: "o2",
-        label: "'If you can't take constructive feedback, you shouldn't be on this project.'",
+        label: "'If you cannot take constructive feedback from senior peers, you should not be leading this initiative.'",
         isCorrect: false,
       },
       {
         id: "o3",
-        label: "Stay silent and report them immediately to upper management.",
+        label: "'Calm down immediately, you are overreacting emotionally to completely objective technical feedback.'",
         isCorrect: false,
       },
       {
         id: "o4",
-        label: "'Calm down, you are overreacting.'",
+        label: "Remain completely silent during the meeting and escalate the confrontation directly to HR afterwards.",
         isCorrect: false,
       },
     ],
@@ -57,12 +57,17 @@ export const EQ_CHALLENGES: CognitiveChallenge[] = [
       },
       {
         id: "o2",
-        label: "Interrupt them back to defend your authority.",
+        label: "Interrupt them immediately to reassert your technical credentials and defend your domain authority.",
         isCorrect: false,
       },
       {
         id: "o3",
-        label: "Rush through the rest of the presentation to finish quickly.",
+        label: "Speed up and rush through the remainder of the presentation slides to conclude the meeting quickly.",
+        isCorrect: false,
+      },
+      {
+        id: "o4",
+        label: "Concede that the data might be faulty on the spot to avoid public disagreement with the stakeholder.",
         isCorrect: false,
       },
     ],
@@ -89,12 +94,17 @@ export const EQ_CHALLENGES: CognitiveChallenge[] = [
       },
       {
         id: "o2",
-        label: "Assign them more work so they don't have time to feel tired.",
+        label: "Assign them additional high-priority deliverables so that they stay occupied and maintain momentum.",
         isCorrect: false,
       },
       {
         id: "o3",
-        label: "Send a public email reminding the team about missing deadlines.",
+        label: "Send a company-wide email reminding everyone about strict deadline adherence and professionalism.",
+        isCorrect: false,
+      },
+      {
+        id: "o4",
+        label: "Reassign their entire project to an intern without informing them to avoid causing additional stress.",
         isCorrect: false,
       },
     ],
@@ -111,7 +121,7 @@ export const EQ_CHALLENGES: CognitiveChallenge[] = [
     type: "decision_room",
     estimatedTimeSec: 18,
     cognitiveSkill: "Active Empathetic Listening",
-    instruction: "A friend shares: 'I had the most exhausting day at work, everything went wrong.'",
+    instruction: "A colleague shares: 'I had the most exhausting day at work, everything went wrong.'",
     question: "What is the best initial conversational response?",
     options: [
       {
@@ -121,12 +131,17 @@ export const EQ_CHALLENGES: CognitiveChallenge[] = [
       },
       {
         id: "o2",
-        label: "'You should just quit and find a new job tomorrow.'",
+        label: "'You should quit immediately and start interviewing for new executive roles tomorrow morning.'",
         isCorrect: false,
       },
       {
         id: "o3",
-        label: "'Well, my day was much worse than yours, let me tell you.'",
+        label: "'My day was significantly worse than yours; let me tell you about the crisis I had to manage.'",
+        isCorrect: false,
+      },
+      {
+        id: "o4",
+        label: "'It is all in your mindset—just stay positive and everything will automatically work out fine.'",
         isCorrect: false,
       },
     ],

@@ -17,17 +17,22 @@ export const BOSS_CHALLENGES: CognitiveChallenge[] = [
     options: [
       {
         id: "o1",
-        label: "Route backup battery bus B first (Preserves electrical life).",
+        label: "Route backup battery bus B first (Preserves core electrical life).",
         isCorrect: true,
       },
       {
         id: "o2",
-        label: "Pressurize cabin immediately without battery routing.",
+        label: "Pressurize cabin immediately without routing backup battery electrical lines.",
         isCorrect: false,
       },
       {
         id: "o3",
-        label: "Vent Tank 2 completely into space.",
+        label: "Vent Tank 2 completely into deep space to prevent cabin pressure explosion.",
+        isCorrect: false,
+      },
+      {
+        id: "o4",
+        label: "Shut down primary telemetry communication antennas to conserve battery reserve.",
         isCorrect: false,
       },
     ],
@@ -48,9 +53,9 @@ export const BOSS_CHALLENGES: CognitiveChallenge[] = [
     question: "Condition: If ALL A are B, and NO B are C, and SOME D are A: Which statement is IRREFUTABLY TRUE?",
     options: [
       { id: "o1", label: "Some D are NOT C (Because those D are A, and thus B, which cannot be C).", isCorrect: true },
-      { id: "o2", label: "All D are C.", isCorrect: false },
-      { id: "o3", label: "All C are A.", isCorrect: false },
-      { id: "o4", label: "No D are B.", isCorrect: false },
+      { id: "o2", label: "All D are C (Contradicts the subset relationship established by premise).", isCorrect: false },
+      { id: "o3", label: "All C are A (Impossible since no B are C and all A are contained in B).", isCorrect: false },
+      { id: "o4", label: "No D are B (False because some D are explicitly identified as A/B).", isCorrect: false },
     ],
     educationalWhy: "Euler/Venn multi-subset deduction tests peak working memory abstraction without pen and paper.",
     xpReward: 120,

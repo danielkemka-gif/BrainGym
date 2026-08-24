@@ -20,12 +20,17 @@ export const CRITICAL_THINKING_CHALLENGES: CognitiveChallenge[] = [
       },
       {
         id: "o2",
-        label: "The sample size was too small.",
+        label: "The sample size evaluated across coastal cities was too small to draw mathematical conclusions.",
         isCorrect: false,
       },
       {
         id: "o3",
-        label: "Ice cream digestion causes cramps immediately in all swimmers.",
+        label: "Eating ice cream impairs physical digestion and causes immediate severe cramps in all swimmers.",
+        isCorrect: false,
+      },
+      {
+        id: "o4",
+        label: "The correlation is purely fictional and ice cream consumption does not actually peak in summer.",
         isCorrect: false,
       },
     ],
@@ -52,12 +57,17 @@ export const CRITICAL_THINKING_CHALLENGES: CognitiveChallenge[] = [
       },
       {
         id: "o2",
-        label: "To the wings and tail because that is where the holes are visible.",
+        label: "To the wings and tail sections because that is where the bullet damage is clearly visible.",
         isCorrect: false,
       },
       {
         id: "o3",
-        label: "Evenly spread over the entire plane without extra weight calculations.",
+        label: "Evenly across the entire aircraft surface without performing structural weight calculations.",
+        isCorrect: false,
+      },
+      {
+        id: "o4",
+        label: "Only to the landing gear to ensure planes can land safely regardless of in-flight fuselage damage.",
         isCorrect: false,
       },
     ],

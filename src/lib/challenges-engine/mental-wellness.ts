@@ -15,17 +15,22 @@ export const MENTAL_WELLNESS_CHALLENGES: CognitiveChallenge[] = [
     options: [
       {
         id: "o1",
-        label: "Inhale 4s → Hold 4s → Exhale 4s → Hold 4s (Box Breathing).",
+        label: "Inhale 4s → Hold 4s → Exhale 4s → Hold 4s (Box Breathing Cadence).",
         isCorrect: true,
       },
       {
         id: "o2",
-        label: "Rapid shallow chest breathing for 30 seconds.",
+        label: "Rapid shallow chest hyperventilation for sixty continuous seconds.",
         isCorrect: false,
       },
       {
         id: "o3",
-        label: "Holding breath for 2 full minutes until dizzy.",
+        label: "Holding breath for three full minutes until experiencing lightheadedness.",
+        isCorrect: false,
+      },
+      {
+        id: "o4",
+        label: "Inhale 10s → Exhale 1s with maximum forced thoracic muscular compression.",
         isCorrect: false,
       },
     ],
@@ -47,17 +52,22 @@ export const MENTAL_WELLNESS_CHALLENGES: CognitiveChallenge[] = [
     options: [
       {
         id: "o1",
-        label: "'This mental friction is the exact physical sensation of neural pathways strengthening through effort.'",
+        label: "'This mental friction is the physical sensation of neural pathways strengthening through effort.'",
         isCorrect: true,
       },
       {
         id: "o2",
-        label: "'I feel friction because I am simply not naturally smart enough.'",
+        label: "'I feel friction because I lack inherent genetic talent and should abandon the task completely.'",
         isCorrect: false,
       },
       {
         id: "o3",
-        label: "'I should wait until I feel 100% inspired before doing anything.'",
+        label: "'I must postpone all creative and technical work until I feel completely inspired and rested.'",
+        isCorrect: false,
+      },
+      {
+        id: "o4",
+        label: "'Cognitive fatigue indicates that my brain capacity has reached its permanent structural ceiling.'",
         isCorrect: false,
       },
     ],

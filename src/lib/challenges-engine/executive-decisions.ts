@@ -20,12 +20,17 @@ export const EXECUTIVE_DECISION_CHALLENGES: CognitiveChallenge[] = [
       },
       {
         id: "o2",
-        label: "Finish Feature A first so the $45k is not completely lost.",
+        label: "Complete Feature A first so that the initial $45,000 engineering investment is not written off.",
         isCorrect: false,
       },
       {
         id: "o3",
-        label: "Split budget 50/50 between both to stay safe.",
+        label: "Split engineering budget 50/50 between both features indefinitely to mitigate political fallout.",
+        isCorrect: false,
+      },
+      {
+        id: "o4",
+        label: "Double the marketing budget for Feature A to artificially stimulate demand before pivoting.",
         isCorrect: false,
       },
     ],
@@ -52,12 +57,17 @@ export const EXECUTIVE_DECISION_CHALLENGES: CognitiveChallenge[] = [
       },
       {
         id: "o2",
-        label: "Let the push notifications go out to see if database fixes itself under load.",
+        label: "Allow the notification blast to proceed as planned to observe if the cluster recovers under traffic.",
         isCorrect: false,
       },
       {
         id: "o3",
-        label: "Ignore the payments and focus on writing marketing copy.",
+        label: "Shut down the entire web platform completely for 24 hours without customer communication.",
+        isCorrect: false,
+      },
+      {
+        id: "o4",
+        label: "Ignore database metrics and focus on drafting promotional email copy for the next campaign.",
         isCorrect: false,
       },
     ],
@@ -79,17 +89,22 @@ export const EXECUTIVE_DECISION_CHALLENGES: CognitiveChallenge[] = [
     options: [
       {
         id: "o1",
-        label: "Foregoing $10k recurring monthly revenue for a small one-time gain.",
+        label: "Foregoing $10,000 monthly recurring revenue from Project Alpha for a small one-time savings.",
         isCorrect: true,
       },
       {
         id: "o2",
-        label: "$3k savings.",
+        label: "The $3,000 one-time operational savings achieved by completing Project Beta on schedule.",
         isCorrect: false,
       },
       {
         id: "o3",
-        label: "Zero opportunity cost because both are productive.",
+        label: "Zero opportunity cost because the engineer remains fully utilized and productive throughout.",
+        isCorrect: false,
+      },
+      {
+        id: "o4",
+        label: "The baseline salary and compensation paid to the senior engineer over the two-week period.",
         isCorrect: false,
       },
     ],

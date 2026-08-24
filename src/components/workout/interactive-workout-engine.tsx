@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { InteractiveChallenge, ChallengeOption } from "@/lib/interactive-challenges";
+import { randomizeOptions } from "@/lib/answer-randomizer";
 import { Sparkles, CheckCircle2, XCircle, Clock, Zap, Trophy, Coins, ArrowRight, Eye, Brain, Scale, Target, Compass } from "lucide-react";
 
 interface WorkoutResultSummary {
@@ -25,6 +26,7 @@ export function InteractiveWorkoutEngine({ challenges, onComplete }: Interactive
   const [memorizeCountdown, setMemorizeCountdown] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [displayOptions, setDisplayOptions] = useState<ChallengeOption[]>([]);
   const [roundStats, setRoundStats] = useState<{
     challengeId: string;
     category: string;
@@ -37,12 +39,14 @@ export function InteractiveWorkoutEngine({ challenges, onComplete }: Interactive
   const questionStartTimeRef = useRef<number>(0);
   const currentChallenge = challenges[currentIndex];
 
-  // Set up phase on challenge change
+  // Set up phase and display options on challenge change
   useEffect(() => {
     if (!currentChallenge) return;
 
     setSelectedOptionId(null);
     setIsCorrect(null);
+    // Shuffle options at display time so position is never fixed
+    setDisplayOptions(randomizeOptions(currentChallenge.options || []));
 
     if (currentChallenge.memorizeDurationSec && currentChallenge.memorizeDurationSec > 0) {
       setPhase("memorize");
@@ -268,7 +272,7 @@ export function InteractiveWorkoutEngine({ challenges, onComplete }: Interactive
 
             {/* 4 Interactive Choice Buttons */}
             <div className="grid grid-cols-1 gap-2.5">
-              {currentChallenge.options.map((option, idx) => {
+              {(displayOptions.length > 0 ? displayOptions : currentChallenge.options).map((option, idx) => {
                 const isSelected = selectedOptionId === option.id;
                 const isThisOptionCorrect = option.isCorrect;
 

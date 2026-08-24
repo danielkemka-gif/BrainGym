@@ -16,6 +16,7 @@ import { DailyReminder, checkAndShowReminder } from "@/components/games/daily-re
 import { pickBrainTasks, type BrainTask } from "@/lib/brain-tasks";
 import { CATEGORY_ILLUSTRATIONS } from "@/components/brain-illustrations";
 import { pickPremiumScenarios, type PremiumScenario } from "@/lib/premium-scenarios";
+import { randomizeOptions } from "@/lib/answer-randomizer";
 
 const CAT_EMOJI: Record<string, string> = {
   memory: "🧠", focus: "🎯", thinking: "💡", learning: "📚",
@@ -217,13 +218,27 @@ export default function ChallengePage() {
     return shuffled.slice(0, Math.min(maxQ, shuffled.length));
   }, [duration, quizLang]);
 
-  // Start challenge
+  // Start challenge with fully randomized answer option positions
   const startChallenge = useCallback(() => {
-    const picked = pickQuestions();
-    if (picked.length === 0) { setError("No questions available."); return; }
+    const rawPicked = pickQuestions();
+    if (rawPicked.length === 0) { setError("No questions available."); return; }
 
-    const brainTasks = pickBrainTasks(duration <= 30 ? 2 : duration <= 60 ? 3 : 4, Date.now());
-    const premiumScenarios = pickPremiumScenarios(duration <= 30 ? 1 : 2, Date.now());
+    const picked = rawPicked.map((q) => {
+      if (q.options && Array.isArray(q.options) && q.options.length > 1) {
+        return { ...q, options: randomizeOptions(q.options) };
+      }
+      return q;
+    });
+
+    const rawBrainTasks = pickBrainTasks(duration <= 30 ? 2 : duration <= 60 ? 3 : 4, Date.now());
+    const brainTasks = rawBrainTasks;
+    const rawPremiumScenarios = pickPremiumScenarios(duration <= 30 ? 1 : 2, Date.now());
+    const premiumScenarios = rawPremiumScenarios.map((ps) => {
+      if (ps.options && Array.isArray(ps.options) && ps.options.length > 1) {
+        return { ...ps, options: randomizeOptions(ps.options) };
+      }
+      return ps;
+    });
 
     const items: SessionItem[] = [];
     let bIdx = 0;
@@ -971,7 +986,7 @@ export default function ChallengePage() {
                 if (qText.includes("flow")) return ["Flow state", "Sleep state", "Hyperfocus", "Trance"];
                 if (qText.includes("bias") || qText.includes("confirm")) return ["Confirmation bias", "Anchoring bias", "Hindsight bias", "Availability bias"];
                 if (qText.includes("nigeria") || qText.includes("abuja")) return ["Abuja", "Lagos", "Kano", "Port Harcourt"];
-                return [correct, "Alternative A", "Alternative B", "Alternative C"];
+                return randomizeOptions([correct, "Alternative A", "Alternative B", "Alternative C"]);
               })();
 
               return (

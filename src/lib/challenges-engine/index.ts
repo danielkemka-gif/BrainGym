@@ -12,6 +12,7 @@ import { SPATIAL_REASONING_CHALLENGES } from "./spatial-reasoning";
 import { MENTAL_WELLNESS_CHALLENGES } from "./mental-wellness";
 import { BOSS_CHALLENGES } from "./boss-challenges";
 import { InteractiveChallenge } from "../interactive-challenges";
+import { randomizeOptions, randomizeChallenge } from "../answer-randomizer";
 
 export * from "./types";
 export * from "./memory";
@@ -67,12 +68,12 @@ function mapToCoreDomain(cat: ChallengeCategory): "Memory" | "Focus" | "Speed" |
   }
 }
 
-// ─── PROCEDURAL DAILY WORKOUT GENERATOR ───────────────────────────────────────
+// ─── PROCEDURAL DAILY WORKOUT GENERATOR WITH RANDOMIZED BALANCED OPTIONS ──────
 export function generateDynamicWorkout(
   seedStr?: string,
   difficulty: ChallengeDifficulty = "intermediate"
 ): InteractiveChallenge[] {
-  const seedKey = seedStr || new Date().toISOString().split("T")[0];
+  const seedKey = seedStr || `${new Date().toISOString().split("T")[0]}-${Date.now()}`;
   let hash = 0;
   for (let i = 0; i < seedKey.length; i++) {
     hash = (hash << 5) - hash + seedKey.charCodeAt(i);
@@ -99,25 +100,31 @@ export function generateDynamicWorkout(
 
   const rawList = [c1, c2, c3, c4, c5, c6, c7];
 
-  return rawList.map((c, idx) => ({
-    id: `${c.id}-r${idx + 1}`,
-    roundNumber: idx + 1,
-    type: (c.type as any) || "visual_memory",
-    category: mapToCoreDomain(c.category),
-    title: `Round ${idx + 1}: ${c.title}`,
-    instruction: c.instruction,
-    memorizeDurationSec: c.memorizeDurationSec,
-    memorizeItems: c.memorizeItems,
-    memorizeStory: c.memorizeStory,
-    visualPromptA: c.visualPromptA,
-    visualPromptB: c.visualPromptB,
-    question: c.question,
-    options: c.options,
-    educationalWhy: c.educationalWhy,
-    xpReward: c.xpReward,
-    coinReward: c.coinReward,
-    difficulty: c.difficulty as any,
-  }));
+  return rawList.map((c, idx) => {
+    // Randomize option positions at generation time while preserving the exact correct answer integrity
+    const shuffledOptions = randomizeOptions(c.options);
+
+    return {
+      id: `${c.id}-r${idx + 1}-${Date.now()}`,
+      roundNumber: idx + 1,
+      type: (c.type as any) || "visual_memory",
+      category: mapToCoreDomain(c.category),
+      title: `Round ${idx + 1}: ${c.title}`,
+      instruction: c.instruction,
+      memorizeDurationSec: c.memorizeDurationSec,
+      memorizeItems: c.memorizeItems,
+      remainingItems: (c as any).remainingItems,
+      memorizeStory: c.memorizeStory,
+      visualPromptA: c.visualPromptA,
+      visualPromptB: c.visualPromptB,
+      question: c.question,
+      options: shuffledOptions,
+      educationalWhy: c.educationalWhy,
+      xpReward: c.xpReward,
+      coinReward: c.coinReward,
+      difficulty: c.difficulty as any,
+    };
+  });
 }
 
 export function getChallengesByCategory(
@@ -131,5 +138,5 @@ export function getChallengesByCategory(
   if (difficulty) {
     list = list.filter((c) => c.difficulty === difficulty);
   }
-  return list;
+  return list.map((c) => randomizeChallenge(c));
 }

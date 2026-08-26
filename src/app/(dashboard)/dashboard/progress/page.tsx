@@ -3,7 +3,10 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/lib/auth";
-import { fetchHabitEngineState, HabitMetricState } from "@/lib/habit-engine";
+import {
+  fetchBrainMomentumEngineState,
+  EngineFullState,
+} from "@/lib/brain-momentum-engine";
 import { RadarChart } from "@/components/progress/radar-chart";
 import { StreakCalendar } from "@/components/progress/streak-calendar";
 import { XpHistory } from "@/components/progress/xp-history";
@@ -12,20 +15,19 @@ import { SkillTree } from "@/components/progress/skill-tree";
 import { ProAnalyticsPreview } from "@/components/premium/pro-analytics-preview";
 import { useEntitlements } from "@/lib/entitlements";
 import { BrainJourney } from "@/components/dashboard/brain-journey";
-import { BrainMomentumWidget } from "@/components/dashboard/brain-momentum-widget";
-import { QuickStatsRow } from "@/components/dashboard/quick-stats-row";
-import { YourProgressSection } from "@/components/dashboard/your-progress-section";
+import { WeeklyBrainReportCard } from "@/components/progress/weekly-brain-report-card";
+import { CognitiveProfileBreakdown } from "@/components/progress/cognitive-profile-breakdown";
 
 export default function ProgressPage() {
   const { user } = useAuth();
   const { isPro, isTrial } = useEntitlements();
-  const [habit, setHabit] = useState<HabitMetricState | null>(null);
+  const [engineState, setEngineState] = useState<EngineFullState | null>(null);
   const [scores, setScores] = useState<Record<string, number>>({});
   const [activityCounts, setActivityCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
-    fetchHabitEngineState(user?.id).then((state) => {
-      setHabit(state);
+    fetchBrainMomentumEngineState(user?.id).then((state) => {
+      setEngineState(state);
     });
 
     const supabase = createClient();
@@ -72,26 +74,23 @@ export default function ProgressPage() {
   }, [user]);
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-6 overflow-x-hidden px-3 sm:px-4 lg:px-6 py-3 pb-20 touch-manipulation">
+    <div className="mx-auto w-full max-w-5xl space-y-6 overflow-x-hidden px-3 sm:px-4 lg:px-6 py-3 pb-24 touch-manipulation">
       <div>
         <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
-          Progress &amp; Cognitive Analytics
+          Progress &amp; Cognitive Fitness
         </h1>
         <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-          Detailed breakdown of your Brain Score, Momentum, Streaks, and 5-domain development.
+          Track your Brain Momentum, personal cognitive baselines, and neuroplastic development over time.
         </p>
       </div>
 
-      {/* Quick Stats Overview */}
-      {habit && <QuickStatsRow habit={habit} />}
+      {/* 1. Weekly Brain Fitness Report */}
+      {engineState && <WeeklyBrainReportCard report={engineState.weeklyReport} />}
 
-      {/* Brain Momentum Consistency Meter */}
-      {habit && <BrainMomentumWidget habit={habit} />}
+      {/* 2. Personal Cognitive Baselines & 7-Domain Trend */}
+      {engineState && <CognitiveProfileBreakdown momentum={engineState.momentum} />}
 
-      {/* 5-Domain Performance & Brain Age Indicator */}
-      {habit && <YourProgressSection habit={habit} />}
-
-      {/* 90-Day Brain Journey: Full for Pro, Preview for Free */}
+      {/* 3. 90-Day Brain Journey Heatmap */}
       {isPro || isTrial ? (
         <BrainJourney />
       ) : (
@@ -101,7 +100,7 @@ export default function ProgressPage() {
         />
       )}
 
-      {/* Cognitive Radar & History */}
+      {/* 4. Cognitive Radar & History */}
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-sm">
           <h2 className="text-base font-black text-foreground mb-4">5-Domain Cognitive Radar</h2>
@@ -113,13 +112,13 @@ export default function ProgressPage() {
         </div>
       </div>
 
-      {/* Skill Tree */}
+      {/* 5. Skill Tree */}
       <div className="overflow-x-auto rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-sm">
         <h2 className="text-base font-black text-foreground mb-4">Neuroplastic Skill Progression</h2>
         <SkillTree activityCounts={activityCounts} scores={scores} />
       </div>
 
-      {/* Achievements Cabinet */}
+      {/* 6. Achievements Cabinet */}
       <div className="rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-sm">
         <h2 className="text-base font-black text-foreground mb-4">Badges &amp; Milestones</h2>
         <AchievementsGrid />

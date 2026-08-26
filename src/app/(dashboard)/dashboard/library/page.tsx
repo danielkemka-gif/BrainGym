@@ -125,27 +125,48 @@ export default function LibraryPage() {
 
   return (
     <div className="mx-auto w-full max-w-full space-y-5 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
-      {/* Hero header */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-card to-purple-500/10 p-5 sm:p-7 border border-primary/20 shadow-sm space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
+      {/* ─── BRAIN MOMENTUM ENGINE RECOMMENDATION BANNER ─────────────────── */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/15 via-card to-violet-600/15 p-6 sm:p-7 border-2 border-primary/40 shadow-md space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-[10px] font-black uppercase tracking-wider text-primary">
-                Gamified Progression System
+                Explore Activity Catalog
               </span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-black text-foreground mt-0.5">
-              Activity Library &amp; Level Gating
+            <h1 className="text-xl sm:text-2xl font-black text-foreground">
+              Cognitive Activity Library
             </h1>
-            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-              Level 1 (Novice) is unlocked. Score points by training to unlock Level 2 (Practitioner) and Level 3 (Master)!
+            <p className="text-xs sm:text-sm text-muted-foreground max-w-xl">
+              «Not sure what to choose? Let BrainGym build an adaptive daily workout around your individual data.»
             </p>
           </div>
 
           <Link
+            href="/dashboard"
+            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary via-violet-600 to-indigo-600 px-5 py-3.5 text-xs font-black text-white shadow-lg shadow-primary/25 hover:brightness-110 active:scale-95 transition min-h-[46px] shrink-0"
+          >
+            <Sparkles className="h-4 w-4" />
+            <span>GENERATE MY WORKOUT</span>
+          </Link>
+        </div>
+      </div>
+
+      {/* Gamified Progression Banner */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-card to-purple-500/10 p-5 sm:p-7 border border-primary/20 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-black text-foreground">
+              Level Gating &amp; Progression
+            </h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Score points by training to unlock Level 2 (Practitioner) and Level 3 (Master)!
+            </p>
+          </div>
+          <Link
             href="/dashboard/workout"
-            className="shrink-0 inline-flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-primary via-violet-600 to-indigo-600 px-4 py-2.5 text-xs sm:text-sm font-black text-white shadow-md shadow-primary/25 hover:brightness-110 active:scale-95 transition min-h-[42px]"
+            className="shrink-0 inline-flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-primary via-violet-600 to-indigo-600 px-4 py-2.5 text-xs font-black text-white shadow-md shadow-primary/25 hover:brightness-110 active:scale-95 transition min-h-[42px]"
           >
             <Sparkles className="h-4 w-4" />
             <span>Train to Unlock Next Level</span>

@@ -7,15 +7,22 @@ import {
   PHYSICAL_ACTIVITIES_LIBRARY,
   PhysicalActivity,
 } from "@/lib/physical-activities";
+import {
+  BODY_BRAIN_CHALLENGES,
+  BodyBrainChallenge,
+} from "@/lib/body-brain";
 import { createClient } from "@/lib/supabase/client";
 import { Confetti } from "@/components/ui/confetti";
+import { MotionVerificationCard } from "@/components/verification/motion-verification-card";
+import { CognitiveRecallModal } from "@/components/verification/cognitive-recall-modal";
+import { getVerificationQuestionsForActivity } from "@/lib/verification/cognitive-questions";
+import { VerificationResult } from "@/lib/verification/types";
+import { evaluatePersonalRecords, BrokenRecord } from "@/lib/personal-records";
+import { ShareableVictoryCard } from "@/components/sharing/shareable-victory-card";
+import { MilestoneCertificateModal } from "@/components/sharing/milestone-certificate-modal";
 import {
   ArrowLeft,
   Clock,
-  Play,
-  Pause,
-  RotateCcw,
-  CheckCircle2,
   Sparkles,
   Zap,
   Coins,
@@ -24,6 +31,10 @@ import {
   ShieldCheck,
   Brain,
   Footprints,
+  Trophy,
+  Share2,
+  Activity,
+  CheckCircle2,
 } from "lucide-react";
 
 export default function PhysicalActivityDetailPage() {
@@ -31,59 +42,99 @@ export default function PhysicalActivityDetailPage() {
   const router = useRouter();
   const activityId = (params?.id as string) || "";
 
-  const activity =
-    PHYSICAL_ACTIVITIES_LIBRARY.find((a) => a.id === activityId) ||
-    PHYSICAL_ACTIVITIES_LIBRARY[0];
+  // Search in both libraries
+  const bodyBrainMatch = BODY_BRAIN_CHALLENGES.find((a) => a.id === activityId);
+  const physicalMatch = PHYSICAL_ACTIVITIES_LIBRARY.find((a) => a.id === activityId);
 
-  // Timer states
-  const totalSeconds = activity.durationMinutes * 60;
-  const [secondsRemaining, setSecondsRemaining] = useState(totalSeconds);
-  const [isRunning, setIsRunning] = useState(false);
+  const title = bodyBrainMatch?.title || physicalMatch?.title || "10-Minute Memory Walk";
+  const durationMinutes = bodyBrainMatch?.durationMinutes || physicalMatch?.durationMinutes || 10;
+  const xpReward = bodyBrainMatch?.xpReward || physicalMatch?.xpReward || 100;
+  const coinReward = bodyBrainMatch?.coinReward || physicalMatch?.coinReward || 25;
+  const whyItMatters = bodyBrainMatch?.expectedOutcome || physicalMatch?.whyItMatters || "Enhances cerebral blood flow and memory retention.";
+  const physicalAction = bodyBrainMatch?.physicalAction || physicalMatch?.whatToDo?.[0] || physicalMatch?.tagline || "Walk briskly for the target duration.";
+  const cognitiveAction = bodyBrainMatch?.cognitiveAction || "Actively observe and encode distinct environmental details along your route.";
+
   const [isCompleted, setIsCompleted] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [reflectionNote, setReflectionNote] = useState("");
-  const [awardedXp, setAwardedXp] = useState(activity.xpReward);
+  const [verificationResult, setVerificationResult] = useState<VerificationResult | null>(null);
+  const [showCognitiveModal, setShowCognitiveModal] = useState(false);
+  const [pendingDurationSec, setPendingDurationSec] = useState(durationMinutes * 60);
+  const [brokenRecords, setBrokenRecords] = useState<BrokenRecord[]>([]);
+  const [showShareCard, setShowShareCard] = useState(false);
+  const [showMilestoneModal, setShowMilestoneModal] = useState(false);
+  const [streakDays, setStreakDays] = useState(15);
+  const [userName, setUserName] = useState("Thinker");
+
+  const cognitiveQuestions = getVerificationQuestionsForActivity(activityId);
 
   useEffect(() => {
-    let interval: any = null;
-    if (isRunning && secondsRemaining > 0) {
-      interval = setInterval(() => {
-        setSecondsRemaining((prev) => prev - 1);
-      }, 1000);
-    } else if (secondsRemaining === 0 && isRunning) {
-      setIsRunning(false);
-      setShowModal(true);
-    }
-    return () => clearInterval(interval);
-  }, [isRunning, secondsRemaining]);
+    const supabase = createClient();
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return;
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("name, current_streak, streak_count")
+        .eq("user_id", user.id)
+        .maybeSingle();
 
-  const formatTime = (secs: number) => {
-    const m = Math.floor(secs / 60);
-    const s = secs % 60;
-    return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+      if (profile) {
+        setStreakDays((profile.current_streak ?? profile.streak_count ?? 14) + 1);
+        if (profile.name) setUserName(profile.name.split(" ")[0]);
+      }
+    });
+  }, []);
+
+  const handleMotionVerification = (result: VerificationResult) => {
+    setPendingDurationSec(result.durationSeconds);
+    // If activity has cognitive recall component, trigger the recall quiz
+    if (cognitiveQuestions && cognitiveQuestions.length > 0) {
+      setShowCognitiveModal(true);
+    } else {
+      finalizeActivity(result);
+    }
   };
 
-  const handleFinishActivity = async () => {
+  const handleCognitiveVerification = (result: VerificationResult) => {
+    setShowCognitiveModal(false);
+    finalizeActivity(result);
+  };
+
+  const finalizeActivity = async (result: VerificationResult) => {
+    setVerificationResult(result);
     setIsCompleted(true);
-    setShowModal(false);
+
+    const calculatedXp = Math.round(xpReward * result.xpModifier);
+    const calculatedCoins = Math.round(coinReward * result.xpModifier);
+
+    // Evaluate Personal Records
+    const accuracy = result.cognitiveRecallScore?.accuracyPercent || (result.status === "VERIFIED" ? 92 : 80);
+    const { newRecords } = evaluatePersonalRecords({
+      accuracyPercent: accuracy,
+      streakDays: streakDays,
+      brainMomentum: 82,
+      weeklyActivities: 5,
+    });
+    setBrokenRecords(newRecords);
+
+    // Check for milestone certificate (7, 14, 30, 60, 90 days)
+    if ([7, 14, 30, 60, 90].includes(streakDays)) {
+      setTimeout(() => setShowMilestoneModal(true), 1500);
+    }
 
     try {
       const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
 
       if (user) {
-        // Record XP in ledger
+        // Record in XP Ledger
         await supabase.from("xp_ledger").insert({
           user_id: user.id,
-          amount: activity.xpReward,
-          source_type: "physical_activity",
-          source_id: activity.id,
-          description: `Completed physical brain activity: ${activity.title}`,
+          amount: calculatedXp,
+          source_type: "verified_body_brain",
+          source_id: activityId,
+          description: `Completed verified challenge: ${title} (${result.status})`,
         });
 
-        // Update profile XP & coins
+        // Update profile
         const { data: profile } = await supabase
           .from("profiles")
           .select("total_xp, coins, current_streak, streak_count")
@@ -91,258 +142,242 @@ export default function PhysicalActivityDetailPage() {
           .single();
 
         if (profile) {
-          const newXp = (profile.total_xp || 0) + activity.xpReward;
-          const newCoins = (profile.coins || 0) + activity.coinReward;
-          const newStreak = (profile.current_streak || profile.streak_count || 0) + 1;
-
           await supabase
             .from("profiles")
             .update({
-              total_xp: newXp,
-              coins: newCoins,
-              current_streak: newStreak,
-              best_streak: Math.max(newStreak, profile.streak_count || 0),
-              last_active_at: new Date().toISOString(),
+              total_xp: (profile.total_xp || 0) + calculatedXp,
+              coins: (profile.coins || 0) + calculatedCoins,
+              current_streak: streakDays,
+              streak_count: streakDays,
             })
             .eq("user_id", user.id);
         }
       }
     } catch (err) {
-      console.warn("Activity completion sync error:", err);
+      console.warn("Activity verification DB sync fallback:", err);
     }
   };
 
-  return (
-    <div className="mx-auto w-full max-w-2xl space-y-6 px-3 sm:px-4 py-3 pb-20 overflow-x-hidden touch-manipulation">
-      <Confetti active={isCompleted} />
+  // ─── COMPLETION & REWARD EXPERIENCE ─────────────────────────────────────────
+  if (isCompleted && verificationResult) {
+    const finalXp = Math.round(xpReward * verificationResult.xpModifier);
+    const finalCoins = Math.round(coinReward * verificationResult.xpModifier);
 
-      {/* Top Breadcrumb */}
-      <Link
-        href="/dashboard/physical"
-        className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-foreground min-h-[36px]"
-      >
-        <ArrowLeft className="h-4 w-4" /> Back to Physical Activities
-      </Link>
+    return (
+      <div className="mx-auto w-full max-w-xl space-y-6 px-3 sm:px-4 py-4 pb-20 overflow-x-hidden">
+        <Confetti active={isCompleted} />
 
-      {/* Header Card with Illustration Badge */}
-      <div className="rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-card to-teal-500/10 p-5 sm:p-7 space-y-4 shadow-md">
-        <div className="flex items-center gap-3">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-emerald-500 text-white text-3xl shadow-lg shadow-emerald-500/25">
-            {activity.icon}
-          </div>
-          <div>
-            <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-              {activity.category}
-            </span>
-            <h1 className="text-xl sm:text-2xl font-black text-foreground">
-              {activity.title}
+        {/* Milestone Certificate Modal */}
+        {showMilestoneModal && (
+          <MilestoneCertificateModal
+            streakDays={streakDays}
+            userName={userName}
+            onClose={() => setShowMilestoneModal(false)}
+          />
+        )}
+
+        <div className="rounded-3xl border-2 border-emerald-500/50 bg-gradient-to-br from-emerald-500/10 via-card to-teal-600/10 p-6 sm:p-8 text-center space-y-5 shadow-2xl">
+          {/* Header */}
+          <div className="space-y-1.5">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30">
+              <Trophy className="h-8 w-8" />
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
+              MISSION COMPLETE!
             </h1>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              {activity.tagline}
+            <p className="text-xs sm:text-sm text-muted-foreground font-medium">
+              You showed up for your brain and body today.
             </p>
           </div>
-        </div>
 
-        {/* Quick Meta Pills */}
-        <div className="flex flex-wrap items-center gap-2 pt-1 text-xs font-bold">
-          <span className="rounded-full bg-muted/80 px-3 py-1 text-foreground border border-border">
-            ⏱️ {activity.duration} offline
-          </span>
-          <span className="rounded-full bg-violet-500/15 border border-violet-500/30 px-3 py-1 text-violet-600 dark:text-violet-400">
-            ⚡ +{activity.xpReward} XP
-          </span>
-          <span className="rounded-full bg-amber-500/15 border border-amber-500/30 px-3 py-1 text-amber-600 dark:text-amber-400">
-            🪙 +{activity.coinReward} Coins
-          </span>
-        </div>
-      </div>
-
-      {/* Interactive Offline Timer Card */}
-      <div className="rounded-3xl border border-border bg-card p-5 sm:p-6 text-center space-y-4 shadow-sm">
-        <span className="text-[11px] font-black uppercase tracking-wider text-muted-foreground">
-          Real-World Activity Timer
-        </span>
-
-        <div className="text-4xl sm:text-5xl font-mono font-black text-foreground">
-          {formatTime(secondsRemaining)}
-        </div>
-
-        <div className="flex items-center justify-center gap-3 pt-1">
-          <button
-            onClick={() => setIsRunning(!isRunning)}
-            className={`inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3.5 text-xs sm:text-sm font-black shadow-md transition active:scale-95 min-h-[48px] min-w-[140px] touch-manipulation ${
-              isRunning
-                ? "bg-amber-500 text-white hover:bg-amber-600 shadow-amber-500/25"
-                : "bg-emerald-600 text-white hover:bg-emerald-500 shadow-emerald-600/25"
-            }`}
-          >
-            {isRunning ? (
-              <>
-                <Pause className="h-4 w-4" />
-                <span>Pause Timer</span>
-              </>
-            ) : (
-              <>
-                <Play className="h-4 w-4" />
-                <span>Start Timer</span>
-              </>
-            )}
-          </button>
-
-          <button
-            onClick={() => {
-              setIsRunning(false);
-              setSecondsRemaining(totalSeconds);
-            }}
-            className="flex h-12 w-12 items-center justify-center rounded-2xl border border-border bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground transition active:scale-95 touch-manipulation"
-            title="Reset Timer"
-          >
-            <RotateCcw className="h-4 w-4" />
-          </button>
-        </div>
-
-        <p className="text-[11px] text-muted-foreground">
-          You can close your phone screen and perform the exercise. Return here when you are done!
-        </p>
-      </div>
-
-      {/* Step-by-Step What To Do */}
-      <div className="rounded-3xl border border-border bg-card p-5 sm:p-6 space-y-3.5 shadow-sm">
-        <h2 className="text-sm sm:text-base font-black text-foreground uppercase tracking-wider flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-emerald-500" />
-          <span>What To Do (Step-by-Step)</span>
-        </h2>
-
-        <div className="space-y-2.5">
-          {activity.whatToDo.map((step, idx) => (
-            <div
-              key={idx}
-              className="flex items-start gap-3 rounded-2xl bg-muted/30 border border-border/80 p-3 text-xs sm:text-sm"
-            >
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white font-black text-xs">
-                {idx + 1}
+          {/* Verification Status Badge */}
+          <div className="rounded-2xl border border-emerald-500/40 bg-background/90 p-4 text-left space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                <ShieldCheck className="h-4 w-4 text-emerald-500" />
+                Integrity Engine: {verificationResult.status}
               </span>
-              <p className="text-foreground leading-relaxed pt-0.5">{step}</p>
+              <span className="text-[10px] font-bold text-muted-foreground capitalize">
+                Confidence: {verificationResult.confidence}
+              </span>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Why It Matters (Evidence-Based) */}
-      <div className="rounded-3xl border border-border bg-card p-5 sm:p-6 space-y-3 shadow-sm">
-        <h2 className="text-sm sm:text-base font-black text-foreground uppercase tracking-wider flex items-center gap-2">
-          <Brain className="h-4 w-4 text-primary" />
-          <span>Why This Matters (Brain Health)</span>
-        </h2>
-        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-          &ldquo;{activity.whyItMatters}&rdquo;
-        </p>
-
-        {activity.culturalContext && (
-          <div className="rounded-2xl bg-primary/5 border border-primary/15 p-3 text-xs text-primary font-medium">
-            💡 <strong>Context Note:</strong> {activity.culturalContext}
-          </div>
-        )}
-      </div>
-
-      {/* What It Supports Badges */}
-      <div className="space-y-2">
-        <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
-          Cognitive Skills Being Trained:
-        </span>
-        <div className="flex flex-wrap gap-2">
-          {activity.whatItSupports.map((skill) => (
-            <span
-              key={skill}
-              className="rounded-full bg-background border border-border px-3 py-1 text-xs font-bold text-foreground shadow-sm"
-            >
-              ✓ {skill}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* Complete Button CTA */}
-      <div className="pt-2">
-        {isCompleted ? (
-          <div className="rounded-3xl border-2 border-emerald-500 bg-emerald-500/10 p-6 text-center space-y-3">
-            <CheckCircle2 className="h-12 w-12 text-emerald-500 mx-auto" />
-            <h3 className="text-xl font-black text-foreground">
-              ACTIVITY COMPLETED!
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              +{activity.xpReward} XP and +{activity.coinReward} Coins have been added to your profile.
+            <p className="text-xs text-foreground font-medium leading-relaxed">
+              {verificationResult.evidenceSummary}
             </p>
-            <div className="flex flex-col sm:flex-row gap-2.5 justify-center pt-2">
-              <Link
-                href="/dashboard"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary to-violet-600 text-white px-6 py-3.5 text-xs font-black shadow-md transition active:scale-95 min-h-[44px]"
-              >
-                <span>Return to Dashboard 🏠</span>
-              </Link>
-              <Link
-                href="/dashboard/physical"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border bg-card hover:bg-muted text-foreground px-6 py-3.5 text-xs font-bold transition active:scale-95 min-h-[44px]"
-              >
-                <span>Explore More Activities</span>
-                <ArrowRight className="h-4 w-4" />
-              </Link>
+          </div>
+
+          {/* 3 Metric Summary Badges */}
+          <div className="grid grid-cols-3 gap-2.5 text-center">
+            <div className="rounded-2xl bg-background/80 border border-border p-3">
+              <span className="text-[9px] text-muted-foreground font-bold uppercase block">Earned XP</span>
+              <span className="text-base sm:text-lg font-black text-primary">+{finalXp} XP</span>
+            </div>
+            <div className="rounded-2xl bg-background/80 border border-border p-3">
+              <span className="text-[9px] text-muted-foreground font-bold uppercase block">Earned Coins</span>
+              <span className="text-base sm:text-lg font-black text-amber-500">+{finalCoins} 🪙</span>
+            </div>
+            <div className="rounded-2xl bg-background/80 border border-border p-3">
+              <span className="text-[9px] text-muted-foreground font-bold uppercase block">Streak</span>
+              <span className="text-base sm:text-lg font-black text-orange-500 flex items-center justify-center gap-0.5">
+                <Flame className="h-4 w-4 fill-current" />
+                {streakDays}d
+              </span>
             </div>
           </div>
-        ) : (
-          <button
-            onClick={() => setShowModal(true)}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-4 text-sm sm:text-base font-black shadow-lg shadow-emerald-600/30 hover:brightness-110 active:scale-[0.98] transition min-h-[52px] touch-manipulation"
-          >
-            <CheckCircle2 className="h-5 w-5" />
-            <span>I HAVE COMPLETED THIS ACTIVITY</span>
-          </button>
-        )}
-      </div>
 
-      {/* Completion Confirmation Modal */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
-          <div className="w-full max-w-md rounded-3xl border border-border bg-card p-6 space-y-4 shadow-2xl">
-            <div className="text-center space-y-1">
-              <span className="text-3xl">🎉</span>
-              <h3 className="text-lg font-black text-foreground">
-                Confirm Activity Completion
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                Did you complete: &ldquo;{activity.title}&rdquo;?
+          {/* ─── PERSONAL RECORD ALERT ("YOU JUST BEAT YOURSELF") ───────────── */}
+          {brokenRecords.length > 0 && (
+            <div className="rounded-2xl border-2 border-amber-500/60 bg-gradient-to-r from-amber-500/15 via-background to-orange-500/15 p-4 text-left space-y-1.5 shadow-md">
+              <div className="flex items-center gap-1.5 text-amber-500 font-black text-xs uppercase tracking-wider">
+                <Sparkles className="h-4 w-4" />
+                <span>NEW PERSONAL RECORD!</span>
+              </div>
+              <p className="text-sm font-black text-foreground">
+                {brokenRecords[0].title}: {brokenRecords[0].previousValue}
+                {brokenRecords[0].unit} → {brokenRecords[0].newValue}
+                {brokenRecords[0].unit}
+              </p>
+              <p className="text-xs text-muted-foreground italic">
+                &ldquo;You just beat yourself.&rdquo;
               </p>
             </div>
+          )}
 
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-muted-foreground">
-                Optional Reflection / What did you learn?
-              </label>
-              <textarea
-                rows={3}
-                placeholder="E.g., Felt calmer, noticed 3 new sights during my walk..."
-                value={reflectionNote}
-                onChange={(e) => setReflectionNote(e.target.value)}
-                className="w-full rounded-2xl border border-border bg-muted/40 p-3 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              />
-            </div>
+          {/* Meaningful Cognitive Insight */}
+          <div className="rounded-2xl bg-muted/60 p-3.5 text-xs text-muted-foreground text-left">
+            <span className="font-bold text-foreground block mb-0.5">Cognitive Insight:</span>
+            Consistent aerobic engagement elevates Brain-Derived Neurotrophic Factor (BDNF), priming synaptic plasticity for tomorrow&apos;s workout.
+          </div>
 
-            <div className="flex gap-2 pt-2">
-              <button
-                onClick={() => setShowModal(false)}
-                className="flex-1 rounded-xl border border-border bg-muted/60 py-3 text-xs font-bold hover:bg-muted transition"
-              >
-                Not yet
-              </button>
-              <button
-                onClick={handleFinishActivity}
-                className="flex-1 rounded-xl bg-emerald-600 text-white py-3 text-xs font-black shadow-md shadow-emerald-600/25 hover:bg-emerald-500 transition"
-              >
-                Yes, Claim +{activity.xpReward} XP
-              </button>
-            </div>
+          {/* Share Victory Card Trigger */}
+          {showShareCard ? (
+            <ShareableVictoryCard
+              userName={userName}
+              activityTitle={title}
+              score={verificationResult.cognitiveRecallScore?.accuracyPercent || 92}
+              streakDays={streakDays}
+              momentumScore={82}
+              onClose={() => setShowShareCard(false)}
+            />
+          ) : (
+            <button
+              onClick={() => setShowShareCard(true)}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-2xl border border-border bg-background hover:bg-accent p-3.5 text-xs font-bold text-foreground transition min-h-[44px]"
+            >
+              <Share2 className="h-4 w-4 text-primary" />
+              <span>Share My Progress &amp; Challenge Friends</span>
+            </button>
+          )}
+
+          {/* Action Navigation */}
+          <div className="space-y-2.5 pt-2">
+            <Link
+              href="/dashboard/workout"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-primary text-white py-4 px-6 text-sm font-black shadow-lg shadow-primary/25 hover:brightness-110 active:scale-95 transition min-h-[52px]"
+            >
+              <Brain className="h-5 w-5" />
+              <span>CONTINUE TO TODAY&apos;S BRAIN WORKOUT</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+
+            <Link
+              href="/dashboard"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-2xl border border-border bg-card px-6 py-3 text-xs font-bold hover:bg-accent transition min-h-[44px]"
+            >
+              <span>Back to Dashboard</span>
+            </Link>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  // ─── ACTIVE PREPARATION & VERIFICATION FLOW ────────────────────────────────
+  return (
+    <div className="mx-auto w-full max-w-xl space-y-5 px-3 sm:px-4 py-2 pb-20 overflow-x-hidden touch-manipulation">
+      {/* Back Link */}
+      <div className="flex items-center justify-between">
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center gap-1 text-xs font-bold text-muted-foreground hover:text-foreground min-h-[36px]"
+        >
+          <ArrowLeft className="h-4 w-4" /> Dashboard
+        </Link>
+        <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-3 py-0.5 text-[10px] font-black text-emerald-600 dark:text-emerald-400">
+          Body + Brain Challenge
+        </span>
+      </div>
+
+      {/* Hero Details */}
+      <div className="rounded-3xl border-2 border-emerald-500/40 bg-gradient-to-br from-emerald-500/10 via-card to-teal-500/10 p-6 sm:p-7 space-y-4 shadow-lg">
+        <div className="flex items-center gap-3">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-500 text-white shadow-md shadow-emerald-500/25">
+            <Footprints className="h-6 w-6" />
+          </div>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
+              {title}
+            </h1>
+            <p className="text-xs text-muted-foreground font-semibold">
+              Target: {durationMinutes} Minutes · Combined Cognitive + Physical Drill
+            </p>
+          </div>
+        </div>
+
+        {/* 2-Part Action Split */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div className="rounded-2xl bg-background/90 border border-border p-3.5 space-y-1">
+            <span className="text-[10px] font-black uppercase text-muted-foreground">
+              🏃 1. Physical Action
+            </span>
+            <p className="text-foreground font-semibold leading-relaxed">
+              {physicalAction}
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-background/90 border border-border p-3.5 space-y-1">
+            <span className="text-[10px] font-black uppercase text-primary">
+              🧠 2. Cognitive Task
+            </span>
+            <p className="text-foreground font-semibold leading-relaxed">
+              {cognitiveAction}
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-2xl bg-background/80 border border-border p-3 text-xs text-muted-foreground">
+          <span className="font-bold text-foreground block mb-0.5">Why it matters:</span>
+          {whyItMatters}
+        </div>
+      </div>
+
+      {/* ─── LIVE MULTI-MODAL MOTION VERIFICATION COMPONENT ─────────────────── */}
+      <MotionVerificationCard
+        expectedDurationSec={durationMinutes * 60}
+        onVerificationComplete={handleMotionVerification}
+      />
+
+      {/* ─── POST-ACTIVITY COGNITIVE RECALL MODAL ───────────────────────────── */}
+      {showCognitiveModal && (
+        <CognitiveRecallModal
+          questions={cognitiveQuestions}
+          activityTitle={title}
+          durationSeconds={pendingDurationSec}
+          expectedDurationSec={durationMinutes * 60}
+          onComplete={handleCognitiveVerification}
+          onSkip={() =>
+            finalizeActivity({
+              method: "cognitive_recall",
+              status: "SELF_REPORTED",
+              confidence: "low",
+              durationSeconds: pendingDurationSec,
+              expectedDurationSeconds: durationMinutes * 60,
+              evidenceSummary: "User completed activity duration and self-reported.",
+              xpModifier: 0.5,
+              verifiedAt: new Date().toISOString(),
+            })
+          }
+        />
       )}
     </div>
   );

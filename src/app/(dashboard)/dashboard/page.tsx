@@ -13,6 +13,8 @@ import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { BrainMomentumHeroCard } from "@/components/dashboard/brain-momentum-hero-card";
 import { TodaysBrainPlanHero } from "@/components/dashboard/todays-brain-plan-hero";
 import { SmallProgressSummary } from "@/components/dashboard/small-progress-summary";
+import { BodyBrainHeroCard } from "@/components/body-brain/body-brain-hero-card";
+import { getTodaysBodyBrainChallenge } from "@/lib/body-brain";
 import { TodaysPhysicalTaskCard } from "@/components/dashboard/todays-physical-task-card";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -81,14 +83,14 @@ export default function DashboardPage() {
         onSurpriseMe={handleSurpriseMe}
       />
 
-      {/* 4. SMALL PROGRESS SUMMARY */}
+      {/* 4. TODAY'S BODY + BRAIN VERIFIED CHALLENGE */}
+      <BodyBrainHeroCard challenge={getTodaysBodyBrainChallenge()} />
+
+      {/* 5. SMALL PROGRESS SUMMARY */}
       <SmallProgressSummary
         momentum={engineState.momentum}
         profile={engineState.profile}
       />
-
-      {/* 5. TAKE IT INTO REAL LIFE / TODAY'S PHYSICAL TASK */}
-      <TodaysPhysicalTaskCard />
     </div>
   );
 }

@@ -8,6 +8,7 @@ export const en: TranslationKeys = {
   nav_quick_fire: "Quick-Fire",
   nav_ai_coach: "AI Coach",
   nav_progress: "Progress",
+  nav_transformation: "Transformation",
   nav_reports: "Reports",
   nav_history: "History",
   nav_leaderboard: "Leaderboard",

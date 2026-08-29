@@ -8,6 +8,7 @@ export const pcm: TranslationKeys = {
   nav_quick_fire: "Quick-Fire",
   nav_ai_coach: "AI Coach",
   nav_progress: "How You Dey Go",
+  nav_transformation: "How You Don Change",
   nav_reports: "Reports",
   nav_history: "History",
   nav_leaderboard: "Ranking",

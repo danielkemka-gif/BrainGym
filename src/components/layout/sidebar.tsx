@@ -21,6 +21,7 @@ const PRIMARY_NAV = [
 ] as const;
 
 const MORE_NAV = [
+  { href: "/dashboard/transformation", labelKey: "nav_transformation" as any, iconKey: "progress" },
   { href: "/dashboard/library", labelKey: "nav_activities", iconKey: "library" },
   { href: "/dashboard/daily-challenge", labelKey: "nav_daily_challenge", iconKey: "challenge" },
   { href: "/dashboard/avatar", labelKey: "nav_avatar", iconKey: "avatar" },

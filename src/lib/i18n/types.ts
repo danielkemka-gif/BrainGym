@@ -22,6 +22,7 @@ export type TranslationKeys = {
   nav_quick_fire: string;
   nav_ai_coach: string;
   nav_progress: string;
+  nav_transformation: string;
   nav_reports: string;
   nav_history: string;
   nav_leaderboard: string;

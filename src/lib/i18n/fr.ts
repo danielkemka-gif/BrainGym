@@ -3,6 +3,7 @@ import { TranslationKeys } from "./types";
 export const fr: TranslationKeys = {
   // Navigation
   nav_dashboard: "Tableau de bord",
+  nav_discover: "Découvrir",
   nav_activities: "Activités",
   nav_quick_fire: "Défi Rapide",
   nav_ai_coach: "Coach IA",

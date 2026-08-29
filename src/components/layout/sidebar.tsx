@@ -13,10 +13,9 @@ import { SIDEBAR_ICONS } from "@/lib/icons";
 
 const PRIMARY_NAV = [
   { href: "/dashboard", labelKey: "nav_dashboard", iconKey: "dashboard" },
+  { href: "/dashboard/discover", labelKey: "nav_discover" as any, iconKey: "library" },
   { href: "/dashboard/workout", labelKey: "nav_workout", iconKey: "workout" },
   { href: "/dashboard/physical", labelKey: "nav_physical" as any, iconKey: "physical" },
-  { href: "/dashboard/reminders", labelKey: "nav_reminders" as any, iconKey: "reminders" },
-  { href: "/pricing", labelKey: "nav_premium", iconKey: "premium" },
   { href: "/dashboard/coach", labelKey: "nav_ai_coach", iconKey: "coach" },
   { href: "/dashboard/progress", labelKey: "nav_progress", iconKey: "progress" },
 ] as const;

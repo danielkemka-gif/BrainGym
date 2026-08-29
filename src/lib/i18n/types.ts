@@ -17,6 +17,7 @@ export const LOCALES: LocaleOption[] = [
 export type TranslationKeys = {
   // Navigation
   nav_dashboard: string;
+  nav_discover: string;
   nav_activities: string;
   nav_quick_fire: string;
   nav_ai_coach: string;

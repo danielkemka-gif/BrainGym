@@ -2,8 +2,9 @@ import { TranslationKeys } from "./types";
 
 export const pcm: TranslationKeys = {
   // Navigation
-  nav_dashboard: "Home",
-  nav_activities: "Wetin You Fit Do",
+  nav_dashboard: "House",
+  nav_discover: "Discover",
+  nav_activities: "Things to Do",
   nav_quick_fire: "Quick-Fire",
   nav_ai_coach: "AI Coach",
   nav_progress: "How You Dey Go",

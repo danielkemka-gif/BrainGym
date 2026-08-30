@@ -14,6 +14,7 @@ import {
 // ─── Clean Dashboard Components ──────────────────────────────────────────────
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { TodaysUnifiedLessonHero } from "@/components/dashboard/todays-unified-lesson-hero";
+import { DashboardShareBanner } from "@/components/dashboard/dashboard-share-banner";
 import { CompactMomentumBar } from "@/components/brain-universe/compact-momentum-bar";
 import { QuickPillarsNav } from "@/components/brain-universe/quick-pillars-nav";
 
@@ -79,6 +80,9 @@ export default function DashboardPage() {
 
       {/* 4. 4-PILLAR QUICK NAVIGATION (DISCOVER · TRAIN · MY BRAIN · COACH) */}
       <QuickPillarsNav />
+
+      {/* 5. ALWAYS-VISIBLE SHARE BRAINGYM BANNER */}
+      <DashboardShareBanner />
     </div>
   );
 }

@@ -7,24 +7,13 @@ import {
   EngineFullState,
 } from "@/lib/brain-momentum-engine";
 import {
-  getTodaysDailyBrainDrop,
-  DailyBrainDrop,
-} from "@/lib/brain-universe";
-import {
-  fetchLifePerformanceState,
-  LifePerformanceState,
-} from "@/lib/life-performance";
-import {
-  getLifeTransferChallengeForUser,
-  LifeTransferChallenge,
-} from "@/lib/life-transfer";
+  getTodaysCurriculumLesson,
+  DailyCurriculumLesson,
+} from "@/lib/daily-curriculum";
 
-// ─── Dashboard Components ───────────────────────────────────────────────────
+// ─── Clean Dashboard Components ──────────────────────────────────────────────
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
-import { HumanLifeBriefing } from "@/components/dashboard/human-life-briefing";
-import { TodaysBrainHeroCard } from "@/components/brain-universe/todays-brain-hero-card";
-import { DualMetricHero } from "@/components/life-performance/dual-metric-hero";
-import { RealLifeChallengeCard } from "@/components/life-transfer/real-life-challenge-card";
+import { TodaysUnifiedLessonHero } from "@/components/dashboard/todays-unified-lesson-hero";
 import { CompactMomentumBar } from "@/components/brain-universe/compact-momentum-bar";
 import { QuickPillarsNav } from "@/components/brain-universe/quick-pillars-nav";
 
@@ -36,9 +25,9 @@ function DashboardSkeleton() {
   return (
     <div className="mx-auto w-full max-w-3xl px-3 sm:px-4 py-8 space-y-6 animate-pulse">
       <div className="h-10 bg-muted rounded-2xl w-1/3" />
-      <div className="h-64 bg-muted rounded-3xl" />
-      <div className="h-44 bg-muted rounded-3xl" />
-      <div className="h-40 bg-muted rounded-3xl" />
+      <div className="h-72 bg-muted rounded-3xl" />
+      <div className="h-20 bg-muted rounded-2xl" />
+      <div className="h-24 bg-muted rounded-2xl" />
     </div>
   );
 }
@@ -46,32 +35,15 @@ function DashboardSkeleton() {
 export default function DashboardPage() {
   const { user } = useAuth();
   const [engineState, setEngineState] = useState<EngineFullState | null>(null);
-  const [dailyDrop, setDailyDrop] = useState<DailyBrainDrop | null>(null);
-  const [lifeState, setLifeState] = useState<LifePerformanceState | null>(null);
-  const [lifeChallenge, setLifeChallenge] = useState<LifeTransferChallenge | null>(null);
+  const [lesson, setLesson] = useState<DailyCurriculumLesson | null>(null);
   const [loading, setLoading] = useState(true);
 
   const loadDashboard = useCallback(async () => {
-    const [engine, life] = await Promise.all([
-      fetchBrainMomentumEngineState(user?.id, "standard"),
-      fetchLifePerformanceState(user?.id),
-    ]);
-
+    const engine = await fetchBrainMomentumEngineState(user?.id, "standard");
     setEngineState(engine);
-    setLifeState(life);
 
-    const drop = getTodaysDailyBrainDrop(
-      engine.profile.primaryGoal ? [engine.profile.primaryGoal] : undefined,
-      engine.momentum.domainNeedingAttention
-    );
-    setDailyDrop(drop);
-
-    const challenge = getLifeTransferChallengeForUser(
-      undefined,
-      undefined,
-      engine.momentum.domainNeedingAttention || "Focus"
-    );
-    setLifeChallenge(challenge);
+    const todaysLesson = getTodaysCurriculumLesson();
+    setLesson(todaysLesson);
 
     setLoading(false);
   }, [user]);
@@ -80,7 +52,7 @@ export default function DashboardPage() {
     loadDashboard();
   }, [loadDashboard]);
 
-  if (loading || !engineState || !dailyDrop || !lifeState || !lifeChallenge) {
+  if (loading || !engineState || !lesson) {
     return <DashboardSkeleton />;
   }
 
@@ -95,26 +67,17 @@ export default function DashboardPage() {
         userName={user?.user_metadata?.name || user?.email?.split("@")[0] || "Thinker"}
       />
 
-      {/* 2. DAILY HUMAN BRAIN BRIEFING (WORK, BUSINESS, STUDY, FAMILY, FINANCE) */}
-      <HumanLifeBriefing />
+      {/* 2. TODAY'S UNIFIED LESSON HERO (CHALLENGE -> SOLUTION -> ACTION -> 2-PHASE WORKOUT CTA) */}
+      <TodaysUnifiedLessonHero lesson={lesson} />
 
-      {/* 3. TODAY'S BRAIN DROP (ONE SCREEN. ONE BIG IDEA. ONE ACTION.) */}
-      <TodaysBrainHeroCard drop={dailyDrop} />
-
-      {/* 4. COMPACT MOMENTUM BAR & WORKOUT CTA */}
+      {/* 3. COMPACT MOMENTUM & STREAK BAR */}
       <CompactMomentumBar
         momentum={engineState.momentum}
         streakDays={engineState.profile.streak}
-        workoutDurationMin={engineState.prescribedWorkout.estimatedMinutes}
+        workoutDurationMin={lesson.phase2PhysicalTask.durationMinutes}
       />
 
-      {/* 5. DUAL-PERFORMANCE INDEX (BRAIN FITNESS VS LIFE PERFORMANCE) */}
-      <DualMetricHero lifeState={lifeState} />
-
-      {/* 6. TODAY'S BRAIN-TO-LIFE APPLICATION CHALLENGE */}
-      <RealLifeChallengeCard challenge={lifeChallenge} />
-
-      {/* 7. 4-PILLAR QUICK NAVIGATION (DISCOVER · TRAIN · MY BRAIN · COACH) */}
+      {/* 4. 4-PILLAR QUICK NAVIGATION (DISCOVER · TRAIN · MY BRAIN · COACH) */}
       <QuickPillarsNav />
     </div>
   );

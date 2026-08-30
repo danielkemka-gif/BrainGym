@@ -6,6 +6,9 @@ import { PERSONAL_GROWTH_MINDSET_CHALLENGES } from "@/lib/challenges-engine/pers
 import { FOCUS_CHALLENGES } from "@/lib/challenges-engine/focus-attention";
 import { MEMORY_CHALLENGES } from "@/lib/challenges-engine/memory";
 import { EQ_CHALLENGES } from "@/lib/challenges-engine/emotional-intelligence";
+import { CRITICAL_THINKING_CHALLENGES } from "@/lib/challenges-engine/critical-thinking";
+import { EXECUTIVE_DECISION_CHALLENGES } from "@/lib/challenges-engine/executive-decisions";
+import { LOGIC_CHALLENGES } from "@/lib/challenges-engine/logic";
 
 export const DAILY_CURRICULUM_LESSONS: DailyCurriculumLesson[] = [
   // ─── LESSON 1: HIGH-PRESSURE WORK CONVERSATIONS & COMPOSURE ───────────────
@@ -30,6 +33,9 @@ export const DAILY_CURRICULUM_LESSONS: DailyCurriculumLesson[] = [
       WORKPLACE_FINANCE_CHALLENGES[0], // High-Stakes Negotiation in Lagos
       WORKPLACE_FINANCE_CHALLENGES[3], // Leadership Conflict in Nairobi
       EQ_CHALLENGES[0] || WORKPLACE_FINANCE_CHALLENGES[2],
+      FAMILY_RELATIONSHIPS_CHALLENGES[0], // De-escalating Heated Argument
+      EXECUTIVE_DECISION_CHALLENGES[0] || WORKPLACE_FINANCE_CHALLENGES[1],
+      CRITICAL_THINKING_CHALLENGES[0] || WORKPLACE_FINANCE_CHALLENGES[0],
     ],
     phase2PhysicalTask: {
       id: "phys-task-01",
@@ -65,6 +71,9 @@ export const DAILY_CURRICULUM_LESSONS: DailyCurriculumLesson[] = [
       WORKPLACE_FINANCE_CHALLENGES[2], // Deep Work in Open Office in Accra
       PERSONAL_GROWTH_MINDSET_CHALLENGES[1], // Breaking Morning Phone Loop
       FOCUS_CHALLENGES[0] || WORKPLACE_FINANCE_CHALLENGES[0],
+      PERSONAL_GROWTH_MINDSET_CHALLENGES[0], // Procrastination 2-Minute Rule
+      FOCUS_CHALLENGES[1] || WORKPLACE_FINANCE_CHALLENGES[2],
+      WORKPLACE_FINANCE_CHALLENGES[4], // Financial Impulse Control
     ],
     phase2PhysicalTask: {
       id: "phys-task-02",
@@ -100,6 +109,9 @@ export const DAILY_CURRICULUM_LESSONS: DailyCurriculumLesson[] = [
       ACADEMICS_LEARNING_CHALLENGES[0], // Feynman Technique in Ibadan
       ACADEMICS_LEARNING_CHALLENGES[1], // Overcoming Sudden Exam Panic
       MEMORY_CHALLENGES[0] || ACADEMICS_LEARNING_CHALLENGES[0],
+      FAMILY_RELATIONSHIPS_CHALLENGES[2], // Remembering Family Milestones
+      MEMORY_CHALLENGES[1] || ACADEMICS_LEARNING_CHALLENGES[0],
+      LOGIC_CHALLENGES[0] || ACADEMICS_LEARNING_CHALLENGES[1],
     ],
     phase2PhysicalTask: {
       id: "phys-task-03",
@@ -135,6 +147,9 @@ export const DAILY_CURRICULUM_LESSONS: DailyCurriculumLesson[] = [
       WORKPLACE_FINANCE_CHALLENGES[4], // Financial Impulse Control 48-Hour Rule
       WORKPLACE_FINANCE_CHALLENGES[1], // Kingston SME Cash Flow Optimization
       PERSONAL_GROWTH_MINDSET_CHALLENGES[0], // Procrastination 2-Minute Rule
+      WORKPLACE_FINANCE_CHALLENGES[0], // Negotiation in Lagos
+      EXECUTIVE_DECISION_CHALLENGES[1] || WORKPLACE_FINANCE_CHALLENGES[1],
+      CRITICAL_THINKING_CHALLENGES[1] || WORKPLACE_FINANCE_CHALLENGES[4],
     ],
     phase2PhysicalTask: {
       id: "phys-task-04",
@@ -170,6 +185,9 @@ export const DAILY_CURRICULUM_LESSONS: DailyCurriculumLesson[] = [
       FAMILY_RELATIONSHIPS_CHALLENGES[0], // De-escalating Heated Argument at Home
       FAMILY_RELATIONSHIPS_CHALLENGES[1], // Supermarket Tantrum Co-regulation
       FAMILY_RELATIONSHIPS_CHALLENGES[2], // Remembering Family Milestones
+      EQ_CHALLENGES[1] || FAMILY_RELATIONSHIPS_CHALLENGES[0],
+      WORKPLACE_FINANCE_CHALLENGES[3], // Resolving Leadership Conflict
+      PERSONAL_GROWTH_MINDSET_CHALLENGES[1], // Morning Phone Loop
     ],
     phase2PhysicalTask: {
       id: "phys-task-05",

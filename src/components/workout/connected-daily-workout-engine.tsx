@@ -6,6 +6,7 @@ import { DailyCurriculumLesson } from "@/lib/daily-curriculum/types";
 import { randomizeOptions } from "@/lib/answer-randomizer";
 import { ChallengeOption } from "@/lib/challenges-engine/types";
 import { ExerciseAvatarGraphic } from "@/components/physical-activities/exercise-avatar-graphic";
+import { QuestionGraphicAvatar } from "@/components/workout/question-graphic-avatar";
 import { Confetti } from "@/components/ui/confetti";
 import {
   Sparkles,
@@ -145,14 +146,20 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
   return (
     <div className="mx-auto w-full max-w-2xl space-y-5 px-3 sm:px-4 py-2 pb-24 overflow-x-hidden touch-manipulation">
       {/* ─── 1. CLEAR TITLE AT THE TOP ───────────────────────────────────────── */}
-      <div className="rounded-3xl border-2 border-primary/30 bg-gradient-to-br from-primary/15 via-card to-violet-600/10 p-5 sm:p-6 space-y-1.5 shadow-lg">
-        <div className="flex items-center gap-2">
-          <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-[10px] font-black uppercase tracking-widest text-primary">
-            TODAY&apos;S 2-PHASE BRAIN WORKOUT
-          </span>
-          <span className="rounded-full bg-muted border border-border px-2.5 py-0.5 text-[9px] font-bold text-muted-foreground">
-            {lesson.category}
+      <div className="rounded-3xl border-2 border-primary/40 bg-gradient-to-br from-primary/15 via-card to-violet-600/10 p-5 sm:p-6 space-y-2 shadow-xl">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-primary">
+              TOPIC TEST
+            </span>
+            <span className="rounded-full bg-muted border border-border px-2.5 py-0.5 text-[9px] font-bold text-muted-foreground">
+              {lesson.category}
+            </span>
+          </div>
+
+          <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-2.5 py-0.5">
+            {lesson.phase1Questions.length} Questions + 1 Physical Task
           </span>
         </div>
 
@@ -161,7 +168,7 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
         </h1>
 
         <p className="text-xs text-muted-foreground font-medium">
-          Phase 1: Connected Questions &rarr; Phase 2: Physical &amp; Real-Life Task
+          Answer each multiple-choice question (A, B, C, D) below, then practice what you&apos;ve learnt in the physical task.
         </p>
       </div>
 
@@ -178,7 +185,7 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
             1
           </span>
           <span className="text-xs font-black text-foreground">
-            Phase 1: Questions (A, B, C, D)
+            Phase 1: Questions ({currentQuestionIndex + 1}/{lesson.phase1Questions.length})
           </span>
         </div>
 
@@ -203,15 +210,15 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* PHASE 1: CONNECTED QUESTIONS (WITH A, B, C, D BADGES)                   */}
+      {/* PHASE 1: CONNECTED QUESTIONS (WITH A, B, C, D BADGES + GRAPHIC AVATAR)  */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {workoutPhase === "phase1_questions" && currentQuestion && (
-        <div className="rounded-3xl border-2 border-primary/40 bg-card p-6 sm:p-8 space-y-5 shadow-xl animate-in fade-in">
+        <div className="rounded-3xl border-2 border-primary/40 bg-card p-5 sm:p-7 space-y-4 shadow-xl animate-in fade-in">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border/60 pb-3">
             <div className="space-y-0.5">
               <span className="text-[10px] font-black uppercase text-primary tracking-wider">
-                TOPIC TEST · QUESTION {currentQuestionIndex + 1} OF {lesson.phase1Questions.length}
+                QUESTION {currentQuestionIndex + 1} OF {lesson.phase1Questions.length}
               </span>
               <h3 className="text-base sm:text-lg font-black text-foreground">
                 {currentQuestion.title}
@@ -221,6 +228,13 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
               +15 XP
             </span>
           </div>
+
+          {/* Contextual Question Graphic Avatar Representation */}
+          <QuestionGraphicAvatar
+            category={currentQuestion.category}
+            subcategory={currentQuestion.subcategory}
+            skill={currentQuestion.cognitiveSkill}
+          />
 
           {/* Question Prompt */}
           <p className="text-sm sm:text-base font-bold text-foreground leading-relaxed">
@@ -378,7 +392,7 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* WORKOUT SUMMARY & BUTTON TO PHYSICAL ACTIVITIES                         */}
+      {/* WORKOUT SUMMARY & PRIMARY BUTTON TO PHYSICAL ACTIVITIES                */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {workoutPhase === "workout_summary" && (
         <div className="rounded-3xl border-2 border-emerald-500/50 bg-gradient-to-br from-emerald-500/10 via-card to-teal-600/10 p-6 sm:p-8 text-center space-y-6 shadow-2xl animate-in zoom-in-95">
@@ -396,7 +410,7 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
               Great Job on Today&apos;s Training!
             </h2>
             <p className="text-xs sm:text-sm text-muted-foreground">
-              You mastered the lesson, answered the test questions, and completed your physical task.
+              You mastered the topic, answered the test questions, and completed your physical task.
             </p>
           </div>
 
@@ -416,15 +430,14 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
             </div>
           </div>
 
-          {/* Action Links: Workout -> Physical Activities -> Dashboard */}
+          {/* ─── PRIMARY BUTTON LEADING TO PHYSICAL ACTIVITIES ─────────────────── */}
           <div className="space-y-3 pt-2">
-            {/* DIRECT BUTTON TO PHYSICAL ACTIVITIES */}
             <Link
               href="/dashboard/physical"
-              className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white py-4 px-6 text-sm font-black shadow-lg shadow-emerald-600/25 transition active:scale-95 min-h-[52px]"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:brightness-110 text-white py-4 px-6 text-sm font-black shadow-xl shadow-emerald-600/30 transition active:scale-95 min-h-[54px]"
             >
               <Activity className="h-5 w-5" />
-              <span>EXPLORE ALL PHYSICAL ACTIVITIES ➔</span>
+              <span>PRACTICE WHAT YOU&apos;VE LEARNT: GO TO PHYSICAL ACTIVITIES ➔</span>
             </Link>
 
             <Link

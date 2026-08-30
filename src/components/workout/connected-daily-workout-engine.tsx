@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { DailyCurriculumLesson } from "@/lib/daily-curriculum/types";
 import { randomizeOptions } from "@/lib/answer-randomizer";
@@ -20,7 +20,8 @@ import {
   Dumbbell,
   ShieldCheck,
   Trophy,
-  RotateCcw,
+  Activity,
+  ArrowLeft,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/client";
@@ -28,6 +29,8 @@ import { createClient } from "@/lib/supabase/client";
 interface ConnectedDailyWorkoutEngineProps {
   lesson: DailyCurriculumLesson;
 }
+
+const OPTION_LETTERS = ["A", "B", "C", "D", "E", "F"];
 
 export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEngineProps) {
   const { user } = useAuth();
@@ -140,8 +143,29 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
   };
 
   return (
-    <div className="mx-auto w-full max-w-2xl space-y-6 px-3 sm:px-4 py-4 pb-24 overflow-x-hidden touch-manipulation">
-      {/* ─── PHASE PROGRESS STEPPER ─────────────────────────────────────────── */}
+    <div className="mx-auto w-full max-w-2xl space-y-5 px-3 sm:px-4 py-2 pb-24 overflow-x-hidden touch-manipulation">
+      {/* ─── 1. CLEAR TITLE AT THE TOP ───────────────────────────────────────── */}
+      <div className="rounded-3xl border-2 border-primary/30 bg-gradient-to-br from-primary/15 via-card to-violet-600/10 p-5 sm:p-6 space-y-1.5 shadow-lg">
+        <div className="flex items-center gap-2">
+          <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="text-[10px] font-black uppercase tracking-widest text-primary">
+            TODAY&apos;S 2-PHASE BRAIN WORKOUT
+          </span>
+          <span className="rounded-full bg-muted border border-border px-2.5 py-0.5 text-[9px] font-bold text-muted-foreground">
+            {lesson.category}
+          </span>
+        </div>
+
+        <h1 className="text-xl sm:text-2xl font-black text-foreground tracking-tight leading-snug">
+          {lesson.topicTitle}
+        </h1>
+
+        <p className="text-xs text-muted-foreground font-medium">
+          Phase 1: Connected Questions &rarr; Phase 2: Physical &amp; Real-Life Task
+        </p>
+      </div>
+
+      {/* ─── 2. PHASE PROGRESS STEPPER ───────────────────────────────────────── */}
       <div className="rounded-2xl border border-border bg-card p-3 shadow-sm flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span
@@ -154,7 +178,7 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
             1
           </span>
           <span className="text-xs font-black text-foreground">
-            Phase 1: Connected Questions
+            Phase 1: Questions (A, B, C, D)
           </span>
         </div>
 
@@ -179,7 +203,7 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* PHASE 1: CONNECTED QUESTIONS                                           */}
+      {/* PHASE 1: CONNECTED QUESTIONS (WITH A, B, C, D BADGES)                   */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {workoutPhase === "phase1_questions" && currentQuestion && (
         <div className="rounded-3xl border-2 border-primary/40 bg-card p-6 sm:p-8 space-y-5 shadow-xl animate-in fade-in">
@@ -203,20 +227,25 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
             {currentQuestion.question}
           </p>
 
-          {/* Randomized Options */}
+          {/* Explicit A, B, C, D Options */}
           <div className="space-y-2.5 pt-1">
             {displayOptions.map((opt, idx) => {
+              const letter = OPTION_LETTERS[idx] || `${idx + 1}`;
               const isSelected = selectedOptionId === opt.id;
               const isCorrect = opt.isCorrect;
               let btnClass = "border-border bg-background hover:border-primary/40 text-foreground";
+              let badgeClass = "bg-muted text-foreground border-border";
 
               if (selectedOptionId !== null) {
                 if (isSelected && isCorrect) {
                   btnClass = "border-emerald-500 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-black";
+                  badgeClass = "bg-emerald-500 text-white border-emerald-500";
                 } else if (isSelected && !isCorrect) {
                   btnClass = "border-rose-500 bg-rose-500/15 text-rose-600 dark:text-rose-400";
+                  badgeClass = "bg-rose-500 text-white border-rose-500";
                 } else if (isCorrect) {
                   btnClass = "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400";
+                  badgeClass = "bg-emerald-500/80 text-white border-emerald-500";
                 }
               }
 
@@ -225,14 +254,22 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
                   key={opt.id}
                   disabled={selectedOptionId !== null}
                   onClick={() => handleSelectOption(opt)}
-                  className={`w-full text-left rounded-2xl border p-3.5 sm:p-4 text-xs sm:text-sm font-semibold transition active:scale-[0.99] flex items-center justify-between ${btnClass}`}
+                  className={`w-full text-left rounded-2xl border p-3.5 sm:p-4 text-xs sm:text-sm font-semibold transition active:scale-[0.99] flex items-start gap-3 ${btnClass}`}
                 >
-                  <span>{opt.label}</span>
+                  {/* A, B, C, D Letter Badge */}
+                  <span
+                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-xs font-black ${badgeClass}`}
+                  >
+                    {letter}
+                  </span>
+
+                  <span className="flex-1 leading-relaxed">{opt.label}</span>
+
                   {selectedOptionId !== null && isCorrect && (
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 ml-2" />
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 ml-1 mt-0.5" />
                   )}
                   {selectedOptionId !== null && isSelected && !isCorrect && (
-                    <XCircle className="h-4 w-4 text-rose-500 shrink-0 ml-2" />
+                    <XCircle className="h-4 w-4 text-rose-500 shrink-0 ml-1 mt-0.5" />
                   )}
                 </button>
               );
@@ -243,7 +280,7 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
           {selectedOptionId !== null && (
             <div className="space-y-4 pt-2 animate-in fade-in">
               <div className="rounded-2xl bg-muted/70 p-3.5 text-xs text-muted-foreground leading-relaxed border-l-2 border-primary">
-                <span className="font-bold text-foreground block mb-0.5">Explanation:</span>
+                <span className="font-bold text-foreground block mb-0.5">Educational Explanation:</span>
                 {currentQuestion.educationalWhy}
               </div>
 
@@ -341,7 +378,7 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* WORKOUT SUMMARY & REWARD CELEBRATION                                   */}
+      {/* WORKOUT SUMMARY & BUTTON TO PHYSICAL ACTIVITIES                         */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {workoutPhase === "workout_summary" && (
         <div className="rounded-3xl border-2 border-emerald-500/50 bg-gradient-to-br from-emerald-500/10 via-card to-teal-600/10 p-6 sm:p-8 text-center space-y-6 shadow-2xl animate-in zoom-in-95">
@@ -379,14 +416,22 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
             </div>
           </div>
 
-          {/* Action Links */}
-          <div className="space-y-2.5 pt-2">
+          {/* Action Links: Workout -> Physical Activities -> Dashboard */}
+          <div className="space-y-3 pt-2">
+            {/* DIRECT BUTTON TO PHYSICAL ACTIVITIES */}
+            <Link
+              href="/dashboard/physical"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white py-4 px-6 text-sm font-black shadow-lg shadow-emerald-600/25 transition active:scale-95 min-h-[52px]"
+            >
+              <Activity className="h-5 w-5" />
+              <span>EXPLORE ALL PHYSICAL ACTIVITIES ➔</span>
+            </Link>
+
             <Link
               href="/dashboard"
-              className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-primary text-white py-3.5 px-6 text-xs sm:text-sm font-black shadow-md hover:brightness-110 active:scale-95 transition min-h-[48px]"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-2xl border border-border bg-card px-6 py-3 text-xs font-bold hover:bg-accent transition min-h-[44px]"
             >
               <span>Back to Dashboard</span>
-              <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>

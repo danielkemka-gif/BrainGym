@@ -312,6 +312,24 @@ export default function PhysicalActivitiesPage() {
           </div>
         </div>
       )}
+
+      {/* ─── DIRECT NAVIGATION BUTTON TO PROGRESS PAGE ─────────────────────── */}
+      <div className="rounded-3xl border-2 border-emerald-500/40 bg-gradient-to-r from-emerald-500/10 via-card to-teal-500/10 p-5 sm:p-6 shadow-md flex flex-col sm:flex-row items-center justify-between gap-4 mt-4">
+        <div>
+          <h3 className="text-sm sm:text-base font-black text-foreground">
+            Track Your Brain &amp; Habit Growth
+          </h3>
+          <p className="text-xs text-muted-foreground">
+            View your multi-domain cognitive baselines, streaks, and transformation analytics.
+          </p>
+        </div>
+        <Link
+          href="/dashboard/progress"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white py-3.5 px-6 text-xs sm:text-sm font-black shadow-md shadow-emerald-600/25 transition active:scale-95 min-h-[46px] shrink-0"
+        >
+          <span>VIEW MY BRAIN PROGRESS ➔</span>
+        </Link>
+      </div>
     </div>
   );
 }

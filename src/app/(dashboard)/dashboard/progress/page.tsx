@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/lib/auth";
 import {
@@ -122,6 +123,30 @@ export default function ProgressPage() {
       <div className="rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-sm">
         <h2 className="text-base font-black text-foreground mb-4">Badges &amp; Milestones</h2>
         <AchievementsGrid />
+      </div>
+
+      {/* 7. DIRECT NAVIGATION BUTTON TO COGNITIVE CHALLENGES ARENA */}
+      <div className="rounded-3xl border-2 border-primary/40 bg-gradient-to-r from-primary/15 via-card to-violet-600/15 p-6 sm:p-7 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
+            <span className="text-[10px] font-black uppercase text-primary tracking-wider">
+              Ready for the Arena?
+            </span>
+          </div>
+          <h3 className="text-lg sm:text-xl font-black text-foreground">
+            Enter the Cognitive Challenges Arena
+          </h3>
+          <p className="text-xs text-muted-foreground">
+            Put your trained memory, logic, focus, and speed to the test in specialized arena challenges.
+          </p>
+        </div>
+        <Link
+          href="/dashboard/challenges"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-primary hover:bg-primary/90 text-white py-4 px-7 text-xs sm:text-sm font-black shadow-lg shadow-primary/25 transition active:scale-95 min-h-[48px] shrink-0"
+        >
+          <span>ENTER CHALLENGES ARENA ➔</span>
+        </Link>
       </div>
     </div>
   );

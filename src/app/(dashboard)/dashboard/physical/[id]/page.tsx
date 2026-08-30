@@ -36,6 +36,7 @@ import {
   Activity,
   CheckCircle2,
 } from "lucide-react";
+import { ExerciseAvatarGraphic } from "@/components/physical-activities/exercise-avatar-graphic";
 
 export default function PhysicalActivityDetailPage() {
   const params = useParams();
@@ -310,6 +311,14 @@ export default function PhysicalActivityDetailPage() {
 
       {/* Hero Details */}
       <div className="rounded-3xl border-2 border-emerald-500/40 bg-gradient-to-br from-emerald-500/10 via-card to-teal-500/10 p-6 sm:p-7 space-y-4 shadow-lg">
+        {/* Exercise Graphic Avatar Illustration */}
+        <div className="flex justify-center pt-1 pb-2">
+          <ExerciseAvatarGraphic
+            type={physicalMatch?.illustrationType || "walking"}
+            size="hero"
+          />
+        </div>
+
         <div className="flex items-center gap-3">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-500 text-white shadow-md shadow-emerald-500/25">
             <Footprints className="h-6 w-6" />

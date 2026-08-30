@@ -11,6 +11,10 @@ import { CRITICAL_THINKING_CHALLENGES } from "./critical-thinking";
 import { SPATIAL_REASONING_CHALLENGES } from "./spatial-reasoning";
 import { MENTAL_WELLNESS_CHALLENGES } from "./mental-wellness";
 import { BOSS_CHALLENGES } from "./boss-challenges";
+import { WORKPLACE_FINANCE_CHALLENGES } from "./workplace-finance";
+import { FAMILY_RELATIONSHIPS_CHALLENGES } from "./family-relationships";
+import { ACADEMICS_LEARNING_CHALLENGES } from "./academics-learning";
+import { PERSONAL_GROWTH_MINDSET_CHALLENGES } from "./personal-growth-mindset";
 import { InteractiveChallenge } from "../interactive-challenges";
 import { randomizeOptions, randomizeChallenge } from "../answer-randomizer";
 
@@ -27,8 +31,12 @@ export * from "./critical-thinking";
 export * from "./spatial-reasoning";
 export * from "./mental-wellness";
 export * from "./boss-challenges";
+export * from "./workplace-finance";
+export * from "./family-relationships";
+export * from "./academics-learning";
+export * from "./personal-growth-mindset";
 
-// ─── COMPLETE 300+ CHALLENGE LIBRARY ─────────────────────────────────────────
+// ─── COMPLETE HUMAN COGNITIVE CHALLENGE REPOSITORY ───────────────────────────
 export const ALL_COGNITIVE_CHALLENGES: CognitiveChallenge[] = [
   ...MEMORY_CHALLENGES,
   ...LOGIC_CHALLENGES,
@@ -42,6 +50,10 @@ export const ALL_COGNITIVE_CHALLENGES: CognitiveChallenge[] = [
   ...SPATIAL_REASONING_CHALLENGES,
   ...MENTAL_WELLNESS_CHALLENGES,
   ...BOSS_CHALLENGES,
+  ...WORKPLACE_FINANCE_CHALLENGES,
+  ...FAMILY_RELATIONSHIPS_CHALLENGES,
+  ...ACADEMICS_LEARNING_CHALLENGES,
+  ...PERSONAL_GROWTH_MINDSET_CHALLENGES,
 ];
 
 // Helper to map category names to 5 core domains for workout engine

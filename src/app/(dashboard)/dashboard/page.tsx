@@ -21,6 +21,7 @@ import {
 
 // ─── Dashboard Components ───────────────────────────────────────────────────
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
+import { HumanLifeBriefing } from "@/components/dashboard/human-life-briefing";
 import { TodaysBrainHeroCard } from "@/components/brain-universe/todays-brain-hero-card";
 import { DualMetricHero } from "@/components/life-performance/dual-metric-hero";
 import { RealLifeChallengeCard } from "@/components/life-transfer/real-life-challenge-card";
@@ -94,23 +95,26 @@ export default function DashboardPage() {
         userName={user?.user_metadata?.name || user?.email?.split("@")[0] || "Thinker"}
       />
 
-      {/* 2. TODAY'S BRAIN DROP (ONE SCREEN. ONE BIG IDEA. ONE ACTION.) */}
+      {/* 2. DAILY HUMAN BRAIN BRIEFING (WORK, BUSINESS, STUDY, FAMILY, FINANCE) */}
+      <HumanLifeBriefing />
+
+      {/* 3. TODAY'S BRAIN DROP (ONE SCREEN. ONE BIG IDEA. ONE ACTION.) */}
       <TodaysBrainHeroCard drop={dailyDrop} />
 
-      {/* 3. COMPACT MOMENTUM BAR & WORKOUT CTA */}
+      {/* 4. COMPACT MOMENTUM BAR & WORKOUT CTA */}
       <CompactMomentumBar
         momentum={engineState.momentum}
         streakDays={engineState.profile.streak}
         workoutDurationMin={engineState.prescribedWorkout.estimatedMinutes}
       />
 
-      {/* 4. DUAL-PERFORMANCE INDEX (BRAIN FITNESS VS LIFE PERFORMANCE) */}
+      {/* 5. DUAL-PERFORMANCE INDEX (BRAIN FITNESS VS LIFE PERFORMANCE) */}
       <DualMetricHero lifeState={lifeState} />
 
-      {/* 5. TODAY'S BRAIN-TO-LIFE APPLICATION CHALLENGE */}
+      {/* 6. TODAY'S BRAIN-TO-LIFE APPLICATION CHALLENGE */}
       <RealLifeChallengeCard challenge={lifeChallenge} />
 
-      {/* 6. 4-PILLAR QUICK NAVIGATION (DISCOVER · TRAIN · MY BRAIN · COACH) */}
+      {/* 7. 4-PILLAR QUICK NAVIGATION (DISCOVER · TRAIN · MY BRAIN · COACH) */}
       <QuickPillarsNav />
     </div>
   );

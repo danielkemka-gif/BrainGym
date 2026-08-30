@@ -27,6 +27,7 @@ import {
   ArrowLeft,
   Bell,
 } from "lucide-react";
+import { ExerciseAvatarGraphic } from "@/components/physical-activities/exercise-avatar-graphic";
 
 const CATEGORIES: { label: string; value: string; icon: string }[] = [
   { label: "All Activities", value: "All", icon: "🌟" },
@@ -47,45 +48,8 @@ const CATEGORIES: { label: string; value: string; icon: string }[] = [
 ];
 
 function ActivityIllustrationBadge({ type }: { type: string }) {
-  const getEmoji = () => {
-    switch (type) {
-      case "meditation":
-        return "🧘‍♂️";
-      case "walking":
-        return "🚶‍♂️";
-      case "reading":
-        return "📖";
-      case "drawing":
-        return "🎨";
-      case "listening":
-        return "🎧";
-      case "speaking":
-        return "🗣️";
-      case "handwriting":
-        return "✍️";
-      case "eating":
-        return "🍲";
-      case "sleeping":
-        return "🌙";
-      case "nature":
-        return "🌲";
-      case "planning":
-        return "📋";
-      case "music":
-        return "🎵";
-      case "hydration":
-        return "💧";
-      case "coordination":
-        return "🤸";
-      default:
-        return "🧠";
-    }
-  };
-
   return (
-    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 text-2xl shadow-sm">
-      {getEmoji()}
-    </div>
+    <ExerciseAvatarGraphic type={type} size="sm" />
   );
 }
 

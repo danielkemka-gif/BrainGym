@@ -38,6 +38,8 @@ export interface DailyCurriculumLesson {
   topicTitle: string;
   category: "Work & Career" | "Business & Wealth" | "Study & Learning" | "Family & Home" | "Emotional Intelligence" | "Focus & Mindset";
   roleTarget: string; // e.g. "For Professionals, Students, Founders & Families"
+  topicEmoji?: string; // e.g. "💰" for Finance, "📚" for Knowledge/Learning, "💼" for Work
+  topicIllustration?: "finance" | "knowledge" | "workplace" | "family" | "relationship" | "focus" | "mindset";
   
   // ─── STEP 1: DASHBOARD LESSON ──────────────────────────────────────────────
   challenge: string; // The real-life dilemma

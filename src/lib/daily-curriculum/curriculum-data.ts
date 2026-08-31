@@ -18,6 +18,8 @@ export const DAILY_CURRICULUM_LESSONS: DailyCurriculumLesson[] = [
     topicTitle: "How to Stay Calm & Think Clearly in High-Pressure Meetings & Negotiations",
     category: "Work & Career",
     roleTarget: "For Workers, Managers, Traders & Entrepreneurs",
+    topicEmoji: "💼",
+    topicIllustration: "workplace",
     challenge:
       "When someone challenges your proposal, criticizes your work, or gives an unexpected low offer, your heart races, your voice tightens, and your working memory freezes.",
     solution:
@@ -56,6 +58,8 @@ export const DAILY_CURRICULUM_LESSONS: DailyCurriculumLesson[] = [
     topicTitle: "Protecting Deep Focus in Noisy Open Offices & Busy Markets",
     category: "Focus & Mindset",
     roleTarget: "For Students, Creators, Employees & Business Owners",
+    topicEmoji: "🎯",
+    topicIllustration: "focus",
     challenge:
       "Office chatter, traffic noise, and phone notifications constantly break your train of thought, leaving you mentally exhausted after getting almost nothing done.",
     solution:
@@ -87,13 +91,15 @@ export const DAILY_CURRICULUM_LESSONS: DailyCurriculumLesson[] = [
     },
   },
 
-  // ─── LESSON 3: ACTIVE RECALL & RAPID LEARNING ──────────────────────────────
+  // ─── LESSON 3: ACTIVE RECALL & RAPID LEARNING (BOOK / KNOWLEDGE) ───────────
   {
     id: "lesson-03-active-recall-learning",
     dayIndex: 3,
     topicTitle: "How to Retain 80% of What You Read Without Passive Highlighting",
     category: "Study & Learning",
     roleTarget: "For Students, Scholars, Researchers & Lifelong Learners",
+    topicEmoji: "📚",
+    topicIllustration: "knowledge",
     challenge:
       "You spend hours reading textbooks, notes, or training manuals, but 24 hours later your mind goes completely blank when trying to recall key points.",
     solution:
@@ -125,13 +131,15 @@ export const DAILY_CURRICULUM_LESSONS: DailyCurriculumLesson[] = [
     },
   },
 
-  // ─── LESSON 4: FINANCIAL IMPULSE CONTROL & WEALTH BUILDING ─────────────────
+  // ─── LESSON 4: FINANCIAL IMPULSE CONTROL & WEALTH (MONEY / FINANCE) ────────
   {
     id: "lesson-04-financial-impulse-control",
     dayIndex: 4,
     topicTitle: "The 48-Hour Dopamine Rule: Mastering Financial Discipline & Impulse Gating",
     category: "Business & Wealth",
     roleTarget: "For Traders, Earners, Families & Wealth Builders",
+    topicEmoji: "💰",
+    topicIllustration: "finance",
     challenge:
       "You see attractive deals, gadgets, or luxury items online, feel an intense urge to buy immediately, and later suffer from financial stress and regret.",
     solution:
@@ -170,6 +178,8 @@ export const DAILY_CURRICULUM_LESSONS: DailyCurriculumLesson[] = [
     topicTitle: "De-escalating Arguments & Cultivating Empathy at Home After Exhausting Days",
     category: "Family & Home",
     roleTarget: "For Parents, Spouses, Siblings & Extended Families",
+    topicEmoji: "👨‍👩‍👧‍👦",
+    topicIllustration: "family",
     challenge:
       "After a long day in traffic and work, minor household issues cause you to snap in anger at family members or spouses, damaging relational warmth.",
     solution:

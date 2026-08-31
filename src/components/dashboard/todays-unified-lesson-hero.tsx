@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { DailyCurriculumLesson } from "@/lib/daily-curriculum/types";
+import { TopicHeroIllustration } from "@/components/dashboard/topic-hero-illustration";
 import {
   Sparkles,
   Zap,
@@ -40,15 +41,30 @@ export function TodaysUnifiedLessonHero({ lesson }: TodaysUnifiedLessonHeroProps
         </span>
       </div>
 
-      {/* Main Topic Title */}
+      {/* Main Topic Title & Subtitle */}
       <div className="space-y-1">
-        <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight leading-snug">
-          {lesson.topicTitle}
-        </h1>
+        <div className="flex items-center gap-2">
+          {lesson.topicEmoji && (
+            <span className="text-2xl sm:text-3xl shrink-0 animate-bounce">
+              {lesson.topicEmoji}
+            </span>
+          )}
+          <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight leading-snug">
+            {lesson.topicTitle}
+          </h1>
+        </div>
         <p className="text-xs sm:text-sm text-muted-foreground font-medium">
           Master today&apos;s cognitive principle, answer the related test questions, and execute the physical task.
         </p>
       </div>
+
+      {/* ─── VIVID TOPIC GRAPHIC / EMOJI ILLUSTRATION BANNER ──────────────────── */}
+      <TopicHeroIllustration
+        category={lesson.category}
+        topicTitle={lesson.topicTitle}
+        topicEmoji={lesson.topicEmoji}
+        topicIllustration={lesson.topicIllustration}
+      />
 
       {/* ─── 3-STEP LESSON: CHALLENGE -> SOLUTION -> ACTION ─────────────────── */}
       <div className="space-y-3.5 text-xs sm:text-sm">
@@ -127,7 +143,7 @@ export function TodaysUnifiedLessonHero({ lesson }: TodaysUnifiedLessonHeroProps
               PHASE 1: CONNECTED QUESTIONS (3 MINS)
             </span>
             <p className="text-muted-foreground font-medium">
-              3 multiple-choice challenges directly testing today&apos;s topic.
+              6 multiple-choice challenges directly testing today&apos;s topic.
             </p>
           </div>
 

@@ -181,6 +181,31 @@ export default function ChallengesPage() {
         </div>
       </div>
 
+      {/* PROMINENT GROUP CHALLENGE SYSTEM HERO */}
+      <div className="rounded-3xl border-2 border-primary/40 bg-gradient-to-r from-primary/15 via-card to-violet-600/15 p-5 sm:p-6 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
+            <span className="text-[10px] font-black uppercase text-primary tracking-wider">
+              COMMUNITY &amp; TEAMS
+            </span>
+          </div>
+          <h3 className="text-base sm:text-lg font-black text-foreground">
+            Structured Group Challenges &amp; WhatsApp Competitions
+          </h3>
+          <p className="text-xs text-muted-foreground">
+            Create or join structured 3 to 30-day challenges for your WhatsApp group, company, church, or school.
+          </p>
+        </div>
+        <Link
+          href="/dashboard/group-challenges"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-primary hover:bg-primary/90 text-white py-3.5 px-6 text-xs sm:text-sm font-black shadow-md shadow-primary/25 transition active:scale-95 min-h-[46px] shrink-0"
+        >
+          <Users className="h-4 w-4" />
+          <span>EXPLORE GROUP CHALLENGES ➔</span>
+        </Link>
+      </div>
+
       {/* Tabs */}
       <div className="flex gap-2 border-b border-border pb-2 overflow-x-auto">
         <button

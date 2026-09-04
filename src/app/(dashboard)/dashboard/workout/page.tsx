@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { getTodaysCurriculumLesson, DailyCurriculumLesson } from "@/lib/daily-curriculum";
 import { ConnectedDailyWorkoutEngine } from "@/components/workout/connected-daily-workout-engine";
-import { ArrowLeft, Sparkles, Dumbbell } from "lucide-react";
+import { AgeTierId, getActiveUserAgeTier } from "@/lib/age-tiers";
+import { ArrowLeft, Dumbbell } from "lucide-react";
 
 export default function WorkoutPage() {
+  const searchParams = useSearchParams();
+  const ageTierParam = (searchParams?.get("ageTier") as AgeTierId) || getActiveUserAgeTier();
   const lesson: DailyCurriculumLesson = getTodaysCurriculumLesson();
 
   return (
@@ -27,8 +30,8 @@ export default function WorkoutPage() {
         </span>
       </div>
 
-      {/* Connected 2-Phase Workout Engine */}
-      <ConnectedDailyWorkoutEngine lesson={lesson} />
+      {/* Connected 2-Phase Workout Engine with Age Tier Support */}
+      <ConnectedDailyWorkoutEngine lesson={lesson} initialAgeTier={ageTierParam} />
     </div>
   );
 }

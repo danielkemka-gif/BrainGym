@@ -7,6 +7,13 @@ import { randomizeOptions } from "@/lib/answer-randomizer";
 import { ChallengeOption } from "@/lib/challenges-engine/types";
 import { ExerciseAvatarGraphic } from "@/components/physical-activities/exercise-avatar-graphic";
 import { QuestionGraphicAvatar } from "@/components/workout/question-graphic-avatar";
+import { AgeTierSelector } from "@/components/dashboard/age-tier-selector";
+import {
+  AgeTierId,
+  getActiveUserAgeTier,
+  getAgeAdaptedLesson,
+  AGE_TIER_CONFIGS,
+} from "@/lib/age-tiers";
 import { Confetti } from "@/components/ui/confetti";
 import {
   Sparkles,
@@ -29,12 +36,20 @@ import { createClient } from "@/lib/supabase/client";
 
 interface ConnectedDailyWorkoutEngineProps {
   lesson: DailyCurriculumLesson;
+  initialAgeTier?: AgeTierId;
 }
 
 const OPTION_LETTERS = ["A", "B", "C", "D", "E", "F"];
 
-export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEngineProps) {
+export function ConnectedDailyWorkoutEngine({
+  lesson,
+  initialAgeTier,
+}: ConnectedDailyWorkoutEngineProps) {
   const { user } = useAuth();
+  const [activeTier, setActiveTier] = useState<AgeTierId>(initialAgeTier || getActiveUserAgeTier());
+
+  // Adapt the lesson to the selected age tier
+  const adaptedLesson = getAgeAdaptedLesson(lesson, activeTier);
 
   // Phase State: 'phase1_questions' | 'phase2_physical' | 'workout_summary'
   const [workoutPhase, setWorkoutPhase] = useState<"phase1_questions" | "phase2_physical" | "workout_summary">("phase1_questions");
@@ -47,11 +62,11 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
   const [questionsScore, setQuestionsScore] = useState(0);
 
   // Phase 2 Physical Task State
-  const [physicalTimerSeconds, setPhysicalTimerSeconds] = useState(lesson.phase2PhysicalTask.durationMinutes * 60);
+  const [physicalTimerSeconds, setPhysicalTimerSeconds] = useState(adaptedLesson.phase2PhysicalTask.durationMinutes * 60);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [physicalTaskCompleted, setPhysicalTaskCompleted] = useState(false);
 
-  const currentQuestion = lesson.phase1Questions[currentQuestionIndex] || lesson.phase1Questions[0];
+  const currentQuestion = adaptedLesson.phase1Questions[currentQuestionIndex] || adaptedLesson.phase1Questions[0];
 
   // Randomize options on each question
   useEffect(() => {
@@ -89,7 +104,7 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
   };
 
   const handleNextQuestion = () => {
-    if (currentQuestionIndex + 1 < lesson.phase1Questions.length) {
+    if (currentQuestionIndex + 1 < adaptedLesson.phase1Questions.length) {
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
       // Transition to Phase 2: Physical Task
@@ -110,8 +125,8 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
           user_id: user.id,
           amount: totalXpAward,
           source_type: "daily_connected_workout",
-          source_id: lesson.id,
-          description: `Completed 2-Phase Connected Workout: ${lesson.topicTitle}`,
+          source_id: `${lesson.id}-${activeTier}`,
+          description: `Completed 2-Phase Workout (${activeTier} Years): ${lesson.topicTitle}`,
         });
 
         const { data: profile } = await supabase
@@ -145,27 +160,34 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
 
   return (
     <div className="mx-auto w-full max-w-2xl space-y-5 px-3 sm:px-4 py-2 pb-24 overflow-x-hidden touch-manipulation">
-      {/* ─── 1. CLEAR TITLE AT THE TOP ───────────────────────────────────────── */}
-      <div className="rounded-3xl border-2 border-primary/40 bg-gradient-to-br from-primary/15 via-card to-violet-600/10 p-5 sm:p-6 space-y-2 shadow-xl">
-        <div className="flex items-center justify-between">
+      {/* ─── 1. CLEAR TITLE AT THE TOP WITH AGE TIER SELECTOR ────────────────── */}
+      <div className="rounded-3xl border-2 border-primary/40 bg-gradient-to-br from-primary/15 via-card to-violet-600/10 p-5 sm:p-6 space-y-3 shadow-xl">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
             <span className="text-[10px] font-black uppercase tracking-widest text-primary">
-              TOPIC TEST
-            </span>
-            <span className="rounded-full bg-muted border border-border px-2.5 py-0.5 text-[9px] font-bold text-muted-foreground">
-              {lesson.category}
+              TOPIC TEST · 2-PHASE WORKOUT
             </span>
           </div>
 
-          <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-2.5 py-0.5">
-            {lesson.phase1Questions.length} Questions + 1 Physical Task
-          </span>
+          {/* Age Tier Selector */}
+          <AgeTierSelector
+            selectedTier={activeTier}
+            onTierChange={(tier) => {
+              setActiveTier(tier);
+              setCurrentQuestionIndex(0);
+            }}
+          />
         </div>
 
-        <h1 className="text-xl sm:text-2xl font-black text-foreground tracking-tight leading-snug">
-          {lesson.topicTitle}
-        </h1>
+        <div>
+          <h1 className="text-xl sm:text-2xl font-black text-foreground tracking-tight leading-snug">
+            {adaptedLesson.topicTitle}
+          </h1>
+          <p className="text-xs text-muted-foreground font-semibold mt-0.5">
+            Personalized for <strong className="text-primary">{adaptedLesson.roleTarget}</strong>.
+          </p>
+        </div>
 
         <p className="text-xs text-muted-foreground font-medium">
           Answer each multiple-choice question (A, B, C, D) below, then practice what you&apos;ve learnt in the physical task.
@@ -185,7 +207,7 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
             1
           </span>
           <span className="text-xs font-black text-foreground">
-            Phase 1: Questions ({currentQuestionIndex + 1}/{lesson.phase1Questions.length})
+            Phase 1: Questions ({currentQuestionIndex + 1}/{adaptedLesson.phase1Questions.length})
           </span>
         </div>
 
@@ -218,7 +240,7 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
           <div className="flex items-center justify-between border-b border-border/60 pb-3">
             <div className="space-y-0.5">
               <span className="text-[10px] font-black uppercase text-primary tracking-wider">
-                QUESTION {currentQuestionIndex + 1} OF {lesson.phase1Questions.length}
+                QUESTION {currentQuestionIndex + 1} OF {adaptedLesson.phase1Questions.length} · AGE {activeTier}
               </span>
               <h3 className="text-base sm:text-lg font-black text-foreground">
                 {currentQuestion.title}
@@ -303,7 +325,7 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
                 className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-primary text-white py-3.5 px-6 text-xs sm:text-sm font-black shadow-md hover:brightness-110 active:scale-95 transition min-h-[48px]"
               >
                 <span>
-                  {currentQuestionIndex + 1 < lesson.phase1Questions.length
+                  {currentQuestionIndex + 1 < adaptedLesson.phase1Questions.length
                     ? "NEXT QUESTION ➔"
                     : "PROCEED TO PHASE 2: PHYSICAL TASK ➔"}
                 </span>
@@ -322,21 +344,21 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
           <div className="flex items-center justify-between border-b border-border/60 pb-3">
             <div className="space-y-0.5">
               <span className="text-[10px] font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">
-                PHASE 2: PHYSICAL &amp; REAL-LIFE TASK
+                PHASE 2: PHYSICAL &amp; REAL-LIFE TASK ({activeTier} YEARS)
               </span>
               <h2 className="text-xl sm:text-2xl font-black text-foreground">
-                {lesson.phase2PhysicalTask.title}
+                {adaptedLesson.phase2PhysicalTask.title}
               </h2>
             </div>
             <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-black text-emerald-600 dark:text-emerald-400">
-              +{lesson.phase2PhysicalTask.xpReward} XP
+              +{adaptedLesson.phase2PhysicalTask.xpReward} XP
             </span>
           </div>
 
           {/* Graphic Avatar Exercise Illustration */}
           <div className="flex justify-center py-2">
             <ExerciseAvatarGraphic
-              type={lesson.phase2PhysicalTask.illustrationType}
+              type={adaptedLesson.phase2PhysicalTask.illustrationType}
               size="hero"
             />
           </div>
@@ -347,7 +369,7 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
               🏃 WHAT TO DO (PHYSICAL ACTION)
             </span>
             <p className="text-xs sm:text-sm text-foreground/90 font-medium leading-relaxed">
-              {lesson.phase2PhysicalTask.physicalAction}
+              {adaptedLesson.phase2PhysicalTask.physicalAction}
             </p>
           </div>
 
@@ -357,7 +379,7 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
               🧠 WHY THIS CONNECTS TO TODAY&apos;S LESSON
             </span>
             <p className="text-xs text-muted-foreground font-medium leading-relaxed">
-              {lesson.phase2PhysicalTask.cognitiveConnection}
+              {adaptedLesson.phase2PhysicalTask.cognitiveConnection}
             </p>
           </div>
 
@@ -386,7 +408,7 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
             className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-4 px-6 text-sm font-black shadow-lg shadow-emerald-600/30 hover:brightness-110 active:scale-95 transition min-h-[52px]"
           >
             <CheckCircle2 className="h-5 w-5" />
-            <span>I COMPLETED THIS PHYSICAL TASK (+{lesson.phase2PhysicalTask.xpReward} XP)</span>
+            <span>I COMPLETED THIS PHYSICAL TASK (+{adaptedLesson.phase2PhysicalTask.xpReward} XP)</span>
           </button>
         </div>
       )}
@@ -404,7 +426,7 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
 
           <div className="space-y-1">
             <span className="text-xs font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">
-              WORKOUT COMPLETE
+              WORKOUT COMPLETE · AGE {activeTier}
             </span>
             <h2 className="text-2xl sm:text-3xl font-black text-foreground">
               Great Job on Today&apos;s Training!
@@ -426,7 +448,7 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
             </div>
             <div className="rounded-2xl border border-border bg-background/90 p-3.5 space-y-0.5 col-span-2 sm:col-span-1">
               <span className="text-[10px] text-muted-foreground font-bold uppercase block">QUESTIONS SCORE</span>
-              <span className="text-xl font-black text-primary">{questionsScore}/{lesson.phase1Questions.length} Correct</span>
+              <span className="text-xl font-black text-primary">{questionsScore}/{adaptedLesson.phase1Questions.length} Correct</span>
             </div>
           </div>
 

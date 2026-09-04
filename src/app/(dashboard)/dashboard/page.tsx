@@ -15,6 +15,7 @@ import {
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { TodaysUnifiedLessonHero } from "@/components/dashboard/todays-unified-lesson-hero";
 import { GroupChallengesHeroCard } from "@/components/dashboard/group-challenges-hero-card";
+import { DashboardAlarmCard } from "@/components/dashboard/dashboard-alarm-card";
 import { DashboardShareBanner } from "@/components/dashboard/dashboard-share-banner";
 import { CompactMomentumBar } from "@/components/brain-universe/compact-momentum-bar";
 import { QuickPillarsNav } from "@/components/brain-universe/quick-pillars-nav";
@@ -85,7 +86,10 @@ export default function DashboardPage() {
       {/* 5. 4-PILLAR QUICK NAVIGATION (DISCOVER · TRAIN · MY BRAIN · COACH) */}
       <QuickPillarsNav />
 
-      {/* 6. ALWAYS-VISIBLE SHARE BRAINGYM BANNER */}
+      {/* 6. SMARTPHONE ALARM & NOTIFICATION CARD */}
+      <DashboardAlarmCard />
+
+      {/* 7. ALWAYS-VISIBLE SHARE BRAINGYM BANNER */}
       <DashboardShareBanner />
     </div>
   );

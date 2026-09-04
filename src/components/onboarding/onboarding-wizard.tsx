@@ -12,6 +12,7 @@ import {
 import { AssessmentStep, type AssessmentData } from "./steps/assessment-step";
 import { SummaryStep } from "./steps/summary-step";
 import type { AgeGroup } from "@/lib/constants";
+import { deriveAgeTierFromAge, setActiveUserAgeTier } from "@/lib/age-tiers";
 
 const TOTAL_STEPS = 5;
 const STEP_LABELS = ["About you", "Your group", "Goals", "Assessment", "Review"];
@@ -66,6 +67,10 @@ export function OnboardingWizard() {
         setSubmitting(false);
         return;
       }
+
+      // Automatically configure Age Tier for all daily questions and games
+      const derivedTier = deriveAgeTierFromAge(basicInfo.age);
+      setActiveUserAgeTier(derivedTier);
 
       const profilePayload = {
         user_id: user.id,

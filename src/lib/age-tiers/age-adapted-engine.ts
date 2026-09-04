@@ -5,7 +5,21 @@ import { CognitiveChallenge } from "@/lib/challenges-engine/types";
 const STORAGE_KEY_USER_AGE_TIER = "braingym_user_age_tier_v1";
 
 /**
- * Get active user age tier (defaults to '26-30' or saved preference)
+ * Derive age tier bracket from user's numerical age
+ */
+export function deriveAgeTierFromAge(age?: number | null): AgeTierId {
+  if (!age || isNaN(age)) return "26-30";
+  if (age <= 19) return "15-19";
+  if (age <= 25) return "20-25";
+  if (age <= 30) return "26-30";
+  if (age <= 35) return "31-35";
+  if (age <= 40) return "36-40";
+  if (age <= 45) return "41-45";
+  return "46-50+";
+}
+
+/**
+ * Get active user age tier (defaults to '26-30' or saved preference from onboarding form)
  */
 export function getActiveUserAgeTier(): AgeTierId {
   if (typeof window === "undefined") return "26-30";
@@ -21,7 +35,7 @@ export function getActiveUserAgeTier(): AgeTierId {
 }
 
 /**
- * Save active user age tier
+ * Save active user age tier (called on onboarding completion or settings)
  */
 export function setActiveUserAgeTier(tier: AgeTierId): void {
   if (typeof window === "undefined") return;
@@ -42,44 +56,44 @@ function adaptQuestionForAgeTier(base: CognitiveChallenge, tier: AgeTierId, idx:
       return {
         ...base,
         id: `${base.id}-15-19-${idx}`,
-        title: `Teen & Scholar Scenario: ${base.title}`,
-        question: `[Age 15–19 Prep Scenario] During high school exam preparations or classroom presentations, ${base.question.toLowerCase()}`,
-        educationalWhy: `For teenage brain development, the prefrontal cortex is actively myelinating. ${base.educationalWhy}`,
+        title: base.title,
+        question: `During high school exam preparations or classroom presentations: ${base.question}`,
+        educationalWhy: `For teenage brain development, the prefrontal cortex is actively developing inhibitory pathways. ${base.educationalWhy}`,
       };
 
     case "20-25":
       return {
         ...base,
         id: `${base.id}-20-25-${idx}`,
-        title: `University & Youth Scenario: ${base.title}`,
-        question: `[Age 20–25 Early Career Scenario] On campus during thesis defense or in your first job internship, ${base.question.toLowerCase()}`,
-        educationalWhy: `In young adulthood, training executive inhibitory control prevents career burnout and builds cognitive resilience. ${base.educationalWhy}`,
+        title: base.title,
+        question: `On campus during thesis defense or in your first job internship: ${base.question}`,
+        educationalWhy: `In early career and university environments, deliberate cognitive pause interrupts threat loops and sharpens memory recall. ${base.educationalWhy}`,
       };
 
     case "31-35":
       return {
         ...base,
         id: `${base.id}-31-35-${idx}`,
-        title: `Mid-Career & Family Scenario: ${base.title}`,
-        question: `[Age 31–35 Business & Home Scenario] Managing workplace deliverables while coordinating household responsibilities, ${base.question.toLowerCase()}`,
-        educationalWhy: `Balancing career growth with parenting requires deliberate glucose and dopamine management. ${base.educationalWhy}`,
+        title: base.title,
+        question: `Managing workplace deliverables while coordinating household and family responsibilities: ${base.question}`,
+        educationalWhy: `Balancing career growth with domestic responsibilities requires deliberate glucose and dopamine management. ${base.educationalWhy}`,
       };
 
     case "36-40":
       return {
         ...base,
         id: `${base.id}-36-40-${idx}`,
-        title: `Leadership & Family Asset Scenario: ${base.title}`,
-        question: `[Age 36–40 Executive & Home Scenario] In high-stakes team leadership and household financial decisions, ${base.question.toLowerCase()}`,
-        educationalWhy: `Mid-career cognitive longevity relies on rapid emotional regulation and strategic clarity. ${base.educationalWhy}`,
+        title: base.title,
+        question: `In high-stakes team leadership, corporate strategy, and family asset decisions: ${base.question}`,
+        educationalWhy: `Mid-career cognitive longevity relies on rapid emotional regulation and strategic clarity under pressure. ${base.educationalWhy}`,
       };
 
     case "41-45":
       return {
         ...base,
         id: `${base.id}-41-45-${idx}`,
-        title: `Senior Executive & Teen Parenting Scenario: ${base.title}`,
-        question: `[Age 41–45 Senior Management Scenario] Navigating organizational restructuring and mentoring adolescents at home, ${base.question.toLowerCase()}`,
+        title: base.title,
+        question: `Navigating organizational management and mentoring adolescents at home: ${base.question}`,
         educationalWhy: `Executive neural networks thrive when high-level decision fatigue is mitigated by parasympathetic resets. ${base.educationalWhy}`,
       };
 
@@ -87,9 +101,9 @@ function adaptQuestionForAgeTier(base: CognitiveChallenge, tier: AgeTierId, idx:
       return {
         ...base,
         id: `${base.id}-46-50-${idx}`,
-        title: `Mentorship & Cognitive Longevity Scenario: ${base.title}`,
-        question: `[Age 46–50+ Strategic Scenario] Directing organizational vision and preserving sharp neuroplastic mental vitality, ${base.question.toLowerCase()}`,
-        educationalWhy: `Cognitive longevity research shows that retrieval practice and stress mitigation protect hippocampal volume. ${base.educationalWhy}`,
+        title: base.title,
+        question: `Directing organizational vision, mentoring others, and preserving sharp neuroplastic mental vitality: ${base.question}`,
+        educationalWhy: `Cognitive longevity research shows that active semantic retrieval practice protects hippocampal volume. ${base.educationalWhy}`,
       };
 
     case "26-30":

@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { DailyCurriculumLesson } from "@/lib/daily-curriculum/types";
 import { TopicHeroIllustration } from "@/components/dashboard/topic-hero-illustration";
-import { AgeTierSelector } from "@/components/dashboard/age-tier-selector";
 import {
   AgeTierId,
   getActiveUserAgeTier,
@@ -29,14 +28,18 @@ interface TodaysUnifiedLessonHeroProps {
 }
 
 export function TodaysUnifiedLessonHero({ lesson }: TodaysUnifiedLessonHeroProps) {
-  const [activeTier, setActiveTier] = useState<AgeTierId>(getActiveUserAgeTier());
+  const [activeTier, setActiveTier] = useState<AgeTierId>("26-30");
+
+  useEffect(() => {
+    setActiveTier(getActiveUserAgeTier());
+  }, []);
 
   // Adapt the lesson dynamically based on active age tier
   const adapted = getAgeAdaptedLesson(lesson, activeTier);
 
   return (
     <div className="rounded-3xl border-2 border-primary/40 bg-gradient-to-br from-primary/10 via-card to-violet-600/10 p-6 sm:p-8 shadow-2xl space-y-6">
-      {/* Header Badge & Age Tier Selector */}
+      {/* Header Badge */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 pb-3">
         <div className="flex items-center gap-2">
           <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -48,11 +51,9 @@ export function TodaysUnifiedLessonHero({ lesson }: TodaysUnifiedLessonHeroProps
           </span>
         </div>
 
-        {/* INTERACTIVE AGE TIER SELECTOR */}
-        <AgeTierSelector
-          selectedTier={activeTier}
-          onTierChange={(tier) => setActiveTier(tier)}
-        />
+        <span className="text-[10px] font-black text-primary bg-primary/10 border border-primary/20 rounded-full px-3 py-0.5">
+          Personalized Daily Plan
+        </span>
       </div>
 
       {/* Main Topic Title & Subtitle */}
@@ -68,7 +69,7 @@ export function TodaysUnifiedLessonHero({ lesson }: TodaysUnifiedLessonHeroProps
           </h1>
         </div>
         <p className="text-xs sm:text-sm text-muted-foreground font-medium">
-          Personalized for <strong className="text-foreground">{adapted.roleTarget}</strong>.
+          Master today&apos;s cognitive principle, answer the related test questions, and execute the physical task.
         </p>
       </div>
 
@@ -86,7 +87,7 @@ export function TodaysUnifiedLessonHero({ lesson }: TodaysUnifiedLessonHeroProps
         <div className="rounded-2xl border border-rose-500/30 bg-rose-500/5 p-4 space-y-1.5 shadow-sm">
           <span className="text-[10px] font-black uppercase tracking-wider text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
             <Target className="h-4 w-4" />
-            1. REAL-LIFE SCENARIO &amp; CHALLENGE ({activeTier} YEARS)
+            1. REAL-LIFE SCENARIO &amp; CHALLENGE
           </span>
           <p className="text-foreground/90 font-medium leading-relaxed">
             {adapted.challenge}
@@ -154,7 +155,7 @@ export function TodaysUnifiedLessonHero({ lesson }: TodaysUnifiedLessonHeroProps
           <div className="rounded-2xl bg-background/90 border border-border p-3.5 space-y-1">
             <span className="text-[10px] font-black uppercase text-primary flex items-center gap-1">
               <HelpCircle className="h-3.5 w-3.5" />
-              PHASE 1: QUESTIONS (A, B, C, D) · AGE {activeTier}
+              PHASE 1: QUESTIONS (A, B, C, D)
             </span>
             <p className="text-muted-foreground font-medium">
               {adapted.phase1Questions.length} tailored scenario questions testing today&apos;s lesson.
@@ -175,11 +176,11 @@ export function TodaysUnifiedLessonHero({ lesson }: TodaysUnifiedLessonHeroProps
         {/* PRIMARY DOMINANT ACTION BUTTON */}
         <div className="pt-2">
           <Link
-            href={`/dashboard/workout?ageTier=${activeTier}`}
+            href="/dashboard/workout"
             className="w-full inline-flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-primary via-violet-600 to-indigo-600 text-white py-4 px-6 text-sm sm:text-base font-black shadow-xl shadow-primary/30 hover:brightness-110 active:scale-[0.98] transition min-h-[54px] touch-manipulation text-center"
           >
             <Zap className="h-5 w-5 fill-white text-white animate-bounce" />
-            <span>START TODAY&apos;S WORKOUT ({activeTier} YEARS) ➔</span>
+            <span>START TODAY&apos;S 2-PHASE WORKOUT ➔</span>
           </Link>
         </div>
       </div>

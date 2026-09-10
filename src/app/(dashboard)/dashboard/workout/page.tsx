@@ -1,17 +1,10 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { getTodaysCurriculumLesson, DailyCurriculumLesson } from "@/lib/daily-curriculum";
 import { ConnectedDailyWorkoutEngine } from "@/components/workout/connected-daily-workout-engine";
-import { AgeTierId, getActiveUserAgeTier } from "@/lib/age-tiers";
 import { ArrowLeft, Dumbbell } from "lucide-react";
 
 export default function WorkoutPage() {
-  const searchParams = useSearchParams();
-  const ageTierParam = (searchParams?.get("ageTier") as AgeTierId) || getActiveUserAgeTier();
-  const lesson: DailyCurriculumLesson = getTodaysCurriculumLesson();
-
   return (
     <div className="mx-auto w-full max-w-2xl space-y-4 px-3 sm:px-4 py-3 pb-24 overflow-x-hidden touch-manipulation">
       {/* Top Header */}
@@ -26,12 +19,12 @@ export default function WorkoutPage() {
 
         <span className="rounded-full bg-primary/10 border border-primary/20 px-3 py-0.5 text-[10px] font-black text-primary flex items-center gap-1">
           <Dumbbell className="h-3 w-3" />
-          <span>2-PHASE GYM SESSION</span>
+          <span>5-STEP REAL-LIFE SESSION</span>
         </span>
       </div>
 
-      {/* Connected 2-Phase Workout Engine with Age Tier Support */}
-      <ConnectedDailyWorkoutEngine lesson={lesson} initialAgeTier={ageTierParam} />
+      {/* Connected 5-Step Real-Life Mental Fitness Engine */}
+      <ConnectedDailyWorkoutEngine />
     </div>
   );
 }

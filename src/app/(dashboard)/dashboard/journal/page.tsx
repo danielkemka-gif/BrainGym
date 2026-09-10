@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { Plus, Pencil, Trash2, BookOpen, Calendar, Tag, X } from "lucide-react";
+import { Plus, Pencil, Trash2, BookOpen, Calendar, Tag, X, Share2, Sparkles, ArrowRight } from "lucide-react";
+import { JournalShareCardModal } from "@/components/journal/journal-share-card-modal";
 
 interface JournalEntry {
   id: string;
@@ -23,8 +25,8 @@ const MOODS = [
 ];
 
 const TAG_SUGGESTIONS = [
-  "Memory", "Focus", "Breakthrough", "Challenge", "Milestone",
-  "Learning", "Reflection", "Goal", "Gratitude", "Motivation",
+  "DecisionMaking", "Focus", "Memory", "Breakthrough", "MentalFitness",
+  "Reflection", "Leadership", "Habits", "Gratitude", "Patience",
 ];
 
 export default function JournalPage() {
@@ -39,6 +41,9 @@ export default function JournalPage() {
   const [tags, setTags] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
+
+  // Share Card Modal State
+  const [shareModalEntry, setShareModalEntry] = useState<JournalEntry | null>(null);
 
   useEffect(() => {
     fetchEntries();
@@ -138,110 +143,124 @@ export default function JournalPage() {
   const moodObj = (m: string) => MOODS.find((mo) => mo.value === m);
 
   return (
-    <div className="mx-auto w-full max-w-full space-y-6 overflow-x-hidden px-4 sm:px-6 lg:px-0 touch-manipulation">
+    <div className="mx-auto w-full max-w-full space-y-6 overflow-x-hidden px-4 sm:px-6 lg:px-0 pb-24 touch-manipulation">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border/60 pb-4">
         <div>
-          <h1 className="text-balance text-xl font-bold sm:text-2xl">Brain Journal</h1>
+          <h1 className="text-balance text-xl font-bold sm:text-2xl flex items-center gap-2">
+            <span>My BrainGym Journal</span>
+            <span className="text-lg">📖</span>
+          </h1>
           <p className="text-sm text-muted-foreground">
-            Write about your brain training journey
+            Reflect on real-life decisions, track cognitive breakthroughs, and turn insights into shareable wisdom.
           </p>
         </div>
-        <button
-          onClick={() => { resetForm(); setShowForm(true); }}
-          className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 active:scale-[0.97]"
-        >
-          <Plus className="h-4 w-4" />
-          New Entry
-        </button>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <Link
+            href="/dashboard/workout"
+            className="inline-flex h-11 sm:h-12 flex-1 sm:flex-none items-center justify-center gap-1.5 rounded-xl border border-border bg-card px-4 py-2.5 text-xs font-bold text-foreground hover:bg-muted active:scale-[0.97]"
+          >
+            <span>Today&apos;s Workout</span>
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+          <button
+            onClick={() => { resetForm(); setShowForm(true); }}
+            className="inline-flex h-11 sm:h-12 flex-1 sm:flex-none items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-xs sm:text-sm font-black text-primary-foreground hover:bg-primary/90 active:scale-[0.97] shadow-md shadow-primary/20"
+          >
+            <Plus className="h-4 w-4" />
+            New Reflection
+          </button>
+        </div>
       </div>
 
       {/* Form */}
       {showForm && (
-        <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
+        <div className="rounded-3xl border-2 border-primary/30 bg-card p-5 sm:p-6 space-y-4 shadow-xl animate-in fade-in">
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold">{editingId ? "Edit Entry" : "New Journal Entry"}</h2>
-            <button onClick={resetForm} className="rounded-full p-1 text-muted-foreground hover:bg-accent">
+            <h2 className="text-base font-black text-foreground">{editingId ? "Edit Journal Entry" : "Write Reflection & Decision Log"}</h2>
+            <button onClick={resetForm} className="rounded-full p-1.5 text-muted-foreground hover:bg-accent">
               <X className="h-4 w-4" />
             </button>
           </div>
 
           <input
             type="text"
-            placeholder="Give this entry a title..."
+            placeholder="Give this reflection a title (e.g. Navigating a tough client meeting)..."
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 min-h-[44px]"
+            className="h-12 w-full rounded-2xl border border-border bg-background px-4 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
           />
 
           <textarea
-            placeholder="How was your brain training today? What did you learn? What challenged you? What are you proud of?"
+            placeholder="What happened? What decision did you make? What did you learn? How will you apply this tomorrow?"
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            rows={6}
-            className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+            rows={5}
+            className="w-full rounded-2xl border border-border bg-background p-4 text-xs sm:text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
           />
 
-          {/* Mood */}
-          <div>
-            <p className="mb-2 text-xs font-medium text-muted-foreground">How are you feeling?</p>
-            <div className="flex gap-2">
+          {/* Mood Selector */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-muted-foreground">How did you feel about this decision?</label>
+            <div className="flex flex-wrap gap-2">
               {MOODS.map((m) => (
                 <button
                   key={m.value}
-                  onClick={() => setMood(mood === m.value ? "" : m.value)}
-                  className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
+                  type="button"
+                  onClick={() => setMood(m.value)}
+                  className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition ${
                     mood === m.value
-                      ? m.color + " border-current"
-                      : "border-border text-muted-foreground hover:border-muted-foreground/50"
+                      ? "border-primary bg-primary/10 text-primary font-black shadow-sm"
+                      : "border-border bg-background text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   <span>{m.emoji}</span>
-                  {m.label}
+                  <span>{m.label}</span>
                 </button>
               ))}
             </div>
           </div>
 
           {/* Tags */}
-          <div>
-            <p className="mb-2 text-xs font-medium text-muted-foreground">Tags (optional)</p>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-muted-foreground">Add Focus Tags (up to 5)</label>
             <div className="flex flex-wrap gap-1.5 mb-2">
               {tags.map((t) => (
-                <span key={t} className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs text-primary">
-                  {t}
-                  <button onClick={() => removeTag(t)} className="hover:text-primary/70">
+                <span key={t} className="inline-flex items-center gap-1 rounded-full bg-primary/10 border border-primary/20 px-2.5 py-0.5 text-xs font-bold text-primary">
+                  <span>#{t}</span>
+                  <button type="button" onClick={() => removeTag(t)} className="hover:text-destructive">
                     <X className="h-3 w-3" />
                   </button>
                 </span>
               ))}
             </div>
             <div className="flex flex-wrap gap-1.5">
-              {TAG_SUGGESTIONS.filter((t) => !tags.includes(t)).slice(0, 6).map((t) => (
+              {TAG_SUGGESTIONS.filter((s) => !tags.includes(s)).slice(0, 6).map((s) => (
                 <button
-                  key={t}
-                  onClick={() => addTag(t)}
-                  className="rounded-full border border-dashed border-border px-2.5 py-1 text-[10px] text-muted-foreground hover:border-primary/50 hover:text-primary"
+                  key={s}
+                  type="button"
+                  onClick={() => addTag(s)}
+                  className="rounded-full bg-muted border border-border px-2.5 py-0.5 text-[11px] font-bold text-muted-foreground hover:text-foreground hover:bg-muted/80"
                 >
-                  + {t}
+                  +{s}
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="flex gap-3">
-            <button
-              onClick={saveEntry}
-              disabled={!title.trim() || !content.trim() || saving}
-              className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 active:scale-[0.97] min-h-[44px]"
-            >
-              {saving ? "Saving..." : editingId ? "Update Entry" : "Save Entry"}
-            </button>
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
             <button
               onClick={resetForm}
-              className="inline-flex h-12 items-center justify-center rounded-xl border border-border px-4 text-sm hover:bg-accent min-h-[44px] active:scale-[0.97] touch-manipulation"
+              className="rounded-xl border border-border bg-background px-4 py-2 text-xs font-bold text-muted-foreground hover:bg-muted"
             >
               Cancel
+            </button>
+            <button
+              onClick={saveEntry}
+              disabled={saving || !title.trim() || !content.trim()}
+              className="rounded-xl bg-primary px-5 py-2.5 text-xs font-black text-white shadow-md hover:brightness-110 disabled:opacity-50 transition active:scale-95"
+            >
+              {saving ? "Saving..." : "Save Reflection"}
             </button>
           </div>
         </div>
@@ -251,39 +270,53 @@ export default function JournalPage() {
       {!showForm && entries.length > 0 && (
         <input
           type="text"
-          placeholder="Search your journal..."
+          placeholder="Search your reflections by keyword, decision, or tag..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="h-12 w-full rounded-xl border border-border bg-card px-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 min-h-[44px]"
+          className="h-12 w-full rounded-2xl border border-border bg-card px-4 text-xs sm:text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
         />
       )}
 
-      {/* Entries */}
+      {/* Entries List */}
       {loading ? (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-32 animate-pulse rounded-2xl bg-muted" />
+            <div key={i} className="h-32 animate-pulse rounded-3xl bg-muted" />
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-card py-16 text-center">
-          <BookOpen className="h-12 w-12 text-muted-foreground/30" />
-          <p className="mt-4 text-lg font-medium">
-            {entries.length === 0 ? "Start your journal" : "No entries found"}
-          </p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {entries.length === 0
-              ? "Write about your brain training experiences, breakthroughs, and reflections."
-              : "Try a different search term."}
-          </p>
-          {entries.length === 0 && (
+        /* Smart Empty State */
+        <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-border bg-card/60 p-8 sm:p-12 text-center space-y-4">
+          <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-primary/10 text-primary">
+            <BookOpen className="h-8 w-8" />
+          </div>
+          <div className="space-y-1 max-w-sm">
+            <h3 className="text-base sm:text-lg font-black text-foreground">
+              {entries.length === 0 ? "Your BrainGym Journal is waiting" : "No matching reflections found"}
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              {entries.length === 0
+                ? "Complete today's real-life mental fitness challenge or write your first entry to track your decision-making growth."
+                : "Try a different search term or clear the filter."}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+            <Link
+              href="/dashboard/workout"
+              className="inline-flex items-center gap-2 rounded-2xl bg-primary text-white py-3 px-5 text-xs font-black shadow-md shadow-primary/25 hover:brightness-110 active:scale-95"
+            >
+              <Sparkles className="h-4 w-4" />
+              <span>START TODAY&apos;S WORKOUT &amp; REFLECT ➔</span>
+            </Link>
             <button
               onClick={() => setShowForm(true)}
-              className="mt-4 h-12 rounded-xl bg-primary/10 px-5 py-3 text-sm font-semibold text-primary hover:bg-primary/20 active:scale-[0.97] min-h-[44px]"
+              className="inline-flex items-center gap-1.5 rounded-2xl border border-border bg-background py-3 px-4 text-xs font-bold text-foreground hover:bg-muted"
             >
-              Write your first entry
+              <Plus className="h-4 w-4 text-primary" />
+              <span>Write Blank Entry</span>
             </button>
-          )}
+          </div>
         </div>
       ) : (
         <div className="space-y-4">
@@ -292,17 +325,17 @@ export default function JournalPage() {
             return (
               <div
                 key={entry.id}
-                className="rounded-2xl border border-border bg-card p-4 sm:p-5 transition-all hover:border-muted-foreground/30"
+                className="rounded-3xl border-2 border-border bg-card p-5 sm:p-6 transition-all hover:border-primary/40 space-y-3 shadow-sm"
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <div className="flex flex-wrap items-center gap-2">
                       {m && (
-                        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${m.color}`}>
+                        <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold ${m.color}`}>
                           {m.emoji} {m.label}
                         </span>
                       )}
-                      <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1 text-[11px] font-bold text-muted-foreground">
                         <Calendar className="h-3 w-3" />
                         {new Date(entry.created_at).toLocaleDateString("en-US", {
                           month: "short",
@@ -311,40 +344,67 @@ export default function JournalPage() {
                         })}
                       </span>
                     </div>
-                    <h3 className="truncate font-semibold">{entry.title}</h3>
-                    <p className="mt-1 text-sm text-muted-foreground leading-relaxed whitespace-pre-line line-clamp-3">
-                      {entry.content}
-                    </p>
-                    {entry.tags && entry.tags.length > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-1.5">
-                        {entry.tags.map((t) => (
-                          <span key={t} className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
-                            <Tag className="h-2.5 w-2.5" />
-                            {t}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                    <h3 className="text-base font-black text-foreground">{entry.title}</h3>
                   </div>
-                  <div className="flex gap-1 shrink-0 ml-2">
+
+                  {/* Actions: Share Card + Edit + Delete */}
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      onClick={() => setShareModalEntry(entry)}
+                      className="inline-flex items-center gap-1 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary py-1.5 px-3 text-xs font-black transition active:scale-95 border border-primary/20"
+                      title="Share Reflection as Social Card"
+                    >
+                      <Share2 className="h-3.5 w-3.5" />
+                      <span>Share Card</span>
+                    </button>
+
                     <button
                       onClick={() => startEdit(entry)}
-                      className="rounded-lg p-2 text-muted-foreground hover:bg-accent hover:text-foreground min-h-[44px] min-w-[44px] flex items-center justify-center"
+                      className="rounded-xl p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition"
+                      title="Edit"
                     >
                       <Pencil className="h-4 w-4" />
                     </button>
+
                     <button
                       onClick={() => deleteEntry(entry.id)}
-                      className="rounded-lg p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive min-h-[44px] min-w-[44px] flex items-center justify-center"
+                      className="rounded-xl p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition"
+                      title="Delete"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
                 </div>
+
+                <p className="text-xs sm:text-sm text-foreground/90 font-medium leading-relaxed whitespace-pre-line">
+                  {entry.content}
+                </p>
+
+                {entry.tags && entry.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 pt-1 border-t border-border/60">
+                    {entry.tags.map((t) => (
+                      <span key={t} className="inline-flex items-center gap-1 rounded-full bg-muted border border-border px-2 py-0.5 text-[10px] font-bold text-muted-foreground">
+                        <Tag className="h-2.5 w-2.5" />
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             );
           })}
         </div>
+      )}
+
+      {/* ─── SHARE CARD MODAL ────────────────────────────────────────────────── */}
+      {shareModalEntry && (
+        <JournalShareCardModal
+          isOpen={Boolean(shareModalEntry)}
+          onClose={() => setShareModalEntry(null)}
+          challengeTitle={shareModalEntry.title}
+          takeaway={shareModalEntry.content.split("\n")[0] || "Pause. Understand. Then decide."}
+          reflectionText={shareModalEntry.content}
+        />
       )}
     </div>
   );

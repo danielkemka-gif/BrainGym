@@ -13,15 +13,16 @@ import {
 
 // ─── Clean Dashboard Components ──────────────────────────────────────────────
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
-import { TodaysUnifiedLessonHero } from "@/components/dashboard/todays-unified-lesson-hero";
+import { TodaysDailyMissionCard } from "@/components/dashboard/todays-daily-mission-card";
 import { GroupChallengesHeroCard } from "@/components/dashboard/group-challenges-hero-card";
 import { DashboardAlarmCard } from "@/components/dashboard/dashboard-alarm-card";
 import { DashboardShareBanner } from "@/components/dashboard/dashboard-share-banner";
 import { CompactMomentumBar } from "@/components/brain-universe/compact-momentum-bar";
 import { QuickPillarsNav } from "@/components/brain-universe/quick-pillars-nav";
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-import { WelcomeTour } from "@/components/dashboard/welcome-tour";
+// ─── Guidance & Helpers ──────────────────────────────────────────────────────
+import { FirstTimeTourModal } from "@/components/guidance/first-time-tour-modal";
+import { GuideMeButton } from "@/components/guidance/guide-me-button";
 import { LevelUpCelebration } from "@/components/dashboard/level-up-celebration";
 
 function DashboardSkeleton() {
@@ -60,18 +61,23 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-3 sm:px-4 lg:px-6 py-4 pb-24 space-y-6 overflow-x-hidden touch-manipulation">
-      {/* Onboarding Tour & Level-up celebration */}
-      <WelcomeTour />
+    <div className="mx-auto w-full max-w-3xl px-3 sm:px-4 lg:px-6 py-4 pb-28 space-y-6 overflow-x-hidden touch-manipulation">
+      {/* 5-Screen First-Time Tour Modal for New Users */}
+      <FirstTimeTourModal />
+
+      {/* Floating "Guide Me" Navigator Button */}
+      <GuideMeButton variant="floating" />
+
+      {/* Level-up celebration */}
       <LevelUpCelebration />
 
-      {/* 1. GREETING */}
+      {/* 1. GREETING HEADER */}
       <DashboardHeader
         userName={user?.user_metadata?.name || user?.email?.split("@")[0] || "Thinker"}
       />
 
-      {/* 2. TODAY'S UNIFIED LESSON HERO (CHALLENGE -> SOLUTION -> ACTION -> 2-PHASE WORKOUT CTA) */}
-      <TodaysUnifiedLessonHero lesson={lesson} />
+      {/* 2. TODAY'S 5-STEP REAL-LIFE DAILY MISSION (SCENARIO -> DECISION -> CHALLENGE -> TASK -> JOURNAL) */}
+      <TodaysDailyMissionCard />
 
       {/* 3. COMPACT MOMENTUM & STREAK BAR */}
       <CompactMomentumBar

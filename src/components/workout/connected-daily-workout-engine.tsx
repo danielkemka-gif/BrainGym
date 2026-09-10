@@ -228,48 +228,75 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* STEP 1: TODAY'S REAL-LIFE SCENARIO                                     */}
+      {/* STEP 1: TODAY'S REAL-LIFE SCENARIO (PROPERLY CENTRALIZED)             */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {currentStep === 1 && (
-        <div className="rounded-3xl border-2 border-primary/40 bg-card p-6 sm:p-8 space-y-6 shadow-xl animate-in fade-in">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 pb-3">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl p-1.5 rounded-xl bg-primary/10 border border-primary/20">
+        <div className="rounded-3xl border-2 border-primary/40 bg-card p-5 sm:p-8 space-y-6 shadow-xl animate-in fade-in">
+          {/* 1. Centralized Step Header & Title */}
+          <div className="flex flex-col items-center justify-center text-center gap-2 border-b border-border/60 pb-4">
+            <div className="inline-flex items-center gap-2">
+              <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-[11px] font-black uppercase text-primary tracking-widest">
+                STEP 1 OF 5 · REAL-LIFE SCENARIO
+              </span>
+            </div>
+
+            <div className="flex items-center justify-center my-1">
+              <span className="text-3xl sm:text-4xl p-2.5 rounded-2xl bg-primary/10 border border-primary/20 shadow-sm">
                 {scenario.coverEmoji}
               </span>
-              <div>
-                <span className="text-[10px] font-black uppercase text-primary tracking-wider block">
-                  STEP 1 OF 5 · REAL-LIFE SCENARIO
-                </span>
-                <h2 className="text-lg sm:text-xl font-black text-foreground">
-                  {scenario.title}
-                </h2>
-              </div>
             </div>
-            <span className="text-[10px] font-black text-muted-foreground bg-muted border border-border rounded-full px-2.5 py-0.5">
-              ~{scenario.estimatedMinutes} Mins
-            </span>
+
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-foreground text-center max-w-xl mx-auto leading-snug">
+              {scenario.title}
+            </h2>
+
+            {/* Sub-badges */}
+            <div className="flex flex-wrap items-center justify-center gap-2 pt-1 text-xs">
+              <span className="text-[10px] font-black text-primary bg-primary/10 border border-primary/20 rounded-full px-3 py-1">
+                {scenario.roleCategory} Edition
+              </span>
+              <span className="text-[10px] font-black text-muted-foreground bg-muted border border-border rounded-full px-3 py-1">
+                ~{scenario.estimatedMinutes} Mins
+              </span>
+              <span className="text-[10px] font-black text-violet-600 dark:text-violet-400 bg-violet-500/10 border border-violet-500/20 rounded-full px-3 py-1">
+                Skill: {scenario.cognitiveSkillInvolved}
+              </span>
+            </div>
           </div>
 
-          {/* Scenario Narrative Box */}
-          <div className="rounded-2xl border border-primary/20 bg-primary/5 p-5 space-y-2 shadow-sm">
-            <span className="text-[10px] font-black uppercase text-primary tracking-wider flex items-center gap-1.5">
-              <Target className="h-4 w-4" />
-              THE SITUATION (COULD THIS HAPPEN TO YOU?)
-            </span>
-            <p className="text-sm sm:text-base text-foreground font-medium leading-relaxed">
-              &ldquo;{scenario.scenarioNarrative}&rdquo;
-            </p>
-          </div>
+          {/* 2. Centralized & Well-Arranged Situation Analysis Box */}
+          <div className="rounded-2xl border-2 border-primary/25 bg-gradient-to-b from-primary/10 via-background to-primary/5 p-5 sm:p-6 space-y-4 shadow-md max-w-xl mx-auto">
+            <div className="flex flex-col items-center justify-center text-center gap-1">
+              <div className="inline-flex items-center gap-1.5 text-primary">
+                <Target className="h-4 w-4" />
+                <span className="text-xs font-black uppercase tracking-wider">
+                  SITUATION ANALYSIS
+                </span>
+              </div>
+              <span className="text-[11px] text-muted-foreground font-medium">
+                Could this dilemma happen to you? Read carefully:
+              </span>
+            </div>
 
-          {/* Why it Matters Context */}
-          <div className="rounded-2xl border border-border bg-background p-4 space-y-1">
-            <span className="text-[10px] font-bold text-muted-foreground uppercase">
-              WHY THIS MATTERS
-            </span>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              {scenario.contextWhyItMatters}
-            </p>
+            {/* Well-arranged Centralized Narrative Quote */}
+            <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 shadow-sm text-center">
+              <Quote className="h-5 w-5 text-primary mx-auto mb-2 opacity-70" />
+              <p className="text-sm sm:text-base text-foreground font-semibold leading-relaxed">
+                &ldquo;{scenario.scenarioNarrative}&rdquo;
+              </p>
+            </div>
+
+            {/* Why This Matters Breakdown */}
+            <div className="rounded-xl bg-muted/70 border border-border/80 p-3.5 sm:p-4 space-y-1 text-left">
+              <span className="text-[10px] font-black text-primary uppercase flex items-center gap-1.5">
+                <Brain className="h-3.5 w-3.5" />
+                WHY THIS MATTERS &amp; HOW TO THINK:
+              </span>
+              <p className="text-xs text-muted-foreground font-medium leading-relaxed">
+                {scenario.contextWhyItMatters}
+              </p>
+            </div>
           </div>
 
           {/* Next Button */}
@@ -278,7 +305,7 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
               advanceDailyMissionStep(1);
               setCurrentStep(2);
             }}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary to-violet-600 text-white py-4 px-6 text-sm font-black shadow-lg shadow-primary/25 hover:brightness-110 active:scale-95 transition min-h-[52px]"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary via-violet-600 to-indigo-600 text-white py-4 px-6 text-sm font-black shadow-lg shadow-primary/25 hover:brightness-110 active:scale-95 transition min-h-[52px]"
           >
             <span>NEXT: MAKE YOUR DECISION (WHAT WOULD YOU DO?) ➔</span>
           </button>
@@ -563,14 +590,18 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* STEP 5: MY BRAINGYM JOURNAL & REFLECTION                               */}
+      {/* STEP 5: MY BRAINGYM JOURNAL & PERSONAL EXPERIENCE                      */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {currentStep === 5 && (
-        <div className="rounded-3xl border-2 border-violet-500/40 bg-card p-6 sm:p-8 space-y-6 shadow-xl animate-in fade-in">
+        <div className="rounded-3xl border-2 border-violet-500/40 bg-card p-5 sm:p-8 space-y-6 shadow-xl animate-in fade-in">
+          {/* Header */}
           <div className="flex items-center justify-between border-b border-border/60 pb-3">
-            <span className="text-[10px] font-black uppercase text-violet-600 dark:text-violet-400 tracking-wider">
-              STEP 5 OF 5 · MY BRAINGYM JOURNAL
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="flex h-2.5 w-2.5 rounded-full bg-violet-500 animate-pulse" />
+              <span className="text-[10px] sm:text-xs font-black uppercase text-violet-600 dark:text-violet-400 tracking-wider">
+                STEP 5 OF 5 · MY BRAINGYM JOURNAL
+              </span>
+            </div>
             <span className="rounded-full bg-violet-500/10 px-3 py-1 text-xs font-black text-violet-600 dark:text-violet-400">
               +50 XP Bonus
             </span>
@@ -578,45 +609,81 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
 
           <div className="space-y-1">
             <h2 className="text-xl sm:text-2xl font-black text-foreground">
-              Write Today&apos;s Reflection
+              Type Your Personal Experience
             </h2>
-            <p className="text-xs text-muted-foreground">
-              What did you discover about your thinking? What will you do differently tomorrow?
+            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+              Type what happened in your life, what decision you made, or what you learned today. Once typed, you can preview and share your reflection card directly to WhatsApp, LinkedIn, or Facebook.
             </p>
           </div>
 
-          {/* Prompts */}
-          <div className="rounded-2xl bg-muted/60 p-4 space-y-2">
-            <span className="text-[10px] font-black uppercase text-foreground block">
-              💡 GUIDED PROMPT QUESTIONS:
-            </span>
-            <ul className="space-y-1 text-xs text-muted-foreground list-disc list-inside">
+          {/* Guided Prompt Inspiration Chips */}
+          <div className="rounded-2xl bg-muted/60 p-4 space-y-2 border border-border/60">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-black uppercase text-foreground flex items-center gap-1.5">
+                <Pencil className="h-3.5 w-3.5 text-primary" />
+                GUIDED PROMPT INSPIRATION (TAP TO ADD):
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
               {scenario.journalPrompts.map((p, idx) => (
-                <li key={idx}>{p}</li>
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => {
+                    setReflectionText((prev) =>
+                      prev ? `${prev}\n\n• ${p}: ` : `• ${p}: `
+                    );
+                  }}
+                  className="text-left rounded-xl bg-background hover:bg-card border border-border hover:border-primary/50 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground transition font-medium active:scale-95"
+                >
+                  💡 {p}
+                </button>
               ))}
-            </ul>
+            </div>
           </div>
 
-          {/* Reflection Text Area */}
+          {/* Dedicated Typing Space */}
           <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-black uppercase tracking-wide text-foreground flex items-center gap-1.5">
+                <span>✍️ YOUR PERSONAL EXPERIENCE &amp; REFLECTION:</span>
+              </label>
+              <span className="text-[10px] font-bold text-muted-foreground">
+                {reflectionText.trim().split(/\s+/).filter(Boolean).length} Words
+              </span>
+            </div>
+
             <textarea
               value={reflectionText}
               onChange={(e) => setReflectionText(e.target.value)}
-              rows={4}
-              placeholder="Write your reflection note here..."
-              className="w-full rounded-2xl border border-border bg-background p-4 text-xs sm:text-sm font-medium text-foreground focus:border-primary focus:outline-none"
+              rows={5}
+              placeholder="Type your personal experience here... (e.g. When I faced this situation at work/home, I noticed... Going forward, I will...)"
+              className="w-full rounded-2xl border-2 border-border focus:border-primary bg-background p-4 text-xs sm:text-sm font-medium text-foreground focus:outline-none transition leading-relaxed shadow-inner"
             />
           </div>
 
-          {/* Finish & Save */}
-          <button
-            onClick={handleSaveReflectionAndComplete}
-            disabled={isSavingJournal || !reflectionText.trim()}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 via-primary to-indigo-600 text-white py-4 px-6 text-sm sm:text-base font-black shadow-xl shadow-primary/30 hover:brightness-110 active:scale-95 disabled:opacity-50 transition min-h-[54px]"
-          >
-            <Sparkles className="h-5 w-5 fill-white" />
-            <span>{isSavingJournal ? "Saving..." : "SAVE REFLECTION & COMPLETE MISSION 🎉"}</span>
-          </button>
+          {/* Social Share & Complete Action CTAs */}
+          <div className="space-y-3 pt-1">
+            {/* Direct Social Share Card Trigger */}
+            <button
+              type="button"
+              onClick={() => setShowShareModal(true)}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:brightness-110 text-white py-3.5 px-6 text-xs sm:text-sm font-black shadow-lg shadow-emerald-600/25 transition active:scale-95 min-h-[48px]"
+            >
+              <Share2 className="h-4 w-4" />
+              <span>PREVIEW &amp; SHARE TO SOCIAL MEDIA (WHATSAPP / LINKEDIN / FB) ➔</span>
+            </button>
+
+            {/* Save and Complete Button */}
+            <button
+              onClick={handleSaveReflectionAndComplete}
+              disabled={isSavingJournal || !reflectionText.trim()}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 via-primary to-indigo-600 text-white py-4 px-6 text-sm sm:text-base font-black shadow-xl shadow-primary/30 hover:brightness-110 active:scale-95 disabled:opacity-50 transition min-h-[54px]"
+            >
+              <Sparkles className="h-5 w-5 fill-white" />
+              <span>{isSavingJournal ? "Saving..." : "SAVE REFLECTION & COMPLETE MISSION 🎉"}</span>
+            </button>
+          </div>
         </div>
       )}
 

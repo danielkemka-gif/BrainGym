@@ -9,6 +9,7 @@ import { Topbar } from "./topbar";
 import { MobileNav } from "./mobile-nav";
 import { TouchDebug } from "@/components/debug/touch-debug";
 import { FeatureNavigator } from "./feature-navigator";
+import { OfflineStatusBanner } from "@/components/offline/offline-status-banner";
 
 function AppShellInner({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -40,12 +41,13 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
         />
         <main
           id="main-content"
-          className="flex-1 w-full max-w-full px-3 py-3 pb-28 sm:px-4 sm:py-4 lg:p-6"
+          className="flex-1 w-full max-w-full px-3 py-3 pb-28 sm:px-4 sm:py-4 lg:p-6 space-y-3"
           style={{
             paddingBottom: 'max(7rem, calc(env(safe-area-inset-bottom) + 4rem))',
           }}
           tabIndex={-1}
         >
+          <OfflineStatusBanner />
           {children}
         </main>
         <MobileNav />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Share2,
   Copy,
@@ -36,6 +36,12 @@ export function JournalShareCardModal({
   const [editedNote, setEditedNote] = useState(reflectionText || "Reacting quickly isn't the same as responding wisely.");
   const [isEditing, setIsEditing] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // Synchronize when parent passes updated typed reflection or opens modal
+  useEffect(() => {
+    if (takeaway) setEditedTakeaway(takeaway);
+    if (reflectionText) setEditedNote(reflectionText);
+  }, [takeaway, reflectionText, isOpen]);
 
   if (!isOpen) return null;
 

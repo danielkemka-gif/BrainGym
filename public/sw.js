@@ -1,13 +1,19 @@
-const CACHE_VERSION = 'braingym-v2026-live-v6';
+const CACHE_VERSION = 'braingym-v2026-offline-v7';
 const STATIC_CACHE = `braingym-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `braingym-dynamic-${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [
   '/',
   '/dashboard',
+  '/dashboard/workout',
+  '/dashboard/journal',
+  '/dashboard/games',
+  '/dashboard/progress',
+  '/dashboard/group-challenges',
   '/manifest.json',
   '/favicon.png',
   '/logo.png',
+  '/offline.html',
 ];
 
 // Message listener to trigger immediate activation
@@ -17,13 +23,13 @@ self.addEventListener('message', (event) => {
   }
 });
 
-// Install: immediately take over
+// Install: pre-cache all core application routes for complete offline availability
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(STATIC_CACHE).then((cache) => {
-      return cache.addAll(STATIC_ASSETS).catch(() => {
-        console.log('Static asset caching completed with partial fallbacks');
+      return cache.addAll(STATIC_ASSETS).catch((err) => {
+        console.log('Static asset caching completed with partial fallbacks', err);
       });
     })
   );
@@ -45,7 +51,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch: Network-First for everything when online to guarantee live updates reflect on smartphones
+// Fetch: Stale-While-Revalidate & Network-First with Offline Fallback
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -53,16 +59,14 @@ self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (request.method !== 'GET') return;
 
-  // Skip Supabase API calls (always network)
-  if (url.hostname.includes('supabase')) return;
-
-  // Skip OpenAI / AI API calls
+  // Skip Supabase auth and external AI API calls
+  if (url.hostname.includes('supabase.co') && url.pathname.includes('/auth/v1/')) return;
   if (url.hostname.includes('openai') || url.hostname.includes('anthropic') || url.hostname.includes('googleapis')) return;
 
   // Skip Chrome extension requests
   if (url.protocol === 'chrome-extension:') return;
 
-  // Network-First strategy: Always fetch latest from server, fallback to cache when offline
+  // For static assets and pages, try network first, fallback to offline cache immediately
   event.respondWith(
     fetch(request)
       .then((response) => {
@@ -79,67 +83,12 @@ self.addEventListener('fetch', (event) => {
         return caches.match(request).then((cachedResponse) => {
           if (cachedResponse) return cachedResponse;
           if (request.mode === 'navigate') {
-            return caches.match('/offline.html');
+            return caches.match('/dashboard').then((dashMatch) => {
+              return dashMatch || caches.match('/offline.html');
+            });
           }
           return new Response('Offline', { status: 503, statusText: 'Offline' });
         });
       })
-  );
-});
-
-// Background sync for offline actions
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'sync-workout') {
-    event.waitUntil(syncWorkouts());
-  }
-});
-
-async function syncWorkouts() {
-  // Get pending workouts from IndexedDB and sync
-  // This would be implemented with a proper IndexedDB wrapper
-  console.log('Background sync: workouts');
-}
-
-// Push notifications
-self.addEventListener('push', (event) => {
-  const data = event.data?.json() ?? {};
-  const title = data.title || 'BrainGym';
-  const body = data.body || 'Time for your brain workout!';
-  const icon = '/icons/icon-192.png';
-  const badge = '/icons/badge-72.png';
-
-  event.waitUntil(
-    self.registration.showNotification(title, {
-      body,
-      icon,
-      badge,
-      vibrate: [100, 50, 100],
-      data: data.url || '/dashboard',
-      actions: [
-        { action: 'workout', title: 'Start Workout' },
-        { action: 'dismiss', title: 'Later' },
-      ],
-    })
-  );
-});
-
-// Notification click
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-
-  if (event.action === 'dismiss') return;
-
-  const url = event.notification.data || '/dashboard';
-
-  event.waitUntil(
-    self.clients.matchAll({ type: 'window' }).then((clients) => {
-      // Focus existing window or open new one
-      for (const client of clients) {
-        if (client.url.includes(url) && 'focus' in client) {
-          return client.focus();
-        }
-      }
-      return self.clients.openWindow(url);
-    })
   );
 });

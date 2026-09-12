@@ -210,13 +210,128 @@ export const DAILY_CURRICULUM_LESSONS: DailyCurriculumLesson[] = [
       coinReward: 20,
     },
   },
+
+  // ─── LESSON 6: THE 5-MINUTE PROCRASTINATION BREAKTHROUGH ───────────────────
+  {
+    id: "lesson-06-procrastination-breakthrough",
+    dayIndex: 6,
+    topicTitle: "Defeating Task Paralysis: The 5-Minute Brain Activation Rule",
+    category: "Focus & Mindset",
+    roleTarget: "For Creators, Students, Professionals & Planners",
+    topicEmoji: "⚡",
+    topicIllustration: "focus",
+    challenge: "Staring at a massive looming project causes intense anxiety, leading to avoidance, endless phone scrolling, and guilt.",
+    solution: "The brain registers a complex task as a physical threat. Committing to just 5 physical minutes of low-stakes micro-action triggers the Zeigarnik Effect, releasing dopamine upon starting and establishing momentum.",
+    actionRule: "Break the hardest task on your desk into a 5-minute starter step (e.g. write just the title and outline). Do only that without expecting perfection.",
+    culturalWisdom: {
+      quote: "A journey of a thousand miles begins with a single step.",
+      origin: "Ancient Wisdom",
+      meaning: "Action precedes motivation. Do not wait to feel ready; move first and the mind will follow.",
+    },
+    phase1Questions: [
+      PERSONAL_GROWTH_MINDSET_CHALLENGES[0], // Procrastination 2-Minute Rule
+      PERSONAL_GROWTH_MINDSET_CHALLENGES[1], // Morning Phone Loop
+      FOCUS_CHALLENGES[0],
+      WORKPLACE_FINANCE_CHALLENGES[2],
+      LOGIC_CHALLENGES[0],
+      CRITICAL_THINKING_CHALLENGES[0],
+    ],
+    phase2PhysicalTask: {
+      id: "phys-task-06",
+      title: "5-Minute Physical Workspace Reset & Single-Task Launch",
+      illustrationType: "planning",
+      durationMinutes: 5,
+      physicalAction: "Clear all unnecessary items from your physical desk. Set a 5-minute timer and write the first 3 sentences or first spreadsheet column of your stalled project.",
+      cognitiveConnection: "Physical organization clears visual clutter, reducing subconscious cognitive load in the parietal cortex.",
+      xpReward: 50,
+      coinReward: 20,
+    },
+  },
+
+  // ─── LESSON 7: STRATEGIC LEADERSHIP & TOXIC CONFLICT DE-ESCALATION ──────────
+  {
+    id: "lesson-07-strategic-leadership-conflict",
+    dayIndex: 7,
+    topicTitle: "Leading Through Crisis: Separating Ego from Strategic Problem Solving",
+    category: "Work & Career",
+    roleTarget: "For Managers, Team Leads, Founders & Executives",
+    topicEmoji: "👑",
+    topicIllustration: "workplace",
+    challenge: "When a team member or stakeholder creates sudden friction or panic, taking it personally ruins strategic team alignment.",
+    solution: "Ego reactivity activates the threat-defensive limbic circuitry. Executive leaders use Cognitive Decentering to view team tension as data rather than disrespect.",
+    actionRule: "When facing workplace tension today, ask: 'What underlying need is being expressed unskillfully?' Answer the underlying need, not the emotional tone.",
+    culturalWisdom: {
+      quote: "If you want to go fast, go alone. If you want to go far, go together.",
+      origin: "African Proverb",
+      meaning: "Sustainable success requires patient human alignment and empathetic leadership.",
+    },
+    phase1Questions: [
+      WORKPLACE_FINANCE_CHALLENGES[3], // Leadership Conflict in Nairobi
+      EXECUTIVE_DECISION_CHALLENGES[0],
+      EQ_CHALLENGES[0],
+      WORKPLACE_FINANCE_CHALLENGES[0],
+      CRITICAL_THINKING_CHALLENGES[1],
+      MEMORY_CHALLENGES[0],
+    ],
+    phase2PhysicalTask: {
+      id: "phys-task-07",
+      title: "10-Minute Reflective Leadership Walking Pause",
+      illustrationType: "walking",
+      durationMinutes: 10,
+      physicalAction: "Take a 10-minute walk away from screens. Think of one difficult person or decision in your organization. Identify 2 non-emotional facts that clarify the root problem.",
+      cognitiveConnection: "Movement stimulates divergent cognitive pathways, unlocking creative conflict solutions.",
+      xpReward: 50,
+      coinReward: 20,
+    },
+  },
+
+  // ─── LESSON 8: COMMERCIAL CASH FLOW & ASYMMETRIC RISK TRIAGE ────────────────
+  {
+    id: "lesson-08-cashflow-risk-triage",
+    dayIndex: 8,
+    topicTitle: "Asymmetric Risk: Protecting Downside While Maximizing Upside Growth",
+    category: "Business & Wealth",
+    roleTarget: "For Business Owners, Investors & Wealth Builders",
+    topicEmoji: "📈",
+    topicIllustration: "finance",
+    challenge: "Chasing high-return opportunities without auditing the worst-case downside leads to catastrophic capital loss.",
+    solution: "Warren Buffett and Nassim Taleb emphasize Asymmetric Payoffs: ensure the worst-case loss is strictly survivable before committing resources to any high-upside venture.",
+    actionRule: "Before making any financial commitment today, calculate the Pre-Mortem: 'If this fails 100%, will my core operations remain completely solvent?'",
+    culturalWisdom: {
+      quote: "Never test the depth of the river with both feet.",
+      origin: "Ashanti Proverb",
+      meaning: "Preserve your survival capital at all costs so you can play the long compounding game.",
+    },
+    phase1Questions: [
+      WORKPLACE_FINANCE_CHALLENGES[1], // SME Cash Flow Optimization
+      WORKPLACE_FINANCE_CHALLENGES[4], // Financial Impulse Control
+      EXECUTIVE_DECISION_CHALLENGES[1],
+      CRITICAL_THINKING_CHALLENGES[0],
+      LOGIC_CHALLENGES[1],
+      MEMORY_CHALLENGES[1],
+    ],
+    phase2PhysicalTask: {
+      id: "phys-task-08",
+      title: "10-Minute Financial Stress-Test Audit",
+      illustrationType: "drawing",
+      durationMinutes: 10,
+      physicalAction: "Write down your total monthly fixed expenses on paper. Calculate exactly how many months of cash buffer you have if revenue drops by 50%.",
+      cognitiveConnection: "Concrete numerical visualization removes ambiguous financial dread and activates strategic problem-solving.",
+      xpReward: 50,
+      coinReward: 20,
+    },
+  },
 ];
 
-export function getTodaysCurriculumLesson(): DailyCurriculumLesson {
+/**
+ * Deterministic progressive curriculum getter that guarantees daily progressive rotation
+ */
+export function getTodaysCurriculumLesson(dayOffset = 0): DailyCurriculumLesson {
   const dayOfYear = Math.floor(
     (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000
-  );
-  return DAILY_CURRICULUM_LESSONS[dayOfYear % DAILY_CURRICULUM_LESSONS.length];
+  ) + dayOffset;
+  const index = Math.abs(dayOfYear) % DAILY_CURRICULUM_LESSONS.length;
+  return DAILY_CURRICULUM_LESSONS[index];
 }
 
 export function getCurriculumLessonById(id: string): DailyCurriculumLesson | undefined {

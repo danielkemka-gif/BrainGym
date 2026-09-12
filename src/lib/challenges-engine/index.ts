@@ -15,6 +15,7 @@ import { WORKPLACE_FINANCE_CHALLENGES } from "./workplace-finance";
 import { FAMILY_RELATIONSHIPS_CHALLENGES } from "./family-relationships";
 import { ACADEMICS_LEARNING_CHALLENGES } from "./academics-learning";
 import { PERSONAL_GROWTH_MINDSET_CHALLENGES } from "./personal-growth-mindset";
+import { getFull5000Questions, getTotalQuestionCount, getQuestionsByDomain, searchQuestions } from "../questions-bank";
 import { InteractiveChallenge } from "../interactive-challenges";
 import { randomizeOptions, randomizeChallenge } from "../answer-randomizer";
 
@@ -35,8 +36,9 @@ export * from "./workplace-finance";
 export * from "./family-relationships";
 export * from "./academics-learning";
 export * from "./personal-growth-mindset";
+export { getFull5000Questions, getTotalQuestionCount, getQuestionsByDomain, searchQuestions };
 
-// ─── COMPLETE HUMAN COGNITIVE CHALLENGE REPOSITORY ───────────────────────────
+// ─── COMPLETE HUMAN COGNITIVE CHALLENGE REPOSITORY (5,000+ QUESTIONS) ─────────
 export const ALL_COGNITIVE_CHALLENGES: CognitiveChallenge[] = [
   ...MEMORY_CHALLENGES,
   ...LOGIC_CHALLENGES,
@@ -54,6 +56,7 @@ export const ALL_COGNITIVE_CHALLENGES: CognitiveChallenge[] = [
   ...FAMILY_RELATIONSHIPS_CHALLENGES,
   ...ACADEMICS_LEARNING_CHALLENGES,
   ...PERSONAL_GROWTH_MINDSET_CHALLENGES,
+  ...getFull5000Questions(),
 ];
 
 // Helper to map category names to 5 core domains for workout engine

@@ -642,13 +642,361 @@ export const REAL_LIFE_SCENARIOS: RealLifeScenario[] = [
     suggestedReflectionTemplate:
       "Today I realized that sharing wisdom through stories and thoughtful questions strengthens both the listener's resolve and my own cognitive vitality.",
   },
+
+  // ─── 9. ENTREPRENEUR SCENARIO 2: CASH FLOW & PAYROLL SQUEEZE ──────────────
+  {
+    id: "scen-entrepreneur-cashflow",
+    title: "The 72-Hour Payroll & Cash Flow Emergency",
+    topicCategory: "Business & Wealth",
+    roleCategory: "Entrepreneur",
+    ageBracket: "25-45",
+    estimatedMinutes: 10,
+    coverEmoji: "💰",
+    coverIllustration: "finance",
+    scenarioNarrative:
+      "It is Wednesday morning. A client who promised to pay a ₦3,500,000 invoice delays until next month. Your team payroll of ₦2,200,000 is due on Friday. You have ₦800,000 in liquid cash. Your stress spikes immediately.",
+    contextWhyItMatters:
+      "Acute cash crunches trigger panic loan decisions with exorbitant interest rates that can permanently cripple an otherwise healthy business.",
+    decisionPrompt: "What would you do?",
+    decisionOptions: [
+      {
+        id: "opt-cf-1",
+        letter: "A",
+        text: "Take an instant high-interest loan shark app with 35% monthly interest to make payroll without anyone knowing.",
+        thinkingStyle: "Panic Debt Substitution",
+        isRecommended: false,
+        consequences:
+          "Solves Friday's problem, but locks your business into a vicious debt cycle requiring ₦770,000 in monthly interest.",
+        brainExplanation:
+          "Cortisol narrows cognitive scope to immediate relief, ignoring devastating second-order financial damage.",
+      },
+      {
+        id: "opt-cf-2",
+        letter: "B",
+        text: "Triage cash: Offer quick 10% cash discounts for immediate settlement from 3 other clients, negotiate a split payroll release with transparent communication, and secure an institutional bank bridge line.",
+        thinkingStyle: "Asymmetric Cash Triage & Proactive Transparency",
+        isRecommended: true,
+        consequences:
+          "Two clients pay early for the discount, raising ₦1,600,000 cash. The team respects the transparent bridge update and payroll clears cleanly by Monday.",
+        brainExplanation:
+          "Executive prefrontal control separates uncontrollable delays from actionable leverage levers.",
+      },
+      {
+        id: "opt-cf-3",
+        letter: "C",
+        text: "Switch off your phone and tell your team that the bank has a technical glitch.",
+        thinkingStyle: "Deceptive Avoidance",
+        isRecommended: false,
+        consequences:
+          "Destroys trust with your most talented staff when the truth inevitably leaks.",
+        brainExplanation:
+          "Shame-avoidance response harms long-term social capital and organizational loyalty.",
+      },
+      {
+        id: "opt-cf-4",
+        letter: "D",
+        text: "Fire 3 staff members on Friday morning without notice to reduce the payroll bill.",
+        thinkingStyle: "Reactive Knee-Jerk Destruction",
+        isRecommended: false,
+        consequences:
+          "Demoralizes the entire company and creates immediate legal liabilities.",
+        brainExplanation:
+          "Aggressive defensiveness destroys long-term operational capacity to relieve temporary anxiety.",
+      },
+    ],
+    brainInsightTakeaway: "Cash flow crises are solved with transparent leverage and calm triage, not panic borrowing or deceptive hiding. Audit. Triage. Communicate.",
+    cognitiveSkillInvolved: "Financial Cash Triage & Asymmetric Risk",
+    relatedBrainChallenge: {
+      id: "bc-cf-triage",
+      title: "Emergency Cash Buffer Calculation",
+      category: "Executive Decisions",
+      subcategory: "Cash Flow Triage",
+      difficulty: "intermediate",
+      type: "critical_scenario",
+      estimatedTimeSec: 45,
+      instruction: "Calculate the most effective cash acceleration lever.",
+      cognitiveSkill: "Liquidity Calculations",
+      question:
+        "If you need ₦1,400,000 cash in 48 hours, which strategy generates liquid cash fastest without adding debt?",
+      options: [
+        { id: "bc-cfo1", label: "Offering a 10% immediate-payment incentive to existing trusted invoice debtors", isCorrect: true },
+        { id: "bc-cfo2", label: "Running an online giveaway contest for social followers", isCorrect: false },
+        { id: "bc-cfo3", label: "Selling office furniture at 90% loss", isCorrect: false },
+        { id: "bc-cfo4", label: "Applying for a 90-day government grant", isCorrect: false },
+      ],
+      educationalWhy:
+        "Incentivizing early settlement turns existing uncollected assets into instant working capital with zero recurring debt obligation.",
+      xpReward: 30,
+      coinReward: 10,
+    },
+    physicalActionTask: {
+      id: "task-cf-triage-card",
+      title: "10-Minute Accounts Receivable Triage List",
+      illustrationType: "drawing",
+      durationMinutes: 5,
+      physicalAction:
+        "Write down every single person, client, or company that currently owes your business or household money. Highlight the top 2 who can pay immediately with a small discount incentive.",
+      cognitiveConnection:
+        "Externalizing financial numbers onto paper reduces prefrontal working memory overload and stimulates concrete execution pathways.",
+      xpReward: 50,
+      coinReward: 20,
+    },
+    journalPrompts: [
+      "What is your current liquid cash runway in months?",
+      "How did writing down actionable receivables shift your stress level?",
+      "What is one rule you will enforce to prevent future payment delays?",
+    ],
+    suggestedReflectionTemplate:
+      "Today I learned that cash emergencies require calm arithmetic and swift negotiation rather than panicked silence. Externalizing my cash levers restored my sense of control.",
+  },
+
+  // ─── 10. STUDENT SCENARIO 2: THE 48-HOUR PROCRASTINATION BLOCK ─────────────
+  {
+    id: "scen-student-procrastination",
+    title: "The 48-Hour Deadline & Sudden Task Paralysis",
+    topicCategory: "Study & Learning",
+    roleCategory: "Student",
+    ageBracket: "15-25",
+    estimatedMinutes: 10,
+    coverEmoji: "📚",
+    coverIllustration: "knowledge",
+    scenarioNarrative:
+      "Your final research project is due in 48 hours. You have barely started the outline. You sit in front of the blank screen, feel intense overwhelm, and involuntarily reach for your phone to watch TikTok reels to numb the discomfort.",
+    contextWhyItMatters:
+      "Task paralysis is not laziness; it is emotional over-arousal where the brain perceives the possibility of failure as a threat to self-worth.",
+    decisionPrompt: "What would you do?",
+    decisionOptions: [
+      {
+        id: "opt-sp-1",
+        letter: "A",
+        text: "Decide you work best under extreme pressure and wait until 4 AM tomorrow before typing anything.",
+        thinkingStyle: "Procrastination Rationalization",
+        isRecommended: false,
+        consequences:
+          "Sleep deprivation ruins cognitive clarity, producing messy logic and low academic scores.",
+        brainExplanation:
+          "The brain rationalizes avoidance to delay discomfort, trading 4 hours of present relief for severe sleep-deprived distress.",
+      },
+      {
+        id: "opt-sp-2",
+        letter: "B",
+        text: "Apply the 5-Minute Micro-Start Rule: Turn off Wi-Fi, write only 3 rough bullet points without self-criticism, and let dopamine from starting build momentum.",
+        thinkingStyle: "The Zeigarnik Micro-Action Protocol",
+        isRecommended: true,
+        consequences:
+          "Starting reduces anxiety within 3 minutes. The Zeigarnik Effect kicks in, and you smoothly write 1,500 words in your first deep session.",
+        brainExplanation:
+          "Lowering the barrier to entry bypasses the amygdala's threat threshold, allowing the striatum to release dopamine upon task initiation.",
+      },
+      {
+        id: "opt-sp-3",
+        letter: "C",
+        text: "Copy a friend's submitted paper and alter a few words to save time.",
+        thinkingStyle: "Unethical Shortcut",
+        isRecommended: false,
+        consequences:
+          "Plagiarism detectors flag the work, risking suspension or academic disciplinary action.",
+        brainExplanation:
+          "Panic drives high-risk shortcuts that destroy long-term reputational safety.",
+      },
+      {
+        id: "opt-sp-4",
+        letter: "D",
+        text: "Email your professor claiming your laptop was stolen to buy more time.",
+        thinkingStyle: "Fabricated Deception",
+        isRecommended: false,
+        consequences:
+          "Adds immense psychological guilt and stress without resolving your writing block.",
+        brainExplanation:
+          "Deception multiplies cognitive load as the brain must track false narratives while anxious.",
+      },
+    ],
+    brainInsightTakeaway: "Action precedes motivation. You do not need to feel ready to begin. Write the first terrible sentence, and the brain's focus engine will activate.",
+    cognitiveSkillInvolved: "Inhibitory Activation & Momentum Generation",
+    relatedBrainChallenge: {
+      id: "bc-sp-zeigarnik",
+      title: "Zeigarnik Momentum Activation",
+      category: "Focus & Attention",
+      subcategory: "Task Initiation",
+      difficulty: "beginner",
+      type: "focus_fire",
+      estimatedTimeSec: 30,
+      instruction: "Identify the highest-leverage task initiation method.",
+      cognitiveSkill: "Focus Initiation",
+      question:
+        "Which cognitive technique is scientifically proven to break academic procrastination fastest?",
+      options: [
+        { id: "bc-spo1", label: "Committing to 5 minutes of imperfect micro-action with phone hidden", isCorrect: true },
+        { id: "bc-spo2", label: "Waiting until you feel 100% inspired and confident", isCorrect: false },
+        { id: "bc-spo3", label: "Drinking 4 cups of coffee while scrolling social media", isCorrect: false },
+        { id: "bc-spo4", label: "Rewriting your study schedule for the 5th time", isCorrect: false },
+      ],
+      educationalWhy:
+        "Lowering the cognitive cost of starting eliminates task avoidance and activates striatal dopamine loops.",
+      xpReward: 30,
+      coinReward: 10,
+    },
+    physicalActionTask: {
+      id: "task-sp-5min-draft",
+      title: "5-Minute Blank Paper Brain Dump",
+      illustrationType: "handwriting",
+      durationMinutes: 5,
+      physicalAction:
+        "Take a blank piece of physical paper and a pen. Write non-stop for 5 minutes about your topic without erasing or crossing out anything. Quantity over quality.",
+      cognitiveConnection:
+        "Kinesthetic handwriting bypasses the inner editor, flowing ideas directly from associative semantic memory.",
+      xpReward: 50,
+      coinReward: 20,
+    },
+    journalPrompts: [
+      "What task were you avoiding today before taking action?",
+      "How did your anxiety change once you wrote the first few lines?",
+      "What is your single priority for tomorrow morning?",
+    ],
+    suggestedReflectionTemplate:
+      "Today I realized that perfectionism was paralyzing my work. Taking a 5-minute micro-start unlocked my focus and proved that starting is 80% of the battle.",
+  },
+
+  // ─── 11. PROFESSIONAL SCENARIO 2: CREDIT THEFT IN EXECUTIVE PRESENTATION ───
+  {
+    id: "scen-professional-credit",
+    title: "Colleague Takes Public Credit for Your Project",
+    topicCategory: "Work & Career",
+    roleCategory: "Professional",
+    ageBracket: "22-55",
+    estimatedMinutes: 10,
+    coverEmoji: "💼",
+    coverIllustration: "workplace",
+    scenarioNarrative:
+      "In a leadership meeting with the Managing Director, your peer presents the cost-saving strategy you spent 3 weeks building and presents it as 'my personal initiative', leaving your name completely out.",
+    contextWhyItMatters:
+      "Reacting with emotional anger in public destroys executive polish, while staying silent enables workplace exploitation.",
+    decisionPrompt: "What would you do?",
+    decisionOptions: [
+      {
+        id: "opt-pc-1",
+        letter: "A",
+        text: "Interrupt loudly in front of the Managing Director and call your colleague a thief and a liar.",
+        thinkingStyle: "Explosive Aggression",
+        isRecommended: false,
+        consequences:
+          "Makes you look unhinged to leadership, overshadowing the actual credit theft.",
+        brainExplanation:
+          "Amygdala highjack forces a public dominance display that harms executive credibility.",
+      },
+      {
+        id: "opt-pc-2",
+        letter: "B",
+        text: "Seamlessly build on their presentation with deep technical nuance: 'Thank you for introducing our framework. As I uncovered in the 3-week data model, here are the implementation metrics...', then document attribution in follow-up minutes.",
+        thinkingStyle: "Strategic Attribution & Value Demonstration",
+        isRecommended: true,
+        consequences:
+          "Leadership immediately realizes you own the intellectual depth and master data. You establish mastery without drama.",
+        brainExplanation:
+          "Calm prefrontal tactical redirection proves expertise through evidentiary depth rather than interpersonal complaints.",
+      },
+      {
+        id: "opt-pc-3",
+        letter: "C",
+        text: "Stay completely silent, go back to your desk, and quietly complain to coworkers.",
+        thinkingStyle: "Passive Resentment",
+        isRecommended: false,
+        consequences:
+          "Solidifies their credit theft and brands you as a passive office gossip.",
+        brainExplanation:
+          "Learned helplessness suppresses assertive prefrontal self-advocacy.",
+      },
+      {
+        id: "opt-pc-4",
+        letter: "D",
+        text: "Sabotage their upcoming project quietly behind the scenes.",
+        thinkingStyle: "Malicious Retaliation",
+        isRecommended: false,
+        consequences:
+          "Damages the overall company and exposes you to career-ending disciplinary risk.",
+        brainExplanation:
+          "Vindictive retaliation consumes cognitive energy that should be invested in high-value output.",
+      },
+    ],
+    brainInsightTakeaway: "Do not fight for credit with emotional words; establish ownership through intellectual depth, verifiable data, and composed execution.",
+    cognitiveSkillInvolved: "Executive Composure & Assertive Attribution",
+    relatedBrainChallenge: {
+      id: "bc-pc-attribution",
+      title: "Tactical Attribution Framing",
+      category: "Executive Decisions",
+      subcategory: "Leadership Communication",
+      difficulty: "advanced",
+      type: "critical_scenario",
+      estimatedTimeSec: 45,
+      instruction: "Select the highest-credibility response in executive settings.",
+      cognitiveSkill: "Strategic Framing",
+      question:
+        "When an idea you originated is presented by someone else, how do you claim credit with maximum executive gravitas?",
+      options: [
+        { id: "bc-pco1", label: "Expand on the underlying data models and execution details that only the true creator understands", isCorrect: true },
+        { id: "bc-pco2", label: "Slam your hands on the boardroom table and demand an apology", isCorrect: false },
+        { id: "bc-pco3", label: "Walk out of the meeting in protest", isCorrect: false },
+        { id: "bc-pco4", label: "Send a passive-aggressive emoji in the group chat", isCorrect: false },
+      ],
+      educationalWhy:
+        "Demonstrating intellectual granularity and implementation mastery proves authentic authorship incontrovertibly.",
+      xpReward: 30,
+      coinReward: 10,
+    },
+    physicalActionTask: {
+      id: "task-pc-posture-reset",
+      title: "3-Minute Power Posture & Vagal Nerve Reset",
+      illustrationType: "nature",
+      durationMinutes: 3,
+      physicalAction:
+        "Stand tall with feet shoulder-width apart, shoulders back, and hands resting relaxed at your side. Inhale deeply for 4 seconds, hold for 4 seconds, exhale for 6 seconds. Feel your heart rate normalize.",
+      cognitiveConnection:
+        "Upright expansive posture combined with extended exhalations reduces salivary cortisol and activates executive prefrontal authority.",
+      xpReward: 50,
+      coinReward: 20,
+    },
+    journalPrompts: [
+      "Have you ever experienced credit theft or uncredited effort at work?",
+      "How does calm mastery outshine emotional defensiveness?",
+      "What is one strategic project you will document with clear attribution this week?",
+    ],
+    suggestedReflectionTemplate:
+      "Today I learned that true authority does not need to shout. When I lead with data, depth, and composure, ownership becomes undeniable.",
+  },
 ];
 
 /**
- * Get the best tailored scenario for a user given their role and age
+ * Get the best tailored scenario for a user given their role and progressive day index.
+ * Deterministically rotates based on DayOfYear + dayOffset so every single day brings a fresh,
+ * exciting dilemma and topic to train on!
  */
-export function getTodaysPersonalizedScenario(role?: UserRoleCategory | null): RealLifeScenario {
-  if (!role) return REAL_LIFE_SCENARIOS[0];
-  const matched = REAL_LIFE_SCENARIOS.find((s) => s.roleCategory === role);
-  return matched || REAL_LIFE_SCENARIOS[0];
+export function getTodaysPersonalizedScenario(
+  role?: UserRoleCategory | null,
+  dayOffset = 0
+): RealLifeScenario {
+  const dayOfYear = Math.floor(
+    (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000
+  ) + dayOffset;
+
+  // 1. Filter scenarios tailored to user's role if provided
+  const roleScenarios = role
+    ? REAL_LIFE_SCENARIOS.filter((s) => s.roleCategory === role)
+    : REAL_LIFE_SCENARIOS;
+
+  // 2. Rotate through matching scenarios
+  if (roleScenarios.length > 0) {
+    const idx = Math.abs(dayOfYear) % roleScenarios.length;
+    return roleScenarios[idx];
+  }
+
+  // 3. Fallback: rotate through the entire library
+  return REAL_LIFE_SCENARIOS[Math.abs(dayOfYear) % REAL_LIFE_SCENARIOS.length];
+}
+
+export function getAllScenarios(): RealLifeScenario[] {
+  return REAL_LIFE_SCENARIOS;
+}
+
+export function getScenarioById(id: string): RealLifeScenario | undefined {
+  return REAL_LIFE_SCENARIOS.find((s) => s.id === id);
 }

@@ -270,20 +270,29 @@ export function TopicHeroIllustration({
         )}
       </div>
 
-      {/* Right: Fun Illustrated Mood Badge & Emoji Cluster */}
-      <div className="w-full sm:w-1/2 space-y-2 text-center sm:text-left flex flex-col items-center sm:items-start">
-        {/* Category & Theme Badge */}
-        <div className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-black tracking-wider uppercase shadow-sm">
-          <span className="text-base">{currentEmoji}</span>
-          <span className={themeConfig.badgeColor}>{themeConfig.badgeLabel}</span>
+      {/* Right: Fun Illustrated Mood Badge, Title & Emoji Cluster */}
+      <div className="w-full sm:w-1/2 space-y-2.5 text-center sm:text-left flex flex-col items-center sm:items-start justify-center">
+        {/* Category & Theme Badge - Enriched and Enlarged */}
+        <div className={`inline-flex items-center gap-2 rounded-2xl border-2 px-3.5 py-1.5 shadow-md backdrop-blur-md ${themeConfig.badgeColor}`}>
+          <span className="text-lg sm:text-xl">{currentEmoji}</span>
+          <span className="text-xs sm:text-sm md:text-base font-black tracking-wider uppercase">
+            {themeConfig.badgeLabel}
+          </span>
         </div>
 
+        {/* Big Bold Topic Title inside the Graphic Box */}
+        {topicTitle && (
+          <h3 className="text-base sm:text-lg md:text-xl font-black text-foreground tracking-tight leading-tight line-clamp-2 drop-shadow-sm">
+            {topicTitle}
+          </h3>
+        )}
+
         {/* Dynamic Emoji Cluster for Fun Visual Engagement */}
-        <div className="flex items-center gap-2 bg-background/80 backdrop-blur-sm border border-border/80 rounded-2xl px-3.5 py-1.5 shadow-sm">
+        <div className="flex items-center gap-2 bg-background/90 backdrop-blur-md border border-border/80 rounded-2xl px-3.5 py-1.5 shadow-sm">
           <span className="text-[10px] font-black uppercase text-muted-foreground tracking-wider">
             TOPIC VISUALS:
           </span>
-          <div className="flex items-center gap-1 text-lg">
+          <div className="flex items-center gap-1.5 text-xl sm:text-2xl">
             {themeConfig.emojiCluster.map((em, idx) => (
               <span key={idx} className="hover:scale-125 transition-transform duration-200 cursor-default">
                 {em}
@@ -292,8 +301,8 @@ export function TopicHeroIllustration({
           </div>
         </div>
 
-        <p className="text-[11px] text-muted-foreground font-medium">
-          Visualized daily concept to help you connect theory directly with practical life mastery.
+        <p className="text-[11px] text-muted-foreground font-semibold">
+          Daily real-life mental fitness concept to connect theory with practical action.
         </p>
       </div>
     </div>

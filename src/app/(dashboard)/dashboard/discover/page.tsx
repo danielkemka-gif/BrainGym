@@ -25,9 +25,10 @@ import {
   XCircle,
   Zap,
 } from "lucide-react";
+import { QuestionBankExplorer } from "@/components/challenges/question-bank-explorer";
 
 export default function DiscoverPage() {
-  const [activeTab, setActiveTab] = useState<"feed" | "myths" | "cards">("feed");
+  const [activeTab, setActiveTab] = useState<"questions" | "feed" | "myths" | "cards">("questions");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [savedCards, setSavedCards] = useState<SavedBrainCard[]>([]);
@@ -95,8 +96,18 @@ export default function DiscoverPage() {
         </Link>
       </div>
 
-      {/* Tabs Switcher: Feed | Myths | Saved Cards */}
-      <div className="flex items-center gap-1 rounded-2xl bg-muted p-1 border border-border text-xs font-bold w-fit">
+      {/* Tabs Switcher: 5,000+ Questions | Feed | Myths | Saved Cards */}
+      <div className="flex items-center gap-1 rounded-2xl bg-muted p-1 border border-border text-xs font-bold w-fit flex-wrap">
+        <button
+          onClick={() => setActiveTab("questions")}
+          className={`px-4 py-2 rounded-xl transition ${
+            activeTab === "questions"
+              ? "bg-card text-primary font-black shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          ✨ 5,000+ Question Bank
+        </button>
         <button
           onClick={() => setActiveTab("feed")}
           className={`px-4 py-2 rounded-xl transition ${
@@ -128,6 +139,13 @@ export default function DiscoverPage() {
           🗂️ My Brain Cards ({savedCards.length})
         </button>
       </div>
+
+      {/* 5,000+ Question Bank Explorer */}
+      {activeTab === "questions" && (
+        <div className="animate-in fade-in">
+          <QuestionBankExplorer />
+        </div>
+      )}
 
       {/* Search & Category Filter */}
       {activeTab === "feed" && (

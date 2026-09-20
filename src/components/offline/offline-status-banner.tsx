@@ -27,9 +27,17 @@ export function OfflineStatusBanner() {
 
     // Register service worker if supported
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js").catch((err) => {
-        console.warn("Service worker registration failed:", err);
-      });
+      navigator.serviceWorker
+        .register("/sw.js")
+        .then((reg) => {
+          reg.update().catch(() => {});
+          if (reg.waiting) {
+            reg.waiting.postMessage({ type: "SKIP_WAITING" });
+          }
+        })
+        .catch((err) => {
+          console.warn("Service worker registration failed:", err);
+        });
     }
 
     return () => {

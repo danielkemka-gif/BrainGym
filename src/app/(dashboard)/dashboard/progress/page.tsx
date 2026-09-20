@@ -18,6 +18,7 @@ import { useEntitlements } from "@/lib/entitlements";
 import { BrainJourney } from "@/components/dashboard/brain-journey";
 import { WeeklyBrainReportCard } from "@/components/progress/weekly-brain-report-card";
 import { CognitiveProfileBreakdown } from "@/components/progress/cognitive-profile-breakdown";
+import { ThinkingPatternsReport } from "@/components/progress/thinking-patterns-report";
 
 export default function ProgressPage() {
   const { user } = useAuth();
@@ -88,7 +89,10 @@ export default function ProgressPage() {
       {/* 1. Weekly Brain Fitness Report */}
       {engineState && <WeeklyBrainReportCard report={engineState.weeklyReport} />}
 
-      {/* 2. Personal Cognitive Baselines & 7-Domain Trend */}
+      {/* 2. Discover How You Think (BrainGym Performance Insights) */}
+      <ThinkingPatternsReport />
+
+      {/* 3. Personal Cognitive Baselines & 7-Domain Trend */}
       {engineState && <CognitiveProfileBreakdown momentum={engineState.momentum} />}
 
       {/* 3. 90-Day Brain Journey Heatmap */}

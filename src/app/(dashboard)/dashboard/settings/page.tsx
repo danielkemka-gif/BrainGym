@@ -10,6 +10,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Camera, X, Globe, Sun, Moon, Monitor } from "lucide-react";
 import { useTheme } from "@/lib/theme-provider";
 import { ReferralSection } from "@/components/settings/referral-section";
+import { DailyReminderSettings } from "@/components/reminders/daily-reminder-settings";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -391,42 +392,8 @@ export default function SettingsPage() {
         </div>
       </section>
 
-      {/* Notifications */}
-      <section className="rounded-2xl border border-border bg-card p-4 sm:p-6">
-        <h2 className="mb-5 text-lg font-semibold">Notifications</h2>
-        <div className="space-y-4">
-          <label className="flex items-center justify-between min-h-[44px] py-3">
-            <div>
-              <p className="text-sm font-medium">Daily workout reminder</p>
-              <p className="text-xs text-muted-foreground">Get reminded to complete your daily workout</p>
-            </div>
-            <button
-              onClick={() => setNotificationsEnabled((p) => !p)}
-              className={`relative h-7 w-12 rounded-full transition-colors shrink-0 ${
-                notificationsEnabled ? "bg-primary" : "bg-muted"
-              }`}
-            >
-              <span
-                className={`absolute left-1 top-1 h-5 w-5 rounded-full bg-background transition-transform ${
-                  notificationsEnabled ? "translate-x-5" : "translate-x-0"
-                }`}
-              />
-            </button>
-          </label>
-
-          {notificationsEnabled && (
-            <div>
-              <label className="mb-1.5 block text-sm font-medium">Reminder time</label>
-              <input
-                type="time"
-                value={reminderTime}
-                onChange={(e) => setReminderTime(e.target.value)}
-                className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-            </div>
-          )}
-        </div>
-      </section>
+      {/* 3-Layer Daily Brain Training Reminder System */}
+      <DailyReminderSettings />
 
       {/* Streak Protection */}
       <section className="rounded-2xl border border-border bg-card p-4 sm:p-6">

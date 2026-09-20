@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'braingym-v2026-v9-master-mission';
+const CACHE_VERSION = 'braingym-v2026-v10-mobile-ux';
 const STATIC_CACHE = `braingym-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `braingym-dynamic-${CACHE_VERSION}`;
 

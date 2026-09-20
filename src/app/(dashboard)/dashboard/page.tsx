@@ -11,28 +11,23 @@ import {
   DailyCurriculumLesson,
 } from "@/lib/daily-curriculum";
 
-// ─── Clean Dashboard Components ──────────────────────────────────────────────
+// ─── Streamlined Mobile-First Dashboard Components ───────────────────────────
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { TodaysDailyMissionCard } from "@/components/dashboard/todays-daily-mission-card";
-import { GroupChallengesHeroCard } from "@/components/dashboard/group-challenges-hero-card";
-import { DashboardAlarmCard } from "@/components/dashboard/dashboard-alarm-card";
-import { DashboardShareBanner } from "@/components/dashboard/dashboard-share-banner";
-import { CompactMomentumBar } from "@/components/brain-universe/compact-momentum-bar";
+import { DashboardProgressSnapshot } from "@/components/dashboard/dashboard-progress-snapshot";
 import { FourCoreOutcomesStrip } from "@/components/dashboard/four-core-outcomes-strip";
-import { QuickPillarsNav } from "@/components/brain-universe/quick-pillars-nav";
+import { GroupChallengesHeroCard } from "@/components/dashboard/group-challenges-hero-card";
 
-// ─── Guidance & Helpers ──────────────────────────────────────────────────────
+// ─── Guidance & Celebrations ────────────────────────────────────────────────
 import { FirstTimeTourModal } from "@/components/guidance/first-time-tour-modal";
-import { GuideMeButton } from "@/components/guidance/guide-me-button";
 import { LevelUpCelebration } from "@/components/dashboard/level-up-celebration";
 
 function DashboardSkeleton() {
   return (
-    <div className="mx-auto w-full max-w-3xl px-3 sm:px-4 py-8 space-y-6 animate-pulse">
-      <div className="h-10 bg-muted rounded-2xl w-1/3" />
-      <div className="h-72 bg-muted rounded-3xl" />
-      <div className="h-20 bg-muted rounded-2xl" />
-      <div className="h-24 bg-muted rounded-2xl" />
+    <div className="mx-auto w-full max-w-xl px-3 sm:px-4 py-6 space-y-4 animate-pulse">
+      <div className="h-8 bg-muted rounded-xl w-1/2" />
+      <div className="h-56 bg-muted rounded-3xl" />
+      <div className="h-28 bg-muted rounded-2xl" />
     </div>
   );
 }
@@ -62,45 +57,30 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-3 sm:px-4 lg:px-6 py-4 pb-28 space-y-6 overflow-x-hidden touch-manipulation">
+    <div className="mx-auto w-full max-w-xl px-3 sm:px-4 py-3 pb-24 space-y-4 overflow-x-hidden touch-manipulation">
       {/* 5-Screen First-Time Tour Modal for New Users */}
       <FirstTimeTourModal />
-
-      {/* Floating "Guide Me" Navigator Button */}
-      <GuideMeButton variant="floating" />
 
       {/* Level-up celebration */}
       <LevelUpCelebration />
 
-      {/* 1. GREETING HEADER */}
+      {/* 1. GREETING & STREAK HEADER */}
       <DashboardHeader
         userName={user?.user_metadata?.name || user?.email?.split("@")[0] || "Thinker"}
+        streakDays={engineState.profile.streak}
       />
 
-      {/* 2. TODAY'S 5-STEP REAL-LIFE DAILY MISSION (SCENARIO -> DECISION -> CHALLENGE -> TASK -> JOURNAL) */}
+      {/* 2. TODAY'S CHALLENGE (THE DOMINANT HERO CARD WITH SINGLE ACTION CTA) */}
       <TodaysDailyMissionCard />
 
-      {/* 3. COMPACT MOMENTUM & STREAK BAR */}
-      <CompactMomentumBar
-        momentum={engineState.momentum}
-        streakDays={engineState.profile.streak}
-        workoutDurationMin={lesson.phase2PhysicalTask.durationMinutes}
-      />
+      {/* 3. SIMPLE PROGRESS SNAPSHOT */}
+      <DashboardProgressSnapshot />
 
       {/* 4. FOUR CORE OUTCOMES (THINK · SOLVE · DECIDE · ADAPT) */}
       <FourCoreOutcomesStrip />
 
-      {/* 5. GROUP CHALLENGES HERO CARD */}
+      {/* 5. GROUP CHALLENGES SOCIAL CARD */}
       <GroupChallengesHeroCard />
-
-      {/* 5. 4-PILLAR QUICK NAVIGATION (DISCOVER · TRAIN · MY BRAIN · COACH) */}
-      <QuickPillarsNav />
-
-      {/* 6. SMARTPHONE ALARM & NOTIFICATION CARD */}
-      <DashboardAlarmCard />
-
-      {/* 7. ALWAYS-VISIBLE SHARE BRAINGYM BANNER */}
-      <DashboardShareBanner />
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { BasicInfoStep, type BasicInfoData } from "./steps/basic-info-step";
-import { AgeGroupStep } from "./steps/age-group-step";
+import { AgeGroupStep, type LifeContextData } from "./steps/age-group-step";
 import {
   GoalsScheduleStep,
   type GoalsScheduleData,
@@ -13,9 +13,24 @@ import { AssessmentStep, type AssessmentData } from "./steps/assessment-step";
 import { SummaryStep } from "./steps/summary-step";
 import type { AgeGroup } from "@/lib/constants";
 import { deriveAgeTierFromAge, setActiveUserAgeTier } from "@/lib/age-tiers";
+import {
+  savePersonalizationProfile,
+  AgeRangeBracket,
+  LifeSituationType,
+  CoreMentalFitnessArea,
+  UserInterestType,
+} from "@/lib/personalization";
 
 const TOTAL_STEPS = 5;
-const STEP_LABELS = ["About you", "Your group", "Goals", "Assessment", "Review"];
+const STEP_LABELS = ["About you", "Your stage", "Goals & topics", "Assessment", "Review"];
+
+function deriveAgeBracket(age: number): AgeRangeBracket {
+  if (age <= 17) return "13-17";
+  if (age <= 25) return "18-25";
+  if (age <= 45) return "26-45";
+  if (age <= 59) return "46-59";
+  return "60+";
+}
 
 function deriveAgeGroup(age: number): AgeGroup {
   if (age <= 20) return "teen";
@@ -36,14 +51,17 @@ export function OnboardingWizard() {
     occupation: "",
   });
 
-  const [ageGroup, setAgeGroup] = useState<{ age_group: AgeGroup }>({
-    age_group: deriveAgeGroup(25),
+  const [lifeContext, setLifeContext] = useState<LifeContextData>({
+    age_range: "26-45",
+    life_situations: ["Professional"],
+    age_group: "adult",
   });
 
   const [goalsSchedule, setGoalsSchedule] = useState<GoalsScheduleData>({
-    goals: [],
+    goals: ["Decision-making", "Focus", "Problem-solving"],
+    interests: ["Business", "Money", "Everyday life"],
     challenges: [],
-    preferred_workout_time: "",
+    preferred_workout_time: "07:00",
   });
 
   const [assessment, setAssessment] = useState<AssessmentData>({
@@ -68,16 +86,30 @@ export function OnboardingWizard() {
         return;
       }
 
-      // Automatically configure Age Tier for all daily questions and games
+      // Automatically configure Age Tier & Personalization Profile
       const derivedTier = deriveAgeTierFromAge(basicInfo.age);
       setActiveUserAgeTier(derivedTier);
+
+      // Save to Personalization Engine
+      await savePersonalizationProfile(
+        {
+          name: basicInfo.name || "Thinker",
+          ageRange: lifeContext.age_range,
+          exactAge: basicInfo.age,
+          lifeSituations: lifeContext.life_situations,
+          primaryGoal: (goalsSchedule.goals[0] as CoreMentalFitnessArea) || "Decision-making",
+          selectedGoals: (goalsSchedule.goals as CoreMentalFitnessArea[]) || ["Decision-making"],
+          interests: goalsSchedule.interests,
+        },
+        user.id
+      );
 
       const profilePayload = {
         user_id: user.id,
         name: basicInfo.name || "User",
         username: basicInfo.username || null,
         age: basicInfo.age || null,
-        age_group: ageGroup.age_group,
+        age_group: lifeContext.age_group,
         occupation: basicInfo.occupation || null,
         goals: goalsSchedule.goals || [],
         challenges: goalsSchedule.challenges || [],
@@ -190,7 +222,11 @@ export function OnboardingWizard() {
             defaultValues={basicInfo}
             onNext={(data) => {
               setBasicInfo(data);
-              setAgeGroup({ age_group: deriveAgeGroup(data.age) });
+              setLifeContext({
+                age_range: deriveAgeBracket(data.age),
+                life_situations: ["Professional"],
+                age_group: deriveAgeGroup(data.age),
+              });
               setStep(1);
             }}
           />
@@ -198,9 +234,9 @@ export function OnboardingWizard() {
 
         {step === 1 && (
           <AgeGroupStep
-            defaultValues={ageGroup}
+            defaultValues={lifeContext}
             onNext={(data) => {
-              setAgeGroup(data);
+              setLifeContext(data);
               setStep(2);
             }}
             onBack={() => setStep(0)}

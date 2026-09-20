@@ -1,76 +1,147 @@
 "use client";
 
 import { useState } from "react";
-import { AGE_GROUPS } from "@/lib/constants";
-import { AGE_GROUP_ICONS } from "@/lib/icons";
+import {
+  AGE_RANGE_OPTIONS,
+  AgeRangeBracket,
+  LIFE_SITUATIONS,
+  LifeSituationType,
+} from "@/lib/personalization";
 import type { AgeGroup } from "@/lib/constants";
+import { Users, Briefcase, Check } from "lucide-react";
+
+export interface LifeContextData {
+  age_range: AgeRangeBracket;
+  life_situations: LifeSituationType[];
+  age_group: AgeGroup;
+}
 
 interface Props {
-  defaultValues: { age_group: AgeGroup };
-  onNext: (data: { age_group: AgeGroup }) => void;
+  defaultValues: {
+    age_range?: AgeRangeBracket;
+    life_situations?: LifeSituationType[];
+    age_group?: AgeGroup;
+  };
+  onNext: (data: LifeContextData) => void;
   onBack: () => void;
 }
 
+function mapBracketToLegacyGroup(range: AgeRangeBracket): AgeGroup {
+  if (range === "13-17") return "teen";
+  if (range === "18-25") return "young_adult";
+  if (range === "26-45") return "adult";
+  return "senior";
+}
+
 export function AgeGroupStep({ defaultValues, onNext, onBack }: Props) {
-  const [selected, setSelected] = useState<AgeGroup>(defaultValues.age_group);
+  const [selectedRange, setSelectedRange] = useState<AgeRangeBracket>(
+    defaultValues.age_range || "26-45"
+  );
+  const [selectedSituations, setSelectedSituations] = useState<LifeSituationType[]>(
+    defaultValues.life_situations?.length
+      ? defaultValues.life_situations
+      : ["Professional"]
+  );
+
+  const toggleSituation = (sit: LifeSituationType) => {
+    setSelectedSituations((prev) =>
+      prev.includes(sit)
+        ? prev.length > 1
+          ? prev.filter((s) => s !== sit)
+          : prev
+        : [...prev, sit]
+    );
+  };
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    onNext({ age_group: selected });
+    onNext({
+      age_range: selectedRange,
+      life_situations: selectedSituations,
+      age_group: mapBracketToLegacyGroup(selectedRange),
+    });
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+      {/* 1. Age Range Selection */}
       <div className="space-y-2">
-        <p className="text-sm font-medium">
-          Which group do you belong to?
-        </p>
+        <div className="flex items-center gap-1.5 text-primary text-xs font-bold uppercase">
+          <Users className="h-4 w-4" />
+          <span>1. Your Age Range</span>
+        </div>
         <p className="text-xs text-muted-foreground">
-          This helps us personalize your experience — activities, goals, and difficulty will be tailored just for you.
+          BrainGym adapts real-life context so exercises feel natural to your stage in life.
         </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+          {AGE_RANGE_OPTIONS.map((range) => {
+            const isSelected = selectedRange === range.id;
+            return (
+              <button
+                key={range.id}
+                type="button"
+                onClick={() => setSelectedRange(range.id)}
+                className={`flex flex-col text-left p-3 rounded-xl border-2 transition-all active:scale-[0.98] ${
+                  isSelected
+                    ? "border-primary bg-primary/10 shadow-sm"
+                    : "border-border bg-card hover:border-muted-foreground/40"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs sm:text-sm font-bold text-foreground">
+                    {range.label}
+                  </span>
+                  {isSelected && <Check className="h-4 w-4 text-primary" />}
+                </div>
+                <p className="text-[10px] sm:text-[11px] text-muted-foreground mt-1 line-clamp-2">
+                  {range.description}
+                </p>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-2.5 sm:gap-3">
-        {AGE_GROUPS.map((group) => (
-          <button
-            key={group.value}
-            type="button"
-            onClick={() => setSelected(group.value)}
-            className={`flex items-center gap-3 sm:gap-4 rounded-2xl border-2 p-3 sm:p-4 text-left transition-all touch-manipulation active:scale-[0.98] ${
-              selected === group.value
-                ? "border-primary bg-primary/5 shadow-md shadow-primary/10"
-                : "border-border bg-card hover:border-muted-foreground/30 hover:bg-accent/50"
-            }`}
-          >
-            <span className="flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/10 to-primary/5">
-              {(() => { const GroupIcon = AGE_GROUP_ICONS[group.iconKey]; return GroupIcon ? <GroupIcon className="h-5 w-5 sm:h-6 sm:w-6 text-primary" /> : null; })()}
-            </span>
-            <div className="min-w-0">
-              <p className={`text-sm font-semibold ${
-                selected === group.value ? "text-primary" : "text-foreground"
-              }`}>
-                {group.label}
-              </p>
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                {group.description}
-              </p>
-            </div>
-            <div className={`ml-auto h-4 w-4 sm:h-5 sm:w-5 shrink-0 rounded-full border-2 flex items-center justify-center transition-colors ${
-              selected === group.value
-                ? "border-primary bg-primary"
-                : "border-muted-foreground/30"
-            }`}>
-              {selected === group.value && (
-                <svg className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              )}
-            </div>
-          </button>
-        ))}
+      {/* 2. Current Life Situation (Multi-Select) */}
+      <div className="space-y-2 pt-2 border-t border-border/60">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5 text-primary text-xs font-bold uppercase">
+            <Briefcase className="h-4 w-4" />
+            <span>2. Current Life Situation</span>
+          </div>
+          <span className="text-[10px] text-muted-foreground">
+            Select all that apply
+          </span>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Helps us customize scenarios around work, business, school, or personal decisions.
+        </p>
+
+        <div className="flex flex-wrap gap-1.5 pt-1">
+          {LIFE_SITUATIONS.map((sit) => {
+            const isSelected = selectedSituations.includes(sit.id);
+            return (
+              <button
+                key={sit.id}
+                type="button"
+                onClick={() => toggleSituation(sit.id)}
+                className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition active:scale-95 touch-manipulation ${
+                  isSelected
+                    ? "border-primary bg-primary text-primary-foreground font-bold shadow-sm"
+                    : "border-border bg-card text-foreground hover:border-primary/50"
+                }`}
+              >
+                <span>{sit.emoji}</span>
+                <span>{sit.label}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      <div className="flex gap-2 sm:gap-3">
+      {/* Action Buttons */}
+      <div className="flex gap-2 sm:gap-3 pt-2">
         <button
           type="button"
           onClick={onBack}
@@ -80,7 +151,7 @@ export function AgeGroupStep({ defaultValues, onNext, onBack }: Props) {
         </button>
         <button
           type="submit"
-          className="inline-flex h-11 sm:h-12 flex-1 items-center justify-center rounded-xl bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 active:scale-[0.97] touch-manipulation"
+          className="inline-flex h-11 sm:h-12 flex-1 items-center justify-center rounded-xl bg-primary px-4 text-sm font-black text-primary-foreground transition-colors hover:bg-primary/90 active:scale-[0.97] touch-manipulation"
         >
           Continue
         </button>

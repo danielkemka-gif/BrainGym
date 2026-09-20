@@ -3,9 +3,13 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
-  RealLifeScenario,
-  getTodaysPersonalizedScenario,
-  getActiveUserRole,
+  PersonalizedMentalWorkout,
+  getTodaysRecommendedWorkout,
+  getActivePersonalizationProfile,
+  recordWorkoutResult,
+  UserPersonalizationProfile,
+} from "@/lib/personalization";
+import {
   advanceDailyMissionStep,
   saveBrainGymReflection,
   getTodaysDailyMissionProgress,
@@ -13,7 +17,6 @@ import {
 import { DailyCurriculumLesson } from "@/lib/daily-curriculum/types";
 import { randomizeOptions } from "@/lib/answer-randomizer";
 import { ChallengeOption } from "@/lib/challenges-engine/types";
-import { ExerciseAvatarGraphic } from "@/components/physical-activities/exercise-avatar-graphic";
 import { QuestionGraphicAvatar } from "@/components/workout/question-graphic-avatar";
 import { JournalShareCardModal } from "@/components/journal/journal-share-card-modal";
 import { Confetti } from "@/components/ui/confetti";
@@ -38,6 +41,7 @@ import {
   Share2,
   HelpCircle,
   Pencil,
+  Award,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/client";
@@ -51,40 +55,48 @@ const OPTION_LETTERS = ["A", "B", "C", "D"];
 export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEngineProps) {
   const { user } = useAuth();
 
-  // Load active role & scenario
-  const userRole = getActiveUserRole();
-  const scenario: RealLifeScenario = getTodaysPersonalizedScenario(userRole);
+  // Load active personalization profile & recommended workout
+  const [profile, setProfile] = useState<UserPersonalizationProfile | null>(null);
+  const [workout, setWorkout] = useState<PersonalizedMentalWorkout | null>(null);
 
-  // 5-Step Flow State: 1: Scenario | 2: Decision | 3: Brain Challenge | 4: Physical Task | 5: Journal | 6: Mission Complete
-  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
+  // 7-Step Sequence: 1: Scenario | 2: Think | 3: Decide | 4: Brain Question | 5: Life Challenge | 6: Journal | 7: Workout Complete
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7>(1);
 
-  // Step 2: Decision State
+  // Step 3: Decision State
   const [selectedDecisionId, setSelectedDecisionId] = useState<string | null>(null);
 
-  // Step 3: Brain Challenge State
+  // Step 4: Brain Question State
   const [selectedChallengeOptionId, setSelectedChallengeOptionId] = useState<string | null>(null);
   const [isChallengeCorrect, setIsChallengeCorrect] = useState<boolean | null>(null);
   const [challengeOptions, setChallengeOptions] = useState<ChallengeOption[]>([]);
 
-  // Step 4: Physical Task State
-  const [taskTimerSeconds, setTaskTimerSeconds] = useState(scenario.physicalActionTask.durationMinutes * 60);
+  // Step 5: Your Life Challenge (Action Assignment)
+  const [taskTimerSeconds, setTaskTimerSeconds] = useState(300); // 5 mins
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [taskCompleted, setTaskCompleted] = useState(false);
 
-  // Step 5: Journal State
-  const [reflectionText, setReflectionText] = useState(scenario.suggestedReflectionTemplate);
+  // Step 6: Journal State
+  const [reflectionText, setReflectionText] = useState("");
   const [isSavingJournal, setIsSavingJournal] = useState(false);
+  const [levelUpMessage, setLevelUpMessage] = useState<string | null>(null);
 
   // Social Share Card Modal State
   const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
-    if (scenario.relatedBrainChallenge.options) {
-      setChallengeOptions(randomizeOptions(scenario.relatedBrainChallenge.options));
-    }
-  }, [scenario]);
+    const userProfile = getActivePersonalizationProfile();
+    const recommendedWorkout = getTodaysRecommendedWorkout(userProfile);
+    setProfile(userProfile);
+    setWorkout(recommendedWorkout);
+    setReflectionText(recommendedWorkout.suggestedReflectionTemplate);
+    setTaskTimerSeconds(recommendedWorkout.yourLifeChallenge.durationMinutes * 60);
 
-  // Physical Timer countdown
+    if (recommendedWorkout.relatedBrainChallenge.options) {
+      setChallengeOptions(randomizeOptions(recommendedWorkout.relatedBrainChallenge.options));
+    }
+  }, []);
+
+  // Life Challenge Timer countdown
   useEffect(() => {
     if (!isTimerRunning || taskTimerSeconds <= 0) return;
     const interval = setInterval(() => {
@@ -101,6 +113,15 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
     return () => clearInterval(interval);
   }, [isTimerRunning, taskTimerSeconds]);
 
+  if (!workout || !profile) {
+    return (
+      <div className="mx-auto w-full max-w-2xl p-6 space-y-4 animate-pulse">
+        <div className="h-8 bg-muted rounded-xl w-1/3 mx-auto" />
+        <div className="h-64 bg-muted rounded-3xl" />
+      </div>
+    );
+  }
+
   // ─── STEP HANDLERS ─────────────────────────────────────────────────────────
 
   const handleSelectDecision = (optionId: string) => {
@@ -110,7 +131,7 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
 
   const handleProceedToChallenge = () => {
     advanceDailyMissionStep(2, { selectedOptionId: selectedDecisionId });
-    setCurrentStep(3);
+    setCurrentStep(4);
   };
 
   const handleSelectChallengeOption = (option: ChallengeOption) => {
@@ -119,25 +140,40 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
     setIsChallengeCorrect(option.isCorrect);
   };
 
-  const handleProceedToPhysicalTask = () => {
+  const handleProceedToLifeTask = () => {
     advanceDailyMissionStep(3, { brainChallengeCompleted: true });
-    setCurrentStep(4);
+    setCurrentStep(5);
   };
 
-  const handleCompletePhysicalTask = () => {
+  const handleCompleteLifeTask = () => {
     setTaskCompleted(true);
     advanceDailyMissionStep(4, { physicalTaskCompleted: true });
-    setCurrentStep(5);
+    setCurrentStep(6);
   };
 
   const handleSaveReflectionAndComplete = async () => {
     setIsSavingJournal(true);
 
+    const isDecisionCorrect = workout.decisionOptions.find(
+      (o) => o.id === selectedDecisionId
+    )?.isRecommended ?? true;
+
+    // Record performance and dynamically adapt difficulty level!
+    const result = recordWorkoutResult(
+      workout.universalSkill,
+      isDecisionCorrect,
+      workout.difficultyLevel
+    );
+
+    if (result.promotedToLevel) {
+      setLevelUpMessage(result.message);
+    }
+
     // Save to Supabase brain_journal table
     await saveBrainGymReflection(
-      scenario.title,
+      workout.title,
       reflectionText,
-      scenario.brainInsightTakeaway,
+      workout.brainInsightTakeaway,
       user?.id
     );
 
@@ -150,23 +186,23 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
           user_id: user.id,
           amount: totalXpAward,
           source_type: "daily_mission_complete",
-          source_id: scenario.id,
-          description: `Completed 5-Step Real-Life Mission: ${scenario.title}`,
+          source_id: workout.id,
+          description: `Completed Personalized Mental Workout: ${workout.title}`,
         });
 
-        const { data: profile } = await supabase
+        const { data: userProf } = await supabase
           .from("profiles")
           .select("total_xp, coins, current_streak")
           .eq("user_id", user.id)
           .single();
 
-        if (profile) {
+        if (userProf) {
           await supabase
             .from("profiles")
             .update({
-              total_xp: (profile.total_xp || 0) + totalXpAward,
-              coins: (profile.coins || 0) + 40,
-              current_streak: (profile.current_streak || 7) + 1,
+              total_xp: (userProf.total_xp || 0) + totalXpAward,
+              coins: (userProf.coins || 0) + 40,
+              current_streak: (userProf.current_streak || 7) + 1,
             })
             .eq("user_id", user.id);
         }
@@ -177,10 +213,10 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
 
     advanceDailyMissionStep(5, { journalEntryText: reflectionText, isCompleted: true });
     setIsSavingJournal(false);
-    setCurrentStep(6);
+    setCurrentStep(7);
   };
 
-  const selectedDecision = scenario.decisionOptions.find((o) => o.id === selectedDecisionId);
+  const selectedDecision = workout.decisionOptions.find((o) => o.id === selectedDecisionId);
 
   const formatTimer = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -190,16 +226,17 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
 
   return (
     <div className="mx-auto w-full max-w-2xl space-y-5 px-3 sm:px-4 py-2 pb-24 overflow-x-hidden touch-manipulation">
-      {/* ─── 5-STEP MISSION PROGRESS STEPPER ─────────────────────────────────── */}
+      {/* ─── WORKOUT STEPPER ─────────────────────────────────────────────────── */}
       <div className="rounded-2xl border border-border bg-card p-3 shadow-sm flex items-center justify-between overflow-x-auto no-scrollbar gap-1">
         {[
           { num: 1, label: "Scenario" },
-          { num: 2, label: "Decision" },
-          { num: 3, label: "Challenge" },
-          { num: 4, label: "Action" },
-          { num: 5, label: "Journal" },
+          { num: 2, label: "Think" },
+          { num: 3, label: "Decide" },
+          { num: 4, label: "Brain Drill" },
+          { num: 5, label: "Life Task" },
+          { num: 6, label: "Journal" },
         ].map((s) => {
-          const isDone = currentStep > s.num || (currentStep === 6);
+          const isDone = currentStep > s.num || currentStep === 7;
           const isCurrent = currentStep === s.num;
           return (
             <div key={s.num} className="flex items-center gap-1.5 shrink-0">
@@ -221,123 +258,152 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
               >
                 {s.label}
               </span>
-              {s.num < 5 && <ArrowRight className="h-3 w-3 text-muted-foreground/50 mx-0.5" />}
+              {s.num < 6 && <ArrowRight className="h-3 w-3 text-muted-foreground/50 mx-0.5" />}
             </div>
           );
         })}
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* STEP 1: TODAY'S REAL-LIFE SCENARIO (PROPERLY CENTRALIZED)             */}
+      {/* STEP 1: PERSONALIZED SCENARIO                                          */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {currentStep === 1 && (
         <div className="rounded-3xl border-2 border-primary/40 bg-card p-5 sm:p-8 space-y-6 shadow-xl animate-in fade-in">
-          {/* 1. Centralized Step Header & Title */}
           <div className="flex flex-col items-center justify-center text-center gap-2 border-b border-border/60 pb-4">
             <div className="inline-flex items-center gap-2">
               <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-[11px] font-black uppercase text-primary tracking-widest">
-                STEP 1 OF 5 · REAL-LIFE SCENARIO
+                STEP 1 OF 6 · REAL-LIFE SCENARIO
               </span>
             </div>
 
             <div className="flex items-center justify-center my-1">
               <span className="text-3xl sm:text-4xl p-2.5 rounded-2xl bg-primary/10 border border-primary/20 shadow-sm">
-                {scenario.coverEmoji}
+                {workout.coverEmoji}
               </span>
             </div>
 
             <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-foreground text-center max-w-xl mx-auto leading-snug">
-              {scenario.title}
+              {workout.title}
             </h2>
 
-            {/* Sub-badges */}
             <div className="flex flex-wrap items-center justify-center gap-2 pt-1 text-xs">
               <span className="text-[10px] font-black text-primary bg-primary/10 border border-primary/20 rounded-full px-3 py-1">
-                {scenario.roleCategory} Edition
+                Universal Skill: {workout.universalSkill}
               </span>
               <span className="text-[10px] font-black text-muted-foreground bg-muted border border-border rounded-full px-3 py-1">
-                ~{scenario.estimatedMinutes} Mins
+                Level {profile.currentDifficultyLevel}
               </span>
               <span className="text-[10px] font-black text-violet-600 dark:text-violet-400 bg-violet-500/10 border border-violet-500/20 rounded-full px-3 py-1">
-                Skill: {scenario.cognitiveSkillInvolved}
+                ~{workout.estimatedMinutes} Mins
               </span>
             </div>
           </div>
 
-          {/* 2. Centralized & Well-Arranged Situation Analysis Box */}
           <div className="rounded-2xl border-2 border-primary/25 bg-gradient-to-b from-primary/10 via-background to-primary/5 p-5 sm:p-6 space-y-4 shadow-md max-w-xl mx-auto">
-            <div className="flex flex-col items-center justify-center text-center gap-1">
-              <div className="inline-flex items-center gap-1.5 text-primary">
-                <Target className="h-4 w-4" />
-                <span className="text-xs font-black uppercase tracking-wider">
-                  SITUATION ANALYSIS
-                </span>
-              </div>
-              <span className="text-[11px] text-muted-foreground font-medium">
-                Could this dilemma happen to you? Read carefully:
-              </span>
-            </div>
-
-            {/* Well-arranged Centralized Narrative Quote */}
             <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 shadow-sm text-center">
               <Quote className="h-5 w-5 text-primary mx-auto mb-2 opacity-70" />
               <p className="text-sm sm:text-base text-foreground font-semibold leading-relaxed">
-                &ldquo;{scenario.scenarioNarrative}&rdquo;
-              </p>
-            </div>
-
-            {/* Why This Matters Breakdown */}
-            <div className="rounded-xl bg-muted/70 border border-border/80 p-3.5 sm:p-4 space-y-1 text-left">
-              <span className="text-[10px] font-black text-primary uppercase flex items-center gap-1.5">
-                <Brain className="h-3.5 w-3.5" />
-                WHY THIS MATTERS &amp; HOW TO THINK:
-              </span>
-              <p className="text-xs text-muted-foreground font-medium leading-relaxed">
-                {scenario.contextWhyItMatters}
+                &ldquo;{workout.scenarioNarrative}&rdquo;
               </p>
             </div>
           </div>
 
-          {/* Next Button */}
           <button
-            onClick={() => {
-              advanceDailyMissionStep(1);
-              setCurrentStep(2);
-            }}
+            onClick={() => setCurrentStep(2)}
             className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary via-violet-600 to-indigo-600 text-white py-4 px-6 text-sm font-black shadow-lg shadow-primary/25 hover:brightness-110 active:scale-95 transition min-h-[52px]"
           >
-            <span>NEXT: MAKE YOUR DECISION (WHAT WOULD YOU DO?) ➔</span>
+            <span>NEXT: ANALYZE THE SITUATION (THINK) ➔</span>
           </button>
         </div>
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* STEP 2: DECISION POINT ("WHAT WOULD YOU DO?")                          */}
+      {/* STEP 2: THINK (SITUATION ANALYSIS)                                     */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {currentStep === 2 && (
-        <div className="rounded-3xl border-2 border-primary/40 bg-card p-6 sm:p-8 space-y-6 shadow-xl animate-in fade-in">
+        <div className="rounded-3xl border-2 border-primary/40 bg-card p-5 sm:p-8 space-y-6 shadow-xl animate-in fade-in">
           <div className="flex items-center justify-between border-b border-border/60 pb-3">
             <span className="text-[10px] font-black uppercase text-primary tracking-wider">
-              STEP 2 OF 5 · DECISION POINT
+              STEP 2 OF 6 · THINK &amp; ANALYZE
             </span>
             <span className="text-[10px] font-bold text-muted-foreground">
-              Skill: {scenario.cognitiveSkillInvolved}
+              Skill: {workout.universalSkill}
             </span>
           </div>
 
           <div className="space-y-1">
             <h2 className="text-xl sm:text-2xl font-black text-foreground">
-              {scenario.decisionPrompt}
+              Deconstruct the Real-Life Dilemma
             </h2>
             <p className="text-xs text-muted-foreground">
-              Select how you would actually respond in this real-life situation.
+              Before jumping to a conclusion, examine the hidden trap and underlying cognitive principle.
             </p>
           </div>
 
-          {/* Realistic Options A, B, C, D */}
           <div className="space-y-3">
-            {scenario.decisionOptions.map((opt) => {
+            <div className="rounded-2xl bg-muted/60 p-4 border-l-4 border-primary space-y-1">
+              <span className="text-xs font-black uppercase text-primary">
+                🧩 CORE DILEMMA:
+              </span>
+              <p className="text-xs sm:text-sm text-foreground font-medium leading-relaxed">
+                {workout.situationAnalysis.coreDilemma}
+              </p>
+            </div>
+
+            <div className="rounded-2xl bg-muted/60 p-4 border-l-4 border-amber-500 space-y-1">
+              <span className="text-xs font-black uppercase text-amber-600 dark:text-amber-400">
+                ⚠️ THE HIDDEN TRAP:
+              </span>
+              <p className="text-xs sm:text-sm text-foreground font-medium leading-relaxed">
+                {workout.situationAnalysis.hiddenTrap}
+              </p>
+            </div>
+
+            <div className="rounded-2xl bg-muted/60 p-4 border-l-4 border-violet-500 space-y-1">
+              <span className="text-xs font-black uppercase text-violet-600 dark:text-violet-400">
+                🧠 COGNITIVE PRINCIPLE:
+              </span>
+              <p className="text-xs sm:text-sm text-foreground font-medium leading-relaxed">
+                {workout.situationAnalysis.cognitivePrinciple}
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setCurrentStep(3)}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary via-violet-600 to-indigo-600 text-white py-4 px-6 text-sm font-black shadow-lg shadow-primary/25 hover:brightness-110 active:scale-95 transition min-h-[52px]"
+          >
+            <span>PROCEED: CHOOSE YOUR DECISION (WHAT WOULD YOU DO?) ➔</span>
+          </button>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* STEP 3: DECIDE / SOLVE (OPTIONS A, B, C, D)                            */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {currentStep === 3 && (
+        <div className="rounded-3xl border-2 border-primary/40 bg-card p-6 sm:p-8 space-y-6 shadow-xl animate-in fade-in">
+          <div className="flex items-center justify-between border-b border-border/60 pb-3">
+            <span className="text-[10px] font-black uppercase text-primary tracking-wider">
+              STEP 3 OF 6 · DECISION POINT
+            </span>
+            <span className="text-[10px] font-bold text-muted-foreground">
+              Level {profile.currentDifficultyLevel}
+            </span>
+          </div>
+
+          <div className="space-y-1">
+            <h2 className="text-xl sm:text-2xl font-black text-foreground">
+              {workout.decisionPrompt}
+            </h2>
+            <p className="text-xs text-muted-foreground">
+              Select how you would genuinely respond in this situation.
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            {workout.decisionOptions.map((opt) => {
               const isSelected = selectedDecisionId === opt.id;
               return (
                 <button
@@ -377,7 +443,6 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
             })}
           </div>
 
-          {/* Brain Insight & Consequences Breakdown */}
           {selectedDecision && (
             <div className="rounded-2xl bg-muted/80 p-5 space-y-3 text-xs leading-relaxed border-l-4 border-primary animate-in fade-in">
               <div>
@@ -401,7 +466,7 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
               <div className="pt-1 border-t border-border/60">
                 <p className="text-xs font-black text-foreground italic flex items-center gap-1.5">
                   <Quote className="h-3.5 w-3.5 text-primary" />
-                  &ldquo;{scenario.brainInsightTakeaway}&rdquo;
+                  &ldquo;{workout.brainInsightTakeaway}&rdquo;
                 </p>
               </div>
 
@@ -409,7 +474,7 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
                 onClick={handleProceedToChallenge}
                 className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-primary text-white py-3 px-4 text-xs font-black shadow-md hover:brightness-110 active:scale-95 transition min-h-[44px]"
               >
-                <span>TEST THIS SKILL WITH A BRAIN CHALLENGE ➔</span>
+                <span>TEST THIS SKILL WITH A BRAIN QUESTION ➔</span>
               </button>
             </div>
           )}
@@ -417,13 +482,13 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* STEP 3: RELATED BRAIN CHALLENGE                                        */}
+      {/* STEP 4: BRAIN QUESTION (COGNITIVE DRILL)                                */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {currentStep === 3 && (
+      {currentStep === 4 && (
         <div className="rounded-3xl border-2 border-primary/40 bg-card p-6 sm:p-8 space-y-5 shadow-xl animate-in fade-in">
           <div className="flex items-center justify-between border-b border-border/60 pb-3">
             <span className="text-[10px] font-black uppercase text-primary tracking-wider">
-              STEP 3 OF 5 · CONNECTED BRAIN CHALLENGE
+              STEP 4 OF 6 · BRAIN QUESTION
             </span>
             <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-[10px] font-black text-primary">
               +30 XP
@@ -432,7 +497,7 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
 
           <div className="space-y-1">
             <h2 className="text-lg sm:text-xl font-black text-foreground">
-              {scenario.relatedBrainChallenge.title}
+              {workout.relatedBrainChallenge.title}
             </h2>
             <p className="text-xs text-muted-foreground">
               Train your neural circuits to apply this cognitive skill under pressure.
@@ -440,16 +505,15 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
           </div>
 
           <QuestionGraphicAvatar
-            category={scenario.relatedBrainChallenge.category}
-            subcategory={scenario.relatedBrainChallenge.subcategory}
-            skill={scenario.relatedBrainChallenge.cognitiveSkill}
+            category={workout.relatedBrainChallenge.category}
+            subcategory={workout.relatedBrainChallenge.subcategory}
+            skill={workout.relatedBrainChallenge.cognitiveSkill}
           />
 
           <p className="text-sm sm:text-base font-bold text-foreground leading-relaxed">
-            {scenario.relatedBrainChallenge.question}
+            {workout.relatedBrainChallenge.question}
           </p>
 
-          {/* Options */}
           <div className="space-y-2.5">
             {challengeOptions.map((opt, idx) => {
               const letter = OPTION_LETTERS[idx] || "A";
@@ -489,19 +553,18 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
             })}
           </div>
 
-          {/* Feedback & Proceed */}
           {selectedChallengeOptionId && (
             <div className="space-y-4 pt-2 animate-in fade-in">
               <div className="rounded-2xl bg-muted/70 p-3.5 text-xs text-muted-foreground leading-relaxed border-l-2 border-primary">
                 <span className="font-bold text-foreground block mb-0.5">Educational Explanation:</span>
-                {scenario.relatedBrainChallenge.educationalWhy}
+                {workout.relatedBrainChallenge.educationalWhy}
               </div>
 
               <button
-                onClick={handleProceedToPhysicalTask}
+                onClick={handleProceedToLifeTask}
                 className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-primary text-white py-3.5 px-6 text-xs sm:text-sm font-black shadow-md hover:brightness-110 active:scale-95 transition min-h-[48px]"
               >
-                <span>PROCEED TO STEP 4: REAL-LIFE PHYSICAL TASK ➔</span>
+                <span>PROCEED TO STEP 5: YOUR LIFE CHALLENGE ➔</span>
               </button>
             </div>
           )}
@@ -509,60 +572,46 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* STEP 4: REAL-LIFE PHYSICAL / ACTION TASK                               */}
+      {/* STEP 5: YOUR LIFE CHALLENGE (REAL-WORLD ACTION TASK)                   */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {currentStep === 4 && (
-        <div className="rounded-3xl border-2 border-emerald-500/40 bg-card p-6 sm:p-8 space-y-6 shadow-xl animate-in fade-in">
+      {currentStep === 5 && (
+        <div className="rounded-3xl border-2 border-amber-500/40 bg-card p-6 sm:p-8 space-y-6 shadow-xl animate-in fade-in">
           <div className="flex items-center justify-between border-b border-border/60 pb-3">
-            <span className="text-[10px] font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">
-              STEP 4 OF 5 · REAL-LIFE ACTION TASK
+            <span className="text-[10px] font-black uppercase text-amber-600 dark:text-amber-400 tracking-wider">
+              STEP 5 OF 6 · YOUR LIFE CHALLENGE
             </span>
-            <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-black text-emerald-600 dark:text-emerald-400">
-              +{scenario.physicalActionTask.xpReward} XP
+            <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-black text-amber-600 dark:text-amber-400">
+              +50 XP
             </span>
           </div>
 
           <div className="space-y-1">
             <h2 className="text-xl sm:text-2xl font-black text-foreground">
-              {scenario.physicalActionTask.title}
+              {workout.yourLifeChallenge.title}
             </h2>
             <p className="text-xs text-muted-foreground">
-              Take today&apos;s mental fitness lesson and put it into physical action.
+              Take today&apos;s mental workout out of the screen and apply it directly into your day.
             </p>
           </div>
 
-          {/* Graphic Avatar */}
-          <div className="flex justify-center py-2">
-            <ExerciseAvatarGraphic
-              type={scenario.physicalActionTask.illustrationType}
-              size="hero"
-            />
-          </div>
-
-          {/* Instructions */}
-          <div className="rounded-2xl bg-background border border-border p-4 space-y-1.5 shadow-sm">
-            <span className="text-[10px] font-black uppercase text-foreground">
-              🏃 PHYSICAL ACTION TO PERFORM TODAY
-            </span>
-            <p className="text-xs sm:text-sm text-foreground/90 font-medium leading-relaxed">
-              {scenario.physicalActionTask.physicalAction}
+          <div className="rounded-2xl bg-amber-500/10 border-2 border-amber-500/30 p-5 space-y-2 text-left">
+            <div className="flex items-center gap-2">
+              <Award className="h-5 w-5 text-amber-500 shrink-0" />
+              <span className="text-xs font-black uppercase text-amber-600 dark:text-amber-400">
+                ACTION INSTRUCTION:
+              </span>
+            </div>
+            <p className="text-sm sm:text-base font-bold text-foreground leading-relaxed">
+              &ldquo;{workout.yourLifeChallenge.instruction}&rdquo;
+            </p>
+            <p className="text-xs text-muted-foreground pt-1 border-t border-border/50">
+              💡 {workout.yourLifeChallenge.contextWhy}
             </p>
           </div>
 
-          {/* Why it connects */}
-          <div className="rounded-2xl bg-emerald-500/10 border border-emerald-500/30 p-4 space-y-1 shadow-sm">
-            <span className="text-[10px] font-black uppercase text-emerald-600 dark:text-emerald-400">
-              🧠 WHY THIS CONNECTS TO YOUR BRAIN
-            </span>
-            <p className="text-xs text-muted-foreground font-medium leading-relaxed">
-              {scenario.physicalActionTask.cognitiveConnection}
-            </p>
-          </div>
-
-          {/* Timer */}
           <div className="rounded-2xl bg-background border border-border p-4 text-center space-y-2">
             <span className="text-[10px] font-black uppercase text-muted-foreground">
-              TASK TIMER (~{scenario.physicalActionTask.durationMinutes} MINS)
+              TASK TIMER (~{workout.yourLifeChallenge.durationMinutes} MINS)
             </span>
             <div className="text-3xl sm:text-4xl font-mono font-black text-foreground tracking-wider">
               {formatTimer(taskTimerSeconds)}
@@ -578,28 +627,26 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
             </div>
           </div>
 
-          {/* Complete CTA */}
           <button
-            onClick={handleCompletePhysicalTask}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-4 px-6 text-sm font-black shadow-lg shadow-emerald-600/30 hover:brightness-110 active:scale-95 transition min-h-[52px]"
+            onClick={handleCompleteLifeTask}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-600 to-orange-600 text-white py-4 px-6 text-sm font-black shadow-lg shadow-amber-600/30 hover:brightness-110 active:scale-95 transition min-h-[52px]"
           >
             <CheckCircle2 className="h-5 w-5" />
-            <span>I COMPLETED THIS REAL-LIFE TASK ➔</span>
+            <span>I COMPLETED THIS REAL-LIFE CHALLENGE ➔</span>
           </button>
         </div>
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* STEP 5: MY BRAINGYM JOURNAL & PERSONAL EXPERIENCE                      */}
+      {/* STEP 6: MY BRAINGYM JOURNAL & REFLECTION                               */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {currentStep === 5 && (
+      {currentStep === 6 && (
         <div className="rounded-3xl border-2 border-violet-500/40 bg-card p-5 sm:p-8 space-y-6 shadow-xl animate-in fade-in">
-          {/* Header */}
           <div className="flex items-center justify-between border-b border-border/60 pb-3">
             <div className="flex items-center gap-2">
               <span className="flex h-2.5 w-2.5 rounded-full bg-violet-500 animate-pulse" />
               <span className="text-[10px] sm:text-xs font-black uppercase text-violet-600 dark:text-violet-400 tracking-wider">
-                STEP 5 OF 5 · MY BRAINGYM JOURNAL
+                STEP 6 OF 6 · MY BRAINGYM JOURNAL
               </span>
             </div>
             <span className="rounded-full bg-violet-500/10 px-3 py-1 text-xs font-black text-violet-600 dark:text-violet-400">
@@ -612,20 +659,17 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
               Type Your Personal Experience
             </h2>
             <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-              Type what happened in your life, what decision you made, or what you learned today. Once typed, you can preview and share your reflection card directly to WhatsApp, LinkedIn, or Facebook.
+              Record what happened, what decision you made, or what you learned today.
             </p>
           </div>
 
-          {/* Guided Prompt Inspiration Chips */}
           <div className="rounded-2xl bg-muted/60 p-4 space-y-2 border border-border/60">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-black uppercase text-foreground flex items-center gap-1.5">
-                <Pencil className="h-3.5 w-3.5 text-primary" />
-                GUIDED PROMPT INSPIRATION (TAP TO ADD):
-              </span>
-            </div>
+            <span className="text-[10px] font-black uppercase text-foreground flex items-center gap-1.5">
+              <Pencil className="h-3.5 w-3.5 text-primary" />
+              GUIDED PROMPT INSPIRATION (TAP TO ADD):
+            </span>
             <div className="flex flex-wrap gap-1.5">
-              {scenario.journalPrompts.map((p, idx) => (
+              {workout.journalPrompts.map((p, idx) => (
                 <button
                   key={idx}
                   type="button"
@@ -642,11 +686,10 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
             </div>
           </div>
 
-          {/* Dedicated Typing Space */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-black uppercase tracking-wide text-foreground flex items-center gap-1.5">
-                <span>✍️ YOUR PERSONAL EXPERIENCE &amp; REFLECTION:</span>
+              <label className="text-xs font-black uppercase tracking-wide text-foreground">
+                ✍️ YOUR PERSONAL EXPERIENCE &amp; REFLECTION:
               </label>
               <span className="text-[10px] font-bold text-muted-foreground">
                 {reflectionText.trim().split(/\s+/).filter(Boolean).length} Words
@@ -657,14 +700,12 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
               value={reflectionText}
               onChange={(e) => setReflectionText(e.target.value)}
               rows={5}
-              placeholder="Type your personal experience here... (e.g. When I faced this situation at work/home, I noticed... Going forward, I will...)"
+              placeholder="Type your personal experience here..."
               className="w-full rounded-2xl border-2 border-border focus:border-primary bg-background p-4 text-xs sm:text-sm font-medium text-foreground focus:outline-none transition leading-relaxed shadow-inner"
             />
           </div>
 
-          {/* Social Share & Complete Action CTAs */}
           <div className="space-y-3 pt-1">
-            {/* Direct Social Share Card Trigger */}
             <button
               type="button"
               onClick={() => setShowShareModal(true)}
@@ -674,23 +715,22 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
               <span>PREVIEW &amp; SHARE TO SOCIAL MEDIA (WHATSAPP / LINKEDIN / FB) ➔</span>
             </button>
 
-            {/* Save and Complete Button */}
             <button
               onClick={handleSaveReflectionAndComplete}
               disabled={isSavingJournal || !reflectionText.trim()}
               className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 via-primary to-indigo-600 text-white py-4 px-6 text-sm sm:text-base font-black shadow-xl shadow-primary/30 hover:brightness-110 active:scale-95 disabled:opacity-50 transition min-h-[54px]"
             >
               <Sparkles className="h-5 w-5 fill-white" />
-              <span>{isSavingJournal ? "Saving..." : "SAVE REFLECTION & COMPLETE MISSION 🎉"}</span>
+              <span>{isSavingJournal ? "Saving..." : "SAVE REFLECTION & COMPLETE WORKOUT 🎉"}</span>
             </button>
           </div>
         </div>
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* STEP 6: TODAY'S MISSION COMPLETE 🎉 & SOCIAL SHARE CARD                 */}
+      {/* STEP 7: WORKOUT COMPLETE 🎉 & SOCIAL SHARE CARD                        */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {currentStep === 6 && (
+      {currentStep === 7 && (
         <div className="rounded-3xl border-2 border-emerald-500/50 bg-gradient-to-br from-emerald-500/10 via-card to-teal-600/10 p-6 sm:p-8 text-center space-y-6 shadow-2xl animate-in zoom-in-95">
           <Confetti active={true} />
 
@@ -700,17 +740,22 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
 
           <div className="space-y-1">
             <span className="text-xs font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">
-              TODAY&apos;S MISSION COMPLETE
+              MENTAL FITNESS WORKOUT COMPLETE
             </span>
             <h2 className="text-2xl sm:text-3xl font-black text-foreground">
               Mastery Achieved!
             </h2>
             <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto">
-              You navigated the scenario, made your decision, trained your cognitive challenge, executed the physical task, and journaled your reflection.
+              You trained {workout.universalSkill} through your personalized context, solved the cognitive challenge, and journaled your real-life assignment.
             </p>
           </div>
 
-          {/* Rewards Grid */}
+          {levelUpMessage && (
+            <div className="rounded-2xl bg-primary/10 border-2 border-primary/30 p-4 text-xs sm:text-sm font-bold text-primary max-w-md mx-auto animate-bounce">
+              {levelUpMessage}
+            </div>
+          )}
+
           <div className="grid grid-cols-3 gap-2.5 max-w-sm mx-auto">
             <div className="rounded-2xl border border-border bg-background/90 p-3 space-y-0.5">
               <span className="text-[10px] text-muted-foreground font-bold uppercase block">XP EARNED</span>
@@ -726,17 +771,15 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
             </div>
           </div>
 
-          {/* Today's Key Takeaway Banner */}
           <div className="rounded-2xl bg-background/80 border border-primary/20 p-4 space-y-1 max-w-md mx-auto shadow-sm">
             <span className="text-[10px] font-black uppercase text-primary">
               TODAY&apos;S KEY TAKEAWAY
             </span>
             <p className="text-sm font-black text-foreground italic">
-              &ldquo;{scenario.brainInsightTakeaway}&rdquo;
+              &ldquo;{workout.brainInsightTakeaway}&rdquo;
             </p>
           </div>
 
-          {/* Actions: Social Share Card + Journal + Dashboard */}
           <div className="space-y-2.5 max-w-md mx-auto pt-2">
             <button
               onClick={() => setShowShareModal(true)}
@@ -766,12 +809,12 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
         </div>
       )}
 
-      {/* ─── SOCIAL SHARE CARD MODAL ────────────────────────────────────────── */}
+      {/* Social Share Card Modal */}
       <JournalShareCardModal
         isOpen={showShareModal}
         onClose={() => setShowShareModal(false)}
-        challengeTitle={scenario.title}
-        takeaway={scenario.brainInsightTakeaway}
+        challengeTitle={workout.title}
+        takeaway={workout.brainInsightTakeaway}
         reflectionText={reflectionText}
       />
     </div>

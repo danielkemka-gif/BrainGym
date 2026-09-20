@@ -19,6 +19,9 @@ import { BrainJourney } from "@/components/dashboard/brain-journey";
 import { WeeklyBrainReportCard } from "@/components/progress/weekly-brain-report-card";
 import { CognitiveProfileBreakdown } from "@/components/progress/cognitive-profile-breakdown";
 import { ThinkingPatternsReport } from "@/components/progress/thinking-patterns-report";
+import { BrainAgeJourneyCard } from "@/components/progress/brain-age-journey-card";
+import { WeeklyBrainQuestCard } from "@/components/progress/weekly-brain-quest-card";
+import { RealLifeMissionCard } from "@/components/missions/real-life-mission-card";
 
 export default function ProgressPage() {
   const { user } = useAuth();
@@ -82,20 +85,29 @@ export default function ProgressPage() {
           Progress &amp; Cognitive Fitness
         </h1>
         <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-          Track your Brain Momentum, personal cognitive baselines, and neuroplastic development over time.
+          Track your Brain Age trajectory, personal best records, neuroplastic momentum, and 4 core outcomes over time.
         </p>
       </div>
 
-      {/* 1. Weekly Brain Fitness Report */}
-      {engineState && <WeeklyBrainReportCard report={engineState.weeklyReport} />}
+      {/* 1. BRAIN AGE JOURNEY & PERSONAL RECORDS */}
+      <BrainAgeJourneyCard />
 
-      {/* 2. Discover How You Think (BrainGym Performance Insights) */}
+      {/* 2. THIS WEEK'S BRAIN QUEST */}
+      <WeeklyBrainQuestCard />
+
+      {/* 3. TODAY'S REAL-LIFE BRAIN MISSION */}
+      <RealLifeMissionCard />
+
+      {/* 4. DISCOVER HOW YOU THINK (BrainGym 4 Core Outcomes: THINK, SOLVE, DECIDE, ADAPT) */}
       <ThinkingPatternsReport />
 
-      {/* 3. Personal Cognitive Baselines & 7-Domain Trend */}
+      {/* 5. Weekly Brain Fitness Report */}
+      {engineState && <WeeklyBrainReportCard report={engineState.weeklyReport} />}
+
+      {/* 6. Personal Cognitive Baselines & 7-Domain Trend */}
       {engineState && <CognitiveProfileBreakdown momentum={engineState.momentum} />}
 
-      {/* 3. 90-Day Brain Journey Heatmap */}
+      {/* 7. 90-Day Brain Journey Heatmap */}
       {isPro || isTrial ? (
         <BrainJourney />
       ) : (
@@ -105,7 +117,7 @@ export default function ProgressPage() {
         />
       )}
 
-      {/* 4. Cognitive Radar & History */}
+      {/* 8. Cognitive Radar & History */}
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-sm">
           <h2 className="text-base font-black text-foreground mb-4">5-Domain Cognitive Radar</h2>
@@ -117,19 +129,19 @@ export default function ProgressPage() {
         </div>
       </div>
 
-      {/* 5. Skill Tree */}
+      {/* 9. Skill Tree */}
       <div className="overflow-x-auto rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-sm">
         <h2 className="text-base font-black text-foreground mb-4">Neuroplastic Skill Progression</h2>
         <SkillTree activityCounts={activityCounts} scores={scores} />
       </div>
 
-      {/* 6. Achievements Cabinet */}
+      {/* 10. Achievements Cabinet */}
       <div className="rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-sm">
         <h2 className="text-base font-black text-foreground mb-4">Badges &amp; Milestones</h2>
         <AchievementsGrid />
       </div>
 
-      {/* 7. DIRECT NAVIGATION BUTTON TO COGNITIVE CHALLENGES ARENA */}
+      {/* 11. DIRECT NAVIGATION BUTTON TO BRAIN ARENA */}
       <div className="rounded-3xl border-2 border-primary/40 bg-gradient-to-r from-primary/15 via-card to-violet-600/15 p-6 sm:p-7 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
@@ -139,7 +151,7 @@ export default function ProgressPage() {
             </span>
           </div>
           <h3 className="text-lg sm:text-xl font-black text-foreground">
-            Enter the Cognitive Challenges Arena
+            Enter the Brain Arena
           </h3>
           <p className="text-xs text-muted-foreground">
             Put your trained memory, logic, focus, and speed to the test in specialized arena challenges.
@@ -149,7 +161,7 @@ export default function ProgressPage() {
           href="/dashboard/challenges"
           className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-primary hover:bg-primary/90 text-white py-4 px-7 text-xs sm:text-sm font-black shadow-lg shadow-primary/25 transition active:scale-95 min-h-[48px] shrink-0"
         >
-          <span>ENTER CHALLENGES ARENA ➔</span>
+          <span>ENTER BRAIN ARENA ➔</span>
         </Link>
       </div>
     </div>

@@ -7,7 +7,8 @@ import { CATEGORIES, DIFFICULTIES } from "@/lib/constants";
 import { FriendDuelSection } from "@/components/challenges/friend-duel-section";
 import { LiveBrainDuel } from "@/components/challenges/live-brain-duel";
 import { ThirtyDayChallenge } from "@/components/challenges/thirty-day-challenge";
-import { Swords, Users, Handshake, Sparkles, Award } from "lucide-react";
+import { BrainArenaHub } from "@/components/challenges/brain-arena-hub";
+import { Swords, Users, Handshake, Sparkles, Award, Layers } from "lucide-react";
 
 interface Challenge {
   id: string;
@@ -35,7 +36,7 @@ export default function ChallengesPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState("");
   const [userId, setUserId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"thirty-day" | "duel" | "community" | "friends">("thirty-day");
+  const [activeTab, setActiveTab] = useState<"arena" | "thirty-day" | "duel" | "community" | "friends">("arena");
 
   const [form, setForm] = useState({
     title: "",
@@ -209,6 +210,18 @@ export default function ChallengesPage() {
       {/* Tabs */}
       <div className="flex gap-2 border-b border-border pb-2 overflow-x-auto">
         <button
+          onClick={() => setActiveTab("arena")}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition whitespace-nowrap min-h-[44px] touch-manipulation ${
+            activeTab === "arena"
+              ? "bg-gradient-to-r from-primary to-violet-600 text-white shadow-md shadow-primary/20"
+              : "border border-border bg-card hover:bg-muted text-muted-foreground"
+          }`}
+        >
+          <Layers className="h-4 w-4" />
+          <span>Brain Arena</span>
+        </button>
+
+        <button
           onClick={() => setActiveTab("thirty-day")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition whitespace-nowrap min-h-[44px] touch-manipulation ${
             activeTab === "thirty-day"
@@ -217,7 +230,7 @@ export default function ChallengesPage() {
           }`}
         >
           <Award className="h-4 w-4" />
-          <span>30-Day Brain Transformation</span>
+          <span>30-Day Transformation</span>
         </button>
 
         <button
@@ -256,6 +269,13 @@ export default function ChallengesPage() {
           <span>Friend Accountability Duels</span>
         </button>
       </div>
+
+      {/* Tab: Brain Arena */}
+      {activeTab === "arena" && (
+        <div className="space-y-6">
+          <BrainArenaHub />
+        </div>
+      )}
 
       {/* Tab 0: 30-Day Brain Transformation Challenge */}
       {activeTab === "thirty-day" && (

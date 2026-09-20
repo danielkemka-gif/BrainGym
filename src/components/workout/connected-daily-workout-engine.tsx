@@ -43,6 +43,8 @@ import {
   Pencil,
   Award,
 } from "lucide-react";
+import { QuickBrainBreakModal } from "@/components/brain-breaks/quick-brain-break-modal";
+import { RealLifeMissionCard } from "@/components/missions/real-life-mission-card";
 import { useAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/client";
 
@@ -82,6 +84,8 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
 
   // Social Share Card Modal State
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showBrainBreakModal, setShowBrainBreakModal] = useState(false);
+  const [showMissionCard, setShowMissionCard] = useState(false);
 
   useEffect(() => {
     const userProfile = getActivePersonalizationProfile();
@@ -728,86 +732,124 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* STEP 7: WORKOUT COMPLETE 🎉 & SOCIAL SHARE CARD                        */}
+      {/* STEP 7: WORKOUT COMPLETE 🔥 & RETENTION NEXT STEPS                      */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {currentStep === 7 && (
-        <div className="rounded-3xl border-2 border-emerald-500/50 bg-gradient-to-br from-emerald-500/10 via-card to-teal-600/10 p-6 sm:p-8 text-center space-y-6 shadow-2xl animate-in zoom-in-95">
+        <div className="rounded-3xl border-2 border-emerald-500/40 bg-gradient-to-br from-emerald-500/10 via-card to-teal-600/10 p-5 sm:p-7 text-center space-y-5 shadow-2xl animate-in zoom-in-95">
           <Confetti active={true} />
 
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-emerald-500 text-white shadow-xl shadow-emerald-500/30 text-3xl">
-            🎉
-          </div>
-
+          {/* 1. STATUS HEADER & SKILL TRAINED */}
           <div className="space-y-1">
             <span className="text-xs font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">
-              MENTAL FITNESS WORKOUT COMPLETE
+              WORKOUT COMPLETE 🔥
             </span>
             <h2 className="text-2xl sm:text-3xl font-black text-foreground">
-              Mastery Achieved!
+              You Trained: {workout.universalSkill.toUpperCase()}
             </h2>
             <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto">
-              You trained {workout.universalSkill} through your personalized context, solved the cognitive challenge, and journaled your real-life assignment.
+              You completed today&apos;s deliberate mental workout and strengthened your real-life cognitive readiness.
             </p>
           </div>
 
-          {levelUpMessage && (
-            <div className="rounded-2xl bg-primary/10 border-2 border-primary/30 p-4 text-xs sm:text-sm font-bold text-primary max-w-md mx-auto animate-bounce">
-              {levelUpMessage}
-            </div>
-          )}
-
-          <div className="grid grid-cols-3 gap-2.5 max-w-sm mx-auto">
+          {/* 2. REWARD & STREAK SUMMARY */}
+          <div className="grid grid-cols-2 gap-3 max-w-xs mx-auto">
             <div className="rounded-2xl border border-border bg-background/90 p-3 space-y-0.5">
-              <span className="text-[10px] text-muted-foreground font-bold uppercase block">XP EARNED</span>
-              <span className="text-lg font-black text-emerald-600 dark:text-emerald-400">+150 XP</span>
-            </div>
-            <div className="rounded-2xl border border-border bg-background/90 p-3 space-y-0.5">
-              <span className="text-[10px] text-muted-foreground font-bold uppercase block">COINS</span>
-              <span className="text-lg font-black text-amber-500">+40 🪙</span>
+              <span className="text-[10px] text-muted-foreground font-bold uppercase block">POINTS</span>
+              <span className="text-lg font-black text-emerald-600 dark:text-emerald-400">+25 Brain Points</span>
             </div>
             <div className="rounded-2xl border border-border bg-background/90 p-3 space-y-0.5">
               <span className="text-[10px] text-muted-foreground font-bold uppercase block">STREAK</span>
-              <span className="text-lg font-black text-primary">Active 🔥</span>
+              <span className="text-lg font-black text-primary">Protected 🔥</span>
             </div>
           </div>
 
-          <div className="rounded-2xl bg-background/80 border border-primary/20 p-4 space-y-1 max-w-md mx-auto shadow-sm">
-            <span className="text-[10px] font-black uppercase text-primary">
+          {/* 3. TODAY'S KEY TAKEAWAY */}
+          <div className="rounded-2xl bg-background/80 border border-primary/20 p-3.5 space-y-1 max-w-md mx-auto shadow-sm text-left">
+            <span className="text-[10px] font-black uppercase text-primary block">
               TODAY&apos;S KEY TAKEAWAY
             </span>
-            <p className="text-sm font-black text-foreground italic">
+            <p className="text-xs sm:text-sm font-black text-foreground italic">
               &ldquo;{workout.brainInsightTakeaway}&rdquo;
             </p>
           </div>
 
-          <div className="space-y-2.5 max-w-md mx-auto pt-2">
+          {/* 4. YOUR NEXT STEP (MAX 2 OPTIONAL ACTIONS) */}
+          <div className="space-y-2.5 max-w-md mx-auto pt-1 text-left">
+            <span className="text-[11px] font-black uppercase text-muted-foreground tracking-wider block">
+              YOUR NEXT STEP (OPTIONAL)
+            </span>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button
+                onClick={() => setShowBrainBreakModal(true)}
+                className="flex items-center justify-between p-3.5 rounded-2xl border border-primary/30 bg-primary/10 hover:bg-primary/20 text-primary font-bold text-xs transition active:scale-95 text-left"
+              >
+                <div>
+                  <span className="block text-[10px] font-black uppercase">GOT 60 SECONDS?</span>
+                  <span className="text-xs font-black">Try a Brain Break ➔</span>
+                </div>
+                <Zap className="h-4 w-4 shrink-0" />
+              </button>
+
+              <button
+                onClick={() => setShowMissionCard(!showMissionCard)}
+                className="flex items-center justify-between p-3.5 rounded-2xl border border-violet-500/30 bg-violet-500/10 hover:bg-violet-500/20 text-violet-600 dark:text-violet-400 font-bold text-xs transition active:scale-95 text-left"
+              >
+                <div>
+                  <span className="block text-[10px] font-black uppercase">REAL LIFE</span>
+                  <span className="text-xs font-black">Today&apos;s Mission ➔</span>
+                </div>
+                <Compass className="h-4 w-4 shrink-0" />
+              </button>
+            </div>
+
+            {/* Inline Real-Life Mission Card when toggled */}
+            {showMissionCard && (
+              <div className="pt-2 animate-in fade-in">
+                <RealLifeMissionCard compact={true} />
+              </div>
+            )}
+          </div>
+
+          {/* 5. TOMORROW'S ANTICIPATION PREVIEW */}
+          <div className="rounded-2xl bg-muted/50 border border-border p-3.5 max-w-md mx-auto text-left space-y-1">
+            <span className="text-[10px] font-black uppercase text-muted-foreground block">
+              TOMORROW 🧠
+            </span>
+            <p className="text-xs sm:text-sm font-bold text-foreground">
+              <span className="text-primary font-black">Decision Making</span> — &ldquo;Can you spot the trap before you make the choice?&rdquo;
+            </p>
+            <span className="text-[11px] text-muted-foreground font-semibold block pt-0.5">
+              See you tomorrow.
+            </span>
+          </div>
+
+          {/* 6. PRIMARY EXIT / SOCIAL SHARE */}
+          <div className="space-y-2 max-w-md mx-auto pt-1">
+            <Link
+              href="/dashboard"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black py-3.5 px-6 text-sm shadow-xl shadow-emerald-600/30 hover:brightness-110 active:scale-95 transition min-h-[48px]"
+            >
+              <CheckCircle2 className="h-4 w-4" />
+              <span>RETURN TO DASHBOARD</span>
+            </Link>
+
             <button
               onClick={() => setShowShareModal(true)}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:brightness-110 text-white py-4 px-6 text-sm font-black shadow-xl shadow-emerald-600/30 transition active:scale-95 min-h-[52px]"
+              className="w-full inline-flex items-center justify-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-foreground py-2 min-h-[36px]"
             >
-              <Share2 className="h-5 w-5" />
-              <span>SHARE REFLECTION AS SOCIAL POST ➔</span>
+              <Share2 className="h-3.5 w-3.5" />
+              <span>Share Reflection Post</span>
             </button>
-
-            <div className="flex items-center gap-2">
-              <Link
-                href="/dashboard/journal"
-                className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-2xl border border-border bg-card hover:bg-muted py-3 px-4 text-xs font-bold text-foreground transition min-h-[44px]"
-              >
-                <BookOpen className="h-4 w-4 text-primary" />
-                <span>View My Journal</span>
-              </Link>
-
-              <Link
-                href="/dashboard"
-                className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-2xl border border-border bg-card hover:bg-muted py-3 px-4 text-xs font-bold text-foreground transition min-h-[44px]"
-              >
-                <span>Back to Dashboard</span>
-              </Link>
-            </div>
           </div>
         </div>
       )}
+
+      {/* Quick 60-Second Brain Break Modal */}
+      <QuickBrainBreakModal
+        isOpen={showBrainBreakModal}
+        onClose={() => setShowBrainBreakModal(false)}
+      />
 
       {/* Social Share Card Modal */}
       <JournalShareCardModal

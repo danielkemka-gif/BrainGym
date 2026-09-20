@@ -5,7 +5,7 @@ import {
   getActivePersonalizationProfile,
   generateThinkingPatternProfile,
 } from "@/lib/personalization";
-import { TrendingUp, ArrowRight, Brain, Target } from "lucide-react";
+import { TrendingUp, ArrowRight, Brain, Target, Award, Calendar } from "lucide-react";
 
 export function DashboardProgressSnapshot() {
   const profile = getActivePersonalizationProfile();
@@ -29,29 +29,31 @@ export function DashboardProgressSnapshot() {
         </Link>
       </div>
 
-      {/* Score & Archetype summary */}
-      <div className="flex items-center justify-between rounded-2xl bg-background/80 border border-border p-3.5">
-        <div>
+      {/* Brain Score & Weekly Progress Strip */}
+      <div className="grid grid-cols-2 gap-2.5">
+        <div className="rounded-2xl bg-background/80 border border-border p-3 space-y-0.5">
           <span className="text-[10px] font-black uppercase text-muted-foreground block">
-            THINKING ARCHETYPE
+            BRAIN SCORE
           </span>
-          <span className="text-sm font-black text-foreground">
-            {thinking.overallThinkingArchetype}
-          </span>
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-xl font-black text-foreground">72</span>
+            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">↑ +3 today</span>
+          </div>
         </div>
 
-        <div className="text-right">
+        <div className="rounded-2xl bg-background/80 border border-border p-3 space-y-0.5">
           <span className="text-[10px] font-black uppercase text-muted-foreground block">
-            LEVEL
+            WEEKLY PROGRESS
           </span>
-          <span className="text-sm font-black text-primary">
-            Level {profile.currentDifficultyLevel}
-          </span>
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-xl font-black text-primary">4/5</span>
+            <span className="text-xs font-bold text-muted-foreground">Workouts</span>
+          </div>
         </div>
       </div>
 
       {/* 4 Core Outcomes Mini-Indicators */}
-      <div className="grid grid-cols-4 gap-2 pt-1 text-center">
+      <div className="grid grid-cols-4 gap-2 pt-0.5 text-center">
         {(["THINK", "SOLVE", "DECIDE", "ADAPT"] as const).map((key) => {
           const item = thinking.outcomeMastery[key];
           return (

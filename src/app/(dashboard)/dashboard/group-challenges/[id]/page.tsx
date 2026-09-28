@@ -159,17 +159,24 @@ export default function SingleChallengeDashboardPage({
               <span className="text-[10px] font-black uppercase tracking-wider text-primary">
                 DAY {challenge.currentDay} OF {challenge.durationDays} · {challenge.type}
               </span>
-              <h1 className="text-xl sm:text-2xl font-black text-foreground">
+              <h1 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
                 {challenge.title}
               </h1>
             </div>
           </div>
 
-          <div className="flex items-center gap-1 text-[11px] font-bold text-muted-foreground bg-muted border border-border rounded-full px-3 py-1">
+          <div className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground bg-muted border border-border rounded-full px-3 py-1">
             <Users className="h-3.5 w-3.5 text-primary" />
             <span>{challenge.participantsCount} Members</span>
           </div>
         </div>
+
+        {/* Challenge Description: Justified and Clean */}
+        {challenge.description && (
+          <p className="text-xs sm:text-sm text-muted-foreground font-medium leading-relaxed text-justify bg-background/60 rounded-2xl p-4 border border-border/50">
+            {challenge.description}
+          </p>
+        )}
 
         {/* 4 Core Vital Performance Metrics */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">

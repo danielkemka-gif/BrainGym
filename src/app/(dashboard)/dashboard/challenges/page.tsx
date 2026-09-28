@@ -8,7 +8,7 @@ import { FriendDuelSection } from "@/components/challenges/friend-duel-section";
 import { LiveBrainDuel } from "@/components/challenges/live-brain-duel";
 import { ThirtyDayChallenge } from "@/components/challenges/thirty-day-challenge";
 import { BrainArenaHub } from "@/components/challenges/brain-arena-hub";
-import { Swords, Users, Handshake, Sparkles, Award, Layers } from "lucide-react";
+import { Swords, Users, Handshake, Sparkles, Award, Layers, Plus } from "lucide-react";
 
 interface Challenge {
   id: string;
@@ -166,49 +166,32 @@ export default function ChallengesPage() {
   );
 
   return (
-    <div className="mx-auto w-full max-w-6xl max-w-full space-y-6 overflow-x-hidden">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-balance text-xl font-bold sm:text-2xl flex items-center gap-2">
-            <span>Brain Challenges &amp; 1v1 Duels</span>
-            <span className="rounded-full bg-purple-500/10 px-2.5 py-0.5 text-xs font-bold text-purple-600 dark:text-purple-400">
-              Habit &amp; Duels 🏆
+    <div className="mx-auto w-full max-w-5xl space-y-6 px-3 sm:px-4 lg:px-6 py-4 pb-24 overflow-x-hidden touch-manipulation">
+      {/* ─── Top Header ───────────────────────────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-border/60 pb-3">
+        <div className="space-y-0.5">
+          <h1 className="text-xl sm:text-2xl font-black text-foreground tracking-tight flex items-center gap-2">
+            <span>Challenges &amp; Arena</span>
+            <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-bold text-primary">
+              Training Grounds 🏆
             </span>
           </h1>
-          <p className="text-sm text-muted-foreground">
-            Complete your 30-Day Brain Transformation, battle in live 1v1 duels, or join community challenges
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            Explore 8 cognitive domains, 30-day transformation programs, live 1v1 duels, and group challenges.
           </p>
         </div>
-      </div>
 
-      {/* PROMINENT GROUP CHALLENGE SYSTEM HERO */}
-      <div className="rounded-3xl border-2 border-primary/40 bg-gradient-to-r from-primary/15 via-card to-violet-600/15 p-5 sm:p-6 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-[10px] font-black uppercase text-primary tracking-wider">
-              COMMUNITY &amp; TEAMS
-            </span>
-          </div>
-          <h3 className="text-base sm:text-lg font-black text-foreground">
-            Structured Group Challenges &amp; WhatsApp Competitions
-          </h3>
-          <p className="text-xs text-muted-foreground">
-            Create or join structured 3 to 30-day challenges for your WhatsApp group, company, church, or school.
-          </p>
-        </div>
         <Link
           href="/dashboard/group-challenges"
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-primary hover:bg-primary/90 text-white py-3.5 px-6 text-xs sm:text-sm font-black shadow-md shadow-primary/25 transition active:scale-95 min-h-[46px] shrink-0"
+          className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card hover:bg-muted py-2 px-3.5 text-xs font-bold text-foreground transition active:scale-95 shrink-0"
         >
-          <Users className="h-4 w-4" />
-          <span>EXPLORE GROUP CHALLENGES ➔</span>
+          <Users className="h-3.5 w-3.5 text-primary" />
+          <span>WhatsApp Groups</span>
         </Link>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-2 border-b border-border pb-2 overflow-x-auto">
+      {/* ─── Tabs Navigation ──────────────────────────────────────────────── */}
+      <div className="flex gap-2 border-b border-border pb-2 overflow-x-auto no-scrollbar">
         <button
           onClick={() => setActiveTab("arena")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition whitespace-nowrap min-h-[44px] touch-manipulation ${
@@ -242,7 +225,7 @@ export default function ChallengesPage() {
           }`}
         >
           <Swords className="h-4 w-4" />
-          <span>Live 1v1 Duel Arena (2 Players)</span>
+          <span>Live 1v1 Duels</span>
         </button>
 
         <button
@@ -254,7 +237,7 @@ export default function ChallengesPage() {
           }`}
         >
           <Users className="h-4 w-4" />
-          <span>Group &amp; Community Challenges</span>
+          <span>Community Challenges</span>
         </button>
 
         <button
@@ -266,73 +249,74 @@ export default function ChallengesPage() {
           }`}
         >
           <Handshake className="h-4 w-4" />
-          <span>Friend Accountability Duels</span>
+          <span>Friend Accountability</span>
         </button>
       </div>
 
+      {/* ─── TAB CONTENT ──────────────────────────────────────────────────── */}
       {/* Tab: Brain Arena */}
       {activeTab === "arena" && (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-in fade-in">
           <BrainArenaHub />
         </div>
       )}
 
-      {/* Tab 0: 30-Day Brain Transformation Challenge */}
+      {/* Tab: 30-Day Transformation Challenge */}
       {activeTab === "thirty-day" && (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-in fade-in">
           <ThirtyDayChallenge />
         </div>
       )}
 
-      {/* Tab 1: Live 1v1 Brain Duel */}
+      {/* Tab: Live 1v1 Brain Duel */}
       {activeTab === "duel" && (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-in fade-in">
           <LiveBrainDuel />
         </div>
       )}
 
-      {/* Tab 2: Group & Community Challenges */}
+      {/* Tab: Community Challenges */}
       {activeTab === "community" && (
-        <div className="space-y-6">
+        <div className="space-y-5 animate-in fade-in">
           <div className="flex items-center justify-between">
-            <h2 className="text-base font-bold text-foreground">Active Group Challenges</h2>
+            <h2 className="text-base sm:text-lg font-black text-foreground">Community &amp; Custom Challenges</h2>
             <button
               onClick={() => setShowCreate((p) => !p)}
-              className="touch-manipulation inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/90 active:scale-[0.97] min-h-[38px]"
+              className="touch-manipulation inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground hover:bg-primary/90 active:scale-[0.97] min-h-[38px]"
             >
-              {showCreate ? "Cancel" : "+ Create Group Challenge"}
+              {showCreate ? "Cancel" : "+ Create Challenge"}
             </button>
           </div>
 
           {/* Create form */}
           {showCreate && (
-            <form onSubmit={handleCreate} className="rounded-2xl border border-border bg-card p-4 sm:p-5 space-y-4 w-full max-w-full overflow-x-hidden">
-              <h2 className="font-semibold">New Community Challenge</h2>
+            <form onSubmit={handleCreate} className="rounded-2xl border border-border bg-card p-4 sm:p-5 space-y-4 w-full max-w-full overflow-x-hidden shadow-sm">
+              <h3 className="font-bold text-sm">New Community Challenge</h3>
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Title</label>
+                <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">Title</label>
                 <input
                   value={form.title}
                   onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-                  className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary"
+                  className="h-11 w-full rounded-xl border border-border bg-background px-4 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-primary"
                   required
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Description (optional)</label>
+                <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">Description (optional)</label>
                 <textarea
                   value={form.description}
                   onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                   rows={2}
-                  className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium">Category</label>
+                  <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">Category</label>
                   <select
                     value={form.category}
                     onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
-                    className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary"
+                    className="h-11 w-full rounded-xl border border-border bg-background px-3 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-primary"
                   >
                     <option value="">All categories</option>
                     {CATEGORIES.map((c) => (
@@ -341,11 +325,11 @@ export default function ChallengesPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium">Difficulty</label>
+                  <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">Difficulty</label>
                   <select
                     value={form.difficulty}
                     onChange={(e) => setForm((f) => ({ ...f, difficulty: e.target.value }))}
-                    className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary"
+                    className="h-11 w-full rounded-xl border border-border bg-background px-3 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-primary"
                   >
                     <option value="">Any</option>
                     {DIFFICULTIES.map((d) => (
@@ -354,58 +338,19 @@ export default function ChallengesPage() {
                   </select>
                 </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium">Duration (days)</label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={90}
-                    value={form.duration_days}
-                    onChange={(e) => setForm((f) => ({ ...f, duration_days: Number(e.target.value) }))}
-                    className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium">Goal type</label>
-                  <select
-                    value={form.goal_type}
-                    onChange={(e) => setForm((f) => ({ ...f, goal_type: e.target.value }))}
-                    className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary"
-                  >
-                    <option value="xp">Total XP</option>
-                    <option value="workouts">Workouts</option>
-                    <option value="streak">Streak Days</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium">Goal amount</label>
-                  <input
-                    type="number"
-                    min={1}
-                    value={form.goal_amount}
-                    onChange={(e) => setForm((f) => ({ ...f, goal_amount: Number(e.target.value) }))}
-                    className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
-              </div>
 
-              {createError && (
-                <p className="text-sm text-destructive">{createError}</p>
-              )}
-
-              <div className="flex justify-end gap-3 pt-2">
+              <div className="flex justify-end gap-2.5 pt-1">
                 <button
                   type="button"
                   onClick={() => setShowCreate(false)}
-                  className="rounded-xl border border-border px-4 py-2.5 text-sm font-medium hover:bg-accent"
+                  className="rounded-xl border border-border px-4 py-2 text-xs font-bold hover:bg-muted"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={creating}
-                  className="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                  className="rounded-xl bg-primary px-5 py-2 text-xs font-black text-white hover:bg-primary/90 disabled:opacity-50"
                 >
                   {creating ? "Creating..." : "Create"}
                 </button>
@@ -413,11 +358,11 @@ export default function ChallengesPage() {
             </form>
           )}
 
-          {/* Category filter */}
-          <div className="flex flex-wrap gap-2">
+          {/* Filter Pills */}
+          <div className="flex flex-wrap gap-1.5">
             <button
               onClick={() => setCategoryFilter("")}
-              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+              className={`rounded-full px-3 py-1 text-xs font-bold transition-colors ${
                 categoryFilter === ""
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted text-muted-foreground hover:text-foreground"
@@ -429,7 +374,7 @@ export default function ChallengesPage() {
               <button
                 key={c.id}
                 onClick={() => setCategoryFilter(c.id)}
-                className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                className={`rounded-full px-3 py-1 text-xs font-bold transition-colors ${
                   categoryFilter === c.id
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted text-muted-foreground hover:text-foreground"
@@ -440,15 +385,15 @@ export default function ChallengesPage() {
             ))}
           </div>
 
-          {/* List of challenges */}
+          {/* Challenges Grid */}
           {loading ? (
-            <div className="py-12 text-center text-sm text-muted-foreground">Loading challenges...</div>
+            <div className="py-12 text-center text-xs text-muted-foreground">Loading challenges...</div>
           ) : filtered.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-border p-8 text-center">
-              <p className="text-sm text-muted-foreground">No challenges found. Create one above!</p>
+            <div className="rounded-2xl border border-dashed border-border p-8 text-center space-y-2">
+              <p className="text-xs text-muted-foreground">No custom challenges found. Create one above!</p>
             </div>
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {filtered.map((c) => {
                 const cat = CATEGORIES.find((x) => x.id === c.category);
                 const joined = userChallenges.has(c.id);
@@ -457,43 +402,29 @@ export default function ChallengesPage() {
                   <Link
                     key={c.id}
                     href={`/dashboard/challenges/${c.id}`}
-                    className="touch-manipulation rounded-2xl border border-border bg-card p-4 sm:p-5 transition-colors hover:border-muted-foreground/30 active:scale-[0.98]"
+                    className="touch-manipulation rounded-2xl border border-border bg-card p-4 space-y-3 transition hover:border-primary/50 shadow-sm"
                   >
-                    <div className="mb-3 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        {cat && (
-                          <div className="h-2 w-2 rounded-full" style={{ backgroundColor: cat.color }} />
-                        )}
-                        <span className="text-xs text-muted-foreground">
-                          {cat?.label ?? "General"}
-                        </span>
-                      </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase">
+                        {cat?.label ?? "General"}
+                      </span>
                       {joined && (
-                        <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
-                          Joined
+                        <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                          Joined ✓
                         </span>
                       )}
                     </div>
 
-                    <h3 className="mb-1 font-semibold">{c.title}</h3>
+                    <h3 className="font-bold text-sm text-foreground leading-snug">{c.title}</h3>
                     {c.description && (
-                      <p className="mb-3 line-clamp-2 text-xs text-muted-foreground">
+                      <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed text-justify">
                         {c.description}
                       </p>
                     )}
 
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>{c.duration_days} days</span>
-                      <span>{pCount} participant{pCount !== 1 ? "s" : ""}</span>
-                    </div>
-
-                    <div className="mt-2 flex items-center gap-2 text-xs">
-                      <span className="rounded-full bg-muted px-2 py-0.5 capitalize">
-                        {c.goal_type}
-                      </span>
-                      <span className="text-muted-foreground">
-                        {c.goal_amount.toLocaleString()} goal
-                      </span>
+                    <div className="flex items-center justify-between text-[11px] text-muted-foreground border-t border-border/50 pt-2">
+                      <span>⏱️ {c.duration_days} days</span>
+                      <span>👥 {pCount} participants</span>
                     </div>
                   </Link>
                 );
@@ -503,9 +434,9 @@ export default function ChallengesPage() {
         </div>
       )}
 
-      {/* Tab 3: Friend Accountability Duels */}
+      {/* Tab: Friend Accountability */}
       {activeTab === "friends" && (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-in fade-in">
           <FriendDuelSection />
         </div>
       )}

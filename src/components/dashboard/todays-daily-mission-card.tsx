@@ -2,64 +2,63 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { useAuth } from "@/lib/auth";
 import {
-  PersonalizedMentalWorkout,
-  getTodaysRecommendedWorkout,
+  getTodaysAssignedDailyTask,
+  DailyFitnessTask,
+  UserDailyTaskAssignment,
+} from "@/lib/daily-tasks-engine";
+import {
   getActivePersonalizationProfile,
   UserPersonalizationProfile,
 } from "@/lib/personalization";
-import {
-  getTodaysDailyMissionProgress,
-  DailyMissionProgress,
-} from "@/lib/mental-fitness";
 import { ContextualChallengeVisual } from "@/components/visuals/contextual-challenge-visual";
 import { SeeHowOthersThinkModal } from "@/components/personalization/see-how-others-think-modal";
 import { PersonaPreviewSwitcher } from "@/components/personalization/persona-preview-switcher";
 import { QuickBrainBreakModal } from "@/components/brain-breaks/quick-brain-break-modal";
 import {
   Zap,
-  Target,
-  ArrowRight,
   CheckCircle2,
-  Users,
-  Sparkles,
   Clock,
-  Compass,
+  ArrowRight,
+  Users,
+  ShieldCheck,
 } from "lucide-react";
 
 export function TodaysDailyMissionCard() {
+  const { user } = useAuth();
   const [profile, setProfile] = useState<UserPersonalizationProfile | null>(null);
-  const [workout, setWorkout] = useState<PersonalizedMentalWorkout | null>(null);
-  const [progress, setProgress] = useState<DailyMissionProgress | null>(null);
+  const [task, setTask] = useState<DailyFitnessTask | null>(null);
+  const [assignment, setAssignment] = useState<UserDailyTaskAssignment | null>(null);
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Modals
   const [showOthersThinkModal, setShowOthersThinkModal] = useState(false);
   const [showBrainBreakModal, setShowBrainBreakModal] = useState(false);
 
   useEffect(() => {
     const userProfile = getActivePersonalizationProfile();
     setProfile(userProfile);
-    setWorkout(getTodaysRecommendedWorkout(userProfile));
-    setProgress(getTodaysDailyMissionProgress());
-  }, []);
 
-  if (!workout || !progress || !profile) {
+    getTodaysAssignedDailyTask(user?.id, userProfile.currentDifficultyLevel as any).then(
+      ({ task: assignedTask, assignment: userAssignment, isCompletedToday }) => {
+        setTask(assignedTask);
+        setAssignment(userAssignment);
+        setIsCompleted(isCompletedToday);
+        setLoading(false);
+      }
+    );
+  }, [user]);
+
+  if (loading || !task || !profile) {
     return (
-      <div className="rounded-3xl border border-border bg-card p-5 animate-pulse space-y-3">
+      <div className="rounded-3xl border border-border bg-card p-5 animate-pulse space-y-3.5">
         <div className="h-5 w-1/3 bg-muted rounded-lg" />
         <div className="h-24 bg-muted rounded-2xl" />
         <div className="h-12 bg-muted rounded-xl" />
       </div>
     );
-  }
-
-  const completedCount = progress.completedSteps.length;
-  const isAllDone = progress.isCompleted || completedCount >= 5;
-
-  // Determine Primary CTA Label
-  let ctaLabel = "START CHALLENGE ➔";
-  if (isAllDone) {
-    ctaLabel = "YOU'RE DONE FOR TODAY ✓";
-  } else if (completedCount > 0) {
-    ctaLabel = "CONTINUE CHALLENGE ➔";
   }
 
   return (
@@ -75,73 +74,78 @@ export function TodaysDailyMissionCard() {
           </div>
 
           <h2 className="text-lg sm:text-xl font-black text-foreground tracking-tight leading-snug">
-            {workout.title}
+            {task.title}
           </h2>
 
           <div className="flex items-center gap-2 text-xs text-muted-foreground font-semibold">
             <span className="rounded-full bg-background/90 border border-border px-2.5 py-0.5 text-[11px] font-bold text-foreground">
-              {workout.coverEmoji} {workout.universalSkill}
+              {task.coverEmoji} {task.categoryLabel}
             </span>
             <span>•</span>
             <span className="flex items-center gap-1">
               <Clock className="h-3 w-3 text-muted-foreground" />
-              {workout.estimatedMinutes} min
+              {task.estimatedDurationMin} min
             </span>
           </div>
         </div>
 
         {/* 20-25% Contextual Editorial Micro-Animated Visual */}
         <ContextualChallengeVisual
-          category={workout.universalSkill}
+          category={task.category}
           size="md"
           className="shrink-0"
         />
       </div>
 
-      {/* ─── 2. CONCISE SCENARIO PREVIEW ───────────────────────────────────── */}
-      <p className="text-xs sm:text-sm text-muted-foreground font-medium line-clamp-2 leading-relaxed text-left bg-background/60 rounded-2xl p-2.5 border border-border/50">
-        &ldquo;{workout.scenarioNarrative}&rdquo;
+      {/* ─── 2. CONCISE SCENARIO PREVIEW (CLEAN & READABLE) ─────────────────── */}
+      <p className="text-xs sm:text-sm text-muted-foreground font-medium line-clamp-2 leading-relaxed text-left bg-background/70 rounded-2xl p-3 border border-border/50">
+        &ldquo;{task.scenarioNarrative || task.description}&rdquo;
       </p>
 
       {/* ─── 3. ONE DOMINANT PRIMARY CTA BUTTON ─────────────────────────────── */}
       <div>
         <Link
           href="/dashboard/workout"
-          className={`w-full inline-flex items-center justify-center gap-2 rounded-2xl py-3.5 sm:py-4 px-6 text-sm sm:text-base font-black shadow-xl transition active:scale-[0.98] min-h-[50px] text-center ${
-            isAllDone
+          className={`w-full inline-flex items-center justify-center gap-2 rounded-2xl py-4 px-6 text-sm sm:text-base font-black shadow-xl transition active:scale-[0.98] min-h-[52px] text-center ${
+            isCompleted
               ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-emerald-600/30 hover:brightness-110"
               : "bg-gradient-to-r from-primary via-violet-600 to-indigo-600 text-white shadow-primary/30 hover:brightness-110"
           }`}
         >
-          {isAllDone ? (
-            <CheckCircle2 className="h-5 w-5" />
+          {isCompleted ? (
+            <>
+              <CheckCircle2 className="h-5 w-5" />
+              <span>TODAY&apos;S CHALLENGE COMPLETE ✓</span>
+            </>
           ) : (
-            <Zap className="h-5 w-5 fill-white animate-bounce" />
+            <>
+              <Zap className="h-5 w-5 fill-white animate-bounce" />
+              <span>START TODAY&apos;S CHALLENGE ➔</span>
+            </>
           )}
-          <span>{ctaLabel}</span>
         </Link>
       </div>
 
-      {/* ─── 4. POST-COMPLETION OR TOMORROW PREVIEW TEASER ──────────────────── */}
-      {isAllDone && (
+      {/* ─── 4. POST-COMPLETION / TOMORROW TEASER ────────────────────────────── */}
+      {isCompleted && (
         <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-left space-y-2 animate-in fade-in">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-black uppercase text-emerald-600 dark:text-emerald-400">
               TODAY COMPLETE ✓ STREAK PROTECTED
             </span>
-            <span className="text-xs font-bold text-foreground">🔥 {profile.streak} Days</span>
+            <span className="text-xs font-bold text-foreground">🔥 {profile.streakDays} Days</span>
           </div>
-          
+
           <div className="rounded-xl bg-background/80 p-2.5 border border-border text-xs space-y-0.5">
             <span className="text-[10px] font-black uppercase text-primary block">
               TOMORROW&apos;S SNEAK PEEK 🧠
             </span>
             <p className="font-bold text-foreground">
-              Decision Traps & Biases — &ldquo;Can you spot the cognitive trap before making the choice?&rdquo;
+              New adaptive mental fitness challenge unlocks at midnight.
             </p>
           </div>
 
-          <div className="pt-1 flex items-center justify-between">
+          <div className="pt-0.5 flex items-center justify-between">
             <button
               onClick={() => setShowBrainBreakModal(true)}
               className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline"

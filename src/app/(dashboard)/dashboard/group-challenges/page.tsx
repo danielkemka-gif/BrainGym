@@ -218,20 +218,22 @@ export default function GroupChallengesHomePage() {
                         <span className="text-3xl p-2 rounded-2xl bg-primary/10 border border-primary/20 shrink-0">
                           {ch.coverEmoji}
                         </span>
-                        <div>
-                          <span className="text-[10px] font-black uppercase text-primary tracking-wider">
+                        <div className="min-w-0 flex-1">
+                          <span className="text-[10px] font-black uppercase text-primary tracking-wider block">
                             DAY {ch.currentDay} OF {ch.durationDays} · {ch.type}
                           </span>
-                          <h3 className="text-base font-black text-foreground leading-snug">
+                          <h3 className="text-base sm:text-lg font-black text-foreground tracking-tight leading-snug">
                             {ch.title}
                           </h3>
                         </div>
                       </div>
                     </div>
 
-                    <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
-                      {ch.description}
-                    </p>
+                    {ch.description && (
+                      <p className="text-xs sm:text-sm text-muted-foreground font-medium leading-relaxed text-justify bg-muted/30 rounded-xl p-3 border border-border/40">
+                        {ch.description}
+                      </p>
+                    )}
 
                     {/* Meta Grid */}
                     <div className="grid grid-cols-3 gap-2 pt-1 text-center">
@@ -265,9 +267,9 @@ export default function GroupChallengesHomePage() {
                     </div>
 
                     {/* Progress Bar */}
-                    <div className="space-y-1">
+                    <div className="space-y-1.5 pt-1">
                       <div className="flex items-center justify-between text-[11px] font-bold">
-                        <span className="text-muted-foreground">Your Progress</span>
+                        <span className="text-muted-foreground">Challenge Consistency</span>
                         <span className="text-emerald-600 dark:text-emerald-400 font-black">
                           {ch.overallCompletionRate}%
                         </span>
@@ -285,10 +287,9 @@ export default function GroupChallengesHomePage() {
                   <div className="pt-2">
                     <Link
                       href={`/dashboard/group-challenges/${ch.id}`}
-                      className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary/90 text-white py-2.5 px-4 text-xs font-black shadow-md transition active:scale-95 min-h-[42px]"
+                      className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-violet-600 hover:brightness-110 text-white py-3 px-4 text-xs sm:text-sm font-black shadow-md shadow-primary/20 transition active:scale-95 min-h-[44px]"
                     >
-                      <span>Open Challenge Dashboard</span>
-                      <ArrowRight className="h-3.5 w-3.5" />
+                      <span>ENTER CHALLENGE ARENA ➔</span>
                     </Link>
                   </div>
                 </div>

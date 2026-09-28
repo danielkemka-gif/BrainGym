@@ -42,6 +42,7 @@ import {
   HelpCircle,
   Pencil,
   Award,
+  Compass,
 } from "lucide-react";
 import { QuickBrainBreakModal } from "@/components/brain-breaks/quick-brain-break-modal";
 import { RealLifeMissionCard } from "@/components/missions/real-life-mission-card";

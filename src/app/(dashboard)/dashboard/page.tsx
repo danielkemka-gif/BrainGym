@@ -6,16 +6,12 @@ import {
   fetchBrainMomentumEngineState,
   EngineFullState,
 } from "@/lib/brain-momentum-engine";
-import {
-  getTodaysCurriculumLesson,
-  DailyCurriculumLesson,
-} from "@/lib/daily-curriculum";
 
 // ─── Streamlined Mobile-First Dashboard Components ───────────────────────────
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { TodaysDailyMissionCard } from "@/components/dashboard/todays-daily-mission-card";
-import { DashboardProgressSnapshot } from "@/components/dashboard/dashboard-progress-snapshot";
-import { FourCoreOutcomesStrip } from "@/components/dashboard/four-core-outcomes-strip";
+import { DashboardMinimalProgress } from "@/components/dashboard/dashboard-minimal-progress";
+import { DashboardQuickExploreStrip } from "@/components/dashboard/dashboard-quick-explore-strip";
 import { GroupChallengesHeroCard } from "@/components/dashboard/group-challenges-hero-card";
 
 // ─── Guidance & Celebrations ────────────────────────────────────────────────
@@ -27,7 +23,7 @@ function DashboardSkeleton() {
     <div className="mx-auto w-full max-w-xl px-3 sm:px-4 py-6 space-y-4 animate-pulse">
       <div className="h-8 bg-muted rounded-xl w-1/2" />
       <div className="h-56 bg-muted rounded-3xl" />
-      <div className="h-28 bg-muted rounded-2xl" />
+      <div className="h-24 bg-muted rounded-2xl" />
     </div>
   );
 }
@@ -35,16 +31,11 @@ function DashboardSkeleton() {
 export default function DashboardPage() {
   const { user } = useAuth();
   const [engineState, setEngineState] = useState<EngineFullState | null>(null);
-  const [lesson, setLesson] = useState<DailyCurriculumLesson | null>(null);
   const [loading, setLoading] = useState(true);
 
   const loadDashboard = useCallback(async () => {
     const engine = await fetchBrainMomentumEngineState(user?.id, "standard");
     setEngineState(engine);
-
-    const todaysLesson = getTodaysCurriculumLesson();
-    setLesson(todaysLesson);
-
     setLoading(false);
   }, [user]);
 
@@ -52,7 +43,7 @@ export default function DashboardPage() {
     loadDashboard();
   }, [loadDashboard]);
 
-  if (loading || !engineState || !lesson) {
+  if (loading || !engineState) {
     return <DashboardSkeleton />;
   }
 
@@ -70,16 +61,18 @@ export default function DashboardPage() {
         streakDays={engineState.profile.streak}
       />
 
-      {/* 2. TODAY'S CHALLENGE (THE DOMINANT HERO CARD WITH SINGLE ACTION CTA) */}
+      {/* 2. TODAY'S CHALLENGE (THE DOMINANT HERO CARD WITH SINGLE PROMINENT ACTION CTA) */}
       <TodaysDailyMissionCard />
 
-      {/* 3. SIMPLE PROGRESS SNAPSHOT */}
-      <DashboardProgressSnapshot />
+      {/* 3. HOW AM I PROGRESSING? (3 KEY METRICS: STREAK, XP, BRAIN SCORE) */}
+      <DashboardMinimalProgress
+        streakDays={engineState.profile.streak}
+      />
 
-      {/* 4. FOUR CORE OUTCOMES (THINK · SOLVE · DECIDE · ADAPT) */}
-      <FourCoreOutcomesStrip />
+      {/* 4. WHAT CAN I EXPLORE? (ONE SECONDARY EXPLORATION AREA) */}
+      <DashboardQuickExploreStrip />
 
-      {/* 5. GROUP CHALLENGES SOCIAL CARD */}
+      {/* 5. COMMUNITY GROUP CHALLENGES (ELEGANTLY ALIGNED & JUSTIFIED) */}
       <GroupChallengesHeroCard />
     </div>
   );

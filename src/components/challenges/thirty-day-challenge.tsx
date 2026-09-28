@@ -22,43 +22,44 @@ export function ThirtyDayChallenge({
     { day: 7, title: "Brain Starter", xp: 500, badge: "🥉 Bronze Mind" },
     { day: 14, title: "Brain Builder", xp: 1000, badge: "🛡️ Streak Shield" },
     { day: 21, title: "Brain Habit Master", xp: 2000, badge: "🥈 Silver Mind" },
-    { day: 30, title: "30-Day Brain Transformation", xp: 5000, badge: "🥇 Gold Mastermind & Certificate" },
+    { day: 30, title: "Brain Transformation", xp: 5000, badge: "🥇 Gold Mastermind & Certificate" },
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* ─── Hero Banner ────────────────────────────────────────────────── */}
-      <div className="relative overflow-hidden rounded-3xl border-2 border-purple-500/40 bg-gradient-to-br from-purple-500/15 via-card to-indigo-500/15 p-5 sm:p-7 shadow-md">
+      <div className="relative overflow-hidden rounded-3xl border-2 border-purple-500/40 bg-gradient-to-br from-purple-500/15 via-card to-indigo-500/15 p-5 sm:p-7 shadow-md space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
+          <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="rounded-full bg-purple-500/20 px-2.5 py-0.5 text-[10px] font-black uppercase text-purple-700 dark:text-purple-300">
                 Official Program
               </span>
-              <span className="text-xs text-muted-foreground font-semibold">
-                🔥 {streak}-Day Streak Active
+              <span className="text-xs text-muted-foreground font-semibold flex items-center gap-1">
+                <Flame className="h-3.5 w-3.5 text-amber-500 fill-amber-500" />
+                <span>{streak}-Day Streak</span>
               </span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-foreground mt-1">
-              THE 30-DAY BRAINGYM CHALLENGE
+            <h2 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
+              30-DAY BRAINGYM TRANSFORMATION
             </h2>
-            <p className="text-xs sm:text-sm text-muted-foreground mt-1 max-w-xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-xl text-justify">
               Train your brain for 5–10 minutes every day for 30 consecutive days. Unlock permanent neuroplastic gains and earn your official graduation certificate.
             </p>
           </div>
 
-          <div className="rounded-2xl bg-card border border-border p-3.5 text-center min-w-[140px] shadow-sm">
-            <span className="text-[10px] font-bold uppercase text-muted-foreground">Challenge Progress</span>
+          <div className="rounded-2xl bg-card border border-border p-3.5 text-center min-w-[140px] shadow-sm shrink-0">
+            <span className="text-[10px] font-bold uppercase text-muted-foreground block">Challenge Progress</span>
             <p className="text-2xl font-black text-purple-600 dark:text-purple-400 mt-0.5">
               Day {completedDays.length}/30
             </p>
-            <span className="text-[10px] font-bold text-emerald-500">{progressPercent}% Complete</span>
+            <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">{progressPercent}% Complete</span>
           </div>
         </div>
 
-        {/* Big Progress Bar */}
-        <div className="mt-5 space-y-1.5">
-          <div className="h-3 w-full rounded-full bg-muted/80 overflow-hidden border border-border">
+        {/* Progress Bar */}
+        <div className="space-y-1.5 pt-1">
+          <div className="h-3 w-full rounded-full bg-muted overflow-hidden border border-border">
             <div
               className="h-full rounded-full bg-gradient-to-r from-purple-600 via-indigo-600 to-emerald-500 transition-all duration-500"
               style={{ width: `${progressPercent}%` }}
@@ -68,18 +69,18 @@ export function ThirtyDayChallenge({
       </div>
 
       {/* ─── 30-Day Visual Grid (Day 1 → Day 30) ─────────────────────────── */}
-      <div className="rounded-3xl border border-border bg-card p-4 sm:p-6 space-y-4">
+      <div className="rounded-3xl border border-border bg-card p-4 sm:p-5 space-y-4 shadow-sm">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-sm sm:text-base font-black text-foreground">
               30-Day Training Path
             </h3>
             <p className="text-xs text-muted-foreground">
-              Tap any day to view workout focus and milestone rewards
+              Tap any day to view workout status and milestone rewards
             </p>
           </div>
-          <span className="text-xs font-bold text-muted-foreground">
-            {completedDays.length} Days Unlocked
+          <span className="text-xs font-bold text-primary">
+            {completedDays.length}/30 Unlocked
           </span>
         </div>
 
@@ -132,10 +133,10 @@ export function ThirtyDayChallenge({
           return (
             <div
               key={m.day}
-              className={`rounded-2xl border p-4 space-y-2 transition ${
+              className={`rounded-2xl border p-4 space-y-2 transition shadow-sm ${
                 reached
                   ? "border-emerald-500/40 bg-emerald-500/10 text-foreground"
-                  : "border-border bg-card/60 text-muted-foreground"
+                  : "border-border bg-card text-muted-foreground"
               }`}
             >
               <div className="flex items-center justify-between">
@@ -145,7 +146,7 @@ export function ThirtyDayChallenge({
                     Unlocked ✓
                   </span>
                 ) : (
-                  <span className="text-[10px] font-medium">Upcoming</span>
+                  <span className="text-[10px] font-medium text-muted-foreground">Upcoming</span>
                 )}
               </div>
               <h4 className="text-sm font-black text-foreground">{m.title}</h4>
@@ -158,11 +159,11 @@ export function ThirtyDayChallenge({
       </div>
 
       {/* ─── Quick Workout Action ────────────────────────────────────────── */}
-      <div className="rounded-3xl border border-border bg-gradient-to-r from-primary/10 via-card to-violet-600/10 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
+      <div className="rounded-3xl border border-border bg-gradient-to-r from-primary/10 via-card to-violet-600/10 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+        <div className="space-y-0.5">
           <h3 className="text-base font-black text-foreground">Ready for Day {completedDays.length + 1}?</h3>
           <p className="text-xs text-muted-foreground">
-            Complete today&apos;s 7-minute workout to advance to Day {completedDays.length + 1} of your 30-day journey.
+            Complete today&apos;s workout to advance your 30-day transformation streak.
           </p>
         </div>
         <Link

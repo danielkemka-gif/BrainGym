@@ -2,17 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useI18n } from "@/lib/i18n";
 import { Home, Dumbbell, TrendingUp, User } from "lucide-react";
-
-const MOBILE_TABS = [
-  { href: "/dashboard", label: "Home", icon: Home },
-  { href: "/dashboard/challenges", label: "Train", icon: Dumbbell },
-  { href: "/dashboard/progress", label: "Progress", icon: TrendingUp },
-  { href: "/dashboard/settings", label: "Profile", icon: User },
-] as const;
 
 export function MobileNav() {
   const pathname = usePathname();
+  const { t } = useI18n();
+
+  const mobileTabs = [
+    { href: "/dashboard", label: t.nav_dashboard || "Home", icon: Home },
+    { href: "/dashboard/challenges", label: t.nav_challenges || "Train", icon: Dumbbell },
+    { href: "/dashboard/progress", label: t.nav_progress || "Progress", icon: TrendingUp },
+    { href: "/dashboard/settings", label: t.settings_profile || "Profile", icon: User },
+  ];
 
   return (
     <nav
@@ -21,7 +23,7 @@ export function MobileNav() {
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <div className="mx-auto flex w-full max-w-md items-stretch justify-around px-3 py-1">
-        {MOBILE_TABS.map((tab) => {
+        {mobileTabs.map((tab) => {
           const active = pathname === tab.href;
           const Icon = tab.icon;
           return (

@@ -11,6 +11,7 @@ import { Camera, X, Globe, Sun, Moon, Monitor } from "lucide-react";
 import { useTheme } from "@/lib/theme-provider";
 import { ReferralSection } from "@/components/settings/referral-section";
 import { DailyReminderSettings } from "@/components/reminders/daily-reminder-settings";
+import { LanguageSettingsSection } from "@/components/settings/language-settings-section";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -240,6 +241,9 @@ export default function SettingsPage() {
         </div>
       )}
 
+      {/* 1. Language & Region (Prominent Top Section) */}
+      <LanguageSettingsSection />
+
       {/* Profile Section */}
       <section className="rounded-2xl border border-border bg-card p-4 sm:p-6">
         <h2 className="mb-5 text-lg font-semibold">Profile</h2>
@@ -421,43 +425,6 @@ export default function SettingsPage() {
               Complete a 7-day streak to earn your first freeze!
             </p>
           )}
-        </div>
-      </section>
-
-      {/* Language */}
-      <section className="rounded-2xl border border-border bg-card p-4 sm:p-6">
-        <div className="flex items-center gap-2 mb-5">
-          <Globe className="h-5 w-5 text-muted-foreground" />
-          <h2 className="text-lg font-semibold">{t.settings_language}</h2>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          {LOCALES.map((loc) => (
-            <button
-              key={loc.id}
-              onClick={() => {
-                setLocaleSetting(loc.id);
-                setI18nLocale(loc.id);
-              }}
-              className={`flex items-center gap-3 rounded-xl border p-3 transition-all min-h-[44px] ${
-                (localeSetting === loc.id || locale === loc.id)
-                  ? "border-primary bg-primary/10 text-primary"
-                  : "border-border hover:border-muted-foreground/30"
-              }`}
-            >
-              <span className="text-2xl">{loc.flag}</span>
-              <div className="text-left">
-                <div className="flex items-center gap-1.5">
-                  <p className="text-sm font-bold">{loc.nativeLabel}</p>
-                  {loc.dir === "rtl" && (
-                    <span className="rounded-full bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.2 text-[9px] font-black text-amber-600 dark:text-amber-400">
-                      RTL
-                    </span>
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground">{loc.label}</p>
-              </div>
-            </button>
-          ))}
         </div>
       </section>
 

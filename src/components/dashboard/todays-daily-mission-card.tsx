@@ -3,11 +3,13 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
+import { useI18n } from "@/lib/i18n";
 import {
-  getTodaysAssignedDailyTask,
-  DailyFitnessTask,
-  UserDailyTaskAssignment,
-} from "@/lib/daily-tasks-engine";
+  getTodaysRealWorldChallenge,
+  RealWorldChallengeDefinition,
+  LocalizedChallengeContent,
+  UserChallengeAttemptRecord,
+} from "@/lib/real-world-thinking-engine";
 import {
   getActivePersonalizationProfile,
   UserPersonalizationProfile,
@@ -22,14 +24,15 @@ import {
   Clock,
   ArrowRight,
   Users,
-  ShieldCheck,
 } from "lucide-react";
 
 export function TodaysDailyMissionCard() {
   const { user } = useAuth();
+  const { locale, t, isRtl } = useI18n();
+
   const [profile, setProfile] = useState<UserPersonalizationProfile | null>(null);
-  const [task, setTask] = useState<DailyFitnessTask | null>(null);
-  const [assignment, setAssignment] = useState<UserDailyTaskAssignment | null>(null);
+  const [challenge, setChallenge] = useState<RealWorldChallengeDefinition | null>(null);
+  const [content, setContent] = useState<LocalizedChallengeContent | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -41,17 +44,18 @@ export function TodaysDailyMissionCard() {
     const userProfile = getActivePersonalizationProfile();
     setProfile(userProfile);
 
-    getTodaysAssignedDailyTask(user?.id, userProfile.currentDifficultyLevel as any).then(
-      ({ task: assignedTask, assignment: userAssignment, isCompletedToday }) => {
-        setTask(assignedTask);
-        setAssignment(userAssignment);
+    getTodaysRealWorldChallenge(user?.id, 2, locale).then(
+      ({ challenge: assignedChallenge, isCompletedToday }) => {
+        setChallenge(assignedChallenge);
+        const localized = assignedChallenge.translations[locale] || assignedChallenge.translations.en;
+        setContent(localized || null);
         setIsCompleted(isCompletedToday);
         setLoading(false);
       }
     );
-  }, [user]);
+  }, [user, locale]);
 
-  if (loading || !task || !profile) {
+  if (loading || !challenge || !content || !profile) {
     return (
       <div className="rounded-3xl border border-border bg-card p-5 animate-pulse space-y-3.5">
         <div className="h-5 w-1/3 bg-muted rounded-lg" />
@@ -62,44 +66,48 @@ export function TodaysDailyMissionCard() {
   }
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border-2 border-primary/40 bg-gradient-to-br from-primary/10 via-card to-violet-600/10 p-4 sm:p-5 shadow-xl space-y-4 touch-manipulation">
+    <div className={`relative overflow-hidden rounded-3xl border-2 border-primary/40 bg-gradient-to-br from-primary/10 via-card to-violet-600/10 p-4 sm:p-5 shadow-xl space-y-4 touch-manipulation ${isRtl ? "text-right" : "text-left"}`}>
       {/* ─── 1. TOP HEADER & RIGHT CONTEXTUAL VISUAL (20-25% AREA) ─────────── */}
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-2 flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
             <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
             <span className="text-[11px] font-black uppercase tracking-widest text-primary">
-              TODAY&apos;S CHALLENGE
+              {t.challenge_todays_title}
             </span>
           </div>
 
           <h2 className="text-lg sm:text-xl font-black text-foreground tracking-tight leading-snug">
-            {task.title}
+            {content.title}
           </h2>
 
           <div className="flex items-center gap-2 text-xs text-muted-foreground font-semibold">
             <span className="rounded-full bg-background/90 border border-border px-2.5 py-0.5 text-[11px] font-bold text-foreground">
-              {task.coverEmoji} {task.categoryLabel}
+              {challenge.skill}
             </span>
             <span>•</span>
             <span className="flex items-center gap-1">
               <Clock className="h-3 w-3 text-muted-foreground" />
-              {task.estimatedDurationMin} min
+              {challenge.estimatedMinutes} min
+            </span>
+            <span>•</span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-bold">
+              +{challenge.xpReward} XP
             </span>
           </div>
         </div>
 
         {/* 20-25% Contextual Editorial Micro-Animated Visual */}
         <ContextualChallengeVisual
-          category={task.category}
+          category={challenge.skill}
           size="md"
           className="shrink-0"
         />
       </div>
 
       {/* ─── 2. CONCISE SCENARIO PREVIEW (CLEAN & READABLE) ─────────────────── */}
-      <p className="text-xs sm:text-sm text-muted-foreground font-medium line-clamp-2 leading-relaxed text-left bg-background/70 rounded-2xl p-3 border border-border/50">
-        &ldquo;{task.scenarioNarrative || task.description}&rdquo;
+      <p className="text-xs sm:text-sm text-muted-foreground font-medium line-clamp-2 leading-relaxed bg-background/70 rounded-2xl p-3 border border-border/50">
+        &ldquo;{content.scenarioNarrative}&rdquo;
       </p>
 
       {/* ─── 3. ONE DOMINANT PRIMARY CTA BUTTON ─────────────────────────────── */}
@@ -115,12 +123,12 @@ export function TodaysDailyMissionCard() {
           {isCompleted ? (
             <>
               <CheckCircle2 className="h-5 w-5" />
-              <span>TODAY&apos;S CHALLENGE COMPLETE ✓</span>
+              <span>{t.challenge_completed_cta}</span>
             </>
           ) : (
             <>
               <Zap className="h-5 w-5 fill-white animate-bounce" />
-              <span>START TODAY&apos;S CHALLENGE ➔</span>
+              <span>{t.challenge_start_cta}</span>
             </>
           )}
         </Link>
@@ -128,20 +136,20 @@ export function TodaysDailyMissionCard() {
 
       {/* ─── 4. POST-COMPLETION / TOMORROW TEASER ────────────────────────────── */}
       {isCompleted && (
-        <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-left space-y-2 animate-in fade-in">
+        <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 space-y-2 animate-in fade-in">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-black uppercase text-emerald-600 dark:text-emerald-400">
-              TODAY COMPLETE ✓ STREAK PROTECTED
+              {t.challenge_streak_protected}
             </span>
-            <span className="text-xs font-bold text-foreground">🔥 {profile.streakDays} Days</span>
+            <span className="text-xs font-bold text-foreground">🔥 {profile.streakDays} {t.general_days}</span>
           </div>
 
           <div className="rounded-xl bg-background/80 p-2.5 border border-border text-xs space-y-0.5">
             <span className="text-[10px] font-black uppercase text-primary block">
-              TOMORROW&apos;S SNEAK PEEK 🧠
+              {t.challenge_tomorrow_preview_title}
             </span>
             <p className="font-bold text-foreground">
-              New adaptive mental fitness challenge unlocks at midnight.
+              {t.challenge_tomorrow_preview_desc}
             </p>
           </div>
 
@@ -150,7 +158,7 @@ export function TodaysDailyMissionCard() {
               onClick={() => setShowBrainBreakModal(true)}
               className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline"
             >
-              <span>Try a 60-second Brain Break</span>
+              <span>60-second Brain Break</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </button>
           </div>

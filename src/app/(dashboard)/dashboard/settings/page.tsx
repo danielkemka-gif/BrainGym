@@ -434,16 +434,26 @@ export default function SettingsPage() {
           {LOCALES.map((loc) => (
             <button
               key={loc.id}
-              onClick={() => setLocaleSetting(loc.id)}
+              onClick={() => {
+                setLocaleSetting(loc.id);
+                setI18nLocale(loc.id);
+              }}
               className={`flex items-center gap-3 rounded-xl border p-3 transition-all min-h-[44px] ${
-                localeSetting === loc.id
+                (localeSetting === loc.id || locale === loc.id)
                   ? "border-primary bg-primary/10 text-primary"
                   : "border-border hover:border-muted-foreground/30"
               }`}
             >
               <span className="text-2xl">{loc.flag}</span>
               <div className="text-left">
-                <p className="text-sm font-medium">{loc.nativeLabel}</p>
+                <div className="flex items-center gap-1.5">
+                  <p className="text-sm font-bold">{loc.nativeLabel}</p>
+                  {loc.dir === "rtl" && (
+                    <span className="rounded-full bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.2 text-[9px] font-black text-amber-600 dark:text-amber-400">
+                      RTL
+                    </span>
+                  )}
+                </div>
                 <p className="text-xs text-muted-foreground">{loc.label}</p>
               </div>
             </button>

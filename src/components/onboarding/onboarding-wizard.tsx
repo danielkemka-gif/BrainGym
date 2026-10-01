@@ -21,6 +21,11 @@ import {
   UserInterestType,
 } from "@/lib/personalization";
 
+import { useI18n } from "@/lib/i18n";
+import { LOCALES } from "@/lib/i18n/types";
+import { BRAND_CONFIG } from "@/config/brand";
+import { Globe, Sparkles } from "lucide-react";
+
 const TOTAL_STEPS = 5;
 const STEP_LABELS = ["About you", "Your stage", "Goals & topics", "Assessment", "Review"];
 
@@ -41,6 +46,7 @@ function deriveAgeGroup(age: number): AgeGroup {
 
 export function OnboardingWizard() {
   const router = useRouter();
+  const { locale, setLocale, t, isRtl } = useI18n();
   const [step, setStep] = useState(0);
 
   const [basicInfo, setBasicInfo] = useState<BasicInfoData>({
@@ -186,8 +192,37 @@ export function OnboardingWizard() {
   }
 
   return (
-    <div className="w-full max-w-lg overflow-x-hidden">
-      <div className="mb-6 sm:mb-8">
+    <div className={`w-full max-w-lg overflow-x-hidden space-y-4 ${isRtl ? "text-right" : "text-left"}`}>
+      {/* Brand Framework & Language Quick Selector */}
+      <div className="flex items-center justify-between gap-2 pb-1 border-b border-border/60">
+        <div className="flex items-center gap-1.5">
+          <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
+          <span className="text-[10px] font-black uppercase tracking-wider text-primary">
+            {BRAND_CONFIG.coreFramework}
+          </span>
+        </div>
+
+        {/* 4 Core Language Quick Switcher */}
+        <div className="flex items-center gap-1 bg-muted/60 p-1 rounded-full border border-border">
+          {LOCALES.slice(0, 4).map((loc) => (
+            <button
+              key={loc.id}
+              onClick={() => setLocale(loc.id)}
+              className={`px-2 py-0.5 rounded-full text-[10px] font-bold transition ${
+                locale === loc.id
+                  ? "bg-primary text-white shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+              title={loc.label}
+            >
+              <span>{loc.flag}</span>
+              <span className="hidden sm:inline ml-1">{loc.id.toUpperCase()}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="mb-4 sm:mb-6">
         <div className="flex items-center justify-between overflow-x-auto scrollbar-none gap-1">
           {STEP_LABELS.map((label, i) => (
             <div key={label} className="flex items-center shrink-0">

@@ -1,17 +1,20 @@
-export type Locale = "en" | "pcm" | "fr" | "pt";
+export type Locale = "en" | "fr" | "ar" | "zh" | "pcm" | "pt";
 
 export interface LocaleOption {
   id: Locale;
   label: string;
   nativeLabel: string;
   flag: string;
+  dir?: "ltr" | "rtl";
 }
 
 export const LOCALES: LocaleOption[] = [
-  { id: "en", label: "English", nativeLabel: "English", flag: "🇬🇧" },
-  { id: "pcm", label: "Nigerian Pidgin", nativeLabel: "Naijá", flag: "🇳🇬" },
-  { id: "fr", label: "French", nativeLabel: "Français", flag: "🇫🇷" },
-  { id: "pt", label: "Portuguese", nativeLabel: "Português", flag: "🇧🇷" },
+  { id: "en", label: "English", nativeLabel: "English", flag: "🇬🇧", dir: "ltr" },
+  { id: "fr", label: "French", nativeLabel: "Français", flag: "🇫🇷", dir: "ltr" },
+  { id: "ar", label: "Arabic", nativeLabel: "العربية", flag: "🇸🇦", dir: "rtl" },
+  { id: "zh", label: "Simplified Chinese", nativeLabel: "简体中文", flag: "🇨🇳", dir: "ltr" },
+  { id: "pcm", label: "Nigerian Pidgin", nativeLabel: "Naijá", flag: "🇳🇬", dir: "ltr" },
+  { id: "pt", label: "Portuguese", nativeLabel: "Português", flag: "🇧🇷", dir: "ltr" },
 ];
 
 export type TranslationKeys = {
@@ -45,7 +48,12 @@ export type TranslationKeys = {
   nav_reminders: string;
   nav_tagline: string;
 
-  // Dashboard
+  // Framework & Branding
+  brand_tagline: string;
+  framework_tagline: string;
+  non_medical_disclaimer: string;
+
+  // Dashboard Core
   dashboard_greeting: string;
   dashboard_subtitle: string;
   dashboard_coins: string;
@@ -56,7 +64,72 @@ export type TranslationKeys = {
   dashboard_complete_workout: string;
   dashboard_no_activities: string;
 
-  // Categories
+  // 8-Step Daily Challenge Architecture
+  challenge_todays_title: string;
+  challenge_start_cta: string;
+  challenge_completed_cta: string;
+  challenge_streak_protected: string;
+  challenge_tomorrow_preview_title: string;
+  challenge_tomorrow_preview_desc: string;
+  step_1_scenario: string;
+  step_2_think: string;
+  step_3_analyse: string;
+  step_4_decide: string;
+  step_5_brain_challenge: string;
+  step_6_act: string;
+  step_7_reflect: string;
+  step_8_record: string;
+  step_think_instruction: string;
+  step_analyse_instruction: string;
+  step_decide_instruction: string;
+  step_act_instruction: string;
+  step_reflect_instruction: string;
+  step_reflect_placeholder: string;
+  step_submit_reflection: string;
+  step_next: string;
+  step_back: string;
+
+  // 8 Cognitive Skills
+  skill_memory: string;
+  skill_focus: string;
+  skill_reasoning: string;
+  skill_problem_solving: string;
+  skill_decision_making: string;
+  skill_cognitive_flexibility: string;
+  skill_processing_speed: string;
+  skill_creativity: string;
+
+  // Skill Development & Progress
+  skill_development_title: string;
+  skill_development_subtitle: string;
+  skill_improvement_prefix: string;
+
+  // Next Challenge Recommendation
+  next_challenge_title: string;
+  next_challenge_subtitle: string;
+  next_challenge_start: string;
+
+  // 7 Latest Workouts
+  latest_workouts_title: string;
+  latest_workouts_subtitle: string;
+  latest_workouts_empty: string;
+  review_workout_modal_title: string;
+  review_scenario_label: string;
+  review_decision_label: string;
+  review_action_label: string;
+  review_reflection_label: string;
+  review_close: string;
+
+  // Thinking Journal
+  journal_title: string;
+  journal_subtitle: string;
+  journal_new_entry: string;
+  journal_empty_title: string;
+  journal_empty_desc: string;
+  journal_search_placeholder: string;
+  journal_share_card_cta: string;
+
+  // Categories (Legacy Compatibility)
   cat_memory: string;
   cat_memory_desc: string;
   cat_focus: string;
@@ -111,6 +184,7 @@ export type TranslationKeys = {
   settings_save: string;
   settings_saved: string;
   settings_language: string;
+  settings_language_desc: string;
 
   // Premium
   premium_title: string;

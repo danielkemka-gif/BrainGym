@@ -302,4 +302,34 @@ export const pcm: TranslationKeys = {
   journey_100workouts: "100 Challenges",
   journey_score80: "Score 80+",
   journey_1000xp: "1,000 XP Milestone",
+
+  // Ask BrainGym & Socratic Problem Solving
+  nav_ask: "Ask",
+  ask_header_title: "Wetin you dey face right now?",
+  ask_header_subtext: "Ask any question. Explain problem. Or tell BrainGym wetin you wan achieve.",
+  ask_input_placeholder: "Type your question or wetin dey happen...",
+  ask_voice_listening: "I dey hear you... talk clearly into your phone",
+  ask_card_know: "WETIN WE SURE OF",
+  ask_card_dont_know: "WETIN WE NEVER KNOW",
+  ask_card_assumptions: "WETIN YOU DEY ASSUME",
+  ask_card_risks: "DANGER & RISK WE CONCERN",
+  ask_card_options: "BETTER OPTIONS WEY DEY",
+  ask_card_questions: "QUESTIONS WEY YOU NEED CHECK",
+  ask_card_mission: "TODAY MISSION",
+  ask_mission_complete: "Mark as Done",
+  ask_results_loop_title: "Action & Results Loop",
+  ask_results_reflection_prompt: "Wetin you learn from this result?",
+
+  // Active Goals & Action Loop
+  goal_active_title: "MAIN GOAL",
+  goal_target_label: "Target",
+  goal_next_action_label: "Next Action",
+  goal_continue_cta: "Continue",
+  goal_create_cta: "Set Goal",
+  goal_log_result_cta: "Record Result",
+
+  // Thinking Profile & Special Workout Modes
+  profile_thinking_dimensions_title: "YOUR BRAIN THINKING PROFILE",
+  workout_challenge_ai_title: "Challenge The AI",
+  workout_think_for_yourself_title: "Think By Yourself (No AI)",
 };

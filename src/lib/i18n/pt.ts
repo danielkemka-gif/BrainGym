@@ -302,4 +302,34 @@ export const pt: TranslationKeys = {
   journey_100workouts: "100 Desafios",
   journey_score80: "Pontuação 80+ Atingida",
   journey_1000xp: "Marco de 1.000 XP",
+
+  // Ask BrainGym & Socratic Problem Solving
+  nav_ask: "Perguntar",
+  ask_header_title: "Com o que você está lidando?",
+  ask_header_subtext: "Faça uma pergunta. Descreva um problema. Ou compartilhe seu objetivo com o BrainGym.",
+  ask_input_placeholder: "Digite sua pergunta ou descreva a situação...",
+  ask_voice_listening: "Ouvindo... fale claramente no microfone do celular",
+  ask_card_know: "O QUE SABEMOS",
+  ask_card_dont_know: "O QUE NÃO SABEMOS",
+  ask_card_assumptions: "SUAS SUPOSIÇÕES",
+  ask_card_risks: "RISCOS POTENCIAIS",
+  ask_card_options: "OPÇÕES POSSÍVEIS",
+  ask_card_questions: "PERGUNTAS A INVESTIGAR",
+  ask_card_mission: "MISSÃO DE HOJE",
+  ask_mission_complete: "Marcar como Concluída",
+  ask_results_loop_title: "Ciclo de Resultados e Ação",
+  ask_results_reflection_prompt: "O que você aprendeu com este resultado?",
+
+  // Active Goals & Action Loop
+  goal_active_title: "OBJETIVO ATIVO",
+  goal_target_label: "Meta",
+  goal_next_action_label: "Próxima Ação",
+  goal_continue_cta: "Continuar",
+  goal_create_cta: "Definir Meta",
+  goal_log_result_cta: "Registrar Resultado",
+
+  // Thinking Profile & Special Workout Modes
+  profile_thinking_dimensions_title: "SEU PERFIL DE PENSAMENTO",
+  workout_challenge_ai_title: "Desafie a IA",
+  workout_think_for_yourself_title: "Pense por Conta Própria (Sem IA)",
 };

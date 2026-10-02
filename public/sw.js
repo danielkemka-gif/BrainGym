@@ -1,10 +1,11 @@
-const CACHE_VERSION = 'braingym-v2026-v15-modern-ui';
+const CACHE_VERSION = 'braingym-v2026-v16-master-prompt';
 const STATIC_CACHE = `braingym-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `braingym-dynamic-${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [
   '/',
   '/dashboard',
+  '/dashboard/ask',
   '/dashboard/workout',
   '/dashboard/journal',
   '/dashboard/games',

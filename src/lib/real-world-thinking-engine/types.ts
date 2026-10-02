@@ -95,8 +95,12 @@ export interface RealWorldChallengeDefinition {
   xpReward: number;
   coinReward: number;
   tags: string[];
-  culturalContext?: "global" | "african" | "workplace" | "entrepreneur";
-  
+  // Special Workout Modes (Challenge AI & Think For Yourself)
+  workoutMode?: "standard" | "challenge_ai" | "think_for_yourself";
+  aiResponseToInspect?: string;
+  flawsToIdentify?: string[];
+  revealedAnalysis?: string;
+
   // Localized Content by Locale
   translations: Partial<Record<Locale, LocalizedChallengeContent>>;
 }

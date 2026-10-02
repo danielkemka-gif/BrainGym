@@ -302,4 +302,34 @@ export const en: TranslationKeys = {
   journey_100workouts: "100 Challenges",
   journey_score80: "Score 80+ Reached",
   journey_1000xp: "1,000 XP Milestone",
+
+  // Ask BrainGym & Socratic Problem Solving
+  nav_ask: "Ask",
+  ask_header_title: "What are you dealing with?",
+  ask_header_subtext: "Ask a question. Describe a problem. Or tell BrainGym what you're trying to achieve.",
+  ask_input_placeholder: "Type your question or describe your situation...",
+  ask_voice_listening: "Listening... speak clearly into your phone",
+  ask_card_know: "WHAT WE KNOW",
+  ask_card_dont_know: "WHAT WE DON'T KNOW",
+  ask_card_assumptions: "YOUR ASSUMPTIONS",
+  ask_card_risks: "POTENTIAL RISKS",
+  ask_card_options: "POSSIBLE OPTIONS",
+  ask_card_questions: "QUESTIONS TO INVESTIGATE",
+  ask_card_mission: "TODAY'S MISSION",
+  ask_mission_complete: "Mark as Completed",
+  ask_results_loop_title: "Results & Action Loop",
+  ask_results_reflection_prompt: "What did you learn from this outcome?",
+
+  // Active Goals & Action Loop
+  goal_active_title: "ACTIVE GOAL",
+  goal_target_label: "Target",
+  goal_next_action_label: "Next Action",
+  goal_continue_cta: "Continue",
+  goal_create_cta: "Set a Goal",
+  goal_log_result_cta: "Log Result",
+
+  // Thinking Profile & Special Workout Modes
+  profile_thinking_dimensions_title: "YOUR THINKING PROFILE",
+  workout_challenge_ai_title: "Challenge The AI",
+  workout_think_for_yourself_title: "Think For Yourself (No AI)",
 };

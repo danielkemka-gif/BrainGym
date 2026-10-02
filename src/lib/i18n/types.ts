@@ -319,4 +319,34 @@ export type TranslationKeys = {
   journey_100workouts: string;
   journey_score80: string;
   journey_1000xp: string;
+
+  // Ask BrainGym & Socratic Problem Solving
+  nav_ask: string;
+  ask_header_title: string;
+  ask_header_subtext: string;
+  ask_input_placeholder: string;
+  ask_voice_listening: string;
+  ask_card_know: string;
+  ask_card_dont_know: string;
+  ask_card_assumptions: string;
+  ask_card_risks: string;
+  ask_card_options: string;
+  ask_card_questions: string;
+  ask_card_mission: string;
+  ask_mission_complete: string;
+  ask_results_loop_title: string;
+  ask_results_reflection_prompt: string;
+
+  // Active Goals & Action Loop
+  goal_active_title: string;
+  goal_target_label: string;
+  goal_next_action_label: string;
+  goal_continue_cta: string;
+  goal_create_cta: string;
+  goal_log_result_cta: string;
+
+  // Thinking Profile & Special Workout Modes
+  profile_thinking_dimensions_title: string;
+  workout_challenge_ai_title: string;
+  workout_think_for_yourself_title: string;
 };

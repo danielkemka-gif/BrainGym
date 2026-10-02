@@ -302,4 +302,34 @@ export const ar: TranslationKeys = {
   journey_100workouts: "100 تحدي مكتمل",
   journey_score80: "الوصول لدرجة 80+",
   journey_1000xp: "إنجاز 1,000 XP",
+
+  // Ask BrainGym & Socratic Problem Solving
+  nav_ask: "اسأل",
+  ask_header_title: "ما التحدي الذي تواجهه؟",
+  ask_header_subtext: "اطرح سؤالاً، أو صف مشكلة، أو شارك هدفك الذي تسعى لتحقيقه مع برين جيم.",
+  ask_input_placeholder: "اكتب سؤالك أو صف الموقف الذي تمر به...",
+  ask_voice_listening: "جاري الاستماع... تحدث بوضوح في هاتفك",
+  ask_card_know: "ما نعرفه",
+  ask_card_dont_know: "ما لا نعرفه",
+  ask_card_assumptions: "افتراضاتك",
+  ask_card_risks: "المخاطر المحتملة",
+  ask_card_options: "الخيارات المتاحة",
+  ask_card_questions: "أسئلة تستحق البحث",
+  ask_card_mission: "مهمة اليوم",
+  ask_mission_complete: "تحديد كمكتمل",
+  ask_results_loop_title: "حلقة النتائج والتطبيق",
+  ask_results_reflection_prompt: "ماذا تعلمت من هذه النتيجة؟",
+
+  // Active Goals & Action Loop
+  goal_active_title: "الهدف النشط",
+  goal_target_label: "المستهدف",
+  goal_next_action_label: "الخطوة القادمة",
+  goal_continue_cta: "متابعة",
+  goal_create_cta: "حدد هدفاً",
+  goal_log_result_cta: "تسجيل النتيجة",
+
+  // Thinking Profile & Special Workout Modes
+  profile_thinking_dimensions_title: "ملفك الفكري",
+  workout_challenge_ai_title: "تحدَّ الذكاء الاصطناعي",
+  workout_think_for_yourself_title: "فكر بنفسك (بدون ذكاء اصطناعي)",
 };

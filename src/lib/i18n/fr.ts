@@ -302,4 +302,34 @@ export const fr: TranslationKeys = {
   journey_100workouts: "100 défis complétés",
   journey_score80: "Score 80+ atteint",
   journey_1000xp: "Cap des 1 000 XP franchi",
+
+  // Ask BrainGym & Socratic Problem Solving
+  nav_ask: "Demander",
+  ask_header_title: "À quoi faites-vous face ?",
+  ask_header_subtext: "Posez une question. Décrivez un problème. Ou partagez votre objectif avec BrainGym.",
+  ask_input_placeholder: "Écrivez votre question ou décrivez votre situation...",
+  ask_voice_listening: "Écoute en cours... parlez clairement dans votre téléphone",
+  ask_card_know: "CE QUE NOUS SAVONS",
+  ask_card_dont_know: "CE QUE NOUS NE SAVONS PAS",
+  ask_card_assumptions: "VOS HYPOTHÈSES",
+  ask_card_risks: "RISQUES POTENTIELS",
+  ask_card_options: "OPTIONS POSSIBLES",
+  ask_card_questions: "QUESTIONS À EXPLORER",
+  ask_card_mission: "MISSION DU JOUR",
+  ask_mission_complete: "Marquer comme accompli",
+  ask_results_loop_title: "Boucle Résultats & Action",
+  ask_results_reflection_prompt: "Qu'avez-vous appris de ce résultat ?",
+
+  // Active Goals & Action Loop
+  goal_active_title: "OBJECTIF ACTIF",
+  goal_target_label: "Cible",
+  goal_next_action_label: "Prochaine Action",
+  goal_continue_cta: "Continuer",
+  goal_create_cta: "Fixer un objectif",
+  goal_log_result_cta: "Enregistrer résultat",
+
+  // Thinking Profile & Special Workout Modes
+  profile_thinking_dimensions_title: "VOTRE PROFIL DE RÉFLEXION",
+  workout_challenge_ai_title: "Défier l'IA",
+  workout_think_for_yourself_title: "Pensez par vous-même (Sans IA)",
 };

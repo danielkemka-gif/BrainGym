@@ -302,4 +302,34 @@ export const zh: TranslationKeys = {
   journey_100workouts: "完成 100 次挑战",
   journey_score80: "心智评分达 80+",
   journey_1000xp: "达成 1,000 XP 积累",
+
+  // Ask BrainGym & Socratic Problem Solving
+  nav_ask: "提问",
+  ask_header_title: "你正在面对什么挑战？",
+  ask_header_subtext: "提出疑问、描述现实难题，或告诉 BrainGym 你想实现的目标。",
+  ask_input_placeholder: "输入你的问题或具体情况...",
+  ask_voice_listening: "正在聆听... 请对准手机清晰说话",
+  ask_card_know: "已知事实",
+  ask_card_dont_know: "未知信息",
+  ask_card_assumptions: "核心假设",
+  ask_card_risks: "潜在风险",
+  ask_card_options: "可选方案",
+  ask_card_questions: "需调查的关键问题",
+  ask_card_mission: "今日实战行动",
+  ask_mission_complete: "标记为已完成",
+  ask_results_loop_title: "成效追踪与行动闭环",
+  ask_results_reflection_prompt: "从这次行动结果中你学到了什么？",
+
+  // Active Goals & Action Loop
+  goal_active_title: "当前核心目标",
+  goal_target_label: "目标",
+  goal_next_action_label: "下一步行动",
+  goal_continue_cta: "继续推进",
+  goal_create_cta: "设定目标",
+  goal_log_result_cta: "记录结果",
+
+  // Thinking Profile & Special Workout Modes
+  profile_thinking_dimensions_title: "你的思维画像",
+  workout_challenge_ai_title: "挑战 AI 思维漏洞",
+  workout_think_for_yourself_title: "独立思考 (无 AI 辅助)",
 };

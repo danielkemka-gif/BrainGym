@@ -94,12 +94,12 @@ export function SummaryStep({
       </div>
 
       <div className="rounded-2xl border-2 border-primary/40 bg-gradient-to-br from-primary/10 via-card to-violet-500/10 p-4 sm:p-5 text-center space-y-1.5 shadow-sm">
-        <span className="text-[10px] font-black uppercase tracking-wider text-primary">Personalized Habit Plan Ready</span>
+        <span className="text-[10px] font-black uppercase tracking-wider text-primary">Mental Fitness Ready</span>
         <h3 className="text-base sm:text-lg font-black text-foreground">
-          YOUR BRAIN TRAINING PLAN IS READY.
+          YOUR FIRST BRAINGYM WORKOUT IS READY.
         </h3>
-        <p className="text-xs text-muted-foreground">
-          We&apos;ve customized your 7-minute daily workouts across your primary focus domains. Start today to establish your baseline score.
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          BrainGym helps you strengthen the way you think, make better decisions, take action and apply it to real life.
         </p>
       </div>
 

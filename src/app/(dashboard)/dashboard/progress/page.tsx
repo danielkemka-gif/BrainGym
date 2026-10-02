@@ -4,165 +4,123 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { useI18n } from "@/lib/i18n";
 import {
   fetchBrainMomentumEngineState,
   EngineFullState,
 } from "@/lib/brain-momentum-engine";
-import { RadarChart } from "@/components/progress/radar-chart";
+import { getAllGoals, BrainGoal } from "@/lib/goals/goals-engine";
+import { QualitativeThinkingProfile } from "@/components/profile/qualitative-thinking-profile";
 import { StreakCalendar } from "@/components/progress/streak-calendar";
 import { XpHistory } from "@/components/progress/xp-history";
 import { AchievementsGrid } from "@/components/achievements/achievements-grid";
-import { SkillTree } from "@/components/progress/skill-tree";
-import { ProAnalyticsPreview } from "@/components/premium/pro-analytics-preview";
-import { useEntitlements } from "@/lib/entitlements";
-import { BrainJourney } from "@/components/dashboard/brain-journey";
-import { WeeklyBrainReportCard } from "@/components/progress/weekly-brain-report-card";
-import { CognitiveProfileBreakdown } from "@/components/progress/cognitive-profile-breakdown";
-import { ThinkingPatternsReport } from "@/components/progress/thinking-patterns-report";
-import { BrainAgeJourneyCard } from "@/components/progress/brain-age-journey-card";
-import { WeeklyBrainQuestCard } from "@/components/progress/weekly-brain-quest-card";
-import { RealLifeMissionCard } from "@/components/missions/real-life-mission-card";
+import { Target, CheckCircle2, RefreshCw, Sparkles, BookOpen } from "lucide-react";
 
 export default function ProgressPage() {
   const { user } = useAuth();
-  const { isPro, isTrial } = useEntitlements();
+  const { t, isRtl } = useI18n();
   const [engineState, setEngineState] = useState<EngineFullState | null>(null);
-  const [scores, setScores] = useState<Record<string, number>>({});
-  const [activityCounts, setActivityCounts] = useState<Record<string, number>>({});
+  const [goals, setGoals] = useState<BrainGoal[]>([]);
 
   useEffect(() => {
     fetchBrainMomentumEngineState(user?.id).then((state) => {
       setEngineState(state);
     });
-
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) return;
-
-      Promise.all([
-        supabase
-          .from("brain_scores")
-          .select("category_id, score")
-          .eq("user_id", user.id)
-          .order("date", { ascending: false })
-          .limit(7)
-          .then(({ data }) => {
-            if (!data) return {} as Record<string, number>;
-            const latest: Record<string, number> = {};
-            for (const row of data) {
-              if (!latest[row.category_id]) {
-                latest[row.category_id] = row.score;
-              }
-            }
-            return latest;
-          }),
-        supabase
-          .from("activity_logs")
-          .select("activity_id, activities(category_id)")
-          .eq("user_id", user.id)
-          .then(({ data }) => {
-            if (!data) return {} as Record<string, number>;
-            const counts: Record<string, number> = {};
-            for (const row of data) {
-              const categoryId = (row as any).activities?.category_id;
-              if (categoryId) {
-                counts[categoryId] = (counts[categoryId] ?? 0) + 1;
-              }
-            }
-            return counts;
-          }),
-      ]).then(([scoresData, countsData]) => {
-        setScores(scoresData);
-        setActivityCounts(countsData);
-      });
-    });
+    getAllGoals().then((g) => setGoals(g));
   }, [user]);
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-6 overflow-x-hidden px-3 sm:px-4 lg:px-6 py-3 pb-24 touch-manipulation">
+    <div className="mx-auto w-full max-w-4xl space-y-6 overflow-x-hidden px-3 sm:px-4 py-3 pb-24 touch-manipulation">
       <div>
         <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
-          Progress &amp; Cognitive Fitness
+          Progress &amp; Thinking Development
         </h1>
-        <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-          Track your Brain Age trajectory, personal best records, neuroplastic momentum, and 4 core outcomes over time.
+        <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 leading-relaxed">
+          Track your qualitative cognitive profile, real-life action results, and daily workout consistency.
         </p>
       </div>
 
-      {/* 1. BRAIN AGE JOURNEY & PERSONAL RECORDS */}
-      <BrainAgeJourneyCard />
+      {/* 1. QUALITATIVE THINKING PROFILE (10 DIMENSIONS & BEHAVIORAL OBSERVATIONS) */}
+      <QualitativeThinkingProfile />
 
-      {/* 2. THIS WEEK'S BRAIN QUEST */}
-      <WeeklyBrainQuestCard />
-
-      {/* 3. TODAY'S REAL-LIFE BRAIN MISSION */}
-      <RealLifeMissionCard />
-
-      {/* 4. DISCOVER HOW YOU THINK (BrainGym 4 Core Outcomes: THINK, SOLVE, DECIDE, ADAPT) */}
-      <ThinkingPatternsReport />
-
-      {/* 5. Weekly Brain Fitness Report */}
-      {engineState && <WeeklyBrainReportCard report={engineState.weeklyReport} />}
-
-      {/* 6. Personal Cognitive Baselines & 7-Domain Trend */}
-      {engineState && <CognitiveProfileBreakdown momentum={engineState.momentum} />}
-
-      {/* 7. 90-Day Brain Journey Heatmap */}
-      {isPro || isTrial ? (
-        <BrainJourney />
-      ) : (
-        <ProAnalyticsPreview
-          title="90-Day Cognitive Vitality &amp; Trend Heatmap"
-          subtitle="Pro members unlock full 90-day trend heatmaps, domain radar shifts, and long-term neuroplastic progression."
-        />
-      )}
-
-      {/* 8. Cognitive Radar & History */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-sm">
-          <h2 className="text-base font-black text-foreground mb-4">5-Domain Cognitive Radar</h2>
-          <RadarChart scores={scores} />
-        </div>
-        <div className="space-y-6">
-          <XpHistory />
-          <StreakCalendar />
-        </div>
-      </div>
-
-      {/* 9. Skill Tree */}
-      <div className="overflow-x-auto rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-sm">
-        <h2 className="text-base font-black text-foreground mb-4">Neuroplastic Skill Progression</h2>
-        <SkillTree activityCounts={activityCounts} scores={scores} />
-      </div>
-
-      {/* 10. Achievements Cabinet */}
-      <div className="rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-sm">
-        <h2 className="text-base font-black text-foreground mb-4">Badges &amp; Milestones</h2>
-        <AchievementsGrid />
-      </div>
-
-      {/* 11. DIRECT NAVIGATION BUTTON TO BRAIN ARENA */}
-      <div className="rounded-3xl border-2 border-primary/40 bg-gradient-to-r from-primary/15 via-card to-violet-600/15 p-6 sm:p-7 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
-        <div className="space-y-1">
+      {/* 2. REAL-LIFE GOALS & RESULTS LOOP LOG */}
+      <div className="rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-sm space-y-4">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-[10px] font-black uppercase text-primary tracking-wider">
-              Ready for the Arena?
-            </span>
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/10 text-amber-500">
+              <Target className="h-4 w-4" />
+            </div>
+            <h2 className="text-sm sm:text-base font-black text-foreground">
+              Goals &amp; Results Loop
+            </h2>
           </div>
-          <h3 className="text-lg sm:text-xl font-black text-foreground">
-            Enter the Brain Arena
-          </h3>
-          <p className="text-xs text-muted-foreground">
-            Put your trained memory, logic, focus, and speed to the test in specialized arena challenges.
-          </p>
+          <span className="text-[11px] font-bold text-muted-foreground">
+            Think → Act → Measure → Learn
+          </span>
         </div>
-        <Link
-          href="/dashboard/challenges"
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-primary hover:bg-primary/90 text-white py-4 px-7 text-xs sm:text-sm font-black shadow-lg shadow-primary/25 transition active:scale-95 min-h-[48px] shrink-0"
-        >
-          <span>ENTER BRAIN ARENA ➔</span>
-        </Link>
+
+        {goals.map((g) => (
+          <div
+            key={g.id}
+            className="rounded-2xl border border-border/80 bg-background/60 p-4 space-y-3"
+          >
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <h3 className="text-sm font-bold text-foreground">{g.title}</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {g.currentSituation}
+                </p>
+              </div>
+              <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-bold text-primary">
+                {g.currentProgress} / {g.target} {g.unit}
+              </span>
+            </div>
+
+            {/* Results history logs */}
+            {g.resultsHistory && g.resultsHistory.length > 0 && (
+              <div className="space-y-2 pt-2 border-t border-border/50">
+                <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block">
+                  Logged Results &amp; Reflection Takeaways:
+                </span>
+                {g.resultsHistory.map((res) => (
+                  <div
+                    key={res.id}
+                    className="rounded-xl bg-muted/40 border border-border/50 p-2.5 text-xs space-y-1"
+                  >
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="font-bold text-foreground">{res.metricValue}</span>
+                      <span className="text-muted-foreground text-[10px]">
+                        {new Date(res.date).toLocaleDateString()}
+                      </span>
+                    </div>
+                    {res.reflection && (
+                      <p className="text-foreground/90 font-medium italic text-[11px]">
+                        &ldquo;{res.reflection}&rdquo;
+                      </p>
+                    )}
+                    {res.nextAdjustment && (
+                      <div className="text-[10px] text-primary font-bold">
+                        ➔ Next Action: {res.nextAdjustment}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* 3. STREAK & CONSISTENCY */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <StreakCalendar />
+        <XpHistory />
+      </div>
+
+      {/* 4. ACHIEVEMENTS */}
+      <div className="rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-sm">
+        <h2 className="text-base font-black text-foreground mb-4">Milestones &amp; Badges</h2>
+        <AchievementsGrid />
       </div>
     </div>
   );

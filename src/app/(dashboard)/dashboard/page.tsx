@@ -8,13 +8,11 @@ import {
   EngineFullState,
 } from "@/lib/brain-momentum-engine";
 
-// ─── Streamlined Mobile-First Dashboard Components ───────────────────────────
+// ─── Streamlined Mobile-First 3-Second Dashboard Components ──────────────────
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { TodaysDailyMissionCard } from "@/components/dashboard/todays-daily-mission-card";
-import { SkillDevelopmentProfile } from "@/components/dashboard/skill-development-profile";
-import { NextChallengeRecommender } from "@/components/dashboard/next-challenge-recommender";
-import { SevenLatestWorkoutsStrip } from "@/components/dashboard/seven-latest-workouts-strip";
-import { DashboardQuickExploreStrip } from "@/components/dashboard/dashboard-quick-explore-strip";
+import { ActiveGoalCard } from "@/components/goals/active-goal-card";
+import { AskBrainGymQuickBar } from "@/components/dashboard/ask-braingym-quick-bar";
 
 // ─── Guidance & Celebrations ────────────────────────────────────────────────
 import { FirstTimeTourModal } from "@/components/guidance/first-time-tour-modal";
@@ -25,8 +23,8 @@ function DashboardSkeleton() {
     <div className="mx-auto w-full max-w-xl px-3 sm:px-4 py-6 space-y-4 animate-pulse">
       <div className="h-8 bg-muted rounded-xl w-1/2" />
       <div className="h-56 bg-muted rounded-3xl" />
-      <div className="h-28 bg-muted rounded-2xl" />
       <div className="h-36 bg-muted rounded-2xl" />
+      <div className="h-16 bg-muted rounded-2xl" />
     </div>
   );
 }
@@ -52,7 +50,11 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className={`mx-auto w-full max-w-xl px-3 sm:px-4 py-3 pb-24 space-y-4 overflow-x-hidden touch-manipulation ${isRtl ? "text-right" : "text-left"}`}>
+    <div
+      className={`mx-auto w-full max-w-xl px-3 sm:px-4 py-3 pb-24 space-y-4 overflow-x-hidden touch-manipulation ${
+        isRtl ? "text-right" : "text-left"
+      }`}
+    >
       {/* 5-Screen First-Time Tour Modal for New Users */}
       <FirstTimeTourModal />
 
@@ -65,20 +67,14 @@ export default function DashboardPage() {
         streakDays={engineState.profile.streak}
       />
 
-      {/* 2. TODAY'S CHALLENGE (DOMINANT HERO CARD WITH START TODAY'S CHALLENGE CTA) */}
+      {/* 2. TODAY'S BRAIN WORKOUT (DOMINANT PRIMARY HERO CARD WITH [START] CTA) */}
       <TodaysDailyMissionCard />
 
-      {/* 3. SKILL DEVELOPMENT PROFILE (8 COGNITIVE SKILLS DEVELOPMENT) */}
-      <SkillDevelopmentProfile />
+      {/* 3. ACTIVE GOAL (ONE FOCUSED ACTIVE GOAL WITH NEXT ACTION & LOG RESULT) */}
+      <ActiveGoalCard />
 
-      {/* 4. NEXT CHALLENGE RECOMMENDER (INTELLIGENT SKILL BALANCE) */}
-      <NextChallengeRecommender />
-
-      {/* 5. 7 LATEST WORKOUTS (COMPACT TAP-TO-REVIEW STRIP) */}
-      <SevenLatestWorkoutsStrip />
-
-      {/* 6. SECONDARY EXPLORATION STRIP (BRAIN ARENA & 60-SEC BREAKS) */}
-      <DashboardQuickExploreStrip />
+      {/* 4. ASK BRAINGYM DOORWAY (CLEAN SINGLE ENTRY FOR REAL PROBLEM SOLVING) */}
+      <AskBrainGymQuickBar />
     </div>
   );
 }

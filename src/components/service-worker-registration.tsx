@@ -11,29 +11,46 @@ export function ServiceWorkerRegistration() {
     navigator.serviceWorker
       .register('/sw.js')
       .then((registration) => {
+        // If a worker is already waiting, tell it to skip waiting immediately
+        if (registration.waiting) {
+          registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+        }
+
         // Trigger immediate check on page load
         registration.update();
 
-        // Check for updates periodically
+        // When user switches back to the app on mobile phone, check for updates
+        const handleVisibilityChange = () => {
+          if (document.visibilityState === 'visible') {
+            registration.update();
+          }
+        };
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        // Check for updates periodically every 2 minutes
         const interval = setInterval(() => {
           registration.update();
-        }, 15 * 60 * 1000);
+        }, 2 * 60 * 1000);
 
         // When a new SW is installing, ask it to skip waiting
         registration.addEventListener('updatefound', () => {
           const installingWorker = registration.installing;
           if (installingWorker) {
             installingWorker.addEventListener('statechange', () => {
-              if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                console.log('New BrainGym version available on mobile. Refreshing cache...');
-                // Automatically take over
-                installingWorker.postMessage({ type: 'SKIP_WAITING' });
+              if (installingWorker.state === 'installed') {
+                if (navigator.serviceWorker.controller) {
+                  console.log('New BrainGym version installed on mobile. Activating...');
+                  installingWorker.postMessage({ type: 'SKIP_WAITING' });
+                }
               }
             });
           }
         });
 
-        return () => clearInterval(interval);
+        return () => {
+          clearInterval(interval);
+          document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
       })
       .catch((err) => {
         console.warn('SW registration warning:', err);

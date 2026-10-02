@@ -13,19 +13,12 @@ import {
   getActivePersonalizationProfile,
   UserPersonalizationProfile,
 } from "@/lib/personalization";
-import { ContextualChallengeVisual } from "@/components/visuals/contextual-challenge-visual";
-import { SeeHowOthersThinkModal } from "@/components/personalization/see-how-others-think-modal";
-import { PersonaPreviewSwitcher } from "@/components/personalization/persona-preview-switcher";
-import { QuickBrainBreakModal } from "@/components/brain-breaks/quick-brain-break-modal";
 import {
   Zap,
   CheckCircle2,
   Clock,
-  ArrowRight,
-  Users,
   Sparkles,
-  ShieldCheck,
-  Target,
+  ArrowRight,
 } from "lucide-react";
 
 export function TodaysDailyMissionCard() {
@@ -37,10 +30,6 @@ export function TodaysDailyMissionCard() {
   const [content, setContent] = useState<LocalizedChallengeContent | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const [loading, setLoading] = useState(true);
-
-  // Modals
-  const [showOthersThinkModal, setShowOthersThinkModal] = useState(false);
-  const [showBrainBreakModal, setShowBrainBreakModal] = useState(false);
 
   useEffect(() => {
     const userProfile = getActivePersonalizationProfile();
@@ -59,152 +48,78 @@ export function TodaysDailyMissionCard() {
 
   if (loading || !challenge || !content || !profile) {
     return (
-      <div className="rounded-3xl border border-border bg-card p-5 animate-pulse space-y-3.5">
-        <div className="h-5 w-1/3 bg-muted rounded-lg" />
-        <div className="h-24 bg-muted rounded-2xl" />
-        <div className="h-12 bg-muted rounded-xl" />
+      <div className="rounded-2xl sm:rounded-3xl border border-border bg-card p-4 animate-pulse space-y-3">
+        <div className="h-4 w-1/3 bg-muted rounded-lg" />
+        <div className="h-16 bg-muted rounded-xl" />
+        <div className="h-10 bg-muted rounded-xl" />
       </div>
     );
   }
 
   return (
     <div
-      className={`relative overflow-hidden rounded-3xl border-2 border-primary/30 bg-gradient-to-br from-primary/10 via-card to-violet-600/10 p-4 sm:p-6 shadow-xl space-y-4 touch-manipulation transition-all hover:border-primary/50 ${
+      className={`relative overflow-hidden rounded-2xl sm:rounded-3xl border border-primary/30 bg-gradient-to-br from-primary/10 via-card to-violet-600/10 p-3.5 sm:p-4 shadow-md space-y-3 touch-manipulation transition-all hover:border-primary/50 ${
         isRtl ? "text-right" : "text-left"
       }`}
     >
-      {/* Subtle Ambient Radial Glow */}
-      <div className="pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full bg-primary/15 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-violet-600/15 blur-3xl" />
-
-      {/* ─── 1. TOP HEADER & RIGHT CONTEXTUAL VISUAL (20-25% AREA) ─────────── */}
-      <div className="relative flex items-start justify-between gap-3">
-        <div className="space-y-2 flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 border border-primary/30 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest text-primary shadow-xs">
-              <span className="flex h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-              {t.challenge_todays_title}
-            </span>
-
-            <span className="rounded-full bg-background/80 border border-border px-2.5 py-0.5 text-[10px] font-bold text-foreground">
-              {challenge.skill}
-            </span>
-          </div>
-
-          <h2 className="text-lg sm:text-2xl font-black text-foreground tracking-tight leading-tight">
-            {content.title}
-          </h2>
-
-          <div className="flex items-center gap-3 text-xs text-muted-foreground font-semibold pt-0.5">
-            <span className="flex items-center gap-1 text-[11px] font-bold text-foreground">
-              <Clock className="h-3.5 w-3.5 text-primary" />
-              {challenge.estimatedMinutes} min session
-            </span>
-            <span>•</span>
-            <span className="inline-flex items-center gap-1 text-[11px] font-black text-emerald-600 dark:text-emerald-400">
-              <Sparkles className="h-3 w-3 text-emerald-500" />
-              +{challenge.xpReward} XP
-            </span>
-          </div>
+      {/* Top Badges */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="inline-flex items-center gap-1.5 rounded-lg bg-primary/15 border border-primary/30 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-primary">
+            <span className="flex h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+            {t.challenge_todays_title || "TODAY'S WORKOUT"}
+          </span>
+          <span className="rounded-lg bg-background/80 border border-border px-2 py-0.5 text-[10px] font-bold text-foreground">
+            {challenge.skill}
+          </span>
         </div>
 
-        {/* 20-25% Contextual Micro-Animated Editorial Visual */}
-        <ContextualChallengeVisual
-          category={challenge.skill}
-          size="md"
-          className="shrink-0 shadow-md"
-        />
+        <div className="flex items-center gap-2 text-[11px] font-bold text-muted-foreground shrink-0">
+          <span className="flex items-center gap-1">
+            <Clock className="h-3 w-3 text-primary" />
+            {challenge.estimatedMinutes} min
+          </span>
+          <span>•</span>
+          <span className="text-emerald-600 dark:text-emerald-400">+{challenge.xpReward} XP</span>
+        </div>
       </div>
 
-      {/* ─── 2. CONCISE SCENARIO PREVIEW (CLEAN & READABLE) ─────────────────── */}
-      <div className="relative rounded-2xl bg-background/80 backdrop-blur-xs p-3.5 border border-border/60 space-y-1">
-        <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground block">
-          REAL-WORLD SCENARIO
-        </span>
-        <p className="text-xs sm:text-sm text-foreground/90 font-medium line-clamp-3 leading-relaxed">
+      {/* Challenge Title */}
+      <h2 className="text-base sm:text-lg font-black text-foreground tracking-tight leading-snug line-clamp-2">
+        {content.title}
+      </h2>
+
+      {/* Concise 2-Line Scenario Narrative */}
+      <div className="rounded-xl bg-background/70 p-2.5 sm:p-3 border border-border/60">
+        <p className="text-xs text-foreground/90 font-medium line-clamp-2 leading-relaxed">
           &ldquo;{content.scenarioNarrative}&rdquo;
         </p>
       </div>
 
-      {/* ─── 3. ONE DOMINANT PRIMARY CTA BUTTON ─────────────────────────────── */}
-      <div className="relative pt-1">
+      {/* Start Workout Button */}
+      <div>
         <Link
           href="/dashboard/workout"
-          className={`w-full inline-flex items-center justify-center gap-2.5 rounded-2xl py-4 px-6 text-sm sm:text-base font-black shadow-xl transition-all duration-200 active:scale-[0.98] min-h-[54px] text-center ${
+          className={`w-full inline-flex items-center justify-center gap-2 rounded-xl py-3 px-5 text-xs sm:text-sm font-black shadow-md transition-all duration-200 active:scale-[0.98] min-h-[48px] text-center touch-manipulation ${
             isCompleted
-              ? "bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white shadow-emerald-600/30 hover:brightness-110"
-              : "bg-gradient-to-r from-primary via-violet-600 to-indigo-600 text-white shadow-primary/35 hover:brightness-110"
+              ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+              : "bg-primary hover:bg-primary/90 text-primary-foreground shadow-primary/25"
           }`}
         >
           {isCompleted ? (
             <>
-              <CheckCircle2 className="h-5 w-5 stroke-[2.5]" />
-              <span>{t.challenge_completed_cta}</span>
+              <CheckCircle2 className="h-4 w-4 stroke-[2.5]" />
+              <span>{t.challenge_completed_cta || "Workout Completed"}</span>
             </>
           ) : (
             <>
-              <Zap className="h-5 w-5 fill-white animate-bounce" />
-              <span>{t.challenge_start_cta}</span>
+              <Zap className="h-4 w-4 fill-current" />
+              <span>{t.challenge_start_cta || "START WORKOUT"}</span>
+              <ArrowRight className={`h-4 w-4 ${isRtl ? "rotate-180" : ""}`} />
             </>
           )}
         </Link>
       </div>
-
-      {/* ─── 4. POST-COMPLETION / TOMORROW TEASER ────────────────────────────── */}
-      {isCompleted && (
-        <div className="relative rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 space-y-2 animate-in fade-in">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase text-emerald-600 dark:text-emerald-400">
-              {t.challenge_streak_protected}
-            </span>
-            <span className="text-xs font-bold text-foreground">🔥 {profile.streakDays} {t.general_days}</span>
-          </div>
-
-          <div className="rounded-xl bg-background/80 p-2.5 border border-border text-xs space-y-0.5">
-            <span className="text-[10px] font-black uppercase text-primary block">
-              {t.challenge_tomorrow_preview_title}
-            </span>
-            <p className="font-bold text-foreground">
-              {t.challenge_tomorrow_preview_desc}
-            </p>
-          </div>
-
-          <div className="pt-0.5 flex items-center justify-between">
-            <button
-              onClick={() => setShowBrainBreakModal(true)}
-              className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline"
-            >
-              <span>60-second Brain Break</span>
-              <ArrowRight className="h-3.5 w-3.5" />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* ─── 5. SUBTLE EXPLORER FOOTER ───────────────────────────────────────── */}
-      <div className="relative flex items-center justify-between pt-1 text-[11px] text-muted-foreground border-t border-border/40">
-        <button
-          onClick={() => setShowOthersThinkModal(true)}
-          className="inline-flex items-center gap-1 font-bold text-violet-600 dark:text-violet-400 hover:underline"
-        >
-          <Users className="h-3.5 w-3.5" />
-          <span>See How Others Think</span>
-        </button>
-
-        <PersonaPreviewSwitcher variant="header_badge" />
-      </div>
-
-      {/* See How Others Think Modal */}
-      <SeeHowOthersThinkModal
-        isOpen={showOthersThinkModal}
-        onClose={() => setShowOthersThinkModal(false)}
-      />
-
-      {/* 60-Second Quick Brain Break Modal */}
-      <QuickBrainBreakModal
-        isOpen={showBrainBreakModal}
-        onClose={() => setShowBrainBreakModal(false)}
-      />
     </div>
   );
 }

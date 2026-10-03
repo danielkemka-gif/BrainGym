@@ -17,9 +17,9 @@ export function MilestoneCertificateModal({
   const [copied, setCopied] = useState(false);
 
   const getMilestoneInfo = (days: number) => {
-    if (days >= 90) return { title: "BrainGym Elite", badge: "👑", subtitle: "90-Day Cognitive Plasticity Mastery" };
-    if (days >= 60) return { title: "Mental Fitness Warrior", badge: "🛡️", subtitle: "60-Day Unstoppable Habit Momentum" };
-    if (days >= 30) return { title: "BrainGym Champion", badge: "🏆", subtitle: "30-Day Neuroplastic Habit Transformation" };
+    if (days >= 90) return { title: "AKUCHE Elite", badge: "👑", subtitle: "90-Day Cognitive Plasticity Mastery" };
+    if (days >= 60) return { title: "AKUCHE Master", badge: "🛡️", subtitle: "60-Day Unstoppable Habit Momentum" };
+    if (days >= 30) return { title: "AKUCHE Champion", badge: "🏆", subtitle: "30-Day Neuroplastic Habit Transformation" };
     if (days >= 14) return { title: "Habit Builder", badge: "⚡", subtitle: "14-Day Consistent Cognitive Conditioning" };
     return { title: "First Commitment", badge: "🌱", subtitle: "7-Day Consistent Brain Training Foundation" };
   };
@@ -27,15 +27,15 @@ export function MilestoneCertificateModal({
   const milestone = getMilestoneInfo(streakDays);
   const todayStr = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
-  const shareText = `I just earned the official "${milestone.title}" Certificate on BrainGym for completing a ${streakDays}-day mental fitness streak! 🧠🏅 #BrainGym https://braingym-live.vercel.app/`;
+  const shareText = `I just earned the official "${milestone.title}" Certificate on AKUCHE for completing a ${streakDays}-day mental fitness streak! 🧠🏅 #AKUCHE https://brain-gym-nsu6.vercel.app/`;
 
   const handleShare = async () => {
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
         await navigator.share({
-          title: `BrainGym Milestone: ${milestone.title}`,
+          title: `AKUCHE Milestone: ${milestone.title}`,
           text: shareText,
-          url: "https://braingym-live.vercel.app/",
+          url: "https://brain-gym-nsu6.vercel.app/",
         });
       } catch {
         handleCopy();

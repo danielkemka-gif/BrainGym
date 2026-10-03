@@ -189,7 +189,7 @@ export function AskBrainGymInterface() {
             {t.ask_header_title || "What are you dealing with?"}
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-            {t.ask_header_subtext || "Ask a question. Describe a problem. Or tell BrainGym what you're trying to achieve."}
+            {t.ask_header_subtext || "Ask a question. Describe a problem. Or tell AKUCHE what you're trying to achieve."}
           </p>
         </div>
       )}

@@ -82,7 +82,7 @@ export function PWAInstallPrompt() {
               </div>
               <div>
                 <h4 className="font-black text-foreground text-sm sm:text-base">
-                  Install BrainGym on Phone
+                  Install AKUCHE on Phone
                 </h4>
                 <p className="text-[11px] text-muted-foreground">
                   Train faster with 1-tap instant access
@@ -106,7 +106,7 @@ export function PWAInstallPrompt() {
                 className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-gradient-to-r from-primary via-violet-600 to-indigo-600 text-white text-xs sm:text-sm font-black shadow-lg shadow-primary/25 active:scale-[0.98] transition touch-manipulation min-h-[44px]"
               >
                 <Download className="w-4 h-4" />
-                <span>Install BrainGym App</span>
+                <span>Install AKUCHE App</span>
               </button>
 
               {showAndroidInstructions && !deferredPrompt && (

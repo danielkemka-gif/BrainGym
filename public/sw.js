@@ -1,6 +1,6 @@
-const CACHE_VERSION = 'braingym-v2026-v19-ultra-clean-dashboard';
-const STATIC_CACHE = `braingym-static-${CACHE_VERSION}`;
-const DYNAMIC_CACHE = `braingym-dynamic-${CACHE_VERSION}`;
+const CACHE_VERSION = 'akuche-v2.0.0-live-launch';
+const STATIC_CACHE = `akuche-static-${CACHE_VERSION}`;
+const DYNAMIC_CACHE = `akuche-dynamic-${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [
   '/',

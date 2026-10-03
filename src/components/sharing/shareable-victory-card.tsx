@@ -22,7 +22,7 @@ export function ShareableVictoryCard({
 }: ShareableVictoryCardProps) {
   const [copied, setCopied] = useState(false);
 
-  const shareText = `I trained my brain today on BrainGym! 🧠🔥\n\n• Challenge: ${activityTitle}\n• Score: ${score}%\n• Active Streak: ${streakDays} Days\n• Brain Momentum: ${momentumScore}/100\n\nCan you beat my score? Try BrainGym: https://braingym-live.vercel.app/`;
+  const shareText = `I trained my mind today on AKUCHE! 🧠🔥\n\n• Challenge: ${activityTitle}\n• Score: ${score}%\n• Active Streak: ${streakDays} Days\n• Brain Momentum: ${momentumScore}/100\n\nTrain your mind for real life on AKUCHE: https://brain-gym-nsu6.vercel.app/`;
 
   const handleCopy = async () => {
     try {
@@ -38,9 +38,9 @@ export function ShareableVictoryCard({
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
         await navigator.share({
-          title: "My BrainGym Victory",
+          title: "My AKUCHE Workout",
           text: shareText,
-          url: "https://braingym-live.vercel.app/",
+          url: "https://brain-gym-nsu6.vercel.app/",
         });
       } catch {
         handleCopy();
@@ -71,26 +71,24 @@ export function ShareableVictoryCard({
       <div className="relative overflow-hidden rounded-3xl border-2 border-primary/60 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 p-6 text-white text-left space-y-4 shadow-xl">
         <div className="flex items-center justify-between border-b border-white/15 pb-3">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-white font-black text-sm">
-              🧠
-            </div>
+            <img src="/logo.png" alt="AKUCHE" className="h-7 w-7 rounded-md object-contain" />
             <span className="font-black text-sm tracking-wider text-white">
-              BRAINGYM™
+              AKUCHE™
             </span>
           </div>
           <span className="text-[10px] font-bold text-white/70 uppercase tracking-widest">
-            #BrainGym
+            #AKUCHE
           </span>
         </div>
 
         <div className="space-y-1">
           <span className="text-[11px] font-black uppercase text-emerald-400 tracking-wider block">
-            I Trained My Brain Today
+            I Trained My Mind Today
           </span>
           <h3 className="text-xl sm:text-2xl font-black text-white leading-tight">
             {activityTitle}
           </h3>
-          <p className="text-xs text-white/70 font-medium">Athlete: {userName}</p>
+          <p className="text-xs text-white/70 font-medium">Thinker: {userName}</p>
         </div>
 
         <div className="grid grid-cols-3 gap-2 pt-1 text-center">

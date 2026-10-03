@@ -32,12 +32,12 @@ export const DEFAULT_REMINDER_CONFIG: DailyReminderConfig = {
 
 const MOTIVATIONAL_NOTIFICATION_MESSAGES = [
   {
-    title: "🧠 BrainGym Mental Fitness",
-    body: "Your 5-minute brain workout is waiting. Take a moment for yourself today! 🔥",
+    title: "🧠 AKUCHE Mental Fitness",
+    body: "Your 5-minute mind workout is waiting. Take a moment for yourself today! 🔥",
   },
   {
     title: "🔥 Keep Your Streak Alive",
-    body: "5 minutes of mental practice today keeps your brain-training habit strong.",
+    body: "5 minutes of mental practice today keeps your thinking habit strong.",
   },
   {
     title: "⚡ Ready for Today's Mental Workout?",
@@ -45,7 +45,7 @@ const MOTIVATIONAL_NOTIFICATION_MESSAGES = [
   },
   {
     title: "🎯 Train Your Mind for Real Life",
-    body: "A fresh cognitive scenario is ready for you on BrainGym.",
+    body: "A fresh cognitive scenario is ready for you on AKUCHE.",
   },
 ];
 

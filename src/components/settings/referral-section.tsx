@@ -49,10 +49,10 @@ export function ReferralSection() {
   }
 
   async function share() {
-    const text = `Join me on BrainGym — train your brain with fun daily exercises! ${inviteUrl}`;
+    const text = `Join me on AKUCHE — train your mind for real life! ${inviteUrl}`;
     if (navigator.share) {
       try {
-        await navigator.share({ title: "BrainGym", text });
+        await navigator.share({ title: "AKUCHE", text });
       } catch {}
     } else {
       await navigator.clipboard.writeText(text);

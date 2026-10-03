@@ -66,7 +66,7 @@ export function HabitReminderModal({ isOpen, onClose }: HabitReminderModalProps)
         </div>
 
         <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-          Consistent 5-minute daily practice is what builds sharp, adaptable thinking. Choose what time you&apos;d like BrainGym to remind you:
+          Consistent 5-minute daily practice is what builds sharp, adaptable thinking. Choose what time you&apos;d like AKUCHE to remind you:
         </p>
 
         <div className="space-y-2">

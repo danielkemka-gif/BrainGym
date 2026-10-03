@@ -32,9 +32,9 @@ export const ar: TranslationKeys = {
   nav_tagline: "درّب طريقة تفكيرك لمواقف الحياة الواقعية",
 
   // Framework & Branding
-  brand_tagline: "درّب تفكيرك. قَوِّ ذهنك. طبّق في حياتك اليومية.",
-  framework_tagline: "فكّر ← قرّر ← تصرّف ← تأمّل",
-  non_medical_disclaimer: "منصة للياقة الذهنية وممارسة القرارات، وليست أداة طبية.",
+  brand_tagline: "درّب عقلك لمواقف الحياة الواقعية.",
+  framework_tagline: "اسأل ← فكّر ← حُلّ ← تصرّف ← انمُ",
+  non_medical_disclaimer: "منصة للياقة الذهنية وحل المشكلات الواقعية، وليست أداة طبية.",
 
   // Dashboard Core
   dashboard_greeting: "أهلاً بك مجدداً",
@@ -303,10 +303,10 @@ export const ar: TranslationKeys = {
   journey_score80: "الوصول لدرجة 80+",
   journey_1000xp: "إنجاز 1,000 XP",
 
-  // Ask BrainGym & Socratic Problem Solving
-  nav_ask: "اسأل",
+  // Ask AKUCHE & Socratic Problem Solving
+  nav_ask: "اسأل AKUCHE",
   ask_header_title: "ما التحدي الذي تواجهه؟",
-  ask_header_subtext: "اطرح سؤالاً، أو صف مشكلة، أو شارك هدفك الذي تسعى لتحقيقه مع برين جيم.",
+  ask_header_subtext: "اطرح سؤالاً، أو صف مشكلة، أو شارك هدفك الذي تسعى لتحقيقه مع AKUCHE.",
   ask_input_placeholder: "اكتب سؤالك أو صف الموقف الذي تمر به...",
   ask_voice_listening: "جاري الاستماع... تحدث بوضوح في هاتفك",
   ask_card_know: "ما نعرفه",

@@ -23,7 +23,7 @@ function LoginContent() {
       <div className="space-y-2 text-center">
         <h1 className="text-xl sm:text-2xl font-black text-balance">Welcome Back</h1>
         <p className="text-sm text-muted-foreground">
-          Sign in to continue your daily brain training
+          Sign in to continue training your mind with AKUCHE
         </p>
       </div>
 

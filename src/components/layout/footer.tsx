@@ -26,14 +26,15 @@ export function Footer() {
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                <Brain className="h-4 w-4 text-primary-foreground" />
-              </div>
-              <span className="font-bold tracking-tight">BrainGym</span>
+              <img
+                src="/logo.png"
+                alt="AKUCHE"
+                className="h-8 w-8 rounded-lg object-contain"
+              />
+              <span className="font-bold tracking-tight text-foreground">AKUCHE</span>
             </Link>
             <p className="text-sm text-muted-foreground">
-              Train your brain for real life. Build focus, memory, and
-              emotional intelligence through daily workouts.
+              Train Your Mind for Real Life. Ask, Think, Solve, Act, Grow. Non-medical mental fitness and real-world problem-solving.
             </p>
           </div>
 
@@ -57,7 +58,7 @@ export function Footer() {
         </div>
 
         <div className="mt-12 border-t border-border/40 pt-8 text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} BrainGym. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} AKUCHE. All rights reserved.</p>
         </div>
       </div>
     </footer>

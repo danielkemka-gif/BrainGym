@@ -484,9 +484,9 @@ export default function SettingsPage() {
             📱
           </div>
           <div>
-            <h2 className="text-base font-bold text-foreground">Install BrainGym App</h2>
+            <h2 className="text-base font-bold text-foreground">Install AKUCHE App</h2>
             <p className="text-xs text-muted-foreground">
-              Add BrainGym directly to your phone&apos;s home screen for fast 1-tap daily workouts
+              Add AKUCHE directly to your phone&apos;s home screen for fast 1-tap daily workouts
             </p>
           </div>
         </div>

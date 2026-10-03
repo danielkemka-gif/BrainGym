@@ -26,7 +26,7 @@ export function SmartPaywallModal({
   isOpen,
   onClose,
   featureName = "This Premium Feature",
-  featureDescription = "Unlock deeper personalization, unlimited workouts, and your personal AI Brain Coach with BrainGym Pro.",
+  featureDescription = "Unlock deeper personalization, unlimited workouts, and your personal AI Coach with AKUCHE Pro.",
 }: SmartPaywallModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -91,13 +91,13 @@ export function SmartPaywallModal({
             <Crown className="h-7 w-7" />
           </div>
           <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-3 py-0.5 text-xs font-black uppercase text-amber-700 dark:text-amber-300">
-            <Sparkles className="h-3.5 w-3.5" /> BrainGym Pro
+            <Sparkles className="h-3.5 w-3.5" /> AKUCHE Pro
           </span>
           <h2 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
-            UNLOCK YOUR FULL BRAIN POTENTIAL
+            UNLOCK YOUR FULL COGNITIVE POTENTIAL
           </h2>
           <p className="text-xs sm:text-sm text-muted-foreground max-w-sm mx-auto leading-relaxed">
-            <strong className="text-foreground">{featureName}</strong> is a BrainGym Pro feature. {featureDescription}
+            <strong className="text-foreground">{featureName}</strong> is an AKUCHE Pro feature. {featureDescription}
           </p>
         </div>
 

@@ -15,10 +15,10 @@ export function Header() {
         <Link href="/" className="flex items-center gap-2.5">
           <img
             src="/logo.png"
-            alt="BrainGym"
-            className="h-9 w-9 rounded-lg object-contain"
+            alt="AKUCHE"
+            className="h-9 w-9 rounded-lg object-contain shadow-sm"
           />
-          <span className="text-lg font-bold tracking-tight">BrainGym</span>
+          <span className="text-lg font-bold tracking-tight text-foreground">AKUCHE</span>
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">

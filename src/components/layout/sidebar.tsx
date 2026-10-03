@@ -110,11 +110,11 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
         <div className="flex h-14 items-center gap-2.5 border-b border-border px-4">
           <img
             src="/logo.png"
-            alt="BrainGym"
-            className="h-8 w-8 rounded-lg object-contain"
+            alt="AKUCHE"
+            className="h-8 w-8 rounded-lg object-contain shadow-xs"
           />
-          <Link href="/dashboard" className="text-lg font-bold" onClick={onClose}>
-            BrainGym
+          <Link href="/dashboard" className="text-lg font-bold tracking-tight text-foreground" onClick={onClose}>
+            AKUCHE
           </Link>
         </div>
 
@@ -185,11 +185,11 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
             </div>
             <div className="space-y-0.5">
               <h4 className="font-bold text-xs text-foreground flex items-center justify-center gap-1">
-                <span>BrainGym Premium</span>
+                <span>AKUCHE Pro</span>
                 <span className="rounded bg-amber-500/20 px-1 py-0.2 text-[9px] font-extrabold text-amber-600 dark:text-amber-400">PRO</span>
               </h4>
               <p className="text-[10px] text-muted-foreground leading-tight">
-                Unlock 177+ activities, AI Coach & ad-free training.
+                Unlock 177+ real-world drills, AI Socratic Coach & unlimited thinking practice.
               </p>
             </div>
             <Link

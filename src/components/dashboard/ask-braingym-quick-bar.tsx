@@ -23,7 +23,7 @@ export function AskBrainGymQuickBar() {
               {t.ask_header_title || "Have a problem or decision to solve?"}
             </span>
             <span className="text-[11px] text-muted-foreground block truncate">
-              {t.ask_input_placeholder || "Ask BrainGym · Guided Socratic Thinking"}
+              {t.ask_input_placeholder || "Ask AKUCHE · Socratic Problem Solving"}
             </span>
           </div>
         </div>

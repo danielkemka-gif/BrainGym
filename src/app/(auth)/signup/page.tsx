@@ -19,9 +19,9 @@ function SignupContent() {
       )}
 
       <div className="space-y-2 text-center">
-        <h1 className="text-xl sm:text-2xl font-black text-balance">Join BrainGym</h1>
+        <h1 className="text-xl sm:text-2xl font-black text-balance">Join AKUCHE</h1>
         <p className="text-sm text-muted-foreground">
-          Train your brain in 5 minutes a day
+          Train your mind for real life in 5 minutes a day
         </p>
       </div>
 

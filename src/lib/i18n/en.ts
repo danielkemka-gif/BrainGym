@@ -32,9 +32,9 @@ export const en: TranslationKeys = {
   nav_tagline: "Train the way you think for real life",
 
   // Framework & Branding
-  brand_tagline: "Train your thinking. Strengthen your mind. Apply it to real life.",
-  framework_tagline: "THINK → DECIDE → ACT → REFLECT",
-  non_medical_disclaimer: "Non-medical mental fitness and decision-making practice.",
+  brand_tagline: "Train Your Mind for Real Life.",
+  framework_tagline: "ASK → THINK → SOLVE → ACT → GROW",
+  non_medical_disclaimer: "Non-medical mental fitness and real-life problem-solving practice.",
 
   // Dashboard Core
   dashboard_greeting: "Welcome back",
@@ -303,10 +303,10 @@ export const en: TranslationKeys = {
   journey_score80: "Score 80+ Reached",
   journey_1000xp: "1,000 XP Milestone",
 
-  // Ask BrainGym & Socratic Problem Solving
-  nav_ask: "Ask",
+  // Ask AKUCHE & Socratic Problem Solving
+  nav_ask: "Ask AKUCHE",
   ask_header_title: "What are you dealing with?",
-  ask_header_subtext: "Ask a question. Describe a problem. Or tell BrainGym what you're trying to achieve.",
+  ask_header_subtext: "Ask a question. Describe a problem. Or tell AKUCHE what you're trying to achieve.",
   ask_input_placeholder: "Type your question or describe your situation...",
   ask_voice_listening: "Listening... speak clearly into your phone",
   ask_card_know: "WHAT WE KNOW",

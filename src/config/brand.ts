@@ -1,27 +1,27 @@
 /**
  * Centralized Brand Configuration
  * Single source of truth for app branding, positioning, tagline, and metadata.
- * "People go to the gym to strengthen their bodies. BrainGym helps people strengthen their minds."
+ * "Train Your Mind for Real Life."
  */
 
 export const BRAND_CONFIG = {
   // Brand Identity
-  name: "BrainGym",
-  shortName: "BrainGym",
-  legalName: "BrainGym Mental Fitness Platform",
-  tagline: "Train Your Mind. Solve Real Problems.",
+  name: "AKUCHE",
+  shortName: "AKUCHE",
+  legalName: "AKUCHE Mental Fitness Platform",
+  tagline: "Train Your Mind for Real Life.",
   secondaryTagline: "Train the way you think, make better decisions, take action and learn from real-life situations.",
-  corePhilosophy: "People go to the gym to strengthen their bodies. BrainGym helps people strengthen their minds.",
-  coreDifferentiation: "ChatGPT can give you an answer. BrainGym helps you become better at finding, evaluating and applying answers.",
+  corePhilosophy: "ASK → THINK → SOLVE → ACT → GROW",
+  coreDifferentiation: "ChatGPT gives you answers. AKUCHE trains your mind to think, evaluate and act.",
   coreLoop: "ASK → UNDERSTAND → THINK → CHALLENGE → SOLVE → ACT → MEASURE → REFLECT → GROW",
   
   // Brand Positioning & Non-Medical Statement
-  positioning: "A mental fitness and real-life problem-solving platform that helps people strengthen their minds, think through challenges, make better decisions, take purposeful action and learn from their results.",
-  nonMedicalDisclaimer: "BrainGym is a mental fitness and thinking development platform. It provides structured cognitive exercises and decision frameworks. It does not provide medical, clinical, legal, or financial advice.",
+  positioning: "AKUCHE helps you think better, solve real-life problems, make better decisions and turn insight into action.",
+  nonMedicalDisclaimer: "AKUCHE is a mental fitness and thinking development platform. It provides structured cognitive exercises and decision frameworks. It does not provide medical, clinical, legal, or financial advice.",
   
   // App URLs & Socials
-  appUrl: process.env.NEXT_PUBLIC_APP_URL || "https://braingym-live.vercel.app",
-  supportEmail: "support@braingym.app",
+  appUrl: process.env.NEXT_PUBLIC_APP_URL || "https://brain-gym-nsu6.vercel.app",
+  supportEmail: "support@akuche.app",
   
   // 10 Core Cognitive Dimensions (Non-medical thinking development)
   cognitiveDimensions: [

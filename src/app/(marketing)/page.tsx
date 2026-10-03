@@ -6,212 +6,193 @@ import {
   Brain,
   Target,
   Lightbulb,
-  Book,
-  Heart,
-  Palette,
-  Users,
+  Compass,
   ArrowRight,
   Sparkles,
   TrendingUp,
-  Award,
+  CheckCircle2,
+  HelpCircle,
   Zap,
+  ShieldCheck,
+  Scale,
+  Workflow,
+  MessageSquare,
 } from "lucide-react";
 
-const categories = [
+const pillars = [
   {
-    icon: Brain,
-    label: "Memory",
-    color: "from-indigo-500 to-indigo-600",
-    shadow: "shadow-indigo-500/20",
-  },
-  {
-    icon: Target,
-    label: "Focus",
-    color: "from-amber-500 to-amber-600",
-    shadow: "shadow-amber-500/20",
-  },
-  {
+    step: "01",
     icon: Lightbulb,
-    label: "Thinking",
-    color: "from-emerald-500 to-emerald-600",
-    shadow: "shadow-emerald-500/20",
+    title: "Think Better",
+    subtitle: "Sharpen critical thinking & spot hidden biases",
+    description:
+      "Go beyond superficial answers. Practice mental models, logical deduction, and challenge AI outputs to sharpen your independent cognitive clarity.",
+    badge: "Cognitive Agility",
+    color: "from-blue-500/20 to-indigo-500/20",
+    border: "border-blue-500/30",
   },
   {
-    icon: Book,
-    label: "Learning",
-    color: "from-blue-500 to-blue-600",
-    shadow: "shadow-blue-500/20",
+    step: "02",
+    icon: Compass,
+    title: "Solve Real Problems",
+    subtitle: "Break down complex life & work challenges",
+    description:
+      "Deconstruct ambiguous situations in business, career, money, and personal decisions into solvable pieces: What We Know, Assumptions, and Trade-offs.",
+    badge: "Socratic Deconstruction",
+    color: "from-emerald-500/20 to-teal-500/20",
+    border: "border-emerald-500/30",
   },
   {
-    icon: Heart,
-    label: "Health",
-    color: "from-red-500 to-red-600",
-    shadow: "shadow-red-500/20",
+    step: "03",
+    icon: Target,
+    title: "Turn Thinking Into Action",
+    subtitle: "Daily missions with real accountability",
+    description:
+      "Insight without execution is just theory. Every workout and problem deconstruction concludes with a concrete Today's Mission you can execute and log.",
+    badge: "Action Loop",
+    color: "from-amber-500/20 to-orange-500/20",
+    border: "border-amber-500/30",
   },
   {
-    icon: Palette,
-    label: "Creativity",
-    color: "from-pink-500 to-pink-600",
-    shadow: "shadow-pink-500/20",
-  },
-  {
-    icon: Users,
-    label: "EQ",
-    color: "from-purple-500 to-purple-600",
-    shadow: "shadow-purple-500/20",
+    step: "04",
+    icon: TrendingUp,
+    title: "Grow With Purpose",
+    subtitle: "Qualitative profile across 10 dimensions",
+    description:
+      "Track your personal cognitive trajectory across 10 dimensions with qualitative observational insights and tailored workouts that adapt to your growth.",
+    badge: "Adaptive Growth",
+    color: "from-purple-500/20 to-pink-500/20",
+    border: "border-purple-500/30",
   },
 ];
 
-const features = [
-  {
-    icon: Zap,
-    title: "Daily Workouts",
-    description:
-      "5 activities in 15 minutes. Meditation, reading, walking, learning, and reflection.",
-  },
-  {
-    icon: Sparkles,
-    title: "AI Coach",
-    description:
-      "Your personal brain coach analyzes your patterns and gives personalized recommendations.",
-  },
-  {
-    icon: TrendingUp,
-    title: "Deep Analytics",
-    description:
-      "Track your Brain Score across 7 categories. See your growth over days, weeks, and months.",
-  },
-  {
-    icon: Award,
-    title: "Gamification",
-    description:
-      "Earn XP, coins, and achievements. Build streaks. Level up from Bronze to Mastermind.",
-  },
+const coreLoopSteps = [
+  { step: "ASK", label: "Ask AKUCHE", desc: "Bring any question, bottleneck, or goal." },
+  { step: "THINK", label: "Think & Analyze", desc: "Examine assumptions, risks, and blind spots." },
+  { step: "SOLVE", label: "Solve & Decide", desc: "Evaluate options and choose optimal paths." },
+  { step: "ACT", label: "Take Action", desc: "Execute a concrete Today's Mission in real life." },
+  { step: "GROW", label: "Measure & Grow", desc: "Reflect on outcomes and build mental stamina." },
 ];
 
 const testimonials = [
   {
     quote:
-      "BrainGym replaced my scattered self-improvement attempts with a focused daily practice.",
-    author: "Alex K.",
-    role: "Software Engineer",
+      "ChatGPT gives answers, but AKUCHE forces me to think through the variables myself. It has radically improved how I make high-stakes business decisions.",
+    author: "Emeka O.",
+    role: "Tech Founder & Entrepreneur",
   },
   {
     quote:
-      "The Decision Lab scenarios made me realize how I actually think under pressure. Game changer.",
-    author: "Maria S.",
-    role: "Product Manager",
+      "The 'Challenge the AI' and 'Think for Yourself' workouts helped me spot logical fallacies in my team proposals. Truly transformative.",
+    author: "Elena R.",
+    role: "Senior Product Strategist",
   },
   {
     quote:
-      "My focus score improved 40% in 8 weeks. I no longer dread deep work sessions.",
-    author: "James L.",
-    role: "Graduate Student",
+      "The 5-step loop (ASK → THINK → SOLVE → ACT → GROW) keeps me disciplined. I'm not just accumulating trivia; I'm solving real-world challenges.",
+    author: "David K.",
+    role: "Engineering Lead",
   },
 ];
 
-
 export default function HomePage() {
   return (
-    <>
-      {/* Hero */}
-      <section className="relative overflow-hidden pt-20 sm:pt-28 pb-16">
-        <div className="absolute inset-0 bg-dot-grid opacity-40" />
-        <div className="absolute left-1/2 top-0 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
+    <div className="flex flex-col min-h-screen">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden pt-24 sm:pt-32 pb-16 lg:pb-24 border-b border-border/40">
+        <div className="absolute inset-0 bg-dot-grid opacity-30" />
+        <div className="absolute left-1/2 top-0 h-[650px] w-[650px] -translate-x-1/2 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
+        
         <div className="relative mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="mx-auto max-w-4xl"
+            className="mx-auto max-w-4xl space-y-6"
           >
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs sm:text-sm font-bold text-primary">
+            <div className="inline-flex items-center gap-2.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-xs sm:text-sm font-bold text-emerald-400">
               <Sparkles className="h-3.5 w-3.5" />
-              <span>THE DAILY GYM FOR YOUR MIND</span>
+              <span>TRAIN YOUR MIND FOR REAL LIFE</span>
             </div>
-            <h1 className="text-4xl font-black leading-tight tracking-tight sm:text-6xl lg:text-7xl">
-              TRAIN YOUR BRAIN.
+
+            <h1 className="text-4xl font-black leading-tight tracking-tight sm:text-6xl lg:text-7xl text-foreground">
+              TRAIN YOUR MIND.
               <br />
-              <span className="bg-gradient-to-r from-primary via-violet-500 to-indigo-500 bg-clip-text text-transparent">EVERY DAY.</span>
+              <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
+                SOLVE REAL PROBLEMS.
+              </span>
             </h1>
-            <p className="mx-auto mt-5 max-w-2xl text-base sm:text-xl text-muted-foreground leading-relaxed font-medium">
-              BrainGym is to the brain what a gym is to the body. Build a morning habit that makes you think faster, focus deeper, remember accurately, and stay razor sharp for life.
+
+            <p className="mx-auto max-w-2xl text-base sm:text-xl text-muted-foreground leading-relaxed font-normal">
+              <strong className="text-foreground font-semibold">AKUCHE</strong> helps you think better, solve real-life challenges, make superior decisions, and turn insight into action.
             </p>
-            <div className="mt-8 flex flex-col items-center justify-center gap-3.5 sm:flex-row">
+
+            {/* Core Philosophy Loop Interactive Bar */}
+            <div className="pt-2 pb-4">
+              <div className="inline-flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 rounded-2xl border border-border/80 bg-card/60 backdrop-blur-md px-3 sm:px-5 py-2 text-xs sm:text-sm font-bold tracking-wide text-foreground shadow-sm">
+                <span className="text-emerald-400">ASK</span>
+                <span className="text-muted-foreground/60">→</span>
+                <span className="text-teal-400">THINK</span>
+                <span className="text-muted-foreground/60">→</span>
+                <span className="text-cyan-400">SOLVE</span>
+                <span className="text-muted-foreground/60">→</span>
+                <span className="text-amber-400">ACT</span>
+                <span className="text-muted-foreground/60">→</span>
+                <span className="text-emerald-300">GROW</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center justify-center gap-3.5 sm:flex-row pt-2">
               <Link
                 href="/signup"
-                className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary via-violet-600 to-indigo-600 px-8 text-base font-black text-white shadow-xl shadow-primary/30 transition-all hover:brightness-110 active:scale-[0.98] sm:w-auto touch-manipulation"
+                className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 px-8 text-base font-bold text-white shadow-xl shadow-emerald-500/25 transition-all hover:brightness-110 active:scale-[0.98] sm:w-auto touch-manipulation"
               >
-                <span>START TRAINING YOUR BRAIN</span>
+                <span>START WITH AKUCHE</span>
                 <ArrowRight className="h-5 w-5" />
               </Link>
               <Link
-                href="/onboarding"
-                className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl border-2 border-border bg-card/80 px-8 text-base font-bold transition-all hover:bg-accent sm:w-auto touch-manipulation"
+                href="/dashboard"
+                className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl border border-border bg-card/80 px-8 text-base font-semibold text-foreground transition-all hover:bg-accent sm:w-auto touch-manipulation"
               >
-                <span>TAKE THE BRAIN TEST (2 MIN)</span>
+                <span>EXPLORE DASHBOARD</span>
               </Link>
             </div>
-          </motion.div>
-
-          {/* Category pills */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="mt-12 flex flex-wrap justify-center gap-2.5"
-          >
-            {categories.map((cat) => (
-              <div
-                key={cat.label}
-                className={`inline-flex items-center gap-2 rounded-full bg-gradient-to-r ${cat.color} px-4 py-2 text-xs sm:text-sm font-bold text-white shadow-md ${cat.shadow}`}
-              >
-                <cat.icon className="h-4 w-4" />
-                {cat.label}
-              </div>
-            ))}
           </motion.div>
         </div>
       </section>
 
-      {/* 5-Step How It Works Section */}
-      <section className="border-t border-border/40 bg-muted/20 py-20">
+      {/* Philosophy & The 5-Step Loop Section */}
+      <section className="py-20 bg-muted/20 border-b border-border/40">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="mx-auto max-w-2xl text-center"
-          >
-            <span className="text-xs font-bold uppercase tracking-wider text-primary">Simple Daily Habit Loop</span>
-            <h2 className="text-3xl sm:text-4xl font-black tracking-tight mt-1">
-              HOW BRAINGYM WORKS
+          <div className="mx-auto max-w-2xl text-center space-y-3">
+            <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
+              The AKUCHE Operating Model
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground">
+              HOW AKUCHE TRANSFORMS THINKING
             </h2>
-            <p className="mt-3 text-sm sm:text-base text-muted-foreground">
-              A 5-step scientifically structured habit that fits effortlessly into your morning routine.
+            <p className="text-sm sm:text-base text-muted-foreground">
+              A continuous loop designed to bridge the gap between mental clarity and real-world results.
             </p>
-          </motion.div>
+          </div>
 
           <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            {[
-              { step: "1", title: "Wake-Up Prompt", desc: "Receive your morning brain activation reminder." },
-              { step: "2", title: "5–10 Min Workout", desc: "Complete 5 balanced cognitive drills tailored to you." },
-              { step: "3", title: "Brain Momentum", desc: "Watch your Brain Score (0–100) & Momentum rise." },
-              { step: "4", title: "Beat Yourself", desc: "Outperform yesterday's personal best baseline." },
-              { step: "5", title: "Come Back Sharper", desc: "Lock in your streak and return sharper tomorrow." },
-            ].map((item, i) => (
+            {coreLoopSteps.map((item, i) => (
               <motion.div
                 key={item.step}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.5 }}
-                className="rounded-2xl border border-border/80 bg-card p-5 space-y-2 relative shadow-sm"
+                transition={{ delay: i * 0.1, duration: 0.4 }}
+                className="rounded-2xl border border-border/80 bg-card p-5 space-y-2 relative shadow-sm hover:border-emerald-500/40 transition-colors"
               >
-                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary font-black text-sm">
-                  {item.step}
-                </span>
-                <h3 className="font-bold text-sm text-foreground">{item.title}</h3>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-extrabold px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400">
+                    STEP {i + 1}
+                  </span>
+                  <span className="text-xs font-bold text-muted-foreground">{item.step}</span>
+                </div>
+                <h3 className="font-bold text-base text-foreground pt-1">{item.label}</h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
@@ -219,22 +200,97 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* 4 Core Pillars */}
+      <section className="py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl text-center space-y-3">
+            <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
+              Four Core Pillars
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground">
+              BUILT FOR REAL-LIFE COGNITIVE EXCELLENCE
+            </h2>
+            <p className="text-sm sm:text-base text-muted-foreground">
+              AKUCHE combines Socratic coaching, structured problem deconstruction, and deliberate cognitive workouts.
+            </p>
+          </div>
+
+          <div className="mt-16 grid gap-6 md:grid-cols-2">
+            {pillars.map((pillar, i) => (
+              <motion.div
+                key={pillar.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.5 }}
+                className={`rounded-3xl border ${pillar.border} bg-card/60 backdrop-blur-sm p-8 space-y-4 hover:shadow-xl transition-all`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-400">
+                    <pillar.icon className="h-6 w-6" />
+                  </div>
+                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground bg-muted px-3 py-1 rounded-full">
+                    {pillar.badge}
+                  </span>
+                </div>
+
+                <div className="space-y-1">
+                  <h3 className="text-xl font-bold text-foreground">{pillar.title}</h3>
+                  <p className="text-xs sm:text-sm font-semibold text-emerald-400">{pillar.subtitle}</p>
+                </div>
+
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {pillar.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Core Differentiation vs Generic AI */}
+      <section className="py-20 bg-muted/20 border-y border-border/40">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-4xl rounded-3xl border border-emerald-500/30 bg-gradient-to-b from-card to-card/50 p-8 sm:p-12 text-center space-y-6 shadow-xl">
+            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-4 py-1.5 text-xs font-bold text-emerald-400">
+              <Scale className="h-3.5 w-3.5" />
+              <span>THE AKUCHE DIFFERENCE</span>
+            </div>
+            
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-foreground">
+              &ldquo;ChatGPT gives you answers. AKUCHE trains your mind to think, evaluate and act.&rdquo;
+            </h2>
+
+            <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              We do not outsource your thinking. AKUCHE acts as your intellectual sparring partner, guiding you through socratic inquiry, unmasking hidden assumptions, and holding you accountable to real execution.
+            </p>
+
+            <div className="pt-4 flex flex-wrap items-center justify-center gap-6 text-xs sm:text-sm font-semibold text-muted-foreground">
+              <span className="flex items-center gap-2 text-foreground">
+                <CheckCircle2 className="h-4 w-4 text-emerald-400" /> Non-Medical Mental Fitness
+              </span>
+              <span className="flex items-center gap-2 text-foreground">
+                <CheckCircle2 className="h-4 w-4 text-emerald-400" /> 10 Cognitive Dimensions
+              </span>
+              <span className="flex items-center gap-2 text-foreground">
+                <CheckCircle2 className="h-4 w-4 text-emerald-400" /> Real-World Problem Engine
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Testimonials */}
       <section className="py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="mx-auto max-w-2xl text-center"
-          >
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Loved by thinkers
+          <div className="mx-auto max-w-2xl text-center space-y-3">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-foreground">
+              Trusted by Ambitious Thinkers
             </h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              Join thousands training their brains daily.
+            <p className="text-base text-muted-foreground">
+              See how learners, founders, and professionals train their minds with AKUCHE.
             </p>
-          </motion.div>
+          </div>
 
           <div className="mt-16 grid gap-6 md:grid-cols-3">
             {testimonials.map((t, i) => (
@@ -244,25 +300,14 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.5 }}
-                className="rounded-2xl border border-border/50 bg-card p-6"
+                className="rounded-2xl border border-border/80 bg-card p-6 flex flex-col justify-between space-y-4"
               >
-                <div className="mb-4 flex gap-1">
-                  {Array.from({ length: 5 }).map((_, j) => (
-                    <svg
-                      key={j}
-                      className="h-4 w-4 fill-primary text-primary"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                </div>
-                <blockquote className="mb-4 text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground italic leading-relaxed">
                   &ldquo;{t.quote}&rdquo;
-                </blockquote>
+                </p>
                 <div>
-                  <p className="text-sm font-medium">{t.author}</p>
-                  <p className="text-xs text-muted-foreground">{t.role}</p>
+                  <p className="text-sm font-bold text-foreground">{t.author}</p>
+                  <p className="text-xs text-emerald-400">{t.role}</p>
                 </div>
               </motion.div>
             ))}
@@ -270,31 +315,28 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* Final Call to Action */}
       <section className="border-t border-border/40 bg-muted/30 py-24">
         <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="mx-auto max-w-2xl"
-          >
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Start your brain training today
+          <div className="mx-auto max-w-2xl space-y-6">
+            <h2 className="text-3xl font-black tracking-tight sm:text-4xl text-foreground">
+              Ready to train your mind for real life?
             </h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              15 minutes a day. Real results. No games.
+            <p className="text-base sm:text-lg text-muted-foreground">
+              Join AKUCHE today. Strengthen your thinking, solve real-world problems, and turn insight into action.
             </p>
-            <Link
-              href="/signup"
-              className="mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-8 text-sm font-medium text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30"
-            >
-              Get Started Free
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </motion.div>
+            <div className="pt-2">
+              <Link
+                href="/signup"
+                className="inline-flex h-14 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 px-10 text-base font-bold text-white shadow-xl shadow-emerald-500/25 transition-all hover:brightness-110 active:scale-[0.98]"
+              >
+                <span>GET STARTED WITH AKUCHE</span>
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }

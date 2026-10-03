@@ -9,7 +9,7 @@ const inter = Inter({
   display: "swap",
 });
 
-let appUrl = "https://braingym-live.vercel.app";
+let appUrl = "https://brain-gym-nsu6.vercel.app";
 if (
   process.env.NEXT_PUBLIC_APP_URL &&
   process.env.NEXT_PUBLIC_APP_URL.startsWith("http")
@@ -19,41 +19,41 @@ if (
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
-  title: "BrainGym — Train Your Brain For Real Life",
+  title: "AKUCHE — Train Your Mind for Real Life",
   description:
-    "BrainGym helps you improve memory, focus, thinking, and emotional intelligence through daily real-life brain workouts.",
+    "AKUCHE is a mental fitness and real-life problem-solving platform. Ask, Think, Solve, Act, Grow.",
   manifest: "/manifest.json",
   icons: {
     icon: "/favicon.png",
     apple: "/logo.png",
   },
   openGraph: {
-    title: "BrainGym — Train Your Brain For Real Life",
+    title: "AKUCHE — Train Your Mind for Real Life",
     description:
-      "Improve your cognitive skills with daily real-life brain workouts.",
+      "Train your mind for real life with AKUCHE: ASK → THINK → SOLVE → ACT → GROW.",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "BrainGym",
+        alt: "AKUCHE",
       },
     ],
     type: "website",
-    siteName: "BrainGym",
+    siteName: "AKUCHE",
   },
   twitter: {
     card: "summary_large_image",
-    title: "BrainGym — Train Your Brain For Real Life",
+    title: "AKUCHE — Train Your Mind for Real Life",
     description:
-      "Improve your cognitive skills with daily real-life brain workouts.",
+      "Train your mind for real life with AKUCHE: ASK → THINK → SOLVE → ACT → GROW.",
     images: ["/og-image.png"],
   },
   other: {
     "msapplication-TileImage": "/logo.png",
     "apple-mobile-web-app-capable": "yes",
     "apple-mobile-web-app-status-bar-style": "black-translucent",
-    "apple-mobile-web-app-title": "BrainGym",
+    "apple-mobile-web-app-title": "AKUCHE",
   },
 };
 

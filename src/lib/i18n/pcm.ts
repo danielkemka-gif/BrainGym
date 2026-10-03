@@ -32,9 +32,9 @@ export const pcm: TranslationKeys = {
   nav_tagline: "Train Your Brain For Real Life",
 
   // Framework & Branding
-  brand_tagline: "Train how you dey think. Make your brain strong for real life.",
-  framework_tagline: "THINK → DECIDE → ACT → REFLECT",
-  non_medical_disclaimer: "Mental fitness and decision-making practice. No be hospital tool.",
+  brand_tagline: "Train Your Mind For Real Life.",
+  framework_tagline: "ASK → THINK → SOLVE → ACT → GROW",
+  non_medical_disclaimer: "Mental fitness and real-life problem solving. No be hospital tool.",
 
   // Dashboard Core
   dashboard_greeting: "How far",
@@ -303,10 +303,10 @@ export const pcm: TranslationKeys = {
   journey_score80: "Score 80+",
   journey_1000xp: "1,000 XP Milestone",
 
-  // Ask BrainGym & Socratic Problem Solving
-  nav_ask: "Ask",
+  // Ask AKUCHE & Socratic Problem Solving
+  nav_ask: "Ask AKUCHE",
   ask_header_title: "Wetin you dey face right now?",
-  ask_header_subtext: "Ask any question. Explain problem. Or tell BrainGym wetin you wan achieve.",
+  ask_header_subtext: "Ask any question. Explain problem. Or tell AKUCHE wetin you wan achieve.",
   ask_input_placeholder: "Type your question or wetin dey happen...",
   ask_voice_listening: "I dey hear you... talk clearly into your phone",
   ask_card_know: "WETIN WE SURE OF",

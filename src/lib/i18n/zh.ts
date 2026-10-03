@@ -32,9 +32,9 @@ export const zh: TranslationKeys = {
   nav_tagline: "在现实情境中锤炼你的思维方式",
 
   // Framework & Branding
-  brand_tagline: "锤炼思维，强化心智，应用于真实生活。",
-  framework_tagline: "思考 → 决策 → 行动 → 复盘",
-  non_medical_disclaimer: "非医疗类心智健身与决策力训练平台。",
+  brand_tagline: "在现实生活中锤炼你的心智。",
+  framework_tagline: "提问 → 思考 → 破解 → 行动 → 精进",
+  non_medical_disclaimer: "非医疗类心智健身与现实问题解决训练平台。",
 
   // Dashboard Core
   dashboard_greeting: "欢迎回来",
@@ -303,10 +303,10 @@ export const zh: TranslationKeys = {
   journey_score80: "心智评分达 80+",
   journey_1000xp: "达成 1,000 XP 积累",
 
-  // Ask BrainGym & Socratic Problem Solving
-  nav_ask: "提问",
+  // Ask AKUCHE & Socratic Problem Solving
+  nav_ask: "向 AKUCHE 提问",
   ask_header_title: "你正在面对什么挑战？",
-  ask_header_subtext: "提出疑问、描述现实难题，或告诉 BrainGym 你想实现的目标。",
+  ask_header_subtext: "提出疑问、描述现实难题，或告诉 AKUCHE 你想实现的目标。",
   ask_input_placeholder: "输入你的问题或具体情况...",
   ask_voice_listening: "正在聆听... 请对准手机清晰说话",
   ask_card_know: "已知事实",

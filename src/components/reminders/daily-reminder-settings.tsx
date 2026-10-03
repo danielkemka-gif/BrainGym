@@ -216,7 +216,7 @@ export function DailyReminderSettings() {
           <div className="rounded-xl bg-muted/50 p-3 text-[11px] text-muted-foreground leading-relaxed flex items-start gap-2 border-l-2 border-primary">
             <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />
             <p>
-              <strong>Intelligent Reminder:</strong> If you complete today&apos;s workout before your scheduled time ({config.time}), BrainGym will automatically skip sending the reminder so you aren&apos;t bothered!
+              <strong>Intelligent Reminder:</strong> If you complete today&apos;s workout before your scheduled time ({config.time}), AKUCHE will automatically skip sending the reminder so you aren&apos;t bothered!
             </p>
           </div>
         </div>

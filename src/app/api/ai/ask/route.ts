@@ -107,15 +107,16 @@ export async function POST(request: NextRequest) {
     } = await supabase.auth.getUser();
 
     const { message, history } = await request.json();
-    if (!message || typeof message !== "string") {
+    if (!message || typeof message !== "string" || !message.trim()) {
       return NextResponse.json({ error: "Message is required" }, { status: 400 });
     }
 
+    const trimmedMessage = message.trim();
     const openaiApiKey = process.env.OPENAI_API_KEY;
 
     // If OpenAI key is not configured or in offline mode, provide high-quality procedural Socratic reverse-engineering response
     if (!openaiApiKey) {
-      const fallbackResponse = generateProceduralSocraticResponse(message);
+      const fallbackResponse = generateProceduralSocraticResponse(trimmedMessage);
       return NextResponse.json({
         reply: fallbackResponse.text,
         structuredCards: fallbackResponse.cards,
@@ -141,7 +142,7 @@ export async function POST(request: NextRequest) {
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           ...formattedHistory,
-          { role: "user", content: message },
+          { role: "user", content: trimmedMessage },
         ],
         max_tokens: 2048,
         temperature: 0.5,
@@ -149,7 +150,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!response.ok) {
-      const fallbackResponse = generateProceduralSocraticResponse(message);
+      const fallbackResponse = generateProceduralSocraticResponse(trimmedMessage);
       return NextResponse.json({
         reply: fallbackResponse.text,
         structuredCards: fallbackResponse.cards,
@@ -165,9 +166,8 @@ export async function POST(request: NextRequest) {
     });
   } catch (err) {
     console.error("Ask AKUCHE error:", err);
-    // Even on error, provide procedural response so user is never stranded
     const fallbackResponse = generateProceduralSocraticResponse(
-      "Let's break down this decision into actionable steps."
+      "Let's break down this challenge into concrete numbers and actions."
     );
     return NextResponse.json({
       reply: fallbackResponse.text,
@@ -193,27 +193,28 @@ function parseFinancialTarget(query: string): {
   if (q.includes("$") || q.includes("dollar") || q.includes("usd")) currency = "$";
   else if (q.includes("£") || q.includes("pound")) currency = "£";
   else if (q.includes("€") || q.includes("euro")) currency = "€";
-  else if (q.includes("naira") || q.includes("₦")) currency = "₦";
+  else if (q.includes("naira") || q.includes("₦") || q.includes("ngn")) currency = "₦";
 
-  // Detect Amount
+  // Match e.g. "5m", "5 million", "5.5m", "10 millions"
   let amount = 0;
-  const millionMatch = q.match(/(\d+(?:\.\d+)?)\s*(?:m|million|millions)/i);
-  const kMatch = q.match(/(\d+(?:\.\d+)?)\s*(?:k|thousand|thousands)/i);
-  const rawNumMatch = q.match(/[₦$£€]?\s*([\d,]{4,})/);
+  const millionMatch = q.match(/(\d+(?:\.\d+)?)\s*(?:m\b|million|millions)/i);
+  const kMatch = q.match(/(\d+(?:\.\d+)?)\s*(?:k\b|thousand|thousands)/i);
+  const rawNumMatch = q.match(/(?:₦|\$|£|€)?\s*([\d,]{4,})/);
 
   if (millionMatch) {
     amount = parseFloat(millionMatch[1]) * 1_000_000;
   } else if (kMatch) {
     amount = parseFloat(kMatch[1]) * 1_000;
   } else if (rawNumMatch) {
-    amount = parseFloat(rawNumMatch[1].replace(/,/g, ""));
+    const parsed = parseFloat(rawNumMatch[1].replace(/,/g, ""));
+    if (parsed >= 1000) amount = parsed;
   }
 
   if (amount <= 0) return null;
 
   // Detect Timeframe
   let timeframeDays = 30;
-  let timeframeLabel = "30 days";
+  let timeframeLabel = "the next 30 days";
 
   if (q.includes("october") || q.includes("this month") || q.includes("end of month") || q.includes("1 month") || q.includes("a month")) {
     timeframeDays = 30;
@@ -254,7 +255,80 @@ export function generateProceduralSocraticResponse(query: string): {
   text: string;
   cards: SocraticThinkingCards;
 } {
-  const q = query.toLowerCase();
+  const q = query.toLowerCase().trim();
+
+  // 0. GREETINGS & PLATFORM INTRO
+  if (
+    q === "hi" ||
+    q === "hello" ||
+    q === "hey" ||
+    q.includes("who are you") ||
+    q.includes("how does this work") ||
+    q.includes("what can you do") ||
+    q === "help"
+  ) {
+    return {
+      text: `### I am ASK AKUCHE
+I am your intelligent problem-solving and decision-support engine.
+
+My purpose is not merely to give polite answers. My purpose is to help you **THINK BETTER, MAKE BETTER DECISIONS, and TAKE PRACTICAL ACTION** that produces measurable results.
+
+---
+
+### How We Solve Challenges Together:
+$$\\textbf{UNDERSTAND} \\rightarrow \\textbf{THINK} \\rightarrow \\textbf{CALCULATE} \\rightarrow \\textbf{IDENTIFY OPTIONS} \\rightarrow \\textbf{DECIDE} \\rightarrow \\textbf{ACT}$$
+
+1. **Reverse-Engineering Goals:** We turn abstract ambitions into unit economics ($R = P \\times Q$).
+2. **Finding Hidden Leverage:** We examine your existing skills, warm contacts, and high-ticket assets first.
+3. **Execution Over Fluff:** Every analysis ends with concrete **DO THIS TODAY** actions and a daily mission.
+
+---
+
+### 3 Ways to Start Right Now:
+* **Option A (Financial Target):** Type *"I want to make ₦5 million in 30 days."*
+* **Option B (Business/Sales Bottleneck):** Type *"I need 10 high-paying B2B clients for my service."*
+* **Option C (Critical Decision):** Type *"Should I borrow money to open a shop?"* or *"Should I leave my job?"*
+
+---
+
+### Do This Today
+Type your exact challenge, financial target, or decision dilemma into the box below.`,
+      cards: {
+        type: "guided_thinking",
+        whatWeKnow: [
+          "Ask AKUCHE is calibrated to diagnose and reverse-engineer your real-life challenges.",
+          "Clear questions receive structured mathematical plans and daily action missions.",
+        ],
+        whatWeDontKnow: [
+          "Your specific goal, target number, or current bottleneck.",
+        ],
+        assumptions: [
+          "You have a real challenge you want to break down into actionable steps.",
+        ],
+        risks: [
+          "Postponing decision-making without testing your assumptions.",
+        ],
+        options: [
+          "Goal 1: Reverse-engineer a revenue target (e.g. ₦5m in 30 days)",
+          "Goal 2: Build a customer acquisition pipeline for your business",
+          "Goal 3: Stress-test a difficult financial or career decision",
+        ],
+        questionsToInvestigate: [
+          "What is the single most important outcome you want to achieve this month?",
+        ],
+        nextQuestion: "What specific problem or goal are you working on right now?",
+        mission: {
+          title: "Define Your Core Goal",
+          deadline: "Before end of today",
+          steps: [
+            "Write down your target outcome in one sentence",
+            "State your deadline and available budget/hours",
+            "Send it to Ask AKUCHE to generate your step-by-step battle plan",
+          ],
+        },
+      },
+    };
+  }
 
   // 1. REVERSE-ENGINEER NUMERICAL FINANCIAL GOALS
   const finTarget = parseFinancialTarget(query);
@@ -263,8 +337,7 @@ export function generateProceduralSocraticResponse(query: string): {
     const dailyTarget = Math.round(amount / timeframeDays);
     const weeklyTarget = Math.round(amount / (timeframeDays / 7));
 
-    // Calculate 4 distinct unit economics pricing tiers
-    const tier1_clients = Math.max(1, Math.round(amount / (amount * 0.1))); // 10 clients
+    const tier1_clients = 10;
     const tier1_price = amount / 10;
 
     const tier2_clients = 20;
@@ -276,11 +349,10 @@ export function generateProceduralSocraticResponse(query: string): {
     const tier4_clients = 100;
     const tier4_price = amount / 100;
 
-    // Funnel calculations for Recommended Route (e.g. Tier 2: 20 clients)
     const requiredConversions = tier2_clients;
-    const expectedCloseRate = 0.2; // 20%
-    const qualifiedConversations = Math.round(requiredConversions / expectedCloseRate); // 100
-    const discoveryCallsPerDay = Math.ceil(qualifiedConversations / (timeframeDays * 0.7)); // working days
+    const expectedCloseRate = 0.2;
+    const qualifiedConversations = Math.round(requiredConversions / expectedCloseRate);
+    const discoveryCallsPerDay = Math.ceil(qualifiedConversations / (timeframeDays * 0.7));
     const dailyOutreachTargets = discoveryCallsPerDay * 3;
 
     const text = `### What I Understand
@@ -299,7 +371,7 @@ Large revenue targets fail when treated as a single abstract goal. To achieve ${
 
 #### Available Revenue Structures ($R = P \\times Q$):
 * **Route A (High-Ticket B2B / Premium):** 10 clients × **${currency}${tier1_price.toLocaleString()}**
-* **Route B (Mid-Market / Core Offer):** 20 clients × **${currency}${tier2_price.toLocaleString()}**
+* **Route B (Mid-Market / Core Offer):** 20 clients × **${currency}${tier2_price.toLocaleString()}** *(Recommended)*
 * **Route C (Productized Service):** 50 clients × **${currency}${tier3_price.toLocaleString()}**
 * **Route D (Volume / Digital / Retail):** 100 clients × **${currency}${tier4_price.toLocaleString()}**
 
@@ -394,7 +466,190 @@ Large revenue targets fail when treated as a single abstract goal. To achieve ${
     };
   }
 
-  // 2. CUSTOMER & SALES ACQUISITION
+  // 2. MAKING MONEY, WEALTH & CASH FLOW (Non-numerical general income query)
+  if (
+    q.includes("make money") ||
+    q.includes("how to make money") ||
+    q.includes("earn money") ||
+    q.includes("how can i make money") ||
+    q.includes("get rich") ||
+    q.includes("broke") ||
+    q.includes("side hustle") ||
+    q.includes("extra income")
+  ) {
+    return {
+      text: `### What I Understand
+You want to generate sustainable income or build cash flow as quickly as possible.
+
+### The Real Problem
+People struggle to make money when they search for "methods" instead of **identifying who has money and what urgent problem they will pay to have solved**. Money is simply an exchange of value.
+
+---
+
+### The 3 Fastest Economic Paths to Cash:
+* **Path 1: High-Value Service (Fastest / Zero Startup Capital)**
+  * Take a skill you already have (design, copywriting, sales, tutoring, repair, consulting) and sell it directly to 5 business owners at **₦100,000 each = ₦500,000**.
+* **Path 2: Deal Sourcing & Commission Arbitrage (High Leverage)**
+  * Connect an existing buyer with an existing seller (real estate, cars, supply contracts, freelance talent) and collect a 5%–10% finder's fee.
+* **Path 3: Productized Knowledge or Digital Asset**
+  * Package a specific procedure or template and sell to 50 buyers at **₦10,000 = ₦500,000**.
+
+---
+
+### Recommended Execution Path: Path 1 (High-Value Service)
+**Why:** It requires **₦0 in startup capital** and puts you in front of decision-makers within 24 hours.
+
+---
+
+### Step-by-Step Execution Plan
+1. **Skill Audit:** List the 3 most useful tasks you can perform that save someone time or make them money.
+2. **Target List:** Identify 20 businesses or individuals who currently suffer from that problem.
+3. **Offer Pitch:** Send a direct message offering a pilot test where they only pay if satisfied.
+
+---
+
+### Do This Today (Your Next 3 Actions)
+1. **Name Your 1 Core Skill:** Write down the #1 service you can deliver this week.
+2. **List 10 Business Owners:** Find 10 local businesses, founders, or contacts in your phone book.
+3. **Send 5 Audit Messages:** Reach out with: *"I noticed [specific bottleneck in your business]. I can help you fix it in 3 days. Would you be open to a quick chat?"*
+
+---
+
+### 3 Questions For You
+1. What skill or experience do you currently possess that people already ask you for advice on?
+2. What is your exact financial target for the next 30 days (e.g. ₦200,000 or ₦1,000,000)?
+3. How many hours per day can you dedicate immediately?`,
+      cards: {
+        type: "guided_thinking",
+        whatWeKnow: [
+          "You want to generate new income or build a cash flow engine.",
+          "Selling services to businesses generates cash 10x faster than building an unvalidated product.",
+        ],
+        whatWeDontKnow: [
+          "Your current marketable skill set and existing equipment.",
+          "Your exact monthly income target.",
+        ],
+        assumptions: [
+          "You have at least 1 transferable skill and 2 hours per day to commit.",
+        ],
+        risks: [
+          "Wasting weeks trying to create a complex product before validating paying demand.",
+        ],
+        options: [
+          "Path 1 (Recommended): High-Value Service (5 clients × ₦100,000)",
+          "Path 2: Deal Sourcing / Brokerage commissions",
+          "Path 3: Productized digital template (50 buyers × ₦10,000)",
+        ],
+        questionsToInvestigate: [
+          "What is the single highest-value problem you can solve for a business owner today?",
+        ],
+        nextQuestion: "What specific skill or service can you offer right now?",
+        mission: {
+          title: "Skill Audit & 5 Outreaches",
+          deadline: "Before 6:00 PM today",
+          steps: [
+            "Write down your #1 strongest marketable skill",
+            "List 10 potential clients who need this skill",
+            "Send 5 personalized direct messages offering a pilot solution",
+          ],
+        },
+      },
+    };
+  }
+
+  // 3. STARTING A BUSINESS & BUSINESS IDEAS
+  if (
+    q.includes("start a business") ||
+    q.includes("starting a business") ||
+    q.includes("business idea") ||
+    q.includes("startup") ||
+    q.includes("new venture") ||
+    q.includes("entrepreneur")
+  ) {
+    return {
+      text: `### What I Understand
+You want to launch a new business or find a viable, profitable business idea.
+
+### The Real Problem
+Most new ventures fail because founders fall in love with an **idea** rather than validating an **urgent, painful customer problem** that people are already paying money to solve.
+
+---
+
+### The Business Validation Economics
+* **The Golden Rule:** Never spend capital on inventory, logos, or office rent before securing **at least 3 paying pre-orders or committed clients**.
+* **Target Breakeven Metric:**
+  * Fixed startup costs: Keep under **₦50,000** for MVP.
+  * Target Margin: At least **50% to 70% gross profit margin**.
+
+---
+
+### 3 Proven Low-Risk Business Archetypes
+* **Archetype 1: B2B Productized Agency (Recommended)**
+  * Solve one administrative, sales, or tech pain for local companies. (e.g. bookkeeping, social leads, IT support).
+* **Archetype 2: High-Margin Direct Trade (Pre-Order Model)**
+  * Source high-demand goods only after taking 50% customer deposits. Zero unsold inventory risk.
+* **Archetype 3: Specialized Education / Training Workshop**
+  * Teach an in-demand practical skill to a cohort of 10 students @ **₦30,000 = ₦300,000 per cohort**.
+
+---
+
+### Step-by-Step Launch Plan
+1. **Problem Discovery:** Interview 5 business owners about what takes the most time in their day.
+2. **Pre-Sale Offer:** Create a 1-page proposal solving that exact problem.
+3. **Deliver & Collect Referrals:** Overdeliver for your first 3 clients to generate instant case studies.
+
+---
+
+### Do This Today (Your Next 3 Actions)
+1. **Select 1 Problem:** Choose one specific problem you can solve better than average.
+2. **List 15 Target Buyers:** Identify 15 individuals or companies experiencing this problem.
+3. **Conduct 3 Pain Interviews:** Ask 3 potential customers: *"What is the hardest part about [problem], and what have you tried so far to fix it?"*
+
+---
+
+### 3 Questions For You
+1. What industry or market do you understand better than the average person?
+2. What initial capital do you have available for this venture?
+3. Are you aiming for a service business or a physical products business?`,
+      cards: {
+        type: "guided_thinking",
+        whatWeKnow: [
+          "You are planning to start a new business venture.",
+          "Validating customer demand before spending capital eliminates 90% of business failure risk.",
+        ],
+        whatWeDontKnow: [
+          "Your preferred industry and domain expertise.",
+          "Your available startup capital.",
+        ],
+        assumptions: [
+          "You want a profitable, cash-flowing business rather than a high-burn speculative startup.",
+        ],
+        risks: [
+          "Buying inventory or registering entities before confirming buyer willingness to pay.",
+        ],
+        options: [
+          "Archetype 1 (Recommended): B2B Productized Agency (Zero Inventory)",
+          "Archetype 2: Pre-Order Direct Trade (Customer-funded inventory)",
+          "Archetype 3: Cohort Training Workshop",
+        ],
+        questionsToInvestigate: [
+          "Who is your ideal customer, and why would they choose you over existing options?",
+        ],
+        nextQuestion: "What specific industry or skill do you want to build this business around?",
+        mission: {
+          title: "Customer Pain Discovery Sprint",
+          deadline: "Before 6:00 PM today",
+          steps: [
+            "Write down 3 real problems people currently complain about in your field",
+            "Draft a 1-sentence solution offer",
+            "Ask 3 potential customers for feedback on the offer",
+          ],
+        },
+      },
+    };
+  }
+
+  // 4. CUSTOMER & SALES ACQUISITION
   if (
     q.includes("customer") ||
     q.includes("client") ||
@@ -408,7 +663,7 @@ Large revenue targets fail when treated as a single abstract goal. To achieve ${
 You are experiencing a bottleneck in customer acquisition, client volume, or sales revenue.
 
 ### The Real Problem
-Most businesses looking for "more customers" mistakenly assume they have a traffic problem, when they actually have a **conversion, positioning, or follow-up problem**. 
+Most businesses looking for "more customers" mistakenly assume they have a traffic problem, when they actually have a **conversion, positioning, or follow-up problem**.
 
 ---
 
@@ -496,7 +751,7 @@ Mobilize your immediate warm assets first to generate immediate cash flow while 
     };
   }
 
-  // 3. CAPITAL, DEBT, LOAN, OR INVESTMENT DECISION
+  // 5. CAPITAL, DEBT, LOAN, OR INVESTMENT DECISION
   if (
     q.includes("borrow") ||
     q.includes("loan") ||
@@ -589,12 +844,11 @@ Debt amplifies existing operations: it accelerates profitable businesses, but ac
     };
   }
 
-  // 4. CAREER, JOB CHANGE, OR BUSINESS LAUNCH
+  // 6. CAREER, JOB CHANGE, OR BUSINESS LAUNCH
   if (
     q.includes("job") ||
     q.includes("career") ||
     q.includes("quit") ||
-    q.includes("start a business") ||
     q.includes("promotion") ||
     q.includes("salary")
   ) {
@@ -679,7 +933,7 @@ Validate your business or skill offer with real paying clients before cutting of
     };
   }
 
-  // 5. STUDYING, CONCENTRATION & ACADEMIC CHALLENGES
+  // 7. STUDYING, CONCENTRATION & ACADEMIC CHALLENGES
   if (
     q.includes("concentrate") ||
     q.includes("studying") ||
@@ -764,10 +1018,89 @@ Concentration failure is rarely a lack of willpower; it is caused by **high fric
     };
   }
 
-  // 6. DEFAULT GENERAL DECISION & PROBLEM SOLVING
+  // 8. PRODUCTIVITY, PROCRASTINATION & TIME MANAGEMENT
+  if (
+    q.includes("procrastinate") ||
+    q.includes("overwhelm") ||
+    q.includes("lazy") ||
+    q.includes("time management") ||
+    q.includes("routine") ||
+    q.includes("discipline") ||
+    q.includes("habit")
+  ) {
+    return {
+      text: `### What I Understand
+You are experiencing friction with procrastination, overwhelm, lack of consistency, or daily execution.
+
+### The Real Problem
+Procrastination is an **emotional regulation and task-friction problem**, not laziness. When a task is ambiguous or feels too large, the brain seeks instant dopamine relief elsewhere.
+
+---
+
+### The 2 Execution Protocols
+* **The Rule of 3:** Every morning, write down strictly **3 non-negotiable tasks**. Everything else is optional until these 3 are checked off.
+* **The 15-Minute Gateway:** Do not commit to working for 4 hours. Commit to **15 minutes with zero distractions**. Once momentum starts, cognitive inertia keeps you going.
+
+---
+
+### Your Action Path
+* **Step 1:** Shrink the first task until it is impossible to fail (e.g. "open the document and write 1 paragraph").
+* **Step 2:** Eliminate environment switches (hide social tabs, place phone out of arm's reach).
+* **Step 3:** Record completed action in the results loop immediately.
+
+---
+
+### Do This Today (Your Next 3 Actions)
+1. **Pick Your #1 Single Task:** Name the single task you have been putting off.
+2. **Shrink the First Step:** Write down the 5-minute version of that task.
+3. **Execute a 15-Minute Sprint:** Start a 15-minute countdown timer right now and work on it.
+
+---
+
+### 3 Questions For You
+1. What is the single highest-priority project currently on your plate?
+2. At what time of day is your mental energy naturally at its peak?
+3. What is the primary trigger that derails your focus during the day?`,
+      cards: {
+        type: "guided_thinking",
+        whatWeKnow: [
+          "You want to overcome execution resistance and build productive momentum.",
+          "Momentum follows action, not motivation.",
+        ],
+        whatWeDontKnow: [
+          "The specific task causing the highest emotional friction.",
+        ],
+        assumptions: [
+          "Assuming task ambiguity is causing hesitation.",
+        ],
+        risks: [
+          "Planning endlessly instead of taking the first physical 15-minute step.",
+        ],
+        options: [
+          "Option A: 15-minute low-friction start protocol",
+          "Option B: Rule of 3 priority lockdown",
+        ],
+        questionsToInvestigate: [
+          "What is the smallest possible action that moves your main project forward?",
+        ],
+        nextQuestion: "Can you start a 15-minute timer right now on your hardest task?",
+        mission: {
+          title: "15-Minute Momentum Sprint",
+          deadline: "Complete within next 60 minutes",
+          steps: [
+            "Select your single most procrastinated task",
+            "Remove all browser tabs and phone distractions",
+            "Work with intense focus for exactly 15 minutes",
+          ],
+        },
+      },
+    };
+  }
+
+  // 9. DEFAULT GENERAL DECISION & PROBLEM SOLVING
   return {
     text: `### What I Understand
-You are facing an important decision or complex challenge that requires structured thinking, diagnosis, and practical action.
+You are facing an important decision or complex challenge: **"${query}"**.
 
 ### The Real Problem
 Complex problems feel overwhelming when facts, assumptions, and emotions are tangled together. To solve this, we must separate **what is verified** from **what is assumed**, identify the highest-leverage route, and build a concrete execution plan.
@@ -809,7 +1142,7 @@ Complex problems feel overwhelming when facts, assumptions, and emotions are tan
     cards: {
       type: "guided_thinking",
       whatWeKnow: [
-        "You are dealing with an important problem requiring analytical diagnosis.",
+        `You are working through this specific challenge: "${query}"`,
       ],
       whatWeDontKnow: [
         "The underlying root cause vs visible symptoms.",

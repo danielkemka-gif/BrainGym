@@ -45,7 +45,7 @@ function FormattedAkucheContent({ content }: { content: string }) {
   const lines = content.split("\n");
 
   return (
-    <div className="space-y-2 text-xs sm:text-sm leading-relaxed text-foreground/95">
+    <div className="space-y-2 text-xs sm:text-sm leading-relaxed text-foreground/95 break-words">
       {lines.map((line, idx) => {
         const trimmed = line.trim();
 
@@ -142,7 +142,6 @@ function FormattedAkucheContent({ content }: { content: string }) {
  * Formats inline bold (**text**), italics (*text*), and math ($formula$)
  */
 function renderInlineFormatted(text: string) {
-  // Split by bold (**bold**)
   const parts = text.split(/(\*\*[^*]+\*\*|\$[^\$]+\$)/g);
 
   return parts.map((part, i) => {
@@ -182,7 +181,17 @@ export function AskBrainGymInterface() {
   const [savingResult, setSavingResult] = useState(false);
 
   const bottomRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<any>(null);
+
+  // Auto-resize textarea when user types
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      const newHeight = Math.min(textareaRef.current.scrollHeight, 120);
+      textareaRef.current.style.height = `${Math.max(newHeight, 38)}px`;
+    }
+  }, [input]);
 
   // Initialize Speech Recognition on mobile & desktop
   useEffect(() => {
@@ -231,17 +240,20 @@ export function AskBrainGymInterface() {
   };
 
   const handleSend = async (queryText?: string) => {
-    const textToSend = queryText || input;
-    if (!textToSend.trim() || loading) return;
+    const textToSend = (queryText || input).trim();
+    if (!textToSend || loading) return;
 
     const userMessage: ChatMessage = {
       id: "user_" + Date.now(),
       role: "user",
-      content: textToSend.trim(),
+      content: textToSend,
     };
 
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "38px";
+    }
     setLoading(true);
 
     try {
@@ -249,7 +261,7 @@ export function AskBrainGymInterface() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          message: textToSend.trim(),
+          message: textToSend,
           history: messages.slice(-4),
         }),
       });
@@ -308,7 +320,7 @@ export function AskBrainGymInterface() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-2xl px-3 sm:px-4 py-4 pb-28 space-y-6">
+    <div className="mx-auto w-full max-w-2xl px-3 sm:px-4 py-4 pb-32 space-y-6">
       {/* 1. CLEAN DOORWAY HEADER */}
       {messages.length === 0 && (
         <div className="text-center pt-4 pb-2 space-y-2">
@@ -334,7 +346,7 @@ export function AskBrainGymInterface() {
             }`}
           >
             <div
-              className={`rounded-2xl sm:rounded-3xl px-4 py-3.5 text-xs sm:text-sm max-w-[95%] sm:max-w-[90%] leading-relaxed ${
+              className={`rounded-2xl sm:rounded-3xl px-4 py-3.5 text-xs sm:text-sm max-w-[95%] sm:max-w-[90%] leading-relaxed break-words whitespace-pre-wrap ${
                 msg.role === "user"
                   ? "bg-primary text-primary-foreground font-semibold shadow-sm"
                   : "bg-card border border-border/80 text-foreground font-normal shadow-sm"
@@ -492,32 +504,37 @@ export function AskBrainGymInterface() {
         </div>
       )}
 
-      {/* 4. FIXED BOTTOM INPUT BAR (SMARTPHONE OPTIMIZED) */}
+      {/* 4. FIXED BOTTOM INPUT BAR (SMARTPHONE OPTIMIZED MULTILINE) */}
       <div className="fixed inset-x-0 bottom-16 lg:bottom-4 z-30 px-3 sm:px-4">
-        <div className="mx-auto max-w-2xl rounded-2xl sm:rounded-3xl border border-border/80 bg-background/95 backdrop-blur-md p-2 shadow-xl flex items-center gap-2">
+        <div className="mx-auto max-w-2xl rounded-2xl sm:rounded-3xl border border-border/80 bg-background/95 backdrop-blur-md p-2 shadow-xl flex items-end gap-2">
           {/* Voice Input Button */}
           {speechSupported && (
             <button
               onClick={toggleVoiceInput}
-              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition touch-manipulation ${
+              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition touch-manipulation mb-0.5 ${
                 isListening
                   ? "bg-rose-500 text-white animate-pulse"
                   : "bg-muted text-muted-foreground hover:text-foreground"
               }`}
               title={isListening ? "Listening..." : "Speak question"}
             >
-              {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+              {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
             </button>
           )}
 
-          <input
-            type="text"
+          {/* Auto-expanding Multiline Textarea (wraps into 2nd/3rd row) */}
+          <textarea
+            ref={textareaRef}
+            rows={1}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                handleSend();
+                // On desktop: Enter sends message
+                if (typeof window !== "undefined" && window.innerWidth > 768) {
+                  e.preventDefault();
+                  handleSend();
+                }
               }
             }}
             placeholder={
@@ -525,13 +542,14 @@ export function AskBrainGymInterface() {
                 ? t.ask_voice_listening || "Listening... speak now"
                 : t.ask_input_placeholder || "Type your question, financial goal, or problem..."
             }
-            className="flex-1 bg-transparent px-2.5 py-2 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none min-h-[44px]"
+            className="flex-1 resize-none bg-transparent px-2.5 py-2 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none min-h-[38px] max-h-[120px] overflow-y-auto leading-relaxed break-words"
           />
 
+          {/* Send Action Button */}
           <button
             onClick={() => handleSend()}
             disabled={!input.trim() || loading}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground transition hover:bg-primary/90 disabled:opacity-40 active:scale-95 touch-manipulation"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground transition hover:bg-primary/90 disabled:opacity-40 active:scale-95 touch-manipulation mb-0.5 shadow-sm"
           >
             <Send className="h-4 w-4" />
           </button>

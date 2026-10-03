@@ -24,7 +24,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   componentDidCatch(error: Error) {
     if (typeof console !== "undefined") {
-      console.error("[BrainGym] component error:", error);
+      console.error("[AKUCHE] component error:", error);
     }
     this.props.onError?.(error);
   }

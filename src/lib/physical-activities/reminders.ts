@@ -39,18 +39,18 @@ export function generateBrainGymCalendarICS(schedule: ReminderSchedule): string 
 
   return `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//BrainGym//Brain Habit Alarm//EN
+PRODID:-//AKUCHE//Brain Habit Alarm//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
 BEGIN:VEVENT
-SUMMARY:🧠 BrainGym Daily Mental Workout
-DESCRIPTION:${schedule.message}\\nOpen BrainGym: https://braingym-live.vercel.app/dashboard
+SUMMARY:🧠 AKUCHE Daily Mental Workout
+DESCRIPTION:${schedule.message}\\nOpen AKUCHE: https://brain-gym-nsu6.vercel.app/dashboard
 STATUS:CONFIRMED
 RRULE:FREQ=DAILY;INTERVAL=1
 BEGIN:VALARM
 TRIGGER:-PT0M
 ACTION:DISPLAY
-DESCRIPTION:Time to train your brain!
+DESCRIPTION:Time to train your mind!
 END:VALARM
 END:VEVENT
 END:VCALENDAR`;
@@ -63,7 +63,7 @@ export function downloadCalendarReminderFile(schedule: ReminderSchedule) {
   const url = window.URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.setAttribute("download", "braingym-daily-reminder.ics");
+  link.setAttribute("download", "akuche-daily-reminder.ics");
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

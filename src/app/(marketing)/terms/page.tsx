@@ -16,7 +16,7 @@ export default function TermsOfServicePage() {
         <section>
           <h2 className="text-xl font-semibold">1. Acceptance of Terms</h2>
           <p>
-            By accessing or using BrainGym (the &quot;Service&quot;), you agree to be bound by these Terms of Service (&quot;Terms&quot;).
+            By accessing or using AKUCHE (the &quot;Service&quot;), you agree to be bound by these Terms of Service (&quot;Terms&quot;).
             If you do not agree to these Terms, do not use the Service. We reserve the right to modify these Terms at any time,
             and continued use constitutes acceptance of any changes.
           </p>
@@ -25,7 +25,7 @@ export default function TermsOfServicePage() {
         <section>
           <h2 className="text-xl font-semibold">2. Eligibility</h2>
           <p>
-            The Service is intended for users aged 13 and above. By using BrainGym, you represent that you are at least 13 years old.
+            The Service is intended for users aged 13 and above. By using AKUCHE, you represent that you are at least 13 years old.
             Users under 18 should have parental consent before using the Service.
           </p>
         </section>
@@ -45,7 +45,7 @@ export default function TermsOfServicePage() {
           <h2 className="text-xl font-semibold">4. Free and Premium Services</h2>
           <h3 className="text-lg font-medium mt-4">Free Tier</h3>
           <p>
-            BrainGym offers a free tier that includes access to basic brain training activities, progress tracking,
+            AKUCHE offers a free tier that includes access to basic brain training activities, progress tracking,
             and community features. Free users receive a 14-day trial of premium features upon signup.
           </p>
 
@@ -72,7 +72,7 @@ export default function TermsOfServicePage() {
           <h2 className="text-xl font-semibold">5. User Content</h2>
           <p>
             You retain ownership of any content you create within the Service, including journal entries,
-            challenge submissions, and profile information. By using BrainGym, you grant us a limited licence
+            challenge submissions, and profile information. By using AKUCHE, you grant us a limited licence
             to store, display, and process this content solely for the purpose of providing the Service.
           </p>
           <p className="mt-2">
@@ -90,7 +90,7 @@ export default function TermsOfServicePage() {
         <section>
           <h2 className="text-xl font-semibold">6. Intellectual Property</h2>
           <p>
-            All content, features, designs, graphics, logos, and software associated with BrainGym are owned by or
+            All content, features, designs, graphics, logos, and software associated with AKUCHE are owned by or
             licensed to us and are protected by copyright, trademark, and other intellectual property laws.
             You may not reproduce, distribute, modify, or create derivative works without our express written permission.
           </p>
@@ -99,7 +99,7 @@ export default function TermsOfServicePage() {
         <section>
           <h2 className="text-xl font-semibold">7. AI-Generated Content</h2>
           <p>
-            BrainGym uses artificial intelligence (powered by OpenAI) to provide coaching, recommendations,
+            AKUCHE uses artificial intelligence (powered by OpenAI) to provide coaching, recommendations,
             and educational content. AI-generated content is provided for informational and educational purposes only
             and should not be considered professional medical, psychological, or educational advice.
           </p>
@@ -126,7 +126,7 @@ export default function TermsOfServicePage() {
         <section>
           <h2 className="text-xl font-semibold">9. Limitation of Liability</h2>
           <p>
-            To the maximum extent permitted by law, BrainGym and its operators shall not be liable for any indirect,
+            To the maximum extent permitted by law, AKUCHE and its operators shall not be liable for any indirect,
             incidental, special, consequential, or punitive damages arising out of or related to your use of the Service.
             Our total liability shall not exceed the amount you paid us in the 12 months preceding the claim.
           </p>
@@ -140,7 +140,7 @@ export default function TermsOfServicePage() {
             or free of viruses or other harmful components.
           </p>
           <p className="mt-2">
-            BrainGym is not a medical device and is not intended to diagnose, treat, cure, or prevent any disease
+            AKUCHE is not a medical device and is not intended to diagnose, treat, cure, or prevent any disease
             or cognitive condition. Consult a healthcare professional before starting any brain training programme.
           </p>
         </section>
@@ -148,7 +148,7 @@ export default function TermsOfServicePage() {
         <section>
           <h2 className="text-xl font-semibold">11. Indemnification</h2>
           <p>
-            You agree to indemnify and hold harmless BrainGym and its operators from any claims, losses, or damages
+            You agree to indemnify and hold harmless AKUCHE and its operators from any claims, losses, or damages
             arising from your use of the Service or violation of these Terms.
           </p>
         </section>
@@ -174,7 +174,7 @@ export default function TermsOfServicePage() {
           <p>
             For questions about these Terms of Service, please contact us at:
           </p>
-          <p className="mt-2 font-medium">legal@braingym.app</p>
+          <p className="mt-2 font-medium">legal@akuche.app</p>
         </section>
       </div>
     </div>

@@ -47,7 +47,7 @@ export const APP_FEATURES: NavFeature[] = [
     id: "guide",
     title: "Feature Guide & Manual",
     category: "guide",
-    description: "Read the complete clarity guide on how all BrainGym features, scoring, and pillars work.",
+    description: "Read the complete clarity guide on how all AKUCHE features, scoring, and pillars work.",
     href: "/dashboard/guide",
     badge: "Start Here",
     icon: BookOpen,
@@ -318,7 +318,7 @@ export function FeatureNavigator() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search BrainGym features, games, AI coach..."
+                placeholder="Search AKUCHE features, games, AI coach..."
                 className="w-full bg-transparent text-base sm:text-sm placeholder:text-muted-foreground focus:outline-none"
               />
               {query && (

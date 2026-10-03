@@ -9,6 +9,7 @@ import {
 } from "@/lib/brain-momentum-engine";
 
 // ─── Streamlined Minimal Dashboard Components ─────────────────────────────────
+import { RebrandUpdateBanner } from "@/components/dashboard/rebrand-update-banner";
 import { TodaysDailyMissionCard } from "@/components/dashboard/todays-daily-mission-card";
 import { ActiveGoalCard } from "@/components/goals/active-goal-card";
 import { AskBrainGymQuickBar } from "@/components/dashboard/ask-braingym-quick-bar";
@@ -55,6 +56,9 @@ export default function DashboardPage() {
     >
       {/* Level-up celebration */}
       <LevelUpCelebration />
+
+      {/* Migration / Rebrand Update Banner */}
+      <RebrandUpdateBanner />
 
       {/* 1. TODAY'S BRAIN WORKOUT (CLEAN, COMPACT HERO CARD WITH [START] CTA) */}
       <TodaysDailyMissionCard />

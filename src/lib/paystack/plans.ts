@@ -4,7 +4,7 @@ export const PLANS = {
     amount: 350000, // ₦3,500 in kobo
     currency: "NGN",
     interval: "monthly" as const,
-    description: "Premium subscription for BrainGym",
+    description: "Premium subscription for AKUCHE",
     features: [
       "Everything in Free",
       "AI Coach unlimited chats",

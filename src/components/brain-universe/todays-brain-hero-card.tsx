@@ -60,13 +60,13 @@ export function TodaysBrainHeroCard({ drop }: TodaysBrainHeroCardProps) {
   };
 
   const handleShare = async () => {
-    const text = `Today's Brain Discovery on BrainGym: 🧠\n\n"${drop.title}"\n\n💡 ${drop.discovery}\n\n👉 Try This: ${drop.useItToday.action}\n\nDiscover more on BrainGym: https://braingym-live.vercel.app/`;
+    const text = `Today's Brain Discovery on AKUCHE: 🧠\n\n"${drop.title}"\n\n💡 ${drop.discovery}\n\n👉 Try This: ${drop.useItToday.action}\n\nDiscover more on AKUCHE: https://brain-gym-nsu6.vercel.app/`;
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
         await navigator.share({
           title: drop.title,
           text,
-          url: "https://braingym-live.vercel.app/",
+          url: "https://brain-gym-nsu6.vercel.app/",
         });
         return;
       } catch {

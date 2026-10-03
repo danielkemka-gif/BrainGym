@@ -19,7 +19,7 @@ export function FeatureGuideCard() {
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <h3 className="font-bold text-sm sm:text-base text-foreground">
-                New to BrainGym? Explore Features & Clarity Guide
+                New to AKUCHE? Explore Features & Clarity Guide
               </h3>
               <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-bold text-primary">
                 <Sparkles className="h-3 w-3" /> Quick Start

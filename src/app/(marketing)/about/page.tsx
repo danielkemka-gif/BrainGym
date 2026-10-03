@@ -14,7 +14,7 @@ const values = [
     icon: Eye,
     title: "Science-Backed",
     description:
-      "Every activity on BrainGym is rooted in cognitive science, behavioral psychology, and proven learning methodologies.",
+      "Every activity on AKUCHE is rooted in cognitive science, behavioral psychology, and proven learning methodologies.",
   },
   {
     icon: Target,
@@ -46,7 +46,7 @@ export default function AboutPage() {
             </h1>
             <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
               Just as physical exercise keeps your body healthy, mental
-              exercise keeps your mind sharp. BrainGym makes that practice
+              exercise keeps your mind sharp. AKUCHE makes that practice
               daily, personal, and effective.
             </p>
           </motion.div>
@@ -74,7 +74,7 @@ export default function AboutPage() {
               viewport={{ once: true }}
               className="mt-6 text-lg leading-relaxed text-muted-foreground"
             >
-              BrainGym was created to fill that gap. We combine the best of
+              AKUCHE was created to fill that gap. We combine the best of
               cognitive science, AI personalization, and habit formation to
               help people become better thinkers, better learners, and better
               leaders.

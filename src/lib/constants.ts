@@ -1,5 +1,5 @@
-export const APP_NAME = "BrainGym";
-export const APP_TAGLINE = "Train Your Brain. Every Day.";
+export const APP_NAME = "AKUCHE";
+export const APP_TAGLINE = "Train Your Mind for Real Life.";
 
 export const WORKOUT_ACTIVITIES_PER_DAY = 5;
 export const WORKOUT_TARGET_MINUTES = 15;

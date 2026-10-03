@@ -327,7 +327,7 @@ export function AskBrainGymInterface() {
         {loading && (
           <div className="flex items-center gap-2 rounded-2xl bg-card border border-border px-4 py-3 text-xs text-muted-foreground w-fit animate-pulse">
             <Sparkles className="h-4 w-4 text-primary animate-spin" />
-            <span>BrainGym is thinking through your situation...</span>
+            <span>AKUCHE is thinking through your situation...</span>
           </div>
         )}
 

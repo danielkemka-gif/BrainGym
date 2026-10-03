@@ -81,7 +81,7 @@ export function PersonaPreviewSwitcher({
             </span>
           </div>
           <p className="text-xs text-muted-foreground">
-            Test how BrainGym adapts content and real-life scenarios for different life stages:
+            Test how AKUCHE adapts content and real-life scenarios for different life stages:
           </p>
           <div className="flex flex-wrap gap-2">
             {BENCHMARK_PERSONAS.map((persona) => {
@@ -127,7 +127,7 @@ export function PersonaPreviewSwitcher({
                 Select a Life Persona to Test
               </h2>
               <p className="text-xs text-muted-foreground">
-                See how BrainGym trains the exact same universal mental abilities (Decision-Making, Focus, Memory, Problem-Solving) while adapting context and difficulty to each persona.
+                See how AKUCHE trains the exact same universal mental abilities (Decision-Making, Focus, Memory, Problem-Solving) while adapting context and difficulty to each persona.
               </p>
             </div>
 
@@ -176,7 +176,7 @@ export function PersonaPreviewSwitcher({
                 🛡️ Universal Framework Guarantee:
               </span>
               <p>
-                No matter which persona is selected, BrainGym maintains the same universal cognitive standards. Teens receive youth-safe scenarios, adults receive workplace/financial dilemmas, and seniors receive strategic/mentorship challenges—all training universal mental fitness.
+                No matter which persona is selected, AKUCHE maintains the same universal cognitive standards. Teens receive youth-safe scenarios, adults receive workplace/financial dilemmas, and seniors receive strategic/mentorship challenges—all training universal mental fitness.
               </p>
             </div>
           </div>

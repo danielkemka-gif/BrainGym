@@ -18,9 +18,9 @@ const STORAGE_KEY_TOUR = "braingym_first_time_tour_seen_v2";
 const SCREENS = [
   {
     step: 1,
-    badge: "WELCOME TO BRAINGYM",
+    badge: "WELCOME TO AKUCHE",
     title: "Mental Fitness for Real Life",
-    description: "BrainGym doesn't train you just to become better at games. We train your mind so you can make better decisions, stay calm under pressure, and perform better in real life.",
+    description: "AKUCHE doesn't train you just to become better at games. We train your mind so you can make better decisions, stay calm under pressure, and perform better in real life.",
     emoji: "🧠",
     color: "from-primary/20 via-card to-violet-600/20",
   },
@@ -52,7 +52,7 @@ const SCREENS = [
     step: 5,
     badge: "STEP 5",
     title: "Reflect in Your Journal & Share Wisdom",
-    description: "Write your takeaway in My BrainGym Journal, earn +150 XP, protect your streak, and turn your insight into a beautiful social share card!",
+    description: "Write your takeaway in My AKUCHE Journal, earn +150 XP, protect your streak, and turn your insight into a beautiful social share card!",
     emoji: "📖",
     color: "from-violet-500/20 via-card to-pink-500/20",
   },

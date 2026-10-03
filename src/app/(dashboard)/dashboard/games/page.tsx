@@ -202,7 +202,7 @@ export default function GamesHubPage() {
       {/* Standard Game cards */}
       <div className="space-y-3">
         <h2 className="text-base sm:text-lg font-black text-foreground">
-          Core BrainGym Machines
+          Core AKUCHE Machines
         </h2>
 
         {loading ? (

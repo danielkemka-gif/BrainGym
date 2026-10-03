@@ -58,7 +58,7 @@ export function PersonalizedTrainingHero() {
             <div>
               <div className="flex items-center gap-2">
                 <span className="rounded-full bg-amber-500/20 px-2.5 py-0.5 text-[10px] font-black uppercase text-amber-700 dark:text-amber-300">
-                  BrainGym Pro Feature
+                  AKUCHE Pro Feature
                 </span>
                 <span className="text-xs font-bold text-foreground">
                   Personalized AI Brain Training

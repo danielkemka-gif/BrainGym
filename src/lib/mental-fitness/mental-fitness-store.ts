@@ -155,7 +155,7 @@ export async function saveBrainGymReflection(
         .from("brain_journal")
         .insert({
           user_id: activeUserId,
-          title: title || "Today's BrainGym Reflection",
+          title: title || "Today's AKUCHE Reflection",
           content: `${content}\n\n**Takeaway:** ${takeaway}`,
           mood: "great",
           tags: ["DailyMission", "MentalFitness", "Reflection"],

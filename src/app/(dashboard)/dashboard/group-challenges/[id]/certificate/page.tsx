@@ -45,7 +45,7 @@ export default function ChallengeCertificatePage({
   }, [resolvedParams.id]);
 
   const participantName =
-    participant?.userName || user?.user_metadata?.name || user?.email?.split("@")[0] || "BrainGym Challenger";
+    participant?.userName || user?.user_metadata?.name || user?.email?.split("@")[0] || "AKUCHE Thinker";
 
   const completionDate = new Intl.DateTimeFormat("en-US", {
     month: "long",
@@ -53,8 +53,8 @@ export default function ChallengeCertificatePage({
     year: "numeric",
   }).format(new Date());
 
-  const certificateUrl = `https://braingym-live.vercel.app/dashboard/group-challenges/${resolvedParams.id}/certificate`;
-  const shareText = `I proudly completed the ${challenge?.title || "BrainGym Challenge"} on BrainGym with ${participant?.completionPercentage || 96}% participation! 🧠🏆\n\nTrain your brain with me here: ${certificateUrl}`;
+  const certificateUrl = `https://brain-gym-nsu6.vercel.app/dashboard/group-challenges/${resolvedParams.id}/certificate`;
+  const shareText = `I proudly completed the ${challenge?.title || "AKUCHE Challenge"} on AKUCHE with ${participant?.completionPercentage || 96}% participation! 🧠🏆\n\nTrain your mind with me here: ${certificateUrl}`;
 
   if (loading || !challenge) {
     return (
@@ -93,13 +93,13 @@ export default function ChallengeCertificatePage({
 
         <div className="space-y-1">
           <span className="text-xs font-black uppercase tracking-widest text-amber-600 dark:text-amber-400">
-            BRAINGYM COGNITIVE FITNESS PLATFORM
+            AKUCHE MENTAL FITNESS PLATFORM
           </span>
           <h1 className="text-2xl sm:text-4xl font-serif font-black text-foreground tracking-tight">
             Certificate of Completion
           </h1>
           <p className="text-xs text-muted-foreground">
-            Official Verification Code: BG-CERT-{challenge.code}-{Date.now().toString().slice(-4)}
+            Official Verification Code: AKUCHE-CERT-{challenge.code}-{Date.now().toString().slice(-4)}
           </p>
         </div>
 

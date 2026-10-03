@@ -178,7 +178,7 @@ export function SignupForm({ refCode }: { refCode?: string | null }) {
           </p>
         </div>
         <p className="text-xs text-muted-foreground leading-relaxed">
-          Click the link in the email to activate your account and access your BrainGym dashboard.
+          Click the link in the email to activate your account and access your AKUCHE dashboard.
         </p>
 
         {resendStatus && (

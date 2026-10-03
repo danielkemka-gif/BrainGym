@@ -39,7 +39,7 @@ export function ServiceWorkerRegistration() {
             installingWorker.addEventListener('statechange', () => {
               if (installingWorker.state === 'installed') {
                 if (navigator.serviceWorker.controller) {
-                  console.log('New BrainGym version installed on mobile. Activating...');
+                  console.log('New Akuche version installed on mobile. Activating...');
                   installingWorker.postMessage({ type: 'SKIP_WAITING' });
                 }
               }

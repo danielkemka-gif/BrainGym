@@ -74,13 +74,20 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <head>
+        <title>AKUCHE — Train Your Mind for Real Life</title>
         <link rel="icon" type="image/png" href="/favicon.png" />
-        <link rel="apple-touch-icon" href="/logo.png" />
+        <link rel="shortcut icon" href="/favicon.png" />
+        <link rel="apple-touch-icon" href="/icons/akuche-apple-touch.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/icons/akuche-apple-touch.png" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/icons/akuche-192.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/icons/akuche-512.png" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)" />
-        <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+        <meta name="application-name" content="AKUCHE" />
+        <meta name="apple-mobile-web-app-title" content="AKUCHE" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="theme-color" content="#090d16" media="(prefers-color-scheme: dark)" />
+        <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         <a

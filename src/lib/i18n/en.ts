@@ -170,7 +170,7 @@ export const en: TranslationKeys = {
   settings_language_desc: "Choose your preferred language. All progress, XP, and streaks are preserved.",
 
   // Premium
-  premium_title: "BrainGym Premium",
+  premium_title: "AKUCHE Premium",
   premium_upgrade: "Upgrade to Premium",
   premium_trial_active: "Free Trial Active",
   premium_trial_days: "days remaining in trial",

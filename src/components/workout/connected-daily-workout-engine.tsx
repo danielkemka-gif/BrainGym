@@ -651,7 +651,7 @@ export function ConnectedDailyWorkoutEngine({ lesson }: ConnectedDailyWorkoutEng
             <div className="flex items-center gap-2">
               <span className="flex h-2.5 w-2.5 rounded-full bg-violet-500 animate-pulse" />
               <span className="text-[10px] sm:text-xs font-black uppercase text-violet-600 dark:text-violet-400 tracking-wider">
-                STEP 6 OF 6 · MY BRAINGYM JOURNAL
+                STEP 6 OF 6 · MY AKUCHE JOURNAL
               </span>
             </div>
             <span className="rounded-full bg-violet-500/10 px-3 py-1 text-xs font-black text-violet-600 dark:text-violet-400">

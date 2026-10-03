@@ -59,7 +59,7 @@ export function DashboardPremiumHero() {
           <div>
             <div className="flex items-center gap-1.5">
               <span className="text-xs sm:text-sm font-bold text-foreground">
-                BrainGym Pro Member Active
+                AKUCHE Pro Member Active
               </span>
               <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-300">
                 VIP ⭐
@@ -97,7 +97,7 @@ export function DashboardPremiumHero() {
             </div>
             <div>
               <h3 className="text-sm sm:text-base font-black text-foreground flex items-center gap-1.5">
-                <span>BrainGym Premium Membership</span>
+                <span>AKUCHE Premium Membership</span>
                 <span className="rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-2 py-0.5 text-[10px] font-extrabold text-white shadow-sm">
                   PRO ⭐
                 </span>

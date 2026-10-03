@@ -52,7 +52,7 @@ export function DashboardInstallCard() {
           </div>
           <div>
             <h3 className="text-sm sm:text-base font-black text-foreground">
-              Install BrainGym App on Your Phone
+              Install AKUCHE App on Your Phone
             </h3>
             <p className="text-xs text-muted-foreground">
               Add to your home screen for 1-tap daily brain workouts

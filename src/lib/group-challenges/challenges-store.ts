@@ -21,7 +21,7 @@ const INITIAL_CHALLENGES: GroupChallenge[] = [
     hostId: "host-daniel",
     hostName: "Daniel Kemka",
     hostAvatar: "🧠",
-    hostRoleTitle: "BrainGym Founder",
+    hostRoleTitle: "AKUCHE Founder",
     type: "Brain Momentum Challenge",
     category: "For Entrepreneurs",
     targetRole: "Founders, Traders, CEOs & Business Builders",
@@ -606,8 +606,8 @@ export async function completeDailyGroupChallenge(
  * Generate a ready-to-send WhatsApp invitation message & URL
  */
 export function generateWhatsAppInviteUrl(challenge: GroupChallenge): string {
-  const appUrl = `https://braingym-live.vercel.app/dashboard/group-challenges/join/${challenge.code}`;
-  const text = `Hey everyone! 🧠🔥\n\nI've created a BrainGym Group Challenge:\n*${challenge.title}*\n\n• Duration: ${challenge.durationDays} Days\n• Goal: Build daily focus, sharp memory & mental consistency\n• Challenge Code: *${challenge.code}*\n\nTap here to join our team now:\n${appUrl}`;
+  const appUrl = `https://brain-gym-nsu6.vercel.app/dashboard/group-challenges/join/${challenge.code}`;
+  const text = `Hey everyone! 🧠🔥\n\nI've created an AKUCHE Group Challenge:\n*${challenge.title}*\n\n• Duration: ${challenge.durationDays} Days\n• Goal: Build daily focus, sharp memory & mental consistency\n• Challenge Code: *${challenge.code}*\n\nTap here to join our team now:\n${appUrl}`;
   return `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
 }
 
@@ -615,5 +615,5 @@ export function generateWhatsAppInviteUrl(challenge: GroupChallenge): string {
  * Generate quick invite link for copying
  */
 export function generateInviteLink(challenge: GroupChallenge): string {
-  return `https://braingym-live.vercel.app/dashboard/group-challenges/join/${challenge.code}`;
+  return `https://brain-gym-nsu6.vercel.app/dashboard/group-challenges/join/${challenge.code}`;
 }

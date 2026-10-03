@@ -190,7 +190,7 @@ export default function FeaturesPage() {
               Train every part of your brain
             </h1>
             <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-              BrainGym covers all the cognitive skills that matter for real
+              AKUCHE covers all the cognitive skills that matter for real
               life — from memory and focus to emotional intelligence.
             </p>
           </motion.div>
@@ -249,7 +249,7 @@ export default function FeaturesPage() {
               Everything included
             </h2>
             <p className="mt-4 text-lg text-muted-foreground">
-              BrainGym combines science-backed training with AI-powered
+              AKUCHE combines science-backed training with AI-powered
               personalization.
             </p>
           </motion.div>

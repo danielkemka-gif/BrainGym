@@ -66,7 +66,7 @@ export function InviteFriendsCard() {
     loadInfo();
   }, [loadInfo]);
 
-  const inviteText = `Train your brain with me on BrainGym! 🧠 Join free and use my code: ${info?.code}`;
+  const inviteText = `Train your mind with me on AKUCHE! 🧠 Join free and use my code: ${info?.code}`;
   const inviteUrl = `${getSiteUrl()}/signup?ref=${info?.code}`;
 
   const copyLink = async () => {
@@ -91,7 +91,7 @@ export function InviteFriendsCard() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'BrainGym',
+          title: 'AKUCHE',
           text: inviteText,
           url: inviteUrl,
         });

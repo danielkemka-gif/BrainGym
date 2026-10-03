@@ -80,7 +80,7 @@ export function ChatUI() {
           {
             id: "welcome-1",
             role: "coach",
-            content: "Hello and welcome to BrainGym! 🧠 I am your AI Brain & Habit Coach. Whether you want to sharpen your focus for work, master deep memory techniques, improve sleep quality, or build unstoppable daily consistency, I am here to guide you. What cognitive goal or challenge would you like to work on today?",
+            content: "Hello and welcome to AKUCHE! 🧠 I am your AI Brain & Habit Coach. Whether you want to sharpen your focus for work, master deep memory techniques, improve sleep quality, or build unstoppable daily consistency, I am here to guide you. What cognitive goal or challenge would you like to work on today?",
           },
         ]);
       }
@@ -192,7 +192,7 @@ export function ChatUI() {
                 <span className="text-xs font-medium text-primary">AI Coach</span>
               </div>
               <div className="whitespace-pre-wrap">
-                Hi! I&apos;m your BrainGym AI Coach. I can recommend activities, answer questions about brain training, and help you reach your cognitive goals. What would you like to explore?
+                Hi! I&apos;m your AKUCHE AI Coach. I can recommend activities, answer questions about brain training, and help you reach your cognitive goals. What would you like to explore?
               </div>
             </div>
           </div>

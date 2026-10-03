@@ -139,7 +139,7 @@ export default function LibraryPage() {
               Cognitive Activity Library
             </h1>
             <p className="text-xs sm:text-sm text-muted-foreground max-w-xl">
-              «Not sure what to choose? Let BrainGym build an adaptive daily workout around your individual data.»
+              «Not sure what to choose? Let AKUCHE build an adaptive daily workout around your individual data.»
             </p>
           </div>
 

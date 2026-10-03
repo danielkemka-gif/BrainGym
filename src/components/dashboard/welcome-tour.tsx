@@ -9,8 +9,8 @@ export const OPEN_TOUR_EVENT = "braingym:opentour";
 const SLIDES = [
   {
     icon: Brain,
-    title: "Welcome to BrainGym!",
-    description: "Train your brain in just minutes a day. We'll show you around — it takes under 60 seconds.",
+    title: "Welcome to AKUCHE!",
+    description: "Train your mind for real life in just minutes a day. We'll show you around — it takes under 60 seconds.",
     gradient: "from-indigo-500 to-violet-600",
   },
   {

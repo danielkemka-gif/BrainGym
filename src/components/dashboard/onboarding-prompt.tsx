@@ -51,7 +51,7 @@ const PROMPTS = [
     avatarIcon: <Trophy className="h-7 w-7 text-pink-400" />,
     title: "See the leaderboard",
     description:
-      "Compare your progress with other BrainGym members and climb the ranks.",
+      "Compare your progress with other AKUCHE members and climb the ranks.",
     href: "/dashboard/leaderboard",
     cta: "View Rankings",
   },

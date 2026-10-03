@@ -71,7 +71,7 @@ export function AgeGroupStep({ defaultValues, onNext, onBack }: Props) {
           <span>1. Your Age Range</span>
         </div>
         <p className="text-xs text-muted-foreground">
-          BrainGym adapts real-life context so exercises feel natural to your stage in life.
+          AKUCHE adapts real-life context so exercises feel natural to your stage in life.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">

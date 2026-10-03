@@ -100,7 +100,7 @@ export async function GET(req: Request) {
           keys,
         },
         JSON.stringify({
-          title: first.title ?? "BrainGym",
+          title: first.title ?? "AKUCHE",
           body: first.message ?? "Time for your brain workout!",
           url: first.action_url ?? "/dashboard",
         })

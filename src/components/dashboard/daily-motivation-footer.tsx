@@ -10,7 +10,7 @@ export function DailyMotivationFooter() {
         <span>&ldquo;Small daily improvements create a stronger mind.&rdquo;</span>
       </p>
       <p className="text-[10px] text-muted-foreground/70 font-medium">
-        BrainGym Mental Vitality Principle
+        AKUCHE Mental Vitality Principle
       </p>
     </div>
   );

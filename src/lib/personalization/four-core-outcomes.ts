@@ -112,7 +112,7 @@ export const MASTER_VALUE_PROPOSITION = {
     "You develop your career in business and work.",
     "You grow spiritually in your faith community.",
     "But you also need to deliberately train the mind you use to navigate all of them.",
-    "That's BrainGym.",
+    "That's AKUCHE.",
   ],
   transferContinuum: "School → Work → Business → Family → Community → Life",
   theBigQuestion: "«How well can you use your mind when real life gives you a problem?»",

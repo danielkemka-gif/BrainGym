@@ -81,7 +81,7 @@ export function DailyReminder() {
       requestPermission();
       return;
     }
-    new Notification("BrainGym 🧠", {
+    new Notification("AKUCHE 🧠", {
       body: "Time to train your brain! Quick-Fire quiz is waiting.",
       icon: "/logo.png",
       badge: "/logo.png",
@@ -208,7 +208,7 @@ export function checkAndShowReminder() {
     const lastShown = sessionStorage.getItem(lastShownKey);
     if (lastShown) return;
 
-    new Notification("BrainGym 🧠 Time to Train!", {
+    new Notification("AKUCHE 🧠 Time to Train!", {
       body: "Your daily brain workout is ready. Quick-Fire quiz takes just 60 seconds!",
       icon: "/logo.png",
       badge: "/logo.png",

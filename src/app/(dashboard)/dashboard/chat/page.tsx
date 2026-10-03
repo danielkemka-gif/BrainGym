@@ -295,7 +295,7 @@ function ChatContent() {
           edited_at: row.edited_at,
           reply_to: row.reply_to,
           user_id: row.user_id,
-          user_name: cached?.name || "BrainGym Member",
+          user_name: cached?.name || "AKUCHE Member",
           user_avatar: cached?.avatar_url || null,
           user_username: cached?.username || null,
         };
@@ -321,12 +321,12 @@ function ChatContent() {
         const welcomeSeed: ChatMessage[] = [
           {
             id: "seed-1",
-            content: "👋 Welcome to BrainGym Community Chat! Connect with other users, share daily high scores, discuss memory techniques, and challenge each other to 1v1 brain duels.",
+            content: "👋 Welcome to AKUCHE Community Chat! Connect with other users, share daily high scores, discuss memory techniques, and challenge each other to 1v1 brain duels.",
             created_at: new Date(Date.now() - 3600000).toISOString(),
             edited_at: null,
             reply_to: null,
             user_id: "system-coach",
-            user_name: "BrainGym AI Coach 🤖",
+            user_name: "AKUCHE AI Coach 🤖",
             user_avatar: null,
             user_username: "coach",
           },
@@ -337,7 +337,7 @@ function ChatContent() {
             edited_at: null,
             reply_to: null,
             user_id: "system-coach",
-            user_name: "BrainGym AI Coach 🤖",
+            user_name: "AKUCHE AI Coach 🤖",
             user_avatar: null,
             user_username: "coach",
           },
@@ -354,7 +354,7 @@ function ChatContent() {
         { user_id: "bot-1", name: "Dr. Adaobi", username: "neuro_ada", avatar_url: null, online_at: new Date().toISOString() },
         { user_id: "bot-2", name: "Kenzo", username: "speed_strategist", avatar_url: null, online_at: new Date().toISOString() },
         { user_id: "bot-3", name: "Maya", username: "logic_grandmaster", avatar_url: null, online_at: new Date().toISOString() },
-        { user_id: "bot-4", name: "BrainGym Coach 🤖", username: "ai_coach", avatar_url: null, online_at: new Date().toISOString() },
+        { user_id: "bot-4", name: "AKUCHE Coach 🤖", username: "ai_coach", avatar_url: null, online_at: new Date().toISOString() },
       ]);
 
       setTimeout(() => {
@@ -430,7 +430,7 @@ function ChatContent() {
           }
           return [...prev, {
             ...newMsg,
-            user_name: cached?.name || "BrainGym Member",
+            user_name: cached?.name || "AKUCHE Member",
             user_avatar: cached?.avatar_url || null,
             user_username: cached?.username || null,
           }];
@@ -532,7 +532,7 @@ function ChatContent() {
         "🔥 Great point! Consistency is everything in cognitive training.",
         "🧠 Totally agree! Have you tried the 1v1 Brain Duel arena today? ⚔️",
         "💡 Pro tip: Doing your daily 6-step loop right after waking up gives the best focus boost!",
-        "👏 Keep up the momentum! Brain Gym is leveling up daily.",
+        "👏 Keep up the momentum! AKUCHE is leveling up daily.",
       ];
       const botResponse: ChatMessage = {
         id: "peer-" + Date.now(),
@@ -541,7 +541,7 @@ function ChatContent() {
         edited_at: null,
         reply_to: optimisticMsg.id,
         user_id: "peer-" + Math.floor(Math.random() * 4),
-        user_name: "BrainGym Thinker 🌟",
+        user_name: "AKUCHE Thinker 🌟",
         user_avatar: null,
         user_username: "thinker",
       };

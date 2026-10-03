@@ -91,7 +91,7 @@ export function FourCoreOutcomesStrip() {
             &ldquo;{MASTER_VALUE_PROPOSITION.theBigQuestion}&rdquo;
           </p>
           <p className="text-[11px] text-muted-foreground mt-1">
-            BrainGym gives you deliberate, daily practice using your mind when real life gives you a problem.
+            AKUCHE gives you deliberate, daily practice using your mind when real life gives you a problem.
           </p>
         </div>
       </div>

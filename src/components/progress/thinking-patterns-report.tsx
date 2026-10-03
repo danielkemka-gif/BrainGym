@@ -134,7 +134,7 @@ export function ThinkingPatternsReport() {
           🛡️ Responsible Cognitive Tracking:
         </span>
         <p>
-          These insights reflect your decision patterns and practice consistency within BrainGym exercises. They are designed to foster thoughtful self-awareness, not clinical diagnoses.
+          These insights reflect your decision patterns and practice consistency within AKUCHE exercises. They are designed to foster thoughtful self-awareness, not clinical diagnoses.
         </p>
       </div>
     </div>

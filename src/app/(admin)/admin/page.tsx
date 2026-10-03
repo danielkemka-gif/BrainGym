@@ -55,7 +55,7 @@ export default function AdminDashboardPage() {
       <div>
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <p className="text-sm text-muted-foreground">
-          Overview of your BrainGym platform
+          Overview of your AKUCHE platform
         </p>
       </div>
 

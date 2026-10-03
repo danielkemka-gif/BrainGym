@@ -31,7 +31,7 @@ export function PushNotificationCard() {
           <h3 className="text-sm font-semibold">Phone Reminders</h3>
         </div>
         <p className="mt-1 text-xs text-muted-foreground">
-          Your browser doesn&apos;t support web push notifications. Open BrainGym in
+          Your browser doesn&apos;t support web push notifications. Open AKUCHE in
           a modern browser (Chrome, Safari, or Edge) to enable phone reminders.
         </p>
       </div>

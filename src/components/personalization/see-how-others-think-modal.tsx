@@ -60,7 +60,7 @@ export function SeeHowOthersThinkModal({
             {challenge.title}
           </h2>
           <p className="text-xs sm:text-sm text-muted-foreground">
-            BrainGym connects people across generations. Everyone receives the same universal challenge—explore how different life stages solve it!
+            AKUCHE connects people across generations. Everyone receives the same universal challenge—explore how different life stages solve it!
           </p>
         </div>
 

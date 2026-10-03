@@ -82,7 +82,7 @@ export function useEntitlements() {
     isFree: true,
     trialDaysRemaining: 0,
     periodEnd: null,
-    planName: "BrainGym Free",
+    planName: "AKUCHE Free",
     loading: true,
   });
 
@@ -128,7 +128,7 @@ export function useEntitlements() {
 
         const isPro = tier === "pro" || tier === "trialing";
         const isFree = !isPro;
-        const planName = tier === "pro" ? "BrainGym Pro" : isTrial ? `Pro Trial (${daysLeft}d left)` : "BrainGym Free";
+        const planName = tier === "pro" ? "AKUCHE Pro" : isTrial ? `Pro Trial (${daysLeft}d left)` : "AKUCHE Free";
 
         setState({
           tier,
@@ -148,7 +148,7 @@ export function useEntitlements() {
           isFree: true,
           trialDaysRemaining: 0,
           periodEnd: null,
-          planName: "BrainGym Free",
+          planName: "AKUCHE Free",
           loading: false,
         });
       }

@@ -91,7 +91,7 @@ function drawCard(ctx: CanvasRenderingContext2D, W: number, H: number, stats: Us
   ctx.font = "bold 28px system-ui, sans-serif";
   ctx.fillStyle = "#ffffff";
   ctx.textAlign = "center";
-  ctx.fillText("BrainGym", W / 2, 108 + yOffset);
+  ctx.fillText("AKUCHE", W / 2, 108 + yOffset);
 
   const nameY = photo ? 80 + photoSize + 80 + yOffset : 200;
   ctx.font = "bold 52px system-ui, sans-serif";
@@ -186,7 +186,7 @@ export default function ShareCardPage() {
         user.user_metadata?.display_name ||
         user.user_metadata?.full_name ||
         user.email?.split("@")[0] ||
-        "BrainGym User";
+        "AKUCHE User";
 
       Promise.all([
         supabase.from("xp_ledger").select("amount").eq("user_id", user.id)
@@ -339,7 +339,7 @@ export default function ShareCardPage() {
 
 
   const shareText = stats
-    ? `🧠 I'm a Level ${stats.level} ${stats.levelTitle} on BrainGym! ${stats.totalXp} XP earned, ${stats.streak}-day streak 🔥\n\nJoin me — train your brain at ${shareUrl}`
+    ? `🧠 I'm a Level ${stats.level} ${stats.levelTitle} on AKUCHE! ${stats.totalXp} XP earned, ${stats.streak}-day streak 🔥\n\nJoin me — train your brain at ${shareUrl}`
     : "";
 
   function getShareUrl(platform: string) {

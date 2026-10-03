@@ -30,7 +30,7 @@ export function JournalShareCardModal({
   challengeTitle,
   takeaway,
   reflectionText,
-  userName = "BrainGym Member",
+  userName = "AKUCHE Member",
 }: JournalShareCardModalProps) {
   const [editedTakeaway, setEditedTakeaway] = useState(takeaway || "Pause. Understand. Then decide.");
   const [editedNote, setEditedNote] = useState(reflectionText || "Reacting quickly isn't the same as responding wisely.");
@@ -45,7 +45,7 @@ export function JournalShareCardModal({
 
   if (!isOpen) return null;
 
-  const formattedShareText = `🧠 TODAY'S BRAINGYM REFLECTION\n\n📌 Today's Challenge:\n${challengeTitle}\n\n💡 My Key Takeaway:\n"${editedTakeaway}"\n\n📝 My Reflection:\n${editedNote}\n\n✨ Train your mind. Improve your life.\n👉 Join me on BrainGym: https://braingym-live.vercel.app`;
+  const formattedShareText = `🧠 TODAY'S AKUCHE REFLECTION\n\n📌 Today's Challenge:\n${challengeTitle}\n\n💡 My Key Takeaway:\n"${editedTakeaway}"\n\n📝 My Reflection:\n${editedNote}\n\n✨ Train your mind for real life.\n👉 Join me on AKUCHE: https://brain-gym-nsu6.vercel.app`;
 
   const handleCopyText = async () => {
     try {
@@ -61,9 +61,9 @@ export function JournalShareCardModal({
     if (typeof window !== "undefined" && navigator.share) {
       try {
         await navigator.share({
-          title: "Today's BrainGym Reflection",
+          title: "Today's AKUCHE Reflection",
           text: formattedShareText,
-          url: "https://braingym-live.vercel.app",
+          url: "https://brain-gym-nsu6.vercel.app",
         });
       } catch {
         // user cancelled or unsupported
@@ -79,12 +79,12 @@ export function JournalShareCardModal({
   };
 
   const shareToLinkedIn = () => {
-    const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent("https://braingym-live.vercel.app")}&summary=${encodeURIComponent(formattedShareText)}`;
+    const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent("https://brain-gym-nsu6.vercel.app")}&summary=${encodeURIComponent(formattedShareText)}`;
     window.open(url, "_blank");
   };
 
   const shareToFacebook = () => {
-    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent("https://braingym-live.vercel.app")}&quote=${encodeURIComponent(formattedShareText)}`;
+    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent("https://brain-gym-nsu6.vercel.app")}&quote=${encodeURIComponent(formattedShareText)}`;
     window.open(url, "_blank");
   };
 
@@ -108,11 +108,11 @@ export function JournalShareCardModal({
           </button>
         </div>
 
-        {/* ─── BRAINGYM BRANDED SHARE CARD PREVIEW ──────────────────────────── */}
+        {/* ─── AKUCHE BRANDED SHARE CARD PREVIEW ──────────────────────────── */}
         <div className="relative rounded-3xl border-2 border-primary/50 bg-gradient-to-br from-primary/15 via-card to-violet-600/15 p-6 sm:p-7 shadow-xl space-y-4">
           <div className="flex items-center justify-between border-b border-primary/20 pb-2">
             <span className="text-[10px] font-black uppercase tracking-widest text-primary">
-              TODAY&apos;S BRAINGYM REFLECTION
+              TODAY&apos;S AKUCHE REFLECTION
             </span>
             <span className="text-[10px] font-bold text-muted-foreground">
               {new Date().toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
@@ -170,8 +170,8 @@ export function JournalShareCardModal({
           {/* Footer Branding */}
           <div className="flex items-center justify-between pt-2 border-t border-primary/20 text-xs">
             <div className="space-y-0.5">
-              <span className="font-black text-foreground block">BrainGym</span>
-              <span className="text-[10px] text-muted-foreground">Train your mind. Improve your life.</span>
+              <span className="font-black text-foreground block">AKUCHE</span>
+              <span className="text-[10px] text-muted-foreground">Train your mind for real life.</span>
             </div>
             <span className="text-xs font-black text-primary bg-primary/10 rounded-full px-2.5 py-0.5">
               Mental Fitness

@@ -49,7 +49,7 @@ export default function SmartRemindersPage() {
       const result = await Notification.requestPermission();
       setPermissionStatus(result);
       if (result === "granted") {
-        new Notification("BrainGym Smart Reminders Active 🧠", {
+        new Notification("AKUCHE Smart Reminders Active 🧠", {
           body: "You will receive daily reminders to keep your brain training streak alive!",
           icon: "/logo.png",
         });
@@ -135,7 +135,7 @@ export default function SmartRemindersPage() {
               <p className="text-xs text-muted-foreground">
                 {permissionStatus === "granted"
                   ? "✓ Push notifications are currently enabled."
-                  : "Allow BrainGym to deliver gentle morning workout prompts."}
+                  : "Allow AKUCHE to deliver gentle morning workout prompts."}
               </p>
             </div>
           </div>
@@ -164,7 +164,7 @@ export default function SmartRemindersPage() {
             <span>Choose Your Brain Training Days</span>
           </h3>
           <p className="text-xs text-muted-foreground">
-            Select the days you want BrainGym to prompt your morning session.
+            Select the days you want AKUCHE to prompt your morning session.
           </p>
         </div>
 

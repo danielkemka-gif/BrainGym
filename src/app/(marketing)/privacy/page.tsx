@@ -16,9 +16,9 @@ export default function PrivacyPolicyPage() {
         <section>
           <h2 className="text-xl font-semibold">1. Introduction</h2>
           <p>
-            Welcome to BrainGym (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). We are committed to protecting your personal information and your right to privacy.
+            Welcome to AKUCHE (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). We are committed to protecting your personal information and your right to privacy.
             This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our brain training application and website
-            at braingym.app (the &quot;Service&quot;).
+            at akuche.app (the &quot;Service&quot;).
           </p>
           <p>
             By using our Service, you agree to the collection and use of information in accordance with this policy. If you do not agree, please discontinue use.
@@ -113,14 +113,14 @@ export default function PrivacyPolicyPage() {
             <li>Withdraw consent at any time</li>
           </ul>
           <p className="mt-2">
-            To exercise any of these rights, please contact us at privacy@braingym.app.
+            To exercise any of these rights, please contact us at privacy@akuche.app.
           </p>
         </section>
 
         <section>
           <h2 className="text-xl font-semibold">8. Children&apos;s Privacy</h2>
           <p>
-            BrainGym is designed for users aged 13 and above. We do not knowingly collect personal information from children under 13.
+            AKUCHE is designed for users aged 13 and above. We do not knowingly collect personal information from children under 13.
             If we become aware that a child under 13 has provided us with personal information, we will take steps to delete such information promptly.
           </p>
         </section>
@@ -146,7 +146,7 @@ export default function PrivacyPolicyPage() {
           <p>
             If you have questions about this Privacy Policy or our data practices, please contact us at:
           </p>
-          <p className="mt-2 font-medium">privacy@braingym.app</p>
+          <p className="mt-2 font-medium">privacy@akuche.app</p>
         </section>
       </div>
     </div>

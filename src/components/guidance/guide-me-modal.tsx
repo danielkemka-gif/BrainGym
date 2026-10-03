@@ -40,7 +40,7 @@ export function GuideMeModal({ isOpen, onClose }: GuideMeModalProps) {
     nextActionLabel = "Continue Workout Steps";
     nextActionHref = "/dashboard/workout";
   } else if (pathname?.includes("/journal")) {
-    pageTitle = "My BrainGym Journal";
+    pageTitle = "My AKUCHE Journal";
     pageExplanation = "Write down takeaways from your daily scenarios, track your cognitive growth over time, and generate beautiful shareable reflection cards for social media.";
     nextActionLabel = "Write a Reflection";
     nextActionHref = "/dashboard/journal";

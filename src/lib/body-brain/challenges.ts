@@ -9,7 +9,7 @@ export const BODY_BRAIN_CHALLENGES: BodyBrainChallenge[] = [
     cognitiveAction: "Spot and encode 4 distinct objects along your path: an Oak Tree, Red Vehicle, Blue Door, and Street Lamp in exact sequence.",
     durationMinutes: 10,
     verificationMethod: "cognitive_recall",
-    verificationInstructions: "BrainGym will monitor your movement duration, followed by a 3-question post-walk recall test upon completion.",
+    verificationInstructions: "AKUCHE will monitor your movement duration, followed by a 3-question post-walk recall test upon completion.",
     expectedOutcome: "Enhances hippocampal episodic memory encoding and cardiovascular cerebral perfusion.",
     xpReward: 120,
     coinReward: 30,

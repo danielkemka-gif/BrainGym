@@ -339,7 +339,7 @@ export async function completeAssignedDailyTask(
         amount: xpReward,
         source_type: "daily_challenge_complete",
         source_id: taskId,
-        description: `Completed BrainGym Daily: ${task?.title || taskId}`,
+        description: `Completed AKUCHE Daily: ${task?.title || taskId}`,
       });
 
       const { data: prof } = await supabase

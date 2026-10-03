@@ -67,7 +67,7 @@ export function QuestionBankExplorer() {
             </span>
           </div>
           <h2 className="text-xl sm:text-2xl font-black text-foreground mt-0.5">
-            Explore 5,000+ BrainGym Questions
+            Explore 5,000+ AKUCHE Questions
           </h2>
           <p className="text-xs text-muted-foreground">
             Search, practice, and challenge your brain across 10 core life and cognitive domains.

@@ -47,7 +47,7 @@ const steps: GuideStep[] = [
     icon: <Trophy className="h-5 w-5" />,
     title: "Check the leaderboard",
     description:
-      "See how you rank against other BrainGym members and stay motivated.",
+      "See how you rank against other AKUCHE members and stay motivated.",
     href: "/dashboard/leaderboard",
     cta: "View Rankings",
   },
@@ -117,7 +117,7 @@ export function WelcomeGuide() {
         </div>
         <div className="min-w-0">
           <h3 className="text-lg font-bold">
-            Hey {userName}! Welcome to BrainGym
+            Hey {userName}! Welcome to AKUCHE
           </h3>
           <p className="text-sm text-muted-foreground">
             Let&apos;s get your brain training started. Here&apos;s what to do first:

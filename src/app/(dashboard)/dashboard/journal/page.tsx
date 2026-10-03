@@ -148,7 +148,7 @@ export default function JournalPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border/60 pb-4">
         <div>
           <h1 className="text-balance text-xl font-bold sm:text-2xl flex items-center gap-2">
-            <span>My BrainGym Journal</span>
+            <span>My AKUCHE Journal</span>
             <span className="text-lg">📖</span>
           </h1>
           <p className="text-sm text-muted-foreground">
@@ -292,7 +292,7 @@ export default function JournalPage() {
           </div>
           <div className="space-y-1 max-w-sm">
             <h3 className="text-base sm:text-lg font-black text-foreground">
-              {entries.length === 0 ? "Your BrainGym Journal is waiting" : "No matching reflections found"}
+              {entries.length === 0 ? "Your AKUCHE Journal is waiting" : "No matching reflections found"}
             </h3>
             <p className="text-xs text-muted-foreground">
               {entries.length === 0

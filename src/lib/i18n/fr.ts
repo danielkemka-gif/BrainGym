@@ -170,7 +170,7 @@ export const fr: TranslationKeys = {
   settings_language_desc: "Choisissez votre langue. Vos points XP, séries et historiques restent intacts.",
 
   // Premium
-  premium_title: "BrainGym Premium",
+  premium_title: "AKUCHE Premium",
   premium_upgrade: "Passer à Premium",
   premium_trial_active: "Essai Gratuit Actif",
   premium_trial_days: "jours restants dans l'essai",

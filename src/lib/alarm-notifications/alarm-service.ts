@@ -21,7 +21,7 @@ const STORAGE_KEY_ALARM = "braingym_alarm_config_v1";
 const DEFAULT_ALARM: AlarmScheduleConfig = {
   enabled: true,
   time: "07:30",
-  label: "Daily BrainGym Workout",
+  label: "Daily AKUCHE Workout",
   days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
   sound: true,
   vibrate: true,
@@ -137,7 +137,7 @@ export async function testAlarmNow(): Promise<{ success: boolean; notificationGr
   if (typeof window !== "undefined" && "Notification" in window) {
     if (Notification.permission === "granted") {
       notificationGranted = true;
-      new Notification("⏰ BrainGym Daily Workout Alarm!", {
+      new Notification("⏰ AKUCHE Daily Workout Alarm!", {
         body: "Your daily 2-phase brain workout is ready. Tap to sharpen your mind today! 🧠⚡",
         icon: "/icons/icon-192.png",
         badge: "/icons/icon-192.png",
@@ -147,7 +147,7 @@ export async function testAlarmNow(): Promise<{ success: boolean; notificationGr
       const perm = await requestAlarmNotificationPermission();
       notificationGranted = perm;
       if (perm) {
-        new Notification("⏰ BrainGym Daily Workout Alarm!", {
+        new Notification("⏰ AKUCHE Daily Workout Alarm!", {
           body: "Your daily 2-phase brain workout is ready. Tap to sharpen your mind today! 🧠⚡",
           icon: "/icons/icon-192.png",
           badge: "/icons/icon-192.png",

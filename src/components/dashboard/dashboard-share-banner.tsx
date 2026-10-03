@@ -6,15 +6,15 @@ import { Share2, Check, Copy, Users, Sparkles, Flame } from "lucide-react";
 export function DashboardShareBanner() {
   const [copied, setCopied] = useState(false);
 
-  const inviteText = `I'm training my brain on BrainGym! 🧠🔥 Daily 2-phase workouts, real-life challenges, and mental performance. Join me here: https://braingym-live.vercel.app/`;
+  const inviteText = `I'm training my mind on AKUCHE! 🧠🔥 Real-life problem solving, cognitive agility, and decision making. Join me here: https://brain-gym-nsu6.vercel.app/`;
 
   const handleNativeShare = async () => {
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
         await navigator.share({
-          title: "Join me on BrainGym",
+          title: "Join me on AKUCHE",
           text: inviteText,
-          url: "https://braingym-live.vercel.app/",
+          url: "https://brain-gym-nsu6.vercel.app/",
         });
         return;
       } catch {
@@ -42,7 +42,7 @@ export function DashboardShareBanner() {
         </div>
         <div>
           <h3 className="text-sm sm:text-base font-black text-foreground">
-            Share BrainGym with Friends
+            Share AKUCHE with Friends
           </h3>
           <p className="text-xs text-muted-foreground">
             Invite friends, classmates, or colleagues to train together and compare streaks.

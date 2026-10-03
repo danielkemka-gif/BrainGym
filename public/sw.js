@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'akuche-v2.0.0-live-launch';
+const CACHE_VERSION = 'akuche-v2.0.1-brand-launch';
 const STATIC_CACHE = `akuche-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `akuche-dynamic-${CACHE_VERSION}`;
 
@@ -15,6 +15,9 @@ const STATIC_ASSETS = [
   '/manifest.json',
   '/favicon.png',
   '/logo.png',
+  '/icons/akuche-192.png',
+  '/icons/akuche-512.png',
+  '/icons/akuche-apple-touch.png',
   '/offline.html',
 ];
 

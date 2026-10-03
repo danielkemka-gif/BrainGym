@@ -147,8 +147,8 @@ const PILLARS: PillarInfo[] = [
 
 const FAQS = [
   {
-    q: "How does BrainGym differ from typical puzzle apps?",
-    a: "Most brain apps only offer mini arcade puzzles, which make you good at those specific games but rarely translate to real life. BrainGym combines interactive speed games with 89+ real-life habit activities (sleep, nutrition, decision case studies, emotional control, and focus sprints) to create true cognitive improvement.",
+    q: "How does AKUCHE differ from typical puzzle apps?",
+    a: "Most brain apps only offer mini arcade puzzles, which make you good at those specific games but rarely translate to real life. AKUCHE combines interactive speed games with 89+ real-life habit activities (sleep, nutrition, decision case studies, emotional control, and focus sprints) to create true cognitive improvement.",
   },
   {
     q: "How is my daily Brain Age calculated?",
@@ -187,10 +187,10 @@ export default function GuidePage() {
         <div className="relative z-10 max-w-2xl space-y-3">
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
             <Compass className="h-3.5 w-3.5" />
-            <span>BrainGym Onboarding & Feature Manual</span>
+            <span>AKUCHE Onboarding & Feature Manual</span>
           </div>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-foreground">
-            How BrainGym Works
+            How AKUCHE Works
           </h1>
           <p className="text-xs sm:text-base text-muted-foreground leading-relaxed">
             Gain complete clarity on the 7 brain fitness pillars, daily workout habits, Brain Age benchmarks, and AI decision systems.
@@ -256,7 +256,7 @@ export default function GuidePage() {
               Your 15-Minute Daily Mental Fitness Routine
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Think of BrainGym like a physical fitness gym. You don&apos;t get stronger by reading exercise articles; you get stronger by executing daily reps. Here is how your daily training flow works:
+              Think of AKUCHE like a physical fitness gym. You don&apos;t get stronger by reading exercise articles; you get stronger by executing daily reps. Here is how your daily training flow works:
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
@@ -329,7 +329,7 @@ export default function GuidePage() {
               The 7 Pillars of Cognitive Fitness
             </h2>
             <p className="text-sm text-muted-foreground">
-              BrainGym categorizes over 177+ activities and scoring parameters into 7 essential brain performance dimensions:
+              AKUCHE categorizes over 177+ activities and scoring parameters into 7 essential brain performance dimensions:
             </p>
           </div>
 
@@ -387,7 +387,7 @@ export default function GuidePage() {
               AI Brain Coach & Decision Lab
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              BrainGym incorporates state-of-the-art AI cognitive modeling to provide personalized mental training that adapts to your actual performance.
+              AKUCHE incorporates state-of-the-art AI cognitive modeling to provide personalized mental training that adapts to your actual performance.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
@@ -514,7 +514,7 @@ export default function GuidePage() {
               Frequently Asked Questions
             </h2>
             <p className="text-sm text-muted-foreground">
-              Everything you need to know about navigating and mastering BrainGym:
+              Everything you need to know about navigating and mastering AKUCHE:
             </p>
           </div>
 

@@ -50,7 +50,7 @@ export default function TransformationPage() {
             Brain &amp; Real-Life Transformation
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground">
-            &ldquo;BrainGym does not train people to become better at BrainGym. It trains your brain for your real life.&rdquo;
+            &ldquo;AKUCHE does not train people to become better at games. It trains your mind for your real life.&rdquo;
           </p>
         </div>
 

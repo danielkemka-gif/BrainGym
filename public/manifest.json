@@ -1,16 +1,41 @@
 {
-  "name": "AKUCHE — Train Your Mind for Real Life",
-  "short_name": "AKUCHE",
+  "id": "/",
+  "name": "Akuche",
+  "short_name": "Akuche",
   "description": "Train Your Mind for Real Life. Ask, Think, Solve, Act, Grow.",
   "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#0f0f23",
-  "theme_color": "#1a1a2e",
-  "orientation": "portrait-primary",
+  "background_color": "#090d16",
+  "theme_color": "#090d16",
+  "orientation": "portrait",
   "scope": "/",
   "lang": "en",
-  "categories": ["education", "health", "fitness"],
+  "categories": ["education", "productivity", "utilities"],
   "icons": [
+    {
+      "src": "/icons/akuche-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/akuche-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/akuche-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/akuche-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
     {
       "src": "/icons/icon-192.png",
       "sizes": "192x192",
@@ -21,15 +46,13 @@
       "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
-    }
-  ],
-  "screenshots": [
+      "purpose": "any maskable"
+    },
     {
-      "src": "/og-image.png",
-      "sizes": "1200x630",
+      "src": "/logo.png",
+      "sizes": "512x512",
       "type": "image/png",
-      "form_factor": "wide"
+      "purpose": "any"
     }
   ],
   "shortcuts": [
@@ -39,14 +62,14 @@
       "url": "/dashboard/workout"
     },
     {
+      "name": "Ask Akuche",
+      "short_name": "Ask",
+      "url": "/dashboard/ask"
+    },
+    {
       "name": "Daily Challenge",
       "short_name": "Challenge",
       "url": "/dashboard/daily-challenge"
-    },
-    {
-      "name": "AI Coach",
-      "short_name": "Coach",
-      "url": "/dashboard/ai-coach"
     }
   ]
 }

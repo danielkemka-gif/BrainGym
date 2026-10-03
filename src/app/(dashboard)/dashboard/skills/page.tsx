@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
-  title: "Skill Development Profile — BrainGym",
+  title: "Skill Development Profile — AKUCHE",
   description: "Explore your 8 core cognitive skills and qualitative thinking dimensions.",
 };
 

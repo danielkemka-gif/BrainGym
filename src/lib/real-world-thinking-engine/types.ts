@@ -95,6 +95,7 @@ export interface RealWorldChallengeDefinition {
   xpReward: number;
   coinReward: number;
   tags: string[];
+  culturalContext?: string;
   // Special Workout Modes (Challenge AI & Think For Yourself)
   workoutMode?: "standard" | "challenge_ai" | "think_for_yourself";
   aiResponseToInspect?: string;

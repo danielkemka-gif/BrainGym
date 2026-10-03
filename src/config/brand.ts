@@ -12,6 +12,7 @@ export const BRAND_CONFIG = {
   tagline: "Train Your Mind for Real Life.",
   secondaryTagline: "Train the way you think, make better decisions, take action and learn from real-life situations.",
   corePhilosophy: "ASK → THINK → SOLVE → ACT → GROW",
+  coreFramework: "ASK → THINK → SOLVE → ACT → GROW",
   coreDifferentiation: "ChatGPT gives you answers. AKUCHE trains your mind to think, evaluate and act.",
   coreLoop: "ASK → UNDERSTAND → THINK → CHALLENGE → SOLVE → ACT → MEASURE → REFLECT → GROW",
   

@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { SocraticThinkingCards } from "@/app/api/ai/ask/route";
-import { logGoalResult, saveGoal } from "@/lib/goals/goals-engine";
+import { saveGoal } from "@/lib/goals/goals-engine";
 import {
   Mic,
   MicOff,
@@ -17,7 +17,10 @@ import {
   Clock,
   ArrowRight,
   Target,
-  RefreshCw,
+  Compass,
+  Layers,
+  Calculator,
+  ChevronRight,
 } from "lucide-react";
 
 interface ChatMessage {
@@ -28,11 +31,138 @@ interface ChatMessage {
 }
 
 const EXAMPLE_PROMPTS = [
-  "I need more customers.",
-  "I can't concentrate when studying.",
-  "Should I change jobs?",
-  "I need help making a difficult decision.",
+  "I want to make ₦5 million before the end of next month.",
+  "I need 10 high-paying clients for my service business.",
+  "Should I borrow money to start a new shop?",
+  "I can't concentrate when studying for exams.",
 ];
+
+/**
+ * High-precision formatter for Ask Akuche Socratic responses.
+ * Parses markdown headings, bold text, lists, formulas, and highlights.
+ */
+function FormattedAkucheContent({ content }: { content: string }) {
+  const lines = content.split("\n");
+
+  return (
+    <div className="space-y-2 text-xs sm:text-sm leading-relaxed text-foreground/95">
+      {lines.map((line, idx) => {
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          return <div key={idx} className="h-1.5" />;
+        }
+
+        // Section Dividers
+        if (trimmed === "---") {
+          return <hr key={idx} className="my-2.5 border-border/60" />;
+        }
+
+        // H3 Headings (e.g. ### The Numbers, ### What I Understand)
+        if (trimmed.startsWith("### ")) {
+          const title = trimmed.replace("### ", "");
+          const isNumbers = title.toLowerCase().includes("number");
+          const isToday = title.toLowerCase().includes("today") || title.toLowerCase().includes("action");
+          const isOptions = title.toLowerCase().includes("option") || title.toLowerCase().includes("path");
+          const isQuestions = title.toLowerCase().includes("question");
+
+          return (
+            <div
+              key={idx}
+              className={`flex items-center gap-1.5 pt-2 pb-0.5 font-black tracking-tight ${
+                isToday
+                  ? "text-primary text-sm sm:text-base"
+                  : isNumbers
+                  ? "text-blue-600 dark:text-blue-400 text-xs sm:text-sm"
+                  : isOptions
+                  ? "text-amber-600 dark:text-amber-400 text-xs sm:text-sm"
+                  : isQuestions
+                  ? "text-purple-600 dark:text-purple-400 text-xs sm:text-sm"
+                  : "text-foreground text-xs sm:text-sm"
+              }`}
+            >
+              {isNumbers && <Calculator className="h-4 w-4 shrink-0" />}
+              {isToday && <Target className="h-4 w-4 shrink-0" />}
+              {isOptions && <Compass className="h-4 w-4 shrink-0" />}
+              {isQuestions && <HelpCircle className="h-4 w-4 shrink-0" />}
+              <span>{title}</span>
+            </div>
+          );
+        }
+
+        // H4 Headings (e.g. #### Pipeline Conversion Mathematics)
+        if (trimmed.startsWith("#### ")) {
+          return (
+            <h5 key={idx} className="font-bold text-foreground text-xs pt-1.5 flex items-center gap-1">
+              <ChevronRight className="h-3.5 w-3.5 text-primary" />
+              {trimmed.replace("#### ", "")}
+            </h5>
+          );
+        }
+
+        // Numbered list items (e.g. 1. Action step)
+        const numberedMatch = trimmed.match(/^(\d+)\.\s+(.*)$/);
+        if (numberedMatch) {
+          const num = numberedMatch[1];
+          const text = numberedMatch[2];
+          return (
+            <div key={idx} className="flex items-start gap-2 pl-0.5 py-0.5">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-[11px] mt-0.5">
+                {num}
+              </span>
+              <div className="flex-1 leading-snug">{renderInlineFormatted(text)}</div>
+            </div>
+          );
+        }
+
+        // Bullet points (e.g. * Target: ₦5m or - Item)
+        if (trimmed.startsWith("* ") || trimmed.startsWith("- ") || trimmed.startsWith("• ")) {
+          const text = trimmed.replace(/^[\*\-\•]\s+/, "");
+          const isSubBullet = line.startsWith("  ") || line.startsWith("\t");
+          return (
+            <div key={idx} className={`flex items-start gap-2 ${isSubBullet ? "pl-5" : "pl-1"} py-0.5`}>
+              <span className="text-primary font-black mt-0.5 shrink-0">•</span>
+              <div className="flex-1 leading-snug">{renderInlineFormatted(text)}</div>
+            </div>
+          );
+        }
+
+        // Standard Paragraph
+        return (
+          <p key={idx} className="leading-relaxed">
+            {renderInlineFormatted(trimmed)}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
+/**
+ * Formats inline bold (**text**), italics (*text*), and math ($formula$)
+ */
+function renderInlineFormatted(text: string) {
+  // Split by bold (**bold**)
+  const parts = text.split(/(\*\*[^*]+\*\*|\$[^\$]+\$)/g);
+
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return (
+        <strong key={i} className="font-bold text-foreground">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    if (part.startsWith("$") && part.endsWith("$")) {
+      return (
+        <code key={i} className="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-primary">
+          {part.slice(1, -1)}
+        </code>
+      );
+    }
+    return part;
+  });
+}
 
 export function AskBrainGymInterface() {
   const { user } = useAuth();
@@ -195,7 +325,7 @@ export function AskBrainGymInterface() {
       )}
 
       {/* 2. CONVERSATION STREAM */}
-      <div className="space-y-4">
+      <div className="space-y-5">
         {messages.map((msg) => (
           <div
             key={msg.id}
@@ -204,13 +334,17 @@ export function AskBrainGymInterface() {
             }`}
           >
             <div
-              className={`rounded-2xl sm:rounded-3xl px-4 py-3 text-xs sm:text-sm max-w-[90%] sm:max-w-[85%] leading-relaxed ${
+              className={`rounded-2xl sm:rounded-3xl px-4 py-3.5 text-xs sm:text-sm max-w-[95%] sm:max-w-[90%] leading-relaxed ${
                 msg.role === "user"
                   ? "bg-primary text-primary-foreground font-semibold shadow-sm"
                   : "bg-card border border-border/80 text-foreground font-normal shadow-sm"
               }`}
             >
-              {msg.content}
+              {msg.role === "assistant" ? (
+                <FormattedAkucheContent content={msg.content} />
+              ) : (
+                msg.content
+              )}
             </div>
 
             {/* Structured Socratic Cards (if available) */}
@@ -261,9 +395,11 @@ export function AskBrainGymInterface() {
                         <span className="font-extrabold uppercase tracking-wider text-[10px] text-purple-600 dark:text-purple-400 block mb-1">
                           {t.ask_card_assumptions || "YOUR ASSUMPTIONS"}
                         </span>
-                        <p className="text-foreground/90 font-medium">
-                          {msg.cards.assumptions.join(", ")}
-                        </p>
+                        <ul className="space-y-0.5 text-foreground/90 font-medium">
+                          {msg.cards.assumptions.map((a, i) => (
+                            <li key={i}>• {a}</li>
+                          ))}
+                        </ul>
                       </div>
                     )}
                     {msg.cards.risks && msg.cards.risks.length > 0 && (
@@ -272,9 +408,11 @@ export function AskBrainGymInterface() {
                           <AlertTriangle className="h-3 w-3" />
                           {t.ask_card_risks || "POTENTIAL RISKS"}
                         </span>
-                        <p className="text-foreground/90 font-medium">
-                          {msg.cards.risks.join(", ")}
-                        </p>
+                        <ul className="space-y-0.5 text-foreground/90 font-medium">
+                          {msg.cards.risks.map((r, i) => (
+                            <li key={i}>• {r}</li>
+                          ))}
+                        </ul>
                       </div>
                     )}
                   </div>
@@ -327,7 +465,7 @@ export function AskBrainGymInterface() {
         {loading && (
           <div className="flex items-center gap-2 rounded-2xl bg-card border border-border px-4 py-3 text-xs text-muted-foreground w-fit animate-pulse">
             <Sparkles className="h-4 w-4 text-primary animate-spin" />
-            <span>AKUCHE is thinking through your situation...</span>
+            <span>AKUCHE is diagnosing your challenge and reverse-engineering the steps...</span>
           </div>
         )}
 
@@ -338,14 +476,14 @@ export function AskBrainGymInterface() {
       {messages.length === 0 && (
         <div className="space-y-2">
           <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block text-center">
-            Or try one of these:
+            Or try one of these real scenarios:
           </span>
           <div className="flex flex-wrap items-center justify-center gap-1.5">
             {EXAMPLE_PROMPTS.map((prompt, i) => (
               <button
                 key={i}
                 onClick={() => handleSend(prompt)}
-                className="rounded-xl border border-border/80 bg-card/80 hover:bg-card hover:border-primary/40 px-3 py-2 text-xs font-medium text-foreground transition active:scale-95 touch-manipulation"
+                className="rounded-xl border border-border/80 bg-card/80 hover:bg-card hover:border-primary/40 px-3 py-2 text-xs font-medium text-foreground transition active:scale-95 touch-manipulation text-left"
               >
                 «{prompt}»
               </button>
@@ -385,7 +523,7 @@ export function AskBrainGymInterface() {
             placeholder={
               isListening
                 ? t.ask_voice_listening || "Listening... speak now"
-                : t.ask_input_placeholder || "Type your question or describe your situation..."
+                : t.ask_input_placeholder || "Type your question, financial goal, or problem..."
             }
             className="flex-1 bg-transparent px-2.5 py-2 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none min-h-[44px]"
           />

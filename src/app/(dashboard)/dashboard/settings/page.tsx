@@ -12,6 +12,7 @@ import { useTheme } from "@/lib/theme-provider";
 import { ReferralSection } from "@/components/settings/referral-section";
 import { DailyReminderSettings } from "@/components/reminders/daily-reminder-settings";
 import { LanguageSettingsSection } from "@/components/settings/language-settings-section";
+import { BrandSwitcherSection } from "@/components/settings/brand-switcher-section";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -243,6 +244,9 @@ export default function SettingsPage() {
 
       {/* 1. Language & Region (Prominent Top Section) */}
       <LanguageSettingsSection />
+
+      {/* 2. Brand & App Icon Customization (AKUCHE vs BrainGym) */}
+      <BrandSwitcherSection />
 
       {/* Profile Section */}
       <section className="rounded-2xl border border-border bg-card p-4 sm:p-6">

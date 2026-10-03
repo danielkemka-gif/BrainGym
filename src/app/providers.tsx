@@ -8,6 +8,8 @@ import { MotionConfig } from "framer-motion";
 import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 
+import { BrandProvider } from "@/lib/brand-context";
+
 function ReducedMotionProvider({ children }: { children: ReactNode }) {
   return <MotionConfig reducedMotion="user">{children}</MotionConfig>;
 }
@@ -15,17 +17,19 @@ function ReducedMotionProvider({ children }: { children: ReactNode }) {
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider>
-      <ReducedMotionProvider>
-        <Suspense fallback={null}>
-          <PostHogProvider>
-            <Suspense fallback={null}>
-              <I18nProvider>{children}</I18nProvider>
-            </Suspense>
-            <ServiceWorkerRegistration />
-            <PWAInstallPrompt />
-          </PostHogProvider>
-        </Suspense>
-      </ReducedMotionProvider>
+      <BrandProvider>
+        <ReducedMotionProvider>
+          <Suspense fallback={null}>
+            <PostHogProvider>
+              <Suspense fallback={null}>
+                <I18nProvider>{children}</I18nProvider>
+              </Suspense>
+              <ServiceWorkerRegistration />
+              <PWAInstallPrompt />
+            </PostHogProvider>
+          </Suspense>
+        </ReducedMotionProvider>
+      </BrandProvider>
     </ThemeProvider>
   );
 }

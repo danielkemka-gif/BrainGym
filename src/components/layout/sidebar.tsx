@@ -10,6 +10,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Globe, ChevronDown, MoreHorizontal, Shield, Crown } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { SIDEBAR_ICONS } from "@/lib/icons";
+import { useBrand } from "@/lib/brand-context";
 
 const PRIMARY_NAV = [
   { href: "/dashboard", labelKey: "nav_dashboard", iconKey: "dashboard" },
@@ -41,6 +42,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
   const pathname = usePathname();
   const { user, supabase } = useAuth();
   const { t, locale, setLocale } = useI18n();
+  const { brand } = useBrand();
   const [profile, setProfile] = useState<{ name: string | null; username: string | null; avatar_url: string | null } | null>(null);
   const [showLang, setShowLang] = useState(false);
   const [showMore, setShowMore] = useState(false);
@@ -109,12 +111,12 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
         {/* Logo */}
         <div className="flex h-14 items-center gap-2.5 border-b border-border px-4">
           <img
-            src="/logo.png"
-            alt="AKUCHE"
+            src={brand.logoUrl}
+            alt={brand.name}
             className="h-8 w-8 rounded-lg object-contain shadow-xs"
           />
           <Link href="/dashboard" className="text-lg font-bold tracking-tight text-foreground" onClick={onClose}>
-            AKUCHE
+            {brand.name}
           </Link>
         </div>
 

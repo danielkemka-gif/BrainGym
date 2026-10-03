@@ -12,6 +12,7 @@ import {
 import { TodaysDailyMissionCard } from "@/components/dashboard/todays-daily-mission-card";
 import { ActiveGoalCard } from "@/components/goals/active-goal-card";
 import { AskBrainGymQuickBar } from "@/components/dashboard/ask-braingym-quick-bar";
+import { AppInstallCard } from "@/components/dashboard/app-install-card";
 
 // ─── Guidance & Celebrations ────────────────────────────────────────────────
 import { LevelUpCelebration } from "@/components/dashboard/level-up-celebration";
@@ -61,8 +62,11 @@ export default function DashboardPage() {
       {/* 2. ACTIVE GOAL (ONE CLEAN FOCUSED GOAL WITH NEXT ACTION) */}
       <ActiveGoalCard />
 
-      {/* 3. ASK BRAINGYM (CLEAN SINGLE ENTRY BAR FOR PROBLEM SOLVING) */}
+      {/* 3. ASK AKUCHE / BRAINGYM (CLEAN SINGLE ENTRY BAR FOR PROBLEM SOLVING) */}
       <AskBrainGymQuickBar />
+
+      {/* 4. APP INSTALL / SWITCH BRAND QUICK CARD */}
+      <AppInstallCard />
     </div>
   );
 }

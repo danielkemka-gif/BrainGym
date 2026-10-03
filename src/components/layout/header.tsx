@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useBrand } from "@/lib/brand-context";
 
 const links = [
   { href: "/features", label: "Features" },
@@ -9,16 +10,18 @@ const links = [
 ];
 
 export function Header() {
+  const { brand } = useBrand();
+
   return (
     <header className="fixed top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2.5">
           <img
-            src="/logo.png"
-            alt="AKUCHE"
+            src={brand.logoUrl}
+            alt={brand.name}
             className="h-9 w-9 rounded-lg object-contain shadow-sm"
           />
-          <span className="text-lg font-bold tracking-tight text-foreground">AKUCHE</span>
+          <span className="text-lg font-bold tracking-tight text-foreground">{brand.name}</span>
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">

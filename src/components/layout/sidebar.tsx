@@ -14,9 +14,10 @@ import { useBrand } from "@/lib/brand-context";
 
 const PRIMARY_NAV = [
   { href: "/dashboard", labelKey: "nav_dashboard", iconKey: "dashboard" },
-  { href: "/dashboard/ask", labelKey: "nav_ask" as any, iconKey: "chat" },
-  { href: "/dashboard/workout", labelKey: "nav_workout", iconKey: "workout" },
-  { href: "/dashboard/progress", labelKey: "nav_progress", iconKey: "progress" },
+  { href: "/dashboard/ask", labelKey: "nav_ask" as any, iconKey: "ask" },
+  { href: "/dashboard/journeys", labelKey: "nav_journeys" as any, iconKey: "journeys" },
+  { href: "/dashboard/insights", labelKey: "nav_insights" as any, iconKey: "insights" },
+  { href: "/dashboard/decisions", labelKey: "nav_decision_lab", iconKey: "decision-lab" },
 ] as const;
 
 const MORE_NAV = [

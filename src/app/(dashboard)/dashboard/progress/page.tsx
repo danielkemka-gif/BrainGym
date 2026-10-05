@@ -14,6 +14,7 @@ import { QualitativeThinkingProfile } from "@/components/profile/qualitative-thi
 import { StreakCalendar } from "@/components/progress/streak-calendar";
 import { XpHistory } from "@/components/progress/xp-history";
 import { AchievementsGrid } from "@/components/achievements/achievements-grid";
+import { ContextualGuidanceBanner } from "@/components/layout/contextual-guidance-banner";
 import { Target, CheckCircle2, RefreshCw, Sparkles, BookOpen } from "lucide-react";
 
 export default function ProgressPage() {
@@ -31,6 +32,13 @@ export default function ProgressPage() {
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-6 overflow-x-hidden px-3 sm:px-4 py-3 pb-24 touch-manipulation">
+      {/* Contextual Guidance Banner (Section 17) */}
+      <ContextualGuidanceBanner
+        featureKey="progress"
+        title="Track your growth & thinking development"
+        description="Observe your cognitive dimensions, completed action milestones, consistency streaks, and overall personal growth over time."
+      />
+
       <div>
         <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
           Progress &amp; Thinking Development

@@ -5,6 +5,8 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { Plus, Pencil, Trash2, BookOpen, Calendar, Tag, X, Share2, Sparkles, ArrowRight } from "lucide-react";
 import { JournalShareCardModal } from "@/components/journal/journal-share-card-modal";
+import { ContextualGuidanceBanner } from "@/components/layout/contextual-guidance-banner";
+import { ActiveGoalCard } from "@/components/goals/active-goal-card";
 
 interface JournalEntry {
   id: string;
@@ -143,7 +145,17 @@ export default function JournalPage() {
   const moodObj = (m: string) => MOODS.find((mo) => mo.value === m);
 
   return (
-    <div className="mx-auto w-full max-w-full space-y-6 overflow-x-hidden px-4 sm:px-6 lg:px-0 pb-24 touch-manipulation">
+    <div className="mx-auto w-full max-w-full space-y-5 overflow-x-hidden px-4 sm:px-6 lg:px-0 pb-24 touch-manipulation">
+      {/* Contextual First-Time Guidance Banner (Section 17) */}
+      <ContextualGuidanceBanner
+        featureKey="goals"
+        title="Turn intentions into action"
+        description="Create a goal, break it down into daily milestones, and let Akuche help you stay accountable and reflect on progress."
+      />
+
+      {/* Active Goal Card */}
+      <ActiveGoalCard onGoalUpdated={fetchEntries} />
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border/60 pb-4">
         <div>

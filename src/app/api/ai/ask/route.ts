@@ -306,7 +306,7 @@ function formatMoney(amount: number, currency: string): string {
   return `${currency}${amount.toLocaleString()}`;
 }
 
-export function generateProceduralSocraticResponse(query: string): {
+function generateProceduralSocraticResponse(query: string): {
   text: string;
   cards: SocraticThinkingCards;
 } {
@@ -543,8 +543,7 @@ Write down the names of the first 5 people you will contact, open WhatsApp or Li
     q.includes("side hustle") ||
     q.includes("extra income")
   ) {
-    return {
-      text: `### What I Understand
+    const text = `### What I Understand
 You want to increase your income or build a new cash flow stream.
 
 ### The Real Problem
@@ -724,8 +723,7 @@ Do not make a permanent commitment today. Take **one 24-hour test action** that 
     q.includes("business problem") ||
     q.includes("grow business")
   ) {
-    return {
-      text: `### Business Diagnostic Mode Activated
+    const text = `### Business Diagnostic Mode Activated
 You are addressing a customer acquisition, sales, or business growth bottleneck.
 
 ### The Real Problem
@@ -818,8 +816,7 @@ Open your WhatsApp chat list right now, find your last 3 satisfied customers, an
     q.includes("idea i want to develop") ||
     q.includes("new venture")
   ) {
-    return {
-      text: `### Business Creation Mode Activated
+    const text = `### Business Creation Mode Activated
 You want to develop a new business idea or launch a profitable venture.
 
 ### The Real Problem
@@ -900,8 +897,7 @@ Identify 3 people in your network who match your target customer profile, send t
   }
 
   // 6. DEFAULT GENERAL PROBLEM-SOLVING & DECISIONS (Section 21)
-  return {
-    text: `### What I Understand
+  const text = `### What I Understand
 You are working through this specific challenge: **"${query}"**.
 
 ### The Real Problem
@@ -981,5 +977,4 @@ State your single most important next step, set a 15-minute timer, and complete 
         },
       },
     };
-  }
 }

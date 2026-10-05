@@ -21,6 +21,7 @@ import {
   Layers,
   Calculator,
   ChevronRight,
+  Zap,
 } from "lucide-react";
 
 interface ChatMessage {
@@ -30,22 +31,26 @@ interface ChatMessage {
   cards?: SocraticThinkingCards;
 }
 
-const EXAMPLE_PROMPTS = [
-  "I want to make ₦5 million before the end of next month.",
-  "I need 10 high-paying clients for my service business.",
-  "Should I borrow money to start a new shop?",
-  "I can't concentrate when studying for exams.",
+const STARTER_OPTIONS = [
+  "I want to make more money",
+  "I have a business problem",
+  "I need to make a difficult decision",
+  "I want to achieve a goal",
+  "I want to learn something",
+  "I have a personal problem",
+  "I have an idea I want to develop",
+  "I don't know where to start",
 ];
 
 /**
- * High-precision formatter for Ask Akuche Socratic responses.
- * Parses markdown headings, bold text, lists, formulas, and highlights.
+ * High-precision formatter for Akuche Master Prompt responses.
+ * Parses markdown headings, bold text, lists, formulas, and action highlights.
  */
 function FormattedAkucheContent({ content }: { content: string }) {
   const lines = content.split("\n");
 
   return (
-    <div className="space-y-2 text-xs sm:text-sm leading-relaxed text-foreground/95 break-words">
+    <div className="space-y-2 text-xs sm:text-sm leading-relaxed text-foreground/95 break-words whitespace-pre-wrap">
       {lines.map((line, idx) => {
         const trimmed = line.trim();
 
@@ -58,39 +63,43 @@ function FormattedAkucheContent({ content }: { content: string }) {
           return <hr key={idx} className="my-2.5 border-border/60" />;
         }
 
-        // H3 Headings (e.g. ### The Numbers, ### What I Understand)
+        // H3 Headings (e.g. ### YOUR NEXT MOVE, ### TODAY'S ACTION, ### The Numbers)
         if (trimmed.startsWith("### ")) {
           const title = trimmed.replace("### ", "");
+          const isNextMove = title.toLowerCase().includes("next move");
+          const isTodayAction = title.toLowerCase().includes("today's action") || title.toLowerCase().includes("today action");
           const isNumbers = title.toLowerCase().includes("number");
-          const isToday = title.toLowerCase().includes("today") || title.toLowerCase().includes("action");
-          const isOptions = title.toLowerCase().includes("option") || title.toLowerCase().includes("path");
+          const isDecision = title.toLowerCase().includes("option") || title.toLowerCase().includes("decision") || title.toLowerCase().includes("assessment");
           const isQuestions = title.toLowerCase().includes("question");
 
           return (
             <div
               key={idx}
               className={`flex items-center gap-1.5 pt-2 pb-0.5 font-black tracking-tight ${
-                isToday
+                isNextMove
                   ? "text-primary text-sm sm:text-base"
+                  : isTodayAction
+                  ? "text-emerald-600 dark:text-emerald-400 text-sm sm:text-base"
                   : isNumbers
                   ? "text-blue-600 dark:text-blue-400 text-xs sm:text-sm"
-                  : isOptions
+                  : isDecision
                   ? "text-amber-600 dark:text-amber-400 text-xs sm:text-sm"
                   : isQuestions
                   ? "text-purple-600 dark:text-purple-400 text-xs sm:text-sm"
                   : "text-foreground text-xs sm:text-sm"
               }`}
             >
+              {isNextMove && <Zap className="h-4 w-4 shrink-0 text-primary" />}
+              {isTodayAction && <Target className="h-4 w-4 shrink-0 text-emerald-500" />}
               {isNumbers && <Calculator className="h-4 w-4 shrink-0" />}
-              {isToday && <Target className="h-4 w-4 shrink-0" />}
-              {isOptions && <Compass className="h-4 w-4 shrink-0" />}
+              {isDecision && <Compass className="h-4 w-4 shrink-0" />}
               {isQuestions && <HelpCircle className="h-4 w-4 shrink-0" />}
               <span>{title}</span>
             </div>
           );
         }
 
-        // H4 Headings (e.g. #### Pipeline Conversion Mathematics)
+        // H4 Headings (e.g. #### Available Revenue Structures)
         if (trimmed.startsWith("#### ")) {
           return (
             <h5 key={idx} className="font-bold text-foreground text-xs pt-1.5 flex items-center gap-1">
@@ -110,7 +119,7 @@ function FormattedAkucheContent({ content }: { content: string }) {
               <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-[11px] mt-0.5">
                 {num}
               </span>
-              <div className="flex-1 leading-snug">{renderInlineFormatted(text)}</div>
+              <div className="flex-1 leading-snug break-words">{renderInlineFormatted(text)}</div>
             </div>
           );
         }
@@ -122,14 +131,14 @@ function FormattedAkucheContent({ content }: { content: string }) {
           return (
             <div key={idx} className={`flex items-start gap-2 ${isSubBullet ? "pl-5" : "pl-1"} py-0.5`}>
               <span className="text-primary font-black mt-0.5 shrink-0">•</span>
-              <div className="flex-1 leading-snug">{renderInlineFormatted(text)}</div>
+              <div className="flex-1 leading-snug break-words">{renderInlineFormatted(text)}</div>
             </div>
           );
         }
 
         // Standard Paragraph
         return (
-          <p key={idx} className="leading-relaxed">
+          <p key={idx} className="leading-relaxed break-words">
             {renderInlineFormatted(trimmed)}
           </p>
         );
@@ -184,14 +193,15 @@ export function AskBrainGymInterface() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<any>(null);
 
-  // Auto-resize textarea when user types
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto";
-      const newHeight = Math.min(textareaRef.current.scrollHeight, 120);
-      textareaRef.current.style.height = `${Math.max(newHeight, 38)}px`;
-    }
-  }, [input]);
+  // Synchronously auto-resize textarea and wrap words
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const val = e.target.value;
+    setInput(val);
+    const el = e.target;
+    el.style.height = "auto";
+    const newHeight = Math.min(el.scrollHeight, 140);
+    el.style.height = `${Math.max(newHeight, 40)}px`;
+  };
 
   // Initialize Speech Recognition on mobile & desktop
   useEffect(() => {
@@ -252,7 +262,7 @@ export function AskBrainGymInterface() {
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     if (textareaRef.current) {
-      textareaRef.current.style.height = "38px";
+      textareaRef.current.style.height = "40px";
     }
     setLoading(true);
 
@@ -320,18 +330,32 @@ export function AskBrainGymInterface() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-2xl px-3 sm:px-4 py-4 pb-32 space-y-6">
-      {/* 1. CLEAN DOORWAY HEADER */}
+    <div className="mx-auto w-full max-w-2xl px-3 sm:px-4 py-4 pb-36 space-y-6">
+      {/* 1. AKUCHE MASTER DOORWAY HEADER */}
       {messages.length === 0 && (
-        <div className="text-center pt-4 pb-2 space-y-2">
+        <div className="text-center pt-3 pb-2 space-y-2">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-inner">
             <Sparkles className="h-6 w-6" />
           </div>
           <h1 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
-            {t.ask_header_title || "What are you dealing with?"}
+            AKUCHE
           </h1>
-          <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-            {t.ask_header_subtext || "Ask a question. Describe a problem. Or tell AKUCHE what you're trying to achieve."}
+          <p className="text-xs sm:text-sm font-semibold text-primary">
+            «Your questions deserve more than answers.»
+          </p>
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-muted/80 px-3 py-1 text-[11px] font-bold text-muted-foreground">
+            <span>ASK</span>
+            <span>→</span>
+            <span>THINK</span>
+            <span>→</span>
+            <span>DECIDE</span>
+            <span>→</span>
+            <span>ACT</span>
+            <span>→</span>
+            <span>GROW</span>
+          </div>
+          <p className="text-xs text-muted-foreground max-w-md mx-auto pt-1 leading-relaxed">
+            What are you trying to figure out right now?
           </p>
         </div>
       )}
@@ -359,7 +383,7 @@ export function AskBrainGymInterface() {
               )}
             </div>
 
-            {/* Structured Socratic Cards (if available) */}
+            {/* Structured Socratic Thinking Cards */}
             {msg.cards && (
               <div className="w-full mt-3 space-y-3">
                 {/* WHAT WE KNOW */}
@@ -367,13 +391,13 @@ export function AskBrainGymInterface() {
                   <div className="rounded-2xl border border-blue-500/20 bg-blue-500/5 p-3.5 sm:p-4 text-xs">
                     <span className="font-extrabold uppercase tracking-wider text-[10px] text-blue-600 dark:text-blue-400 block mb-1.5 flex items-center gap-1.5">
                       <CheckCircle2 className="h-3.5 w-3.5" />
-                      {t.ask_card_know || "WHAT WE KNOW"}
+                      WHAT WE KNOW
                     </span>
                     <ul className="space-y-1 text-foreground/90 pl-1">
                       {msg.cards.whatWeKnow.map((k, i) => (
                         <li key={i} className="flex items-start gap-1.5">
                           <span className="text-blue-500 font-bold">•</span>
-                          <span>{k}</span>
+                          <span className="break-words">{k}</span>
                         </li>
                       ))}
                     </ul>
@@ -385,31 +409,31 @@ export function AskBrainGymInterface() {
                   <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-3.5 sm:p-4 text-xs">
                     <span className="font-extrabold uppercase tracking-wider text-[10px] text-amber-600 dark:text-amber-400 block mb-1.5 flex items-center gap-1.5">
                       <HelpCircle className="h-3.5 w-3.5" />
-                      {t.ask_card_dont_know || "WHAT WE DON'T KNOW"}
+                      WHAT WE DON'T KNOW
                     </span>
                     <ul className="space-y-1 text-foreground/90 pl-1">
                       {msg.cards.whatWeDontKnow.map((dk, i) => (
                         <li key={i} className="flex items-start gap-1.5">
                           <span className="text-amber-500 font-bold">•</span>
-                          <span>{dk}</span>
+                          <span className="break-words">{dk}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
                 )}
 
-                {/* YOUR ASSUMPTIONS & RISKS */}
+                {/* ASSUMPTIONS & RISKS */}
                 {((msg.cards.assumptions && msg.cards.assumptions.length > 0) ||
                   (msg.cards.risks && msg.cards.risks.length > 0)) && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {msg.cards.assumptions && msg.cards.assumptions.length > 0 && (
                       <div className="rounded-2xl border border-purple-500/20 bg-purple-500/5 p-3 text-xs">
                         <span className="font-extrabold uppercase tracking-wider text-[10px] text-purple-600 dark:text-purple-400 block mb-1">
-                          {t.ask_card_assumptions || "YOUR ASSUMPTIONS"}
+                          YOUR ASSUMPTIONS
                         </span>
                         <ul className="space-y-0.5 text-foreground/90 font-medium">
                           {msg.cards.assumptions.map((a, i) => (
-                            <li key={i}>• {a}</li>
+                            <li key={i} className="break-words">• {a}</li>
                           ))}
                         </ul>
                       </div>
@@ -418,11 +442,11 @@ export function AskBrainGymInterface() {
                       <div className="rounded-2xl border border-rose-500/20 bg-rose-500/5 p-3 text-xs">
                         <span className="font-extrabold uppercase tracking-wider text-[10px] text-rose-600 dark:text-rose-400 block mb-1 flex items-center gap-1">
                           <AlertTriangle className="h-3 w-3" />
-                          {t.ask_card_risks || "POTENTIAL RISKS"}
+                          POTENTIAL RISKS
                         </span>
                         <ul className="space-y-0.5 text-foreground/90 font-medium">
                           {msg.cards.risks.map((r, i) => (
-                            <li key={i}>• {r}</li>
+                            <li key={i} className="break-words">• {r}</li>
                           ))}
                         </ul>
                       </div>
@@ -430,13 +454,13 @@ export function AskBrainGymInterface() {
                   </div>
                 )}
 
-                {/* TODAY'S MISSION (ACTION CONVERSION) */}
+                {/* TODAY'S ACTION ASSIGNMENT (SECTION 10) */}
                 {msg.cards.mission && (
                   <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-primary/40 bg-gradient-to-br from-primary/10 via-card to-card p-4 sm:p-5 shadow-md">
                     <div className="flex items-center justify-between gap-2 mb-2">
                       <span className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-2.5 py-1 text-[11px] font-black text-primary-foreground shadow-sm">
                         <Target className="h-3.5 w-3.5" />
-                        {t.ask_card_mission || "TODAY'S MISSION"}
+                        TODAY'S ACTION ASSIGNMENT
                       </span>
                       <span className="inline-flex items-center gap-1 text-[11px] font-bold text-muted-foreground">
                         <Clock className="h-3.5 w-3.5" />
@@ -444,9 +468,15 @@ export function AskBrainGymInterface() {
                       </span>
                     </div>
 
-                    <h4 className="text-sm sm:text-base font-black text-foreground mb-2.5">
+                    <h4 className="text-sm sm:text-base font-black text-foreground mb-2">
                       {msg.cards.mission.title}
                     </h4>
+
+                    {msg.cards.mission.whyItMatters && (
+                      <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+                        <strong className="text-foreground">Why it matters:</strong> {msg.cards.mission.whyItMatters}
+                      </p>
+                    )}
 
                     <div className="space-y-2 mb-3.5 text-xs text-foreground/90">
                       {msg.cards.mission.steps.map((step, idx) => (
@@ -454,7 +484,7 @@ export function AskBrainGymInterface() {
                           <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-[11px]">
                             {idx + 1}
                           </span>
-                          <span className="font-medium pt-0.5 leading-snug">{step}</span>
+                          <span className="font-medium pt-0.5 leading-snug break-words">{step}</span>
                         </div>
                       ))}
                     </div>
@@ -464,7 +494,7 @@ export function AskBrainGymInterface() {
                       className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-primary text-primary-foreground px-4 py-3 text-xs sm:text-sm font-bold shadow-sm transition hover:bg-primary/90 active:scale-95 min-h-[48px] touch-manipulation"
                     >
                       <CheckCircle2 className="h-4 w-4" />
-                      {t.ask_mission_complete || "Mark as Completed & Log Result"}
+                      Mark as Completed & Log Result
                       <ArrowRight className="h-4 w-4" />
                     </button>
                   </div>
@@ -477,25 +507,25 @@ export function AskBrainGymInterface() {
         {loading && (
           <div className="flex items-center gap-2 rounded-2xl bg-card border border-border px-4 py-3 text-xs text-muted-foreground w-fit animate-pulse">
             <Sparkles className="h-4 w-4 text-primary animate-spin" />
-            <span>AKUCHE is diagnosing your challenge and reverse-engineering the steps...</span>
+            <span>AKUCHE is diagnosing your situation and reverse-engineering the steps...</span>
           </div>
         )}
 
         <div ref={bottomRef} />
       </div>
 
-      {/* 3. SUBTLE PROMPT CHIPS */}
+      {/* 3. FIRST SESSION SUGGESTED STARTING OPTIONS (SECTION 27) */}
       {messages.length === 0 && (
-        <div className="space-y-2">
+        <div className="space-y-2.5 pt-2">
           <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block text-center">
-            Or try one of these real scenarios:
+            Or choose a starting point:
           </span>
           <div className="flex flex-wrap items-center justify-center gap-1.5">
-            {EXAMPLE_PROMPTS.map((prompt, i) => (
+            {STARTER_OPTIONS.map((prompt, i) => (
               <button
                 key={i}
                 onClick={() => handleSend(prompt)}
-                className="rounded-xl border border-border/80 bg-card/80 hover:bg-card hover:border-primary/40 px-3 py-2 text-xs font-medium text-foreground transition active:scale-95 touch-manipulation text-left"
+                className="rounded-xl border border-border/80 bg-card/80 hover:bg-card hover:border-primary/40 px-3 py-2 text-xs font-medium text-foreground transition active:scale-95 touch-manipulation text-left shadow-sm"
               >
                 «{prompt}»
               </button>
@@ -504,7 +534,7 @@ export function AskBrainGymInterface() {
         </div>
       )}
 
-      {/* 4. FIXED BOTTOM INPUT BAR (SMARTPHONE OPTIMIZED MULTILINE) */}
+      {/* 4. FIXED BOTTOM INPUT BAR (AUTO-EXPANDING MULTILINE TEXTAREA) */}
       <div className="fixed inset-x-0 bottom-16 lg:bottom-4 z-30 px-3 sm:px-4">
         <div className="mx-auto max-w-2xl rounded-2xl sm:rounded-3xl border border-border/80 bg-background/95 backdrop-blur-md p-2 shadow-xl flex items-end gap-2">
           {/* Voice Input Button */}
@@ -522,15 +552,15 @@ export function AskBrainGymInterface() {
             </button>
           )}
 
-          {/* Auto-expanding Multiline Textarea (wraps into 2nd/3rd row) */}
+          {/* Auto-expanding Multiline Textarea — Text wraps into row 2 & row 3 immediately at the edge */}
           <textarea
             ref={textareaRef}
             rows={1}
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={handleInputChange}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
-                // On desktop: Enter sends message
+                // On desktop screen widths: Enter submits, Shift+Enter makes newline
                 if (typeof window !== "undefined" && window.innerWidth > 768) {
                   e.preventDefault();
                   handleSend();
@@ -539,10 +569,16 @@ export function AskBrainGymInterface() {
             }}
             placeholder={
               isListening
-                ? t.ask_voice_listening || "Listening... speak now"
-                : t.ask_input_placeholder || "Type your question, financial goal, or problem..."
+                ? "Listening... speak clearly"
+                : "Type your question, financial goal, or decision..."
             }
-            className="flex-1 resize-none bg-transparent px-2.5 py-2 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none min-h-[38px] max-h-[120px] overflow-y-auto leading-relaxed break-words"
+            className="flex-1 min-w-0 resize-none bg-transparent px-2.5 py-2 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none min-h-[40px] max-h-[140px] overflow-y-auto leading-relaxed break-words whitespace-pre-wrap"
+            style={{
+              wordBreak: "break-word",
+              overflowWrap: "break-word",
+              whiteSpace: "pre-wrap",
+              overflowX: "hidden",
+            }}
           />
 
           {/* Send Action Button */}
@@ -561,7 +597,7 @@ export function AskBrainGymInterface() {
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4">
           <div className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl border border-border bg-background p-5 sm:p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 className="text-base font-black text-foreground mb-1">
-              {t.ask_results_loop_title || "Results & Action Loop"}
+              Results & Action Loop
             </h3>
             <p className="text-xs text-muted-foreground mb-4">
               Mission: <strong className="text-foreground">{activeMission?.title}</strong>
@@ -576,7 +612,7 @@ export function AskBrainGymInterface() {
                   type="text"
                   value={resultInput}
                   onChange={(e) => setResultInput(e.target.value)}
-                  placeholder="e.g. Completed 5 calls, 2 interested prospects booked"
+                  placeholder="e.g. Sent 5 WhatsApp pitches, 2 prospective clients replied"
                   className="w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none min-h-[44px]"
                   required
                 />
@@ -584,12 +620,12 @@ export function AskBrainGymInterface() {
 
               <div>
                 <label className="text-xs font-bold text-foreground block mb-1">
-                  {t.ask_results_reflection_prompt || "What did you learn from this outcome?"}
+                  What did you learn from this outcome?
                 </label>
                 <textarea
                   value={reflectionInput}
                   onChange={(e) => setReflectionInput(e.target.value)}
-                  placeholder="e.g. Direct follow-up had higher engagement than email..."
+                  placeholder="e.g. Prospects responded faster when I mentioned their specific industry pain point..."
                   rows={2}
                   className="w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
                   required

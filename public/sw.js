@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'akuche-v2.0.2-ask-engine-live';
+const CACHE_VERSION = 'akuche-v2.0.3-master-engine';
 const STATIC_CACHE = `akuche-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `akuche-dynamic-${CACHE_VERSION}`;
 

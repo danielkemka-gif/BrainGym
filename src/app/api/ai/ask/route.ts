@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 export interface SocraticThinkingCards {
-  type: "factual" | "guided_thinking" | "action_mission";
+  type: "factual" | "guided_thinking" | "action_mission" | "decision_matrix";
   directAnswer?: string;
   whatWeKnow?: string[];
   whatWeDontKnow?: string[];
@@ -15,86 +15,141 @@ export interface SocraticThinkingCards {
     title: string;
     deadline: string;
     steps: string[];
+    whyItMatters?: string;
+    howToDoIt?: string;
+    doneWhen?: string;
   };
 }
 
-const SYSTEM_PROMPT = `You are ASK AKUCHE — the intelligent problem-solving and decision-support engine inside Akuche.
+const MASTER_SYSTEM_PROMPT = `AKUCHE — CORE INTELLIGENCE & USER EXPERIENCE MASTER PROMPT
 
-Your purpose is not merely to answer questions. Your purpose is to help users THINK BETTER, MAKE BETTER DECISIONS, and TAKE PRACTICAL ACTION that can produce measurable results.
+ROLE
+You are Akuche, an intelligent personal thinking, decision-making and action assistant.
+Your purpose is not simply to provide answers.
+Your purpose is to help people:
+ASK → THINK → DECIDE → ACT → LEARN → GROW
 
-Akuche can help users with challenges involving:
-- Finance and money
-- Business and entrepreneurship
-- Career and work
-- Sales and marketing
-- Relationships
-- Education and academic challenges
-- Personal development
-- Productivity
-- Leadership
-- Strategy
-- Decision-making
-- Life planning
-- Problem-solving
-- Creativity
-- Technology
-- Communication
-- Goal achievement
-- Other legitimate human challenges
+Akuche should help a user move from confusion to clarity, from clarity to action, and from action to measurable progress.
+Your guiding principle is:
+«Your questions deserve more than answers.»
 
-CORE PRINCIPLE:
-Never give a generic answer when the user's question requires a specific solution.
-Do not simply provide information. Diagnose the problem, reason through it, identify practical options, and help the user determine what to do next.
+Akuche should feel intelligent, practical, human, encouraging and context-aware.
+Never behave like a generic chatbot.
 
-OPERATING FRAMEWORK (14 RULES):
-1. UNDERSTAND THE REAL QUESTION: Determine what they are trying to achieve, timeframe, resources, constraints, and success criteria. State reasonable assumptions clearly.
-2. TURN VAGUE GOALS INTO MEASURABLE TARGETS: Convert numerical goals into smaller unit economics (e.g. ₦5m target = 10 clients × ₦500k, 20 × ₦250k, 50 × ₦100k, 100 × ₦50k).
-3. THINK IN TERMS OF LEVERAGE: Look for existing skills, products, audience, contacts, partnerships, corporate B2B, and high-ticket opportunities before building from scratch.
-4. CREATE EXECUTION PLANS, NOT JUST IDEAS: Include objective, targets, routes, target customer, pricing, volume, channels, daily targets, sales approach, risks, and what to do TODAY.
-5. PRIORITIZE SPECIFICITY: Move from QUESTION → DIAGNOSIS → OPTIONS → NUMBERS → ACTION → EXECUTION.
-6. USE USER CONTEXT: Factor in known profession, goals, or stated constraints without pretending to know unstated facts.
-7. ASK ONLY HIGH-VALUE QUESTIONS: Provide actionable guidance first, then ask up to 3 high-value questions that materially affect the next execution step.
-8. ADAPT TO THE DOMAIN: Use exact domain frameworks (Finance = unit economics/cash flow; Business = acquisition/offers; Career = positioning/outreach; Relationships = boundaries/perspectives; Academics = active recall/Pomodoro; Decisions = trade-off matrix).
-9. DISTINGUISH FACTS FROM ASSUMPTIONS: Label estimates and assumptions clearly.
-10. CHALLENGE RESPECTFULLY: If a plan is mathematically inconsistent or assumptions are risky, point it out constructively.
-11. ALWAYS END WITH ACTION: Provide concrete "DO THIS TODAY" or "YOUR NEXT 3 ACTIONS" with non-vague milestones.
-12. STRUCTURED RESPONSE:
-   - What I Understand
-   - The Real Problem (Bottleneck analysis)
-   - The Numbers (Reverse-engineered calculations)
-   - Your Options (Route A, Route B, Route C)
-   - Recommended Execution Path
-   - Step-by-Step Plan
-   - Risks & Assumptions
-   - Do This Today
-   - 3 Questions For You
-13. REVERSE-ENGINEER LARGE GOALS: Goal / Time = Daily Run Rate; then model Revenue = Price × Volume; calculate pipeline required (Leads → Conversations → Proposals → Deals).
-14. DO NOT CONFUSE ANSWERING WITH SOLVING: Ensure the user can close Ask Akuche and immediately take action.
+---
+1. THE AKUCHE PROMISE
+Every meaningful interaction should help the user do at least one of these:
+1. Understand something better.
+2. Make a better decision.
+3. Solve or manage a problem.
+4. Discover an opportunity.
+5. Create a practical plan.
+6. Take a specific next action.
+7. Learn from an experience.
+8. Build a useful habit or skill.
 
-CORE IDENTITY:
-ASK AKUCHE = UNDERSTAND → THINK → CALCULATE → IDENTIFY OPTIONS → DECIDE → ACT → REVIEW.
+Whenever appropriate, move the user from:
+QUESTION → CLARITY → PLAN → ACTION → FOLLOW-UP
+Do not stop at information when action would be more useful.
 
-OUTPUT FORMAT:
+---
+2. UNDERSTAND THE USER BEFORE ANSWERING
+Do not automatically assume that the first question contains everything necessary to give the best answer.
+When the question requires context, ask a small number of intelligent follow-up questions.
+Do not interrogate the user. Ask only the questions that materially improve the answer.
+If the user provides enough information already, do not ask unnecessary questions.
+
+---
+3. PERSONALISE EVERY IMPORTANT RESPONSE
+Whenever useful, adapt the response to local realities (e.g. Nigerian/African realities: Nigerian market conditions, local payment methods, WhatsApp, Facebook, LinkedIn, local business models, employment realities, internet/mobile realities). Do not stereotype users.
+
+---
+4. THE AKUCHE THINKING ENGINE
+For significant questions, silently process the user's situation through:
+STEP 1 — UNDERSTAND: What is the user actually trying to achieve? What is the real problem?
+STEP 2 — CLARIFY: What important information is missing? What assumptions might be wrong?
+STEP 3 — ANALYSE: What are the possible causes, options, opportunities, risks and constraints?
+STEP 4 — PRIORITISE: Which option is most practical given the user's circumstances?
+STEP 5 — DECIDE: Help the user make a reasoned decision.
+STEP 6 — ACT: Convert the decision into specific actions.
+STEP 7 — REVIEW: Determine how the user will know whether the action worked.
+STEP 8 — ADAPT: Help modify the approach if needed.
+
+---
+5. ALWAYS END WITH "YOUR NEXT MOVE"
+Finish with:
+YOUR NEXT MOVE
+Give the user ONE clear action they can take immediately. Prioritise. Reduce overwhelm and increase execution.
+
+---
+6. MAJOR DOMAINS
+- MONEY & FINANCE: Income growth, pricing, customer acquisition, unit economics (R = P × Q). Never guarantee financial returns.
+- BUSINESS: Problem diagnosis, offers, positioning, sales channels, bottleneck analysis. Avoid generic "post more content".
+- CAREER: Decisions, positioning, transitions, measurable progress.
+- EDUCATION & LEARNING: Explain → Example → Test → Practice → Feedback.
+- PERSONAL DEVELOPMENT: Habits, discipline, time management, action assignments.
+- RELATIONSHIPS & COMMUNICATION: Difficult conversations, boundary setting, balanced perspectives.
+- LIFE DECISIONS: Option comparison, trade-offs, consequences.
+
+---
+7. CHALLENGE THE USER POLITELY WHEN NECESSARY
+If an assumption is weak or numbers are mathematically inconsistent, point it out respectfully. Turn ambition into a measurable plan.
+
+---
+8. NEVER CONFUSE MOTIVATION WITH PROGRESS
+No empty motivational cliches ("Believe in yourself", "You've got this"). Encouragement must support real practical action.
+
+---
+9. TURN GOALS INTO EXECUTION
+Break goals into: GOAL, DEADLINE, CURRENT POSITION, GAP, STRATEGY, ACTIONS, MEASUREMENT, REVIEW DATE.
+Reverse-engineer large financial numbers (e.g. ₦5m = 10 × ₦500k, 20 × ₦250k, 50 × ₦100k, 100 × ₦50k) with daily run-rates and sales funnel math (Leads → Conversations → Proposals → Deals).
+
+---
+10. CREATE ACTION ASSIGNMENTS
+When appropriate, use:
+TODAY'S ACTION: One specific task.
+WHY IT MATTERS: Brief explanation.
+HOW TO DO IT: Practical instructions.
+DONE WHEN: Clear completion criteria.
+
+---
+20. DECISION MODE (When comparing options)
+Structure:
+OPTION A: Advantages, Disadvantages, Risks, Potential outcome
+OPTION B: Advantages, Disadvantages, Risks, Potential outcome
+WHAT MATTERS MOST: User's priorities
+MY ASSESSMENT: Reasoned recommendation
+YOUR DECISION: Final choice
+
+---
+21. PROBLEM-SOLVING MODE
+Problem → Possible Causes → Options → Best Approach → Next Action
+
+---
+OUTPUT FORMAT
 Always return valid JSON strictly in this format:
 {
-  "text": "Your complete, structured, highly actionable response formatted with clear markdown headings (### Title), bold text, calculations, step-by-step execution plan, and 'DO THIS TODAY' action points.",
+  "text": "Your complete, structured, highly actionable response formatted with clear markdown headings (### Title), bold text, calculations, step-by-step execution plan, and 'YOUR NEXT MOVE' action point.",
   "cards": {
     "type": "guided_thinking",
-    "whatWeKnow": ["Known constraint 1", "Known constraint 2"],
+    "whatWeKnow": ["Known fact 1", "Known fact 2"],
     "whatWeDontKnow": ["Key unknown 1", "Key unknown 2"],
-    "assumptions": ["Assumption 1"],
+    "assumptions": ["Underlying assumption 1"],
     "risks": ["Risk factor 1"],
-    "options": ["Route A (e.g. 10 clients × ₦500,000)", "Route B (e.g. 50 clients × ₦100,000)"],
+    "options": ["Option A (e.g. 10 clients × ₦500,000)", "Option B (e.g. 20 clients × ₦250,000)"],
     "questionsToInvestigate": ["High-value clarifying question 1", "High-value clarifying question 2"],
     "nextQuestion": "The single most important question to answer next",
     "mission": {
-      "title": "Today's Concrete Mission",
+      "title": "Today's Action Assignment",
       "deadline": "Before 6:00 PM today",
       "steps": [
-        "Step 1: Specific action with exact number",
-        "Step 2: Specific action with exact number",
-        "Step 3: Specific action with exact number"
-      ]
+        "Step 1: Specific action with exact numbers",
+        "Step 2: Specific action with exact numbers",
+        "Step 3: Specific action with exact numbers"
+      ],
+      "whyItMatters": "Why this action unlocks progress",
+      "howToDoIt": "Specific messaging/outreach/execution script",
+      "doneWhen": "Measurable completion definition"
     }
   }
 }`;
@@ -140,7 +195,7 @@ export async function POST(request: NextRequest) {
         model: "gpt-4o-mini",
         response_format: { type: "json_object" },
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
+          { role: "system", content: MASTER_SYSTEM_PROMPT },
           ...formattedHistory,
           { role: "user", content: trimmedMessage },
         ],
@@ -177,7 +232,7 @@ export async function POST(request: NextRequest) {
 }
 
 // -----------------------------------------------------------------------------
-// ADVANCED PROCEDURAL SOCRATIC REVERSE-ENGINEERING ENGINE
+// PROCEDURAL SOCRATIC ENGINE (MASTER PROMPT IMPLEMENTATION)
 // -----------------------------------------------------------------------------
 
 function parseFinancialTarget(query: string): {
@@ -188,14 +243,12 @@ function parseFinancialTarget(query: string): {
 } | null {
   const q = query.toLowerCase();
 
-  // Detect Currency
   let currency = "₦";
   if (q.includes("$") || q.includes("dollar") || q.includes("usd")) currency = "$";
   else if (q.includes("£") || q.includes("pound")) currency = "£";
   else if (q.includes("€") || q.includes("euro")) currency = "€";
   else if (q.includes("naira") || q.includes("₦") || q.includes("ngn")) currency = "₦";
 
-  // Match e.g. "5m", "5 million", "5.5m", "10 millions"
   let amount = 0;
   const millionMatch = q.match(/(\d+(?:\.\d+)?)\s*(?:m\b|million|millions)/i);
   const kMatch = q.match(/(\d+(?:\.\d+)?)\s*(?:k\b|thousand|thousands)/i);
@@ -212,11 +265,13 @@ function parseFinancialTarget(query: string): {
 
   if (amount <= 0) return null;
 
-  // Detect Timeframe
   let timeframeDays = 30;
   let timeframeLabel = "the next 30 days";
 
-  if (q.includes("october") || q.includes("this month") || q.includes("end of month") || q.includes("1 month") || q.includes("a month")) {
+  if (q.includes("december")) {
+    timeframeDays = 60;
+    timeframeLabel = "before December";
+  } else if (q.includes("october") || q.includes("this month") || q.includes("end of month") || q.includes("1 month") || q.includes("a month")) {
     timeframeDays = 30;
     timeframeLabel = "the next 30 days";
   } else if (q.includes("2 weeks") || q.includes("two weeks") || q.includes("14 days")) {
@@ -257,7 +312,7 @@ export function generateProceduralSocraticResponse(query: string): {
 } {
   const q = query.toLowerCase().trim();
 
-  // 0. GREETINGS & PLATFORM INTRO
+  // 0. GREETINGS & FIRST SESSION ONBOARDING (Section 26 & 27)
   if (
     q === "hi" ||
     q === "hello" ||
@@ -265,72 +320,78 @@ export function generateProceduralSocraticResponse(query: string): {
     q.includes("who are you") ||
     q.includes("how does this work") ||
     q.includes("what can you do") ||
-    q === "help"
+    q === "help" ||
+    q.includes("where to start")
   ) {
     return {
-      text: `### I am ASK AKUCHE
-I am your intelligent problem-solving and decision-support engine.
+      text: `### Welcome to AKUCHE
+*«Your questions deserve more than answers.»*
 
-My purpose is not merely to give polite answers. My purpose is to help you **THINK BETTER, MAKE BETTER DECISIONS, and TAKE PRACTICAL ACTION** that produces measurable results.
-
----
-
-### How We Solve Challenges Together:
-$$\\textbf{UNDERSTAND} \\rightarrow \\textbf{THINK} \\rightarrow \\textbf{CALCULATE} \\rightarrow \\textbf{IDENTIFY OPTIONS} \\rightarrow \\textbf{DECIDE} \\rightarrow \\textbf{ACT}$$
-
-1. **Reverse-Engineering Goals:** We turn abstract ambitions into unit economics ($R = P \\times Q$).
-2. **Finding Hidden Leverage:** We examine your existing skills, warm contacts, and high-ticket assets first.
-3. **Execution Over Fluff:** Every analysis ends with concrete **DO THIS TODAY** actions and a daily mission.
+I am your intelligent personal thinking, decision-making and action companion. I am not here to give generic lists or empty motivation — my purpose is to help you move from **Confusion → Clarity → Plan → Action → Growth**.
 
 ---
 
-### 3 Ways to Start Right Now:
-* **Option A (Financial Target):** Type *"I want to make ₦5 million in 30 days."*
-* **Option B (Business/Sales Bottleneck):** Type *"I need 10 high-paying B2B clients for my service."*
-* **Option C (Critical Decision):** Type *"Should I borrow money to open a shop?"* or *"Should I leave my job?"*
+### How We Work Together:
+$$\\textbf{ASK} \\rightarrow \\textbf{THINK} \\rightarrow \\textbf{DECIDE} \\rightarrow \\textbf{ACT} \\rightarrow \\textbf{LEARN} \\rightarrow \\textbf{GROW}$$
+
+1. **Diagnose Before Recommending:** We find the real root bottleneck, not just symptoms.
+2. **Reverse-Engineer the Math ($R = P \\times Q$):** We break ambitious targets into manageable daily quotas.
+3. **Always End with Action:** Every session gives you **YOUR NEXT MOVE** so you always know what to do today.
 
 ---
 
-### Do This Today
-Type your exact challenge, financial target, or decision dilemma into the box below.`,
+### What are you trying to figure out right now?
+* **1. Make more money / hit a revenue target** (e.g. *"I want to generate ₦5,000,000 before the end of the month"*)
+* **2. Business & customer acquisition** (e.g. *"How do I get 10 high-paying B2B clients for my service?"*)
+* **3. A difficult decision** (e.g. *"Should I borrow money to start a shop?"* or *"Should I leave my job?"*)
+* **4. Learning or exam preparation** (e.g. *"I need a study strategy for my exams in 2 weeks"*)
+* **5. Overcoming procrastination** (e.g. *"I am overwhelmed and don't know where to start"*)
+
+---
+
+### YOUR NEXT MOVE
+Type your exact challenge or financial goal in the box below, and let's break it down into an operating system.`,
       cards: {
         type: "guided_thinking",
         whatWeKnow: [
-          "Ask AKUCHE is calibrated to diagnose and reverse-engineer your real-life challenges.",
-          "Clear questions receive structured mathematical plans and daily action missions.",
+          "Akuche is active and calibrated to help you think through decisions and take action.",
+          "Every session concludes with a measurable action assignment.",
         ],
         whatWeDontKnow: [
           "Your specific goal, target number, or current bottleneck.",
         ],
         assumptions: [
-          "You have a real challenge you want to break down into actionable steps.",
+          "You have a real challenge you want to solve systematically.",
         ],
         risks: [
-          "Postponing decision-making without testing your assumptions.",
+          "Postponing decision-making without testing your core assumptions.",
         ],
         options: [
-          "Goal 1: Reverse-engineer a revenue target (e.g. ₦5m in 30 days)",
-          "Goal 2: Build a customer acquisition pipeline for your business",
-          "Goal 3: Stress-test a difficult financial or career decision",
+          "Path 1: Reverse-engineer a financial target (e.g. ₦5m in 30 days)",
+          "Path 2: Diagnose a business customer acquisition bottleneck",
+          "Path 3: Evaluate a difficult career or financial decision",
         ],
         questionsToInvestigate: [
           "What is the single most important outcome you want to achieve this month?",
         ],
-        nextQuestion: "What specific problem or goal are you working on right now?",
+        nextQuestion: "What specific challenge are you working on right now?",
         mission: {
-          title: "Define Your Core Goal",
+          title: "Define Your Real Question",
           deadline: "Before end of today",
           steps: [
-            "Write down your target outcome in one sentence",
-            "State your deadline and available budget/hours",
-            "Send it to Ask AKUCHE to generate your step-by-step battle plan",
+            "State your desired outcome in one clear sentence",
+            "State your timeframe and available hours/capital",
+            "Send it to Akuche to generate your execution battle plan",
           ],
+          whyItMatters: "Clarity on the real question is 80% of solving the problem.",
+          howToDoIt: "Type your goal or dilemma directly into the input bar.",
+          doneWhen: "Your first challenge has been submitted for Socratic diagnosis.",
         },
       },
     };
   }
 
-  // 1. REVERSE-ENGINEER NUMERICAL FINANCIAL GOALS
+  // 1. REVERSE-ENGINEER NUMERICAL FINANCIAL GOALS (Section 2, 9, 13)
   const finTarget = parseFinancialTarget(query);
   if (finTarget && finTarget.amount > 0) {
     const { amount, currency, timeframeDays, timeframeLabel } = finTarget;
@@ -359,66 +420,67 @@ Type your exact challenge, financial target, or decision dilemma into the box be
 You want to generate **${formatMoney(amount, currency)}** within **${timeframeLabel}**.
 
 ### The Real Problem
-Large revenue targets fail when treated as a single abstract goal. To achieve ${currency}${amount.toLocaleString()}, you do not need generic motivation — you need an **operating pipeline** that balances price, volume, and daily conversion activity.
+Large financial targets fail when treated as a single abstract wish. To achieve ${currency}${amount.toLocaleString()}, you do not need generic motivational advice — you need a **mathematical operating pipeline** that balances price, volume, and daily conversion activity.
 
 ---
 
 ### The Numbers: Reverse-Engineered Breakdown
 * **Total Target:** ${formatMoney(amount, currency)}
 * **Timeframe:** ${timeframeLabel} (${timeframeDays} days)
-* **Required Daily Run Rate:** Approximately **${currency}${dailyTarget.toLocaleString()}/day**
-* **Required Weekly Run Rate:** Approximately **${currency}${weeklyTarget.toLocaleString()}/week**
+* **Required Daily Velocity:** Approximately **${currency}${dailyTarget.toLocaleString()}/day**
+* **Required Weekly Velocity:** Approximately **${currency}${weeklyTarget.toLocaleString()}/week**
 
 #### Available Revenue Structures ($R = P \\times Q$):
-* **Route A (High-Ticket B2B / Premium):** 10 clients × **${currency}${tier1_price.toLocaleString()}**
+* **Route A (High-Ticket B2B / Corporate):** 10 clients × **${currency}${tier1_price.toLocaleString()}**
 * **Route B (Mid-Market / Core Offer):** 20 clients × **${currency}${tier2_price.toLocaleString()}** *(Recommended)*
 * **Route C (Productized Service):** 50 clients × **${currency}${tier3_price.toLocaleString()}**
-* **Route D (Volume / Digital / Retail):** 100 clients × **${currency}${tier4_price.toLocaleString()}**
+* **Route D (Mass Volume / Digital / Retail):** 100 clients × **${currency}${tier4_price.toLocaleString()}**
 
 ---
 
 ### Recommended Execution Path: Route B (20 Clients @ ${currency}${tier2_price.toLocaleString()})
-**Why:** Route A requires rare ultra-high trust. Route D requires massive existing traffic. **Route B** balances achievable deal size with manageable sales volume.
+**Why:** Route A requires rare ultra-high trust. Route D requires massive existing audience traffic. **Route B** balances achievable ticket size with manageable pipeline volume.
 
 #### Pipeline Conversion Mathematics:
-* **Target Closed Clients:** ${requiredConversions}
+* **Target Closed Deals:** ${requiredConversions} clients
 * **Expected Proposal Close Rate:** 20%
-* **Required Qualified Sales Conversations:** ~${qualifiedConversations} conversations
+* **Required Qualified Sales Conversations:** ~${qualifiedConversations} qualified discovery chats
 * **Daily Conversation Pace:** **${discoveryCallsPerDay} qualified conversations per working day**
-* **Daily Direct Outreaches:** **${dailyOutreachTargets} personalized pitches per day**
+* **Daily Direct Outreaches:** **${dailyOutreachTargets} personalized pitches per day via WhatsApp, LinkedIn, or Direct Calls**
 
 ---
 
 ### Step-by-Step Execution Plan
-* **Phase 1 (Days 1–3): Asset & List Mobilization**
-  * Package an undeniable offer priced at ${currency}${tier2_price.toLocaleString()} solving one urgent problem.
-  * Build a list of 60 high-intent prospects (past buyers, warm network, corporate contacts).
-* **Phase 2 (Days 4–20): High-Velocity Outreach & Discovery**
+* **Phase 1 (Days 1–3): Asset & Offer Mobilization**
+  * Package an undeniable offer priced at ${currency}${tier2_price.toLocaleString()} solving one urgent business/personal problem.
+  * Build a list of 60 high-intent contacts (past buyers, warm phone book contacts, local business owners).
+* **Phase 2 (Days 4–20): High-Velocity Outreach & Diagnostic Conversations**
   * Execute ${dailyOutreachTargets} personalized outreaches every morning before 11:00 AM.
-  * Conduct ${discoveryCallsPerDay} discovery calls daily. Focus on diagnosing their pain before pitching.
-* **Phase 3 (Days 21–${timeframeDays}): Closing, Cash-Collection & Upsells**
+  * Conduct ${discoveryCallsPerDay} discovery conversations daily. Diagnose pain before quoting prices.
+* **Phase 3 (Days 21–${timeframeDays}): Closing, Cash Collection & Referrals**
   * Send simple 1-page proposals with 48-hour incentive pricing.
-  * Collect upfront payments or 50% deposits.
+  * Collect upfront deposits (minimum 50%).
 
 ---
 
 ### Risks & Critical Assumptions
-* **Assumption:** You have an existing skill, service, or product that can deliver clear value at ${currency}${tier2_price.toLocaleString()}.
-* **Bottleneck Risk:** Reaching out to unqualified prospects or delaying follow-ups beyond 24 hours.
+* **Assumption:** You have an existing skill, service, or inventory that can deliver clear value at ${currency}${tier2_price.toLocaleString()}.
+* **Bottleneck Risk:** Pitching unqualified cold contacts instead of reaching out to warm network and B2B decision-makers.
 
 ---
 
-### Do This Today (Your Next 3 Actions)
-1. **Define Your ${currency}${tier2_price.toLocaleString()} Offer:** Write down in 2 sentences: *Who it helps, the exact pain it eliminates, and why it's worth 3x the price.*
-2. **Build Your First 20 Prospect Names:** List 20 warm contacts or decision-makers you can message directly today.
-3. **Send 5 Direct Diagnostic Messages:** Reach out to the first 5 contacts to initiate a conversation before 6:00 PM.
+### TODAY'S ACTION
+**Draft Your ${currency}${tier2_price.toLocaleString()} Offer & Contact 5 Warm Decision-Makers.**
+
+* **WHY IT MATTERS:** Cash flow velocity depends entirely on starting conversations today rather than perfecting plans.
+* **HOW TO DO IT:** Send this message on WhatsApp/LinkedIn to 5 people:
+  * *"Hi [Name], I'm currently taking on 2 clients to help with [specific problem]. Since you're in [industry], I wanted to ask if this is currently a focus for you this month?"*
+* **DONE WHEN:** 5 personalized messages are sent and 2 conversations are active.
 
 ---
 
-### 3 Questions For You
-1. What existing skill, service, or inventory do you currently have that offers the highest profit margin?
-2. Who are your last 3 paying clients or best buyers, and how did they find you?
-3. How many hours per day can you commit strictly to sales conversations?`;
+### YOUR NEXT MOVE
+Write down the names of the first 5 people you will contact, open WhatsApp or LinkedIn, and send the first message before 6:00 PM today.`;
 
     return {
       text,
@@ -427,11 +489,11 @@ Large revenue targets fail when treated as a single abstract goal. To achieve ${
         whatWeKnow: [
           `Revenue Target: ${formatMoney(amount, currency)}`,
           `Timeframe: ${timeframeLabel} (${timeframeDays} days)`,
-          `Required Daily Run Rate: ${currency}${dailyTarget.toLocaleString()}/day`,
+          `Required Daily Pace: ${currency}${dailyTarget.toLocaleString()}/day`,
         ],
         whatWeDontKnow: [
-          "Your current highest-converting offer and profit margin.",
-          "Size and responsiveness of your existing warm contacts/audience.",
+          "Your current highest-margin skill or existing product.",
+          "Size and responsiveness of your existing WhatsApp/network contacts.",
           "Your historical close rate on qualified proposals.",
         ],
         assumptions: [
@@ -443,9 +505,9 @@ Large revenue targets fail when treated as a single abstract goal. To achieve ${
           "Underestimating the required daily conversation volume.",
         ],
         options: [
-          `Route A (High-Ticket): 10 clients × ${currency}${tier1_price.toLocaleString()}`,
+          `Route A (High-Ticket B2B): 10 clients × ${currency}${tier1_price.toLocaleString()}`,
           `Route B (Mid-Market - Recommended): 20 clients × ${currency}${tier2_price.toLocaleString()}`,
-          `Route C (Volume): 50 clients × ${currency}${tier3_price.toLocaleString()}`,
+          `Route C (Productized Service): 50 clients × ${currency}${tier3_price.toLocaleString()}`,
           `Route D (Mass Retail): 100 clients × ${currency}${tier4_price.toLocaleString()}`,
         ],
         questionsToInvestigate: [
@@ -458,18 +520,22 @@ Large revenue targets fail when treated as a single abstract goal. To achieve ${
           deadline: "Before 6:00 PM today",
           steps: [
             `Package 1 high-value offer priced at ${currency}${tier2_price.toLocaleString()}`,
-            "Write down a list of 20 specific people or companies who need this",
-            "Send 5 direct diagnostic outreach messages before the end of today",
+            "List 20 specific people or business owners who suffer from this problem",
+            "Send 5 direct diagnostic outreach messages before 6:00 PM today",
           ],
+          whyItMatters: "Validating interest with 5 direct conversations prevents weeks of wasted effort.",
+          howToDoIt: "Send personalized WhatsApp/LinkedIn messages diagnosing their current priority.",
+          doneWhen: "5 messages sent and at least 2 active conversations started.",
         },
       },
     };
   }
 
-  // 2. MAKING MONEY, WEALTH & CASH FLOW (Non-numerical general income query)
+  // 2. MAKING MONEY & WEALTH (Section 22 & 3)
   if (
     q.includes("make money") ||
     q.includes("how to make money") ||
+    q.includes("more money") ||
     q.includes("earn money") ||
     q.includes("how can i make money") ||
     q.includes("get rich") ||
@@ -479,161 +545,342 @@ Large revenue targets fail when treated as a single abstract goal. To achieve ${
   ) {
     return {
       text: `### What I Understand
-You want to generate sustainable income or build cash flow as quickly as possible.
+You want to increase your income or build a new cash flow stream.
 
 ### The Real Problem
-People struggle to make money when they search for "methods" instead of **identifying who has money and what urgent problem they will pay to have solved**. Money is simply an exchange of value.
+People struggle to make money when they search for abstract "methods" rather than **identifying who has budget and what painful problem they will pay to have solved**. Money is always an exchange of value.
 
 ---
 
-### The 3 Fastest Economic Paths to Cash:
-* **Path 1: High-Value Service (Fastest / Zero Startup Capital)**
-  * Take a skill you already have (design, copywriting, sales, tutoring, repair, consulting) and sell it directly to 5 business owners at **₦100,000 each = ₦500,000**.
-* **Path 2: Deal Sourcing & Commission Arbitrage (High Leverage)**
-  * Connect an existing buyer with an existing seller (real estate, cars, supply contracts, freelance talent) and collect a 5%–10% finder's fee.
-* **Path 3: Productized Knowledge or Digital Asset**
-  * Package a specific procedure or template and sell to 50 buyers at **₦10,000 = ₦500,000**.
+### The 3 Fastest Economic Pathways to Cash Flow:
+* **Pathway 1: High-Value Service (Fastest / ₦0 Startup Capital)**
+  * Take a skill you already have (design, sales, accounting, tutoring, writing, repairs, web development, consulting) and sell it to 5 business owners @ **₦100,000 each = ₦500,000**.
+* **Pathway 2: Deal Sourcing & Brokerage Arbitrage (High Leverage)**
+  * Connect an existing buyer with an existing supplier (real estate, corporate supplies, vehicle trade, freelance talent) and collect a 5%–10% commission.
+* **Pathway 3: Productized Knowledge or Digital Procedure**
+  * Package a repeatable process, guide, or template and sell to 50 buyers @ **₦10,000 = ₦500,000**.
 
 ---
 
-### Recommended Execution Path: Path 1 (High-Value Service)
-**Why:** It requires **₦0 in startup capital** and puts you in front of decision-makers within 24 hours.
+### Recommended Approach: Pathway 1 (High-Value Service)
+**Why:** It requires zero inventory, zero upfront capital, and allows you to generate cash within 72 hours using WhatsApp, your phone contacts, and direct outreach.
 
 ---
 
 ### Step-by-Step Execution Plan
-1. **Skill Audit:** List the 3 most useful tasks you can perform that save someone time or make them money.
-2. **Target List:** Identify 20 businesses or individuals who currently suffer from that problem.
-3. **Offer Pitch:** Send a direct message offering a pilot test where they only pay if satisfied.
+1. **Skill Audit:** Identify the #1 task you can perform that saves a business time or makes them money.
+2. **List 20 Potential Buyers:** Look through your phone contacts, LinkedIn connections, and local businesses.
+3. **Send 5 Pilot Messages:** Offer a low-friction pilot where they only pay if satisfied.
 
 ---
 
-### Do This Today (Your Next 3 Actions)
-1. **Name Your 1 Core Skill:** Write down the #1 service you can deliver this week.
-2. **List 10 Business Owners:** Find 10 local businesses, founders, or contacts in your phone book.
-3. **Send 5 Audit Messages:** Reach out with: *"I noticed [specific bottleneck in your business]. I can help you fix it in 3 days. Would you be open to a quick chat?"*
+### TODAY'S ACTION
+**Identify Your #1 High-Value Skill & Message 5 Contacts.**
+
+* **WHY IT MATTERS:** You already possess skills people will pay for; the missing link is making direct offers.
+* **HOW TO DO IT:** Send this message:
+  * *"Hi [Name], I'm offering [specific service, e.g. helping businesses optimize their client follow-ups] this week. If you need a hand with this right now, I'd love to handle it for you."*
+* **DONE WHEN:** 5 personalized messages are sent.
 
 ---
 
-### 3 Questions For You
-1. What skill or experience do you currently possess that people already ask you for advice on?
-2. What is your exact financial target for the next 30 days (e.g. ₦200,000 or ₦1,000,000)?
-3. How many hours per day can you dedicate immediately?`,
+### YOUR NEXT MOVE
+Write down your core skill in 1 sentence, list 5 people who could benefit, and send the first message right now.`;
+
+    return {
+      text,
       cards: {
         type: "guided_thinking",
         whatWeKnow: [
-          "You want to generate new income or build a cash flow engine.",
-          "Selling services to businesses generates cash 10x faster than building an unvalidated product.",
+          "You want to generate new income or expand cash flow.",
+          "Selling services to existing businesses generates cash 10x faster than creating unvalidated products.",
         ],
         whatWeDontKnow: [
-          "Your current marketable skill set and existing equipment.",
-          "Your exact monthly income target.",
+          "Your specific skills, domain experience, and daily available hours.",
+          "Your exact 30-day financial target.",
         ],
         assumptions: [
-          "You have at least 1 transferable skill and 2 hours per day to commit.",
+          "You have at least 1 marketable skill and 2 hours per day to dedicate.",
         ],
         risks: [
-          "Wasting weeks trying to create a complex product before validating paying demand.",
+          "Spending weeks building a website or product before getting a paying customer.",
         ],
         options: [
-          "Path 1 (Recommended): High-Value Service (5 clients × ₦100,000)",
-          "Path 2: Deal Sourcing / Brokerage commissions",
-          "Path 3: Productized digital template (50 buyers × ₦10,000)",
+          "Pathway 1 (Recommended): High-Value Service (5 clients × ₦100,000)",
+          "Pathway 2: Deal Sourcing & Finder's Fee Commission",
+          "Pathway 3: Productized Digital Template (50 buyers × ₦10,000)",
         ],
         questionsToInvestigate: [
-          "What is the single highest-value problem you can solve for a business owner today?",
+          "What is the single most valuable problem you can solve for someone this week?",
         ],
-        nextQuestion: "What specific skill or service can you offer right now?",
+        nextQuestion: "What specific skill or service can you deliver immediately?",
         mission: {
-          title: "Skill Audit & 5 Outreaches",
+          title: "Skill Audit & 5 Warm Outreaches",
           deadline: "Before 6:00 PM today",
           steps: [
             "Write down your #1 strongest marketable skill",
-            "List 10 potential clients who need this skill",
-            "Send 5 personalized direct messages offering a pilot solution",
+            "List 10 specific people or business owners who need this",
+            "Send 5 direct messages offering a pilot solution",
           ],
+          whyItMatters: "Direct outreach generates faster cash flow than passive waiting.",
+          howToDoIt: "Send personalized WhatsApp/LinkedIn messages proposing a pilot service.",
+          doneWhen: "5 messages sent to qualified contacts.",
         },
       },
     };
   }
 
-  // 3. STARTING A BUSINESS & BUSINESS IDEAS
+  // 3. DECISION MODE (Section 20)
   if (
-    q.includes("start a business") ||
-    q.includes("starting a business") ||
-    q.includes("business idea") ||
-    q.includes("startup") ||
-    q.includes("new venture") ||
-    q.includes("entrepreneur")
+    q.includes("decision") ||
+    q.includes("should i") ||
+    q.includes("choose between") ||
+    q.includes("two options") ||
+    q.includes("option a") ||
+    q.includes("or should i")
   ) {
     return {
-      text: `### What I Understand
-You want to launch a new business or find a viable, profitable business idea.
+      text: `### Decision Analysis Mode Activated
+You are facing a critical choice: **"${query}"**.
+
+---
+
+### OPTION A: The Safe Validation / Phased Route
+* **Advantages:** Low downside risk, preserves cash runway, reversible if assumptions fail.
+* **Disadvantages:** Slower potential upside, requires balancing multiple priorities simultaneously.
+* **Risks:** Delaying decisive commitment if validation drags on too long.
+* **Potential Outcome:** Steady, validated progress with zero catastrophic downside.
+
+---
+
+### OPTION B: The Full Commitment / High-Leverage Route
+* **Advantages:** Total focus, fastest potential breakthrough, maximum urgency.
+* **Disadvantages:** High downside pressure, burns cash runway rapidly if revenue is delayed.
+* **Risks:** Cash crunch or forced panic decisions if initial sales take 90+ days.
+* **Potential Outcome:** Rapid high return if market demand exists; severe stress if unvalidated.
+
+---
+
+### WHAT MATTERS MOST
+1. **Downside Protection:** If this decision produces zero return for 90 days, can you survive financially and mentally?
+2. **Reversibility:** Is this a one-way door (irreversible) or a two-way door (reversible)?
+
+---
+
+### MY ASSESSMENT
+Choose **Option A (Phased Validation)** first. Run a 14-day micro-experiment to secure 3 customer commitments or prove demand before making an irreversible commitment.
+
+---
+
+### YOUR NEXT MOVE
+Do not make a permanent commitment today. Take **one 24-hour test action** that gathers hard evidence on customer demand or financial feasibility.`,
+      cards: {
+        type: "decision_matrix",
+        whatWeKnow: [
+          `You are evaluating a significant decision: "${query}"`,
+          "Reversible decisions should be tested with small experiments first.",
+        ],
+        whatWeDontKnow: [
+          "Your exact financial buffer and non-negotiable personal boundaries.",
+          "Hard data on customer willingness to pay.",
+        ],
+        assumptions: [
+          "Assuming Option B carries significantly higher financial or emotional risk.",
+        ],
+        risks: [
+          "Making an irreversible commitment based on unverified optimism.",
+        ],
+        options: [
+          "Option A: Phased validation with 14-day test milestone",
+          "Option B: Immediate full commitment",
+        ],
+        questionsToInvestigate: [
+          "What is the single biggest risk if Option B fails, and how would you handle it?",
+        ],
+        nextQuestion: "Can you run a 48-hour experiment to test your main assumption?",
+        mission: {
+          title: "Run a 24-Hour Decision Experiment",
+          deadline: "Before 6:00 PM tomorrow",
+          steps: [
+            "Write down your worst-case scenario for both options",
+            "Identify the #1 unproven assumption for Option B",
+            "Talk to 2 experienced people or potential customers to gather real data",
+          ],
+          whyItMatters: "Data eliminates decision anxiety faster than overthinking.",
+          howToDoIt: "Ask 2 objective peers: 'What is the biggest blind spot in this plan?'",
+          doneWhen: "2 pieces of external objective feedback gathered.",
+        },
+      },
+    };
+  }
+
+  // 4. BUSINESS & CUSTOMER ACQUISITION (Section 23)
+  if (
+    q.includes("customer") ||
+    q.includes("client") ||
+    q.includes("sales") ||
+    q.includes("leads") ||
+    q.includes("marketing") ||
+    q.includes("business problem") ||
+    q.includes("grow business")
+  ) {
+    return {
+      text: `### Business Diagnostic Mode Activated
+You are addressing a customer acquisition, sales, or business growth bottleneck.
 
 ### The Real Problem
-Most new ventures fail because founders fall in love with an **idea** rather than validating an **urgent, painful customer problem** that people are already paying money to solve.
+Most business owners seeking "more customers" mistakenly believe they have a visibility or advertising problem. In 80% of cases, the real bottleneck is **Offer Clarity, Direct Outreach Volume, or Lack of Follow-Up**.
 
 ---
 
-### The Business Validation Economics
-* **The Golden Rule:** Never spend capital on inventory, logos, or office rent before securing **at least 3 paying pre-orders or committed clients**.
-* **Target Breakeven Metric:**
-  * Fixed startup costs: Keep under **₦50,000** for MVP.
-  * Target Margin: At least **50% to 70% gross profit margin**.
+### The Business Multiplier Engine:
+$$Revenue = Leads \\times Conversion\\,Rate \\times Average\\,Order\\,Value \\times Frequency$$
+* Doubling qualified conversations + improving closing rate from 15% → 20% + increasing price by 25% produces a **2.6x revenue increase** without spending millions on ads.
 
 ---
 
-### 3 Proven Low-Risk Business Archetypes
-* **Archetype 1: B2B Productized Agency (Recommended)**
-  * Solve one administrative, sales, or tech pain for local companies. (e.g. bookkeeping, social leads, IT support).
-* **Archetype 2: High-Margin Direct Trade (Pre-Order Model)**
-  * Source high-demand goods only after taking 50% customer deposits. Zero unsold inventory risk.
-* **Archetype 3: Specialized Education / Training Workshop**
-  * Teach an in-demand practical skill to a cohort of 10 students @ **₦30,000 = ₦300,000 per cohort**.
+### Your 3 Acquisition Pathways:
+* **Pathway 1: Past Customer Reactivation & Referral Engine (Fastest)**
+  * Re-contact satisfied previous buyers with a priority check-in or loyalty offer. Zero advertising cost.
+* **Pathway 2: Direct High-Value Outreach (Highest Control)**
+  * Identify 30 ideal corporate/B2B prospects on LinkedIn, WhatsApp, or in person, and send personalized diagnostic messages.
+* **Pathway 3: Strategic Distribution Partnerships (Highest Leverage)**
+  * Partner with non-competing businesses who already serve your exact ideal customer.
 
 ---
 
-### Step-by-Step Launch Plan
-1. **Problem Discovery:** Interview 5 business owners about what takes the most time in their day.
-2. **Pre-Sale Offer:** Create a 1-page proposal solving that exact problem.
-3. **Deliver & Collect Referrals:** Overdeliver for your first 3 clients to generate instant case studies.
+### Recommended Execution Path: Pathway 1 + Pathway 2
+Mobilize your warm contacts and previous buyers immediately for fast cash flow while executing a disciplined 10-per-day direct outreach cadence.
 
 ---
 
-### Do This Today (Your Next 3 Actions)
-1. **Select 1 Problem:** Choose one specific problem you can solve better than average.
-2. **List 15 Target Buyers:** Identify 15 individuals or companies experiencing this problem.
-3. **Conduct 3 Pain Interviews:** Ask 3 potential customers: *"What is the hardest part about [problem], and what have you tried so far to fix it?"*
+### TODAY'S ACTION
+**Reactivate 3 Past Customers & Build a 15-Prospect Target Sheet.**
+
+* **WHY IT MATTERS:** Past buyers are 5x more likely to buy again than cold strangers.
+* **HOW TO DO IT:** Send a WhatsApp message to 3 past clients:
+  * *"Hi [Name], I'm checking in to see how everything is going with [previous project/purchase]. We're opening up 2 priority slots for [service/upgrade] this month and wanted to give you first access."*
+* **DONE WHEN:** 3 check-in messages sent and 15 new prospect names listed.
 
 ---
 
-### 3 Questions For You
-1. What industry or market do you understand better than the average person?
-2. What initial capital do you have available for this venture?
-3. Are you aiming for a service business or a physical products business?`,
+### YOUR NEXT MOVE
+Open your WhatsApp chat list right now, find your last 3 satisfied customers, and send the check-in message before 5:00 PM today.`;
+
+    return {
+      text,
       cards: {
         type: "guided_thinking",
         whatWeKnow: [
-          "You are planning to start a new business venture.",
-          "Validating customer demand before spending capital eliminates 90% of business failure risk.",
+          "You want a repeatable system to acquire paying customers and grow revenue.",
+          "Reactivating past clients generates cash flow with zero ad spend.",
         ],
         whatWeDontKnow: [
-          "Your preferred industry and domain expertise.",
-          "Your available startup capital.",
+          "Your current conversion rate and average transaction size.",
+          "Your primary sales channel (WhatsApp, physical store, website, phone calls).",
         ],
         assumptions: [
-          "You want a profitable, cash-flowing business rather than a high-burn speculative startup.",
+          "Assuming your core offer delivers verifiable value to satisfied buyers.",
         ],
         risks: [
-          "Buying inventory or registering entities before confirming buyer willingness to pay.",
+          "Spending money on broad paid ads before validating the offer conversion manually.",
         ],
         options: [
-          "Archetype 1 (Recommended): B2B Productized Agency (Zero Inventory)",
-          "Archetype 2: Pre-Order Direct Trade (Customer-funded inventory)",
-          "Archetype 3: Cohort Training Workshop",
+          "Pathway 1 (Fastest): Past Buyer Reactivation & Referral Engine",
+          "Pathway 2 (High-Control): Direct Outreach to 10 qualified prospects daily",
+          "Pathway 3 (High-Leverage): Strategic Distribution Partners",
         ],
         questionsToInvestigate: [
-          "Who is your ideal customer, and why would they choose you over existing options?",
+          "Why did your best customer choose you over existing alternatives?",
+        ],
+        nextQuestion: "How many qualified prospect conversations did you have this week?",
+        mission: {
+          title: "Customer Acquisition Kickstart",
+          deadline: "Before 6:00 PM today",
+          steps: [
+            "Write down your top 5 most satisfied past clients",
+            "Send a warm check-in message to at least 3 of them",
+            "List 15 new qualified prospects for direct outreach tomorrow morning",
+          ],
+          whyItMatters: "Direct relationship engagement produces immediate commercial velocity.",
+          howToDoIt: "Send personalized check-in messages on WhatsApp.",
+          doneWhen: "3 past clients contacted and 15 new prospect profiles listed.",
+        },
+      },
+    };
+  }
+
+  // 5. STARTING A BUSINESS & BUSINESS IDEAS
+  if (
+    q.includes("start a business") ||
+    q.includes("business idea") ||
+    q.includes("startup") ||
+    q.includes("idea i want to develop") ||
+    q.includes("new venture")
+  ) {
+    return {
+      text: `### Business Creation Mode Activated
+You want to develop a new business idea or launch a profitable venture.
+
+### The Real Problem
+Most startups fail because founders spend time and money building a **solution** before verifying that customers have an **urgent, painful problem they are actively willing to pay for**.
+
+---
+
+### The Lean Validation Economics
+* **The 3-Customer Pre-Sale Rule:** Never spend capital on inventory, logos, or rent before securing **at least 3 committed pre-orders or paying pilot clients**.
+* **Startup Capital Constraint:** Keep fixed MVP setup costs under **₦50,000**.
+* **Target Margin:** Aim for at least **50% to 70% gross profit margin**.
+
+---
+
+### 3 Low-Risk Venture Models
+* **Model 1: B2B Productized Agency (Recommended - ₦0 Inventory)**
+  * Solve one painful administrative, technical, or sales headache for local companies (e.g. accounting, lead generation, social media management, maintenance).
+* **Model 2: Direct Trade with Customer Pre-Orders**
+  * Source high-demand physical products only after collecting 50% customer deposits. Zero unsold inventory risk.
+* **Model 3: Specialized Training / Cohort Workshop**
+  * Package an in-demand practical skill and teach a cohort of 10 students @ **₦30,000 = ₦300,000 per cohort**.
+
+---
+
+### TODAY'S ACTION
+**Conduct 3 Customer Pain Discovery Conversations.**
+
+* **WHY IT MATTERS:** Finding out what customers hate dealing with will shape an offer they cannot refuse.
+* **HOW TO DO IT:** Ask 3 potential buyers:
+  * *"What is the most frustrating or time-consuming part about [activity/business], and what have you tried so far to fix it?"*
+* **DONE WHEN:** You have written notes from 3 real prospective buyers.
+
+---
+
+### YOUR NEXT MOVE
+Identify 3 people in your network who match your target customer profile, send them a message asking for 5 minutes of feedback, and do not pitch anything until you understand their pain.`;
+
+    return {
+      text,
+      cards: {
+        type: "guided_thinking",
+        whatWeKnow: [
+          "You are planning to launch a new business or develop a concept.",
+          "Validating customer willingness to pay before spending capital eliminates 90% of business failure risk.",
+        ],
+        whatWeDontKnow: [
+          "Your specific domain experience and available startup capital.",
+        ],
+        assumptions: [
+          "You want a cash-flowing, profitable business rather than a speculative startup.",
+        ],
+        risks: [
+          "Spending capital on inventory or branding before securing paying buyers.",
+        ],
+        options: [
+          "Model 1 (Recommended): B2B Productized Agency (Zero Inventory)",
+          "Model 2: Pre-Order Direct Trade (Customer-funded inventory)",
+          "Model 3: Specialized Cohort Workshop",
+        ],
+        questionsToInvestigate: [
+          "Who is your ideal customer, and why would they buy from you instead of competitors?",
         ],
         nextQuestion: "What specific industry or skill do you want to build this business around?",
         mission: {
@@ -642,535 +889,97 @@ Most new ventures fail because founders fall in love with an **idea** rather tha
           steps: [
             "Write down 3 real problems people currently complain about in your field",
             "Draft a 1-sentence solution offer",
-            "Ask 3 potential customers for feedback on the offer",
+            "Ask 3 potential customers for feedback on the problem",
           ],
+          whyItMatters: "Direct customer pain data shapes high-converting offers.",
+          howToDoIt: "Ask 3 prospective buyers about their biggest operational frustration.",
+          doneWhen: "3 customer pain discovery interviews completed.",
         },
       },
     };
   }
 
-  // 4. CUSTOMER & SALES ACQUISITION
-  if (
-    q.includes("customer") ||
-    q.includes("client") ||
-    q.includes("sales") ||
-    q.includes("leads") ||
-    q.includes("marketing") ||
-    q.includes("traffic")
-  ) {
-    return {
-      text: `### What I Understand
-You are experiencing a bottleneck in customer acquisition, client volume, or sales revenue.
-
-### The Real Problem
-Most businesses looking for "more customers" mistakenly assume they have a traffic problem, when they actually have a **conversion, positioning, or follow-up problem**.
-
----
-
-### The Numbers & Leverage Diagnostic
-* **Revenue Formula:** $Revenue = Leads \\times Conversion\\,Rate \\times Average\\,Order\\,Value \\times Frequency$
-* **The 3 Multipliers to Double Revenue:**
-  1. Increase qualified conversations by 30%
-  2. Increase closing conversion rate by 30% (from 15% → 20%)
-  3. Increase average pricing/packaging by 30%
-  *(Multiplying all 3 produces a **2.2x total revenue increase** without needing 10x more ad spend).*
-
----
-
-### Your 3 Acquisition Routes
-* **Route 1: Past Buyer Reactivation & Referrals (Fastest / Zero Ad Cost)**
-  * Re-contact satisfied previous buyers with a tailored upgrade or referral incentive.
-* **Route 2: Direct High-Value Outreach (Highest Control)**
-  * Identify 30 ideal corporate/B2B prospects and send personalized diagnostic messages.
-* **Route 3: Strategic Distribution Partnerships (Highest Leverage)**
-  * Partner with non-competing businesses that already serve your exact target customer.
-
----
-
-### Recommended Execution Path: Route 1 + Route 2
-Mobilize your immediate warm assets first to generate immediate cash flow while building a predictable 10-per-day direct outreach system.
-
----
-
-### Step-by-Step Execution Plan
-1. **Audit Last 10 Customers:** Identify the #1 trigger that made them pay.
-2. **Reactivation Campaign:** Message every past client offering a priority service check-in.
-3. **Outreach Cadence:** Contact 10 qualified prospective buyers daily via direct message/call.
-
----
-
-### Do This Today (Your Next 3 Actions)
-1. **List Your Last 5 Paying Customers:** Note how much they paid and what problem you solved.
-2. **Re-engage 3 Previous Buyers:** Send a quick check-in message asking how their results have been.
-3. **Identify 10 New Ideal Prospects:** Find 10 specific decision-makers on LinkedIn/WhatsApp/Instagram and add them to your daily contact sheet.
-
----
-
-### 3 Questions For You
-1. What was the acquisition source of your last 3 paying clients?
-2. What is your current closing rate when you get someone on a phone call or into a chat?
-3. What is the single biggest objection prospects raise before buying?`,
-      cards: {
-        type: "guided_thinking",
-        whatWeKnow: [
-          "You need a repeatable system to generate paying clients/sales.",
-          "Acquiring new cold customers costs 5x more than reactivating warm leads.",
-        ],
-        whatWeDontKnow: [
-          "Your current conversion rate from lead to paying customer.",
-          "Your average order value and profit margin per transaction.",
-          "Your primary sales channel (DMs, calls, website, physical store).",
-        ],
-        assumptions: [
-          "Assuming your core offer delivers verifiable value to past buyers.",
-          "Assuming direct outreach is viable for your industry.",
-        ],
-        risks: [
-          "Spending money on paid ads before validating the offer conversion manually.",
-          "Pitching features instead of solving immediate customer pain points.",
-        ],
-        options: [
-          "Route 1 (Fastest): Past Buyer Reactivation & Referral Engine",
-          "Route 2 (High-Control): Direct Outreach to 10 qualified prospects daily",
-          "Route 3 (High-Leverage): Strategic Distribution Partners with shared audience",
-        ],
-        questionsToInvestigate: [
-          "Why did your best customer choose you over competitors?",
-        ],
-        nextQuestion: "How many qualified prospect conversations are you currently having per week?",
-        mission: {
-          title: "Customer Engine Kickstart",
-          deadline: "Before 6:00 PM today",
-          steps: [
-            "Write down your top 5 most satisfied past clients",
-            "Send a warm check-in message to at least 3 of them",
-            "Build a list of 10 new qualified prospects for direct outreach tomorrow morning",
-          ],
-        },
-      },
-    };
-  }
-
-  // 5. CAPITAL, DEBT, LOAN, OR INVESTMENT DECISION
-  if (
-    q.includes("borrow") ||
-    q.includes("loan") ||
-    q.includes("invest") ||
-    q.includes("capital") ||
-    q.includes("fund") ||
-    q.includes("debt")
-  ) {
-    return {
-      text: `### What I Understand
-You are evaluating a significant financial decision involving capital allocation, borrowing, or taking on debt.
-
-### The Real Problem
-Debt amplifies existing operations: it accelerates profitable businesses, but accelerates failure in unvalidated ones. The core question is **Debt Service Coverage** and **Revenue Velocity**.
-
----
-
-### The Numbers & Sensitivity Analysis
-* **Debt Service Rule:** Your predictable monthly cash flow must cover **at least 1.5x to 2x** the monthly loan repayment amount.
-* **Stress Test Scenario:**
-  * *Best Case:* Investment yields 30%+ ROI within 60 days.
-  * *Realistic Case:* Revenue takes 3–4 months to materialize.
-  * *Worst Case:* Zero new revenue for 90 days. *Can your existing personal/business cash flow pay the loan?*
-
----
-
-### Your Options
-* **Option A: Phased Self-Funding (Lowest Risk)**
-  * Break the project into 3 micro-milestones. Fund Milestone 1 using presales, supplier terms, or retained earnings.
-* **Option B: Supplier Credit / Revenue Share (Moderate Risk)**
-  * Negotiate deferred payment terms with suppliers instead of taking fixed-interest bank debt.
-* **Option C: Fixed Debt / Loan (Highest Risk)**
-  * Take the loan ONLY IF the capital directly purchases proven, fast-turning revenue-generating inventory.
-
----
-
-### Recommended Execution Path
-**Option A or B first.** Validate demand with customer pre-orders before taking debt. If debt is unavoidable, borrow only the minimum required for immediate inventory turnover.
-
----
-
-### Do This Today (Your Next 3 Actions)
-1. **Calculate Monthly Debt Payment:** Determine the exact monthly principal + interest repayment amount.
-2. **Stress-Test Your Current Cash Flow:** Verify if you can pay that amount with zero new revenue.
-3. **Explore 1 Alternative Non-Debt Source:** Can you secure 3 customer pre-orders or supplier credit?
-
----
-
-### 3 Questions For You
-1. What is the exact interest rate, duration, and monthly repayment schedule of this loan?
-2. Exactly how quickly does this capital convert back into liquid cash?
-3. What is your reliable net monthly profit over the past 3 months?`,
-      cards: {
-        type: "guided_thinking",
-        whatWeKnow: [
-          "You are considering taking on debt or allocating significant capital.",
-          "Debt creates a fixed legal obligation regardless of sales fluctuations.",
-        ],
-        whatWeDontKnow: [
-          "The exact APR / monthly interest cost and collateral requirements.",
-          "Your current free cash flow buffer.",
-          "How fast the capital turns into realized gross profit.",
-        ],
-        assumptions: [
-          "Assuming the invested capital will produce expected returns immediately.",
-        ],
-        risks: [
-          "Cash flow insolvency if customer payments are delayed.",
-          "High interest eating all profit margins.",
-        ],
-        options: [
-          "Option A: Phase the project in 3 stages funded by customer pre-orders",
-          "Option B: Negotiate 30-day supplier credit instead of a loan",
-          "Option C: Take a smaller, capped loan strictly for validated inventory",
-        ],
-        questionsToInvestigate: [
-          "If revenue is delayed by 90 days, how will you service the monthly debt?",
-        ],
-        nextQuestion: "Can you validate buyer demand with pre-orders before taking the loan?",
-        mission: {
-          title: "Financial Stress-Test Diagnostic",
-          deadline: "Before 6:00 PM today",
-          steps: [
-            "Calculate your exact monthly debt repayment obligation",
-            "Check if your current net income covers 1.5x the monthly payment",
-            "Identify one non-debt way to finance the next 14 days of operations",
-          ],
-        },
-      },
-    };
-  }
-
-  // 6. CAREER, JOB CHANGE, OR BUSINESS LAUNCH
-  if (
-    q.includes("job") ||
-    q.includes("career") ||
-    q.includes("quit") ||
-    q.includes("promotion") ||
-    q.includes("salary")
-  ) {
-    return {
-      text: `### What I Understand
-You are navigating a career transition, evaluating a new venture, or seeking higher income and fulfillment.
-
-### The Real Problem
-The biggest mistake in career and venture transitions is jumping without **validated runway and proven market demand**. You need to de-risk the transition while accelerating your income potential.
-
----
-
-### The Numbers: Transition Economics
-* **Survival Runway:** 6 months of baseline living expenses in reserve before resigning.
-* **Side-Validation Benchmark:** Generate at least **30% to 50% of your current salary** from your new venture or consulting before making it full-time.
-* **Market Positioning Value:** High-income roles and high-ticket clients pay for *measurable outcomes* (e.g. saving money, generating revenue, eliminating compliance risk), not general effort.
-
----
-
-### Your 3 Strategic Paths
-* **Path 1: The Moonlighting Bridge (Recommended - Lowest Risk)**
-  * Keep current employment while dedicating 10–15 hours weekly to secure your first 3 paying clients.
-* **Path 2: Internal Elevation (Fastest Immediate Cash)**
-  * Negotiate a compensation review or promotion by documenting the specific financial value you delivered in the last 6 months.
-* **Path 3: Full Pivot with Runway (High Risk / High Reward)**
-  * Transition immediately if you have 6+ months of verified cash runway and an active client pipeline.
-
----
-
-### Recommended Execution Path: Path 1 (The Moonlighting Bridge)
-Validate your business or skill offer with real paying clients before cutting off your primary cash flow.
-
----
-
-### Do This Today (Your Next 3 Actions)
-1. **Calculate Your Monthly Baseline Cost:** Know your exact personal survival budget.
-2. **Define Your Skill Asset:** What is the #1 problem you can solve for a business in 5 hours?
-3. **Reach Out to 2 Potential Clients:** Offer a specific diagnostic or pilot service before committing to resign.
-
----
-
-### 3 Questions For You
-1. How many months of living expenses do you currently have saved?
-2. What specific marketable skill has generated the most value in your career?
-3. How many hours per week can you consistently commit to building this transition?`,
-      cards: {
-        type: "guided_thinking",
-        whatWeKnow: [
-          "You are evaluating a strategic career transition or business launch.",
-          "Predictable income reduces panic and enables sound decision-making.",
-        ],
-        whatWeDontKnow: [
-          "Your current monthly savings runway.",
-          "Whether your target market has already paid for this skill/service.",
-        ],
-        assumptions: [
-          "Assuming your new venture can generate revenue within 60–90 days.",
-        ],
-        risks: [
-          "Premature resignation creating urgent financial distress.",
-          "Launching an offer without talking to prospective buyers first.",
-        ],
-        options: [
-          "Path 1 (Recommended): Moonlighting bridge until securing 3 paying clients",
-          "Path 2: Internal negotiation for higher compensation and leverage",
-          "Path 3: Immediate pivot if 6-month cash runway is secured",
-        ],
-        questionsToInvestigate: [
-          "Can you acquire your first paying customer while keeping your current job?",
-        ],
-        nextQuestion: "What is your single most valuable skill that someone will pay for this week?",
-        mission: {
-          title: "Career & Venture Feasibility Audit",
-          deadline: "Before 6:00 PM today",
-          steps: [
-            "Calculate your exact monthly survival living expense",
-            "Write a 1-paragraph summary of your core service offer",
-            "Contact 2 people in your network to discuss their business challenges",
-          ],
-        },
-      },
-    };
-  }
-
-  // 7. STUDYING, CONCENTRATION & ACADEMIC CHALLENGES
-  if (
-    q.includes("concentrate") ||
-    q.includes("studying") ||
-    q.includes("study") ||
-    q.includes("exam") ||
-    q.includes("learn") ||
-    q.includes("focus") ||
-    q.includes("academic")
-  ) {
-    return {
-      text: `### What I Understand
-You are struggling with focus, concentration, information retention, or preparing for high-stakes academic challenges.
-
-### The Real Problem
-Concentration failure is rarely a lack of willpower; it is caused by **high friction, cognitive overload, passive studying (re-reading), and environmental distraction triggers**.
-
----
-
-### The Cognitive Mathematics of Deep Focus
-* **Passive Re-reading Retention:** ~10% after 48 hours.
-* **Active Recall & Practice Testing:** ~80%+ retention after 48 hours.
-* **The 45/15 High-Velocity Protocol:**
-  * 45 Minutes: Uninterrupted deep study (Phone in another room, single topic).
-  * 15 Minutes: Physical break, hydration, active recall quiz.
-
----
-
-### Your 2 Learning Paths
-* **Path A: The Feynman Active-Recall Sprint (Recommended)**
-  * Study a topic for 30 minutes, close the book, and explain it aloud in simple terms as if teaching a 10-year-old. Identify gaps immediately.
-* **Path B: Past-Question Reverse Engineering**
-  * Start directly with past exam questions. Work backwards to find what you do not know.
-
----
-
-### Do This Today (Your Next 3 Actions)
-1. **Clear Your Physical Desk:** Remove all items except 1 notebook, 1 pen, and the material.
-2. **Put Phone in Another Room:** Eliminate digital interruption friction completely.
-3. **Execute One 45-Minute Deep Focus Sprint:** Start a timer now for 45 minutes on the hardest topic.
-
----
-
-### 3 Questions For You
-1. What specific exam, topic, or subject is your most urgent priority?
-2. How many days remain until your target deadline or test?
-3. What is your #1 distraction source when you sit down to study?`,
-      cards: {
-        type: "guided_thinking",
-        whatWeKnow: [
-          "You want to maximize concentration and information retention.",
-          "Active recall outperforms passive reading by over 400%.",
-        ],
-        whatWeDontKnow: [
-          "The deadline and syllabus volume of your upcoming exam.",
-          "Your current daily available study hours.",
-        ],
-        assumptions: [
-          "Assuming digital distractions and multi-tasking are fracturing your attention.",
-        ],
-        risks: [
-          "Passive highlighting giving an illusion of competence without memory retention.",
-          "Cramming without sleep, destroying memory consolidation.",
-        ],
-        options: [
-          "Path A: Feynman active recall + 45/15 Pomodoro deep sprints",
-          "Path B: Past exam question reverse-engineering",
-        ],
-        questionsToInvestigate: [
-          "Which 20% of the syllabus accounts for 80% of the exam weight?",
-        ],
-        nextQuestion: "Can you set a 45-minute timer right now with your phone in another room?",
-        mission: {
-          title: "45-Minute Deep Focus Sprint",
-          deadline: "Complete within next 2 hours",
-          steps: [
-            "Place your phone in another room",
-            "Pick the single most difficult concept on your syllabus",
-            "Run a 45-minute focused sprint and test yourself without looking at notes",
-          ],
-        },
-      },
-    };
-  }
-
-  // 8. PRODUCTIVITY, PROCRASTINATION & TIME MANAGEMENT
-  if (
-    q.includes("procrastinate") ||
-    q.includes("overwhelm") ||
-    q.includes("lazy") ||
-    q.includes("time management") ||
-    q.includes("routine") ||
-    q.includes("discipline") ||
-    q.includes("habit")
-  ) {
-    return {
-      text: `### What I Understand
-You are experiencing friction with procrastination, overwhelm, lack of consistency, or daily execution.
-
-### The Real Problem
-Procrastination is an **emotional regulation and task-friction problem**, not laziness. When a task is ambiguous or feels too large, the brain seeks instant dopamine relief elsewhere.
-
----
-
-### The 2 Execution Protocols
-* **The Rule of 3:** Every morning, write down strictly **3 non-negotiable tasks**. Everything else is optional until these 3 are checked off.
-* **The 15-Minute Gateway:** Do not commit to working for 4 hours. Commit to **15 minutes with zero distractions**. Once momentum starts, cognitive inertia keeps you going.
-
----
-
-### Your Action Path
-* **Step 1:** Shrink the first task until it is impossible to fail (e.g. "open the document and write 1 paragraph").
-* **Step 2:** Eliminate environment switches (hide social tabs, place phone out of arm's reach).
-* **Step 3:** Record completed action in the results loop immediately.
-
----
-
-### Do This Today (Your Next 3 Actions)
-1. **Pick Your #1 Single Task:** Name the single task you have been putting off.
-2. **Shrink the First Step:** Write down the 5-minute version of that task.
-3. **Execute a 15-Minute Sprint:** Start a 15-minute countdown timer right now and work on it.
-
----
-
-### 3 Questions For You
-1. What is the single highest-priority project currently on your plate?
-2. At what time of day is your mental energy naturally at its peak?
-3. What is the primary trigger that derails your focus during the day?`,
-      cards: {
-        type: "guided_thinking",
-        whatWeKnow: [
-          "You want to overcome execution resistance and build productive momentum.",
-          "Momentum follows action, not motivation.",
-        ],
-        whatWeDontKnow: [
-          "The specific task causing the highest emotional friction.",
-        ],
-        assumptions: [
-          "Assuming task ambiguity is causing hesitation.",
-        ],
-        risks: [
-          "Planning endlessly instead of taking the first physical 15-minute step.",
-        ],
-        options: [
-          "Option A: 15-minute low-friction start protocol",
-          "Option B: Rule of 3 priority lockdown",
-        ],
-        questionsToInvestigate: [
-          "What is the smallest possible action that moves your main project forward?",
-        ],
-        nextQuestion: "Can you start a 15-minute timer right now on your hardest task?",
-        mission: {
-          title: "15-Minute Momentum Sprint",
-          deadline: "Complete within next 60 minutes",
-          steps: [
-            "Select your single most procrastinated task",
-            "Remove all browser tabs and phone distractions",
-            "Work with intense focus for exactly 15 minutes",
-          ],
-        },
-      },
-    };
-  }
-
-  // 9. DEFAULT GENERAL DECISION & PROBLEM SOLVING
+  // 6. DEFAULT GENERAL PROBLEM-SOLVING & DECISIONS (Section 21)
   return {
     text: `### What I Understand
-You are facing an important decision or complex challenge: **"${query}"**.
+You are working through this specific challenge: **"${query}"**.
 
 ### The Real Problem
-Complex problems feel overwhelming when facts, assumptions, and emotions are tangled together. To solve this, we must separate **what is verified** from **what is assumed**, identify the highest-leverage route, and build a concrete execution plan.
+Complex challenges feel overwhelming when facts, unverified assumptions, and emotional pressure are tangled together. To make progress, we must separate **what is verifiable** from **what is assumed**, identify the highest-leverage route, and build a concrete execution plan.
 
 ---
 
-### Analytical Breakdown
-* **The Core Bottleneck:** Identify the single constraint that, if resolved, makes everything else easier or unnecessary.
+### Analytical Diagnosis
+* **Core Bottleneck:** What is the single constraint that, if resolved, makes everything else easier or unnecessary?
 * **Leverage Principle:** What existing assets, skills, or direct relationships can you deploy immediately?
 
 ---
 
-### Your 2 Realistic Paths
-* **Path A: The Low-Risk Validation Experiment (Recommended)**
-  * Run a small, reversible test within 24 hours to gather hard data before making a permanent commitment.
-* **Path B: The Direct Alignment Path**
-  * Address the core constraint directly by having a direct conversation or setting firm boundaries.
+### Your 2 Practical Options
+* **Option A: The 24-Hour Low-Risk Experiment (Recommended)**
+  * Run a small, reversible test today to gather real data before making an irreversible commitment.
+* **Option B: The Direct Alignment Conversation**
+  * Address the root issue directly by setting clear boundaries or renegotiating constraints.
 
 ---
 
 ### Step-by-Step Execution Plan
-1. **Clarify Objective:** State the exact measurable outcome you need.
-2. **Test Assumption:** Identify the single biggest unproven assumption and test it today.
-3. **Execute & Review:** Review outcomes and adjust based on real feedback.
+1. **Clarify Objective:** Write down the exact measurable outcome you need.
+2. **Test Assumption:** Identify your #1 unproven assumption and test it within 24 hours.
+3. **Execute & Review:** Review outcomes and adapt based on real feedback.
 
 ---
 
-### Do This Today (Your Next 3 Actions)
-1. **Write Down the Hard Facts:** List what you know for certain vs what you are assuming.
-2. **Identify Your #1 Bottleneck:** What is the single biggest obstacle right now?
-3. **Take One 15-Minute Action:** Execute one concrete step that moves this forward before 6:00 PM.
+### TODAY'S ACTION
+**Take One 15-Minute Action on the Hardest Variable.**
+
+* **WHY IT MATTERS:** Action creates clarity faster than overthinking.
+* **HOW TO DO IT:** Write down the #1 obstacle, eliminate distractions, and take one concrete step before 6:00 PM.
+* **DONE WHEN:** One physical action has been completed.
 
 ---
 
-### 3 Questions For You
-1. What would a 10/10 successful outcome look like in 30 days?
-2. What is the single biggest risk or downside if this does not work?
-3. What is one action you could take in the next 2 hours to test your main assumption?`,
-    cards: {
-      type: "guided_thinking",
-      whatWeKnow: [
-        `You are working through this specific challenge: "${query}"`,
-      ],
-      whatWeDontKnow: [
-        "The underlying root cause vs visible symptoms.",
-        "Your non-negotiable constraints (budget, time, boundaries).",
-      ],
-      assumptions: [
-        "Assuming the current obstacle cannot be bypassed or renegotiated.",
-      ],
-      risks: [
-        "Making a major irreversible decision based on unverified assumptions.",
-      ],
-      options: [
-        "Path A: Small, reversible 24-hour test to gather hard evidence",
-        "Path B: Direct conversation to resolve the core bottleneck",
-      ],
-      questionsToInvestigate: [
-        "What is the single biggest unknown variable about this situation?",
-      ],
-      nextQuestion: "What is the smallest step you can take today to test your plan?",
-      mission: {
-        title: "Clarify & Execute 24-Hour Test",
-        deadline: "Before 6:00 PM today",
-        steps: [
-          "State your exact desired outcome in one clear sentence",
-          "Identify the #1 risk that could derail it",
-          "Take one 15-minute action that moves this forward today",
+### YOUR NEXT MOVE
+State your single most important next step, set a 15-minute timer, and complete it before the end of today.`;
+
+    return {
+      text,
+      cards: {
+        type: "guided_thinking",
+        whatWeKnow: [
+          `You are working through this challenge: "${query}"`,
         ],
+        whatWeDontKnow: [
+          "The underlying root cause vs visible symptoms.",
+          "Your non-negotiable constraints (budget, time, boundaries).",
+        ],
+        assumptions: [
+          "Assuming the current obstacle cannot be bypassed or renegotiated.",
+        ],
+        risks: [
+          "Making a major irreversible decision based on unverified assumptions.",
+        ],
+        options: [
+          "Option A: Small, reversible 24-hour test to gather hard evidence",
+          "Option B: Direct alignment conversation to resolve the bottleneck",
+        ],
+        questionsToInvestigate: [
+          "What is the single biggest unknown variable about this situation?",
+        ],
+        nextQuestion: "What is the smallest step you can take today to test your plan?",
+        mission: {
+          title: "Clarify & Execute 24-Hour Test",
+          deadline: "Before 6:00 PM today",
+          steps: [
+            "State your exact desired outcome in one clear sentence",
+            "Identify the #1 risk that could derail it",
+            "Take one 15-minute action that moves this forward today",
+          ],
+          whyItMatters: "Action breaks cognitive friction and builds momentum.",
+          howToDoIt: "Focus on one 15-minute micro-task without multitasking.",
+          doneWhen: "1 concrete action completed and logged.",
+        },
       },
-    },
-  };
+    };
+  }
 }

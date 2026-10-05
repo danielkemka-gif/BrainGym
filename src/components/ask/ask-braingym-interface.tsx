@@ -611,80 +611,122 @@ export function AskBrainGymInterface() {
         <div ref={bottomRef} />
       </div>
 
-      {/* 3. SUGGESTED PROMPTS CATEGORY CHIPS (SECTION 19) */}
+      {/* 3. SUGGESTED PROMPTS CATEGORY CHIPS IN EMPTY STATE */}
       {messages.length === 0 && (
-        <div className="space-y-2.5 pt-2">
-          <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block text-center">
-            Suggested starting prompts:
-          </span>
-          <div className="flex flex-wrap items-center justify-center gap-1.5">
+        <div className="space-y-3 pt-2">
+          <div className="flex items-center justify-between px-1">
+            <span className="text-[11px] font-black text-muted-foreground uppercase tracking-wider">
+              Popular Starting Challenges:
+            </span>
+            <button
+              onClick={() => setShowDiscoveryModal(true)}
+              className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline"
+            >
+              Explore Domains →
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {CATEGORY_PROMPTS.map((item, i) => (
               <button
                 key={i}
                 onClick={() => handleSend(item.prompt)}
-                className="rounded-xl border border-border/80 bg-card/80 hover:bg-card hover:border-primary/40 px-3 py-2 text-xs font-semibold text-foreground transition active:scale-95 touch-manipulation text-left shadow-sm"
+                className="group flex flex-col items-start rounded-2xl border border-border/80 bg-card p-3 text-left transition hover:border-emerald-500/40 hover:bg-card/90 active:scale-95 touch-manipulation shadow-xs"
               >
-                <span>{item.label}</span>
+                <span className="text-xs font-bold text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
+                  {item.label}
+                </span>
+                <span className="text-[11px] text-muted-foreground line-clamp-2 mt-0.5">
+                  &ldquo;{item.prompt}&rdquo;
+                </span>
               </button>
             ))}
           </div>
         </div>
       )}
 
-      {/* 4. FIXED BOTTOM INPUT BAR (AUTO-EXPANDING MULTILINE TEXTAREA) */}
+      {/* 4. FIXED BOTTOM INPUT BAR WITH PERSISTENT HORIZONTAL PROMPTS STRIP */}
       <div className="fixed inset-x-0 bottom-16 lg:bottom-4 z-30 px-3 sm:px-4">
-        <div className="mx-auto max-w-2xl rounded-2xl sm:rounded-3xl border border-border/80 bg-background/95 backdrop-blur-md p-2 shadow-xl flex items-end gap-2">
-          {/* Voice Input Button (Section 20) */}
-          {speechSupported && (
+        <div className="mx-auto max-w-2xl space-y-1.5">
+          {/* Scrollable Quick Prompts Ribbon (Always Accessible on Mobile) */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-[11px] font-bold scrollbar-none">
             <button
-              onClick={toggleVoiceInput}
-              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition touch-manipulation mb-0.5 ${
-                isListening
-                  ? "bg-rose-500 text-white animate-pulse"
-                  : "bg-muted text-muted-foreground hover:text-foreground"
-              }`}
-              title={isListening ? "Listening..." : "Talk to Akuche"}
+              onClick={() => setShowDiscoveryModal(true)}
+              className="flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 text-emerald-700 dark:text-emerald-300 shrink-0 shadow-xs touch-manipulation whitespace-nowrap active:scale-95"
             >
-              {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+              <CompassIcon className="h-3 w-3" />
+              <span>Not sure what I need?</span>
             </button>
-          )}
+            {[
+              { label: "💰 Make ₦5M Plan", text: "I want to make ₦5 million before the end of the year." },
+              { label: "📈 Get 10 B2B Clients", text: "How do I get 10 high-paying B2B clients for my service?" },
+              { label: "⚖️ Should I Leave Job?", text: "Should I start a business or keep my 9-to-5 job?" },
+              { label: "⚡ Overcome Procrastination", text: "I am overwhelmed and need a daily productivity plan." },
+              { label: "💡 3 Business Ideas", text: "Give me 3 low-risk business ideas I can launch with my skills." },
+            ].map((p, idx) => (
+              <button
+                key={idx}
+                onClick={() => handleSend(p.text)}
+                className="rounded-full bg-card/90 border border-border/80 hover:border-emerald-500/40 px-3 py-1 text-foreground/80 hover:text-foreground shrink-0 shadow-xs touch-manipulation whitespace-nowrap active:scale-95"
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
 
-          {/* Auto-expanding Multiline Textarea — Text wraps into row 2 & row 3 immediately at the edge */}
-          <textarea
-            ref={textareaRef}
-            rows={1}
-            value={input}
-            onChange={handleInputChange}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                if (typeof window !== "undefined" && window.innerWidth > 768) {
-                  e.preventDefault();
-                  handleSend();
+          <div className="rounded-2xl sm:rounded-3xl border border-border/80 bg-background/95 backdrop-blur-md p-2 shadow-xl flex items-end gap-2">
+            {/* Voice Input Button (Section 20) */}
+            {speechSupported && (
+              <button
+                onClick={toggleVoiceInput}
+                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition touch-manipulation mb-0.5 ${
+                  isListening
+                    ? "bg-rose-500 text-white animate-pulse"
+                    : "bg-muted text-muted-foreground hover:text-foreground"
+                }`}
+                title={isListening ? "Listening..." : "Talk to Akuche"}
+              >
+                {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+              </button>
+            )}
+
+            {/* Auto-expanding Multiline Textarea — Text wraps into row 2 & row 3 immediately at the edge */}
+            <textarea
+              ref={textareaRef}
+              rows={1}
+              value={input}
+              onChange={handleInputChange}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  if (typeof window !== "undefined" && window.innerWidth > 768) {
+                    e.preventDefault();
+                    handleSend();
+                  }
                 }
+              }}
+              placeholder={
+                isListening
+                  ? "Listening... speak clearly"
+                  : "Ask anything you're trying to understand, solve, decide or accomplish..."
               }
-            }}
-            placeholder={
-              isListening
-                ? "Listening... speak clearly"
-                : "Ask anything you're trying to understand, solve, decide or accomplish..."
-            }
-            className="flex-1 min-w-0 resize-none bg-transparent px-2.5 py-2 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none min-h-[40px] max-h-[140px] overflow-y-auto leading-relaxed break-words whitespace-pre-wrap"
-            style={{
-              wordBreak: "break-word",
-              overflowWrap: "break-word",
-              whiteSpace: "pre-wrap",
-              overflowX: "hidden",
-            }}
-          />
+              className="flex-1 min-w-0 resize-none bg-transparent px-2.5 py-2 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none min-h-[40px] max-h-[140px] overflow-y-auto leading-relaxed break-words whitespace-pre-wrap"
+              style={{
+                wordBreak: "break-word",
+                overflowWrap: "break-word",
+                whiteSpace: "pre-wrap",
+                overflowX: "hidden",
+              }}
+            />
 
-          {/* Send Action Button */}
-          <button
-            onClick={() => handleSend()}
-            disabled={!input.trim() || loading}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground transition hover:bg-primary/90 disabled:opacity-40 active:scale-95 touch-manipulation mb-0.5 shadow-sm"
-          >
-            <Send className="h-4 w-4" />
-          </button>
+            {/* Send Action Button */}
+            <button
+              onClick={() => handleSend()}
+              disabled={!input.trim() || loading}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white transition hover:bg-emerald-700 disabled:opacity-40 active:scale-95 touch-manipulation mb-0.5 shadow-sm"
+            >
+              <Send className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </div>
 

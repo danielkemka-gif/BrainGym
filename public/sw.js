@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'akuche-v2.0.3-master-engine';
+const CACHE_VERSION = 'akuche-v2.1.0-master-ux';
 const STATIC_CACHE = `akuche-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `akuche-dynamic-${CACHE_VERSION}`;
 
@@ -6,6 +6,9 @@ const STATIC_ASSETS = [
   '/',
   '/dashboard',
   '/dashboard/ask',
+  '/dashboard/journeys',
+  '/dashboard/insights',
+  '/dashboard/decisions',
   '/dashboard/skills',
   '/dashboard/workout',
   '/dashboard/journal',

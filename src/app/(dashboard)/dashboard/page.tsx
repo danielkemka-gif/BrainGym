@@ -16,6 +16,8 @@ import { getActiveJourneyId, getJourneyById, getJourneyProgress } from "@/lib/ak
 import { AkucheGuidedOnboarding } from "@/components/onboarding/akuche-guided-onboarding";
 import { MyMemoryModal } from "@/components/memory/my-memory-modal";
 import { AppInstallCard } from "@/components/dashboard/app-install-card";
+import { RealWorldAssignmentCard } from "@/components/dashboard/real-world-assignment-card";
+import { AkucheMomentBanner } from "@/components/dashboard/akuche-moment-banner";
 import {
   Sparkles,
   ArrowRight,
@@ -325,147 +327,125 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* ─── 6. THE 6 PRIMARY ACTION GATEWAYS (SECTION 8) ─── */}
+      {/* ─── 6. THE 5 PRIMARY ACTION GATEWAYS (PHASE 2 SECTION 7) ─── */}
       <div className="space-y-2.5">
         <span className="text-xs font-black text-foreground uppercase tracking-wider block">
           What Do You Need Today?
         </span>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-          {/* 1. THINK */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+          {/* 1. THINK SOMETHING THROUGH */}
           <Link
-            href="/dashboard/decisions"
-            className="group flex flex-col justify-between p-3.5 rounded-2xl border border-border/80 bg-card hover:border-emerald-500/40 hover:bg-card/90 transition shadow-xs touch-manipulation min-h-[105px]"
+            href="/dashboard/think"
+            className="group flex flex-col justify-between p-4 rounded-3xl border border-border/80 bg-card hover:border-emerald-500/40 hover:bg-card/90 transition shadow-xs touch-manipulation min-h-[110px]"
           >
             <div className="flex items-center justify-between">
-              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+              <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                 <Brain className="h-4 w-4" />
               </span>
-              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-40 group-hover:opacity-100 group-hover:text-emerald-600 transition" />
+              <ArrowRight className="h-4 w-4 text-muted-foreground opacity-40 group-hover:opacity-100 group-hover:text-emerald-600 transition" />
             </div>
             <div>
-              <span className="text-xs font-black text-foreground block group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
-                THINK
+              <span className="text-xs sm:text-sm font-black text-foreground block group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
+                THINK SOMETHING THROUGH
               </span>
-              <span className="text-[10px] text-muted-foreground line-clamp-2 leading-tight mt-0.5">
-                Work through a confusing situation or choice
+              <span className="text-[11px] text-muted-foreground line-clamp-2 leading-tight mt-0.5">
+                For a situation, problem or decision
               </span>
             </div>
           </Link>
 
-          {/* 2. ASK */}
+          {/* 2. ASK AKUCHE */}
           <Link
             href="/dashboard/ask"
-            className="group flex flex-col justify-between p-3.5 rounded-2xl border border-border/80 bg-card hover:border-emerald-500/40 hover:bg-card/90 transition shadow-xs touch-manipulation min-h-[105px]"
+            className="group flex flex-col justify-between p-4 rounded-3xl border border-border/80 bg-card hover:border-blue-500/40 hover:bg-card/90 transition shadow-xs touch-manipulation min-h-[110px]"
           >
             <div className="flex items-center justify-between">
-              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
+              <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
                 <HelpCircle className="h-4 w-4" />
               </span>
-              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-40 group-hover:opacity-100 group-hover:text-blue-600 transition" />
+              <ArrowRight className="h-4 w-4 text-muted-foreground opacity-40 group-hover:opacity-100 group-hover:text-blue-600 transition" />
             </div>
             <div>
-              <span className="text-xs font-black text-foreground block group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
-                ASK
+              <span className="text-xs sm:text-sm font-black text-foreground block group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
+                ASK AKUCHE
               </span>
-              <span className="text-[10px] text-muted-foreground line-clamp-2 leading-tight mt-0.5">
-                Understand a topic, dilemma, or idea
+              <span className="text-[11px] text-muted-foreground line-clamp-2 leading-tight mt-0.5">
+                For questions and guided conversations
               </span>
             </div>
           </Link>
 
-          {/* 3. WORK ON SOMETHING */}
+          {/* 3. TODAY'S CHALLENGE */}
           <Link
-            href="/dashboard/journeys"
-            className="group flex flex-col justify-between p-3.5 rounded-2xl border border-border/80 bg-card hover:border-emerald-500/40 hover:bg-card/90 transition shadow-xs touch-manipulation min-h-[105px]"
+            href="/dashboard/daily-challenge"
+            className="group flex flex-col justify-between p-4 rounded-3xl border border-border/80 bg-card hover:border-amber-500/40 hover:bg-card/90 transition shadow-xs touch-manipulation min-h-[110px]"
           >
             <div className="flex items-center justify-between">
-              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                <Compass className="h-4 w-4" />
-              </span>
-              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-40 group-hover:opacity-100 group-hover:text-emerald-600 transition" />
-            </div>
-            <div>
-              <span className="text-xs font-black text-foreground block group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
-                WORK ON GOALS
-              </span>
-              <span className="text-[10px] text-muted-foreground line-clamp-2 leading-tight mt-0.5">
-                Progress on structured outcome journeys
-              </span>
-            </div>
-          </Link>
-
-          {/* 4. TRAIN */}
-          <Link
-            href="/dashboard/workout"
-            className="group flex flex-col justify-between p-3.5 rounded-2xl border border-border/80 bg-card hover:border-emerald-500/40 hover:bg-card/90 transition shadow-xs touch-manipulation min-h-[105px]"
-          >
-            <div className="flex items-center justify-between">
-              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
-                <Zap className="h-4 w-4" />
-              </span>
-              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-40 group-hover:opacity-100 group-hover:text-purple-600 transition" />
-            </div>
-            <div>
-              <span className="text-xs font-black text-foreground block group-hover:text-purple-600 dark:group-hover:text-purple-400 transition">
-                TRAIN
-              </span>
-              <span className="text-[10px] text-muted-foreground line-clamp-2 leading-tight mt-0.5">
-                Exercise problem solving &amp; mental models
-              </span>
-            </div>
-          </Link>
-
-          {/* 5. MOVE */}
-          <Link
-            href="/dashboard/physical"
-            className="group flex flex-col justify-between p-3.5 rounded-2xl border border-border/80 bg-card hover:border-emerald-500/40 hover:bg-card/90 transition shadow-xs touch-manipulation min-h-[105px]"
-          >
-            <div className="flex items-center justify-between">
-              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
+              <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
                 <Target className="h-4 w-4" />
               </span>
-              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-40 group-hover:opacity-100 group-hover:text-amber-600 transition" />
+              <ArrowRight className="h-4 w-4 text-muted-foreground opacity-40 group-hover:opacity-100 group-hover:text-amber-600 transition" />
             </div>
             <div>
-              <span className="text-xs font-black text-foreground block group-hover:text-amber-600 dark:group-hover:text-amber-400 transition">
-                MOVE
+              <span className="text-xs sm:text-sm font-black text-foreground block group-hover:text-amber-600 dark:group-hover:text-amber-400 transition">
+                TODAY&apos;S CHALLENGE
               </span>
-              <span className="text-[10px] text-muted-foreground line-clamp-2 leading-tight mt-0.5">
-                2-minute sensory &amp; physical reset
+              <span className="text-[11px] text-muted-foreground line-clamp-2 leading-tight mt-0.5">
+                A personalised mental or practical activity
               </span>
             </div>
           </Link>
 
-          {/* 6. SURPRISE ME */}
-          <button
-            onClick={() => {
-              setSurpriseMeActive(!surpriseMeActive);
-              setChallengeMeActive(false);
-            }}
-            className={`group flex flex-col justify-between p-3.5 rounded-2xl border transition shadow-xs touch-manipulation min-h-[105px] text-left ${
-              surpriseMeActive
-                ? "border-emerald-500 bg-emerald-500/10"
-                : "border-border/80 bg-card hover:border-emerald-500/40 hover:bg-card/90"
-            }`}
+          {/* 4. MOVE */}
+          <Link
+            href="/dashboard/move"
+            className="group flex flex-col justify-between p-4 rounded-3xl border border-border/80 bg-card hover:border-rose-500/40 hover:bg-card/90 transition shadow-xs touch-manipulation min-h-[110px]"
           >
             <div className="flex items-center justify-between">
-              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
-                <Shuffle className="h-4 w-4" />
+              <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-600 dark:text-rose-400">
+                <Zap className="h-4 w-4" />
               </span>
-              <Sparkles className="h-3.5 w-3.5 text-muted-foreground opacity-40 group-hover:opacity-100 transition" />
+              <ArrowRight className="h-4 w-4 text-muted-foreground opacity-40 group-hover:opacity-100 group-hover:text-rose-600 transition" />
             </div>
             <div>
-              <span className="text-xs font-black text-foreground block group-hover:text-purple-600 dark:group-hover:text-purple-400 transition">
-                SURPRISE ME
+              <span className="text-xs sm:text-sm font-black text-foreground block group-hover:text-rose-600 dark:group-hover:text-rose-400 transition">
+                MOVE
               </span>
-              <span className="text-[10px] text-muted-foreground line-clamp-2 leading-tight mt-0.5">
-                Intelligent insight, challenge, or reflection
+              <span className="text-[11px] text-muted-foreground line-clamp-2 leading-tight mt-0.5">
+                A short 2–5 minute physical reset for brain clarity
               </span>
             </div>
-          </button>
+          </Link>
+
+          {/* 5. SURPRISE ME */}
+          <Link
+            href="/dashboard/surprise"
+            className="group flex flex-col justify-between p-4 rounded-3xl border border-border/80 bg-card hover:border-purple-500/40 hover:bg-card/90 transition shadow-xs touch-manipulation min-h-[110px]"
+          >
+            <div className="flex items-center justify-between">
+              <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                <Shuffle className="h-4 w-4" />
+              </span>
+              <ArrowRight className="h-4 w-4 text-muted-foreground opacity-40 group-hover:opacity-100 group-hover:text-purple-600 transition" />
+            </div>
+            <div>
+              <span className="text-xs sm:text-sm font-black text-foreground block group-hover:text-purple-600 dark:group-hover:text-purple-400 transition">
+                SURPRISE ME
+              </span>
+              <span className="text-[11px] text-muted-foreground line-clamp-2 leading-tight mt-0.5">
+                Let Akuche choose something useful for you
+              </span>
+            </div>
+          </Link>
         </div>
       </div>
+
+      {/* ─── OUTSIDE YOUR PHONE REAL-WORLD CHALLENGE (SECTION 34) ─── */}
+      <RealWorldAssignmentCard />
+
+      {/* ─── AKUCHE MOMENT OBSERVATION (SECTION 12) ─── */}
+      <AkucheMomentBanner />
 
       {/* Dynamic Drawer for Challenge Me / Surprise Me */}
       {challengeMeActive && (

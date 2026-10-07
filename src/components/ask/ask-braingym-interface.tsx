@@ -452,31 +452,66 @@ export function AskBrainGymInterface() {
               )}
             </div>
 
-            {/* Action Conversion Loop Buttons (Section 7) */}
+            {/* Action Conversion Loop Buttons & Socratic Thinking Pills (Phase 2) */}
             {msg.role === "assistant" && (
-              <div className="flex flex-wrap items-center gap-1.5 mt-2 pl-1">
-                <button
-                  onClick={() => {
-                    setPlanTitle("My 30-Day Execution Plan");
-                    setPlanAction("Execute Step 1 before 6 PM");
-                    setShowPlanModal(true);
-                  }}
-                  className="inline-flex items-center gap-1 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 text-[11px] font-bold transition active:scale-95 touch-manipulation"
-                >
-                  <PlusCircle className="h-3.5 w-3.5" />
-                  <span>CREATE MY PLAN</span>
-                </button>
-                <button
-                  onClick={() => {
-                    setPlanTitle("Achieve Target Goal");
-                    setPlanAction("Complete today's milestone");
-                    setShowPlanModal(true);
-                  }}
-                  className="inline-flex items-center gap-1 rounded-xl bg-muted hover:bg-accent text-foreground px-3 py-1.5 text-[11px] font-bold transition active:scale-95 touch-manipulation"
-                >
-                  <Target className="h-3.5 w-3.5 text-emerald-500" />
-                  <span>SET A GOAL</span>
-                </button>
+              <div className="w-full mt-2 pl-0.5 space-y-1.5">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <button
+                    onClick={() => handleSend("Can you help me think deeper into this? What are the underlying dynamics or root causes I might be overlooking?")}
+                    className="inline-flex items-center gap-1 rounded-xl bg-card border border-border/80 hover:border-emerald-500/50 hover:bg-emerald-500/5 text-foreground px-2.5 py-1 text-[11px] font-semibold transition active:scale-95 touch-manipulation shadow-xs"
+                  >
+                    <span>💡 Think deeper</span>
+                  </button>
+                  <button
+                    onClick={() => handleSend("Show me another perspective or alternative way to frame this situation.")}
+                    className="inline-flex items-center gap-1 rounded-xl bg-card border border-border/80 hover:border-emerald-500/50 hover:bg-emerald-500/5 text-foreground px-2.5 py-1 text-[11px] font-semibold transition active:scale-95 touch-manipulation shadow-xs"
+                  >
+                    <span>🔄 Another perspective</span>
+                  </button>
+                  <button
+                    onClick={() => handleSend("Challenge my assumptions here. Where might I be making incorrect premises or unverified guesses?")}
+                    className="inline-flex items-center gap-1 rounded-xl bg-card border border-border/80 hover:border-amber-500/50 hover:bg-amber-500/5 text-foreground px-2.5 py-1 text-[11px] font-semibold transition active:scale-95 touch-manipulation shadow-xs"
+                  >
+                    <span>🎯 Challenge assumptions</span>
+                  </button>
+                  <button
+                    onClick={() => handleSend("Can you break down and compare my top 2 to 3 realistic options with pros, cons, and trade-offs?")}
+                    className="inline-flex items-center gap-1 rounded-xl bg-card border border-border/80 hover:border-blue-500/50 hover:bg-blue-500/5 text-foreground px-2.5 py-1 text-[11px] font-semibold transition active:scale-95 touch-manipulation shadow-xs"
+                  >
+                    <span>⚖️ Compare options</span>
+                  </button>
+                  <button
+                    onClick={() => handleSend("Convert this into a structured 3-step action plan for Today, Tomorrow, and This Week.")}
+                    className="inline-flex items-center gap-1 rounded-xl bg-card border border-border/80 hover:border-emerald-500/50 hover:bg-emerald-500/5 text-foreground px-2.5 py-1 text-[11px] font-semibold transition active:scale-95 touch-manipulation shadow-xs"
+                  >
+                    <span>📋 Action plan</span>
+                  </button>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                  <button
+                    onClick={() => {
+                      setPlanTitle("My 30-Day Execution Plan");
+                      setPlanAction("Execute Step 1 before 6 PM");
+                      setShowPlanModal(true);
+                    }}
+                    className="inline-flex items-center gap-1 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 px-3 py-1.5 text-[11px] font-bold transition active:scale-95 touch-manipulation"
+                  >
+                    <PlusCircle className="h-3.5 w-3.5" />
+                    <span>CREATE MY PLAN</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setPlanTitle("Achieve Target Goal");
+                      setPlanAction("Complete today's milestone");
+                      setShowPlanModal(true);
+                    }}
+                    className="inline-flex items-center gap-1 rounded-xl bg-muted hover:bg-accent text-foreground px-3 py-1.5 text-[11px] font-bold transition active:scale-95 touch-manipulation"
+                  >
+                    <Target className="h-3.5 w-3.5 text-emerald-500" />
+                    <span>SET A GOAL</span>
+                  </button>
+                </div>
               </div>
             )}
 

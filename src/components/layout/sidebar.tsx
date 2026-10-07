@@ -15,31 +15,31 @@ import { AkucheBrandLogo } from "@/components/brand/akuche-brand-logo";
 import { AppInstallCard } from "@/components/dashboard/app-install-card";
 
 const PRIMARY_NAV = [
-  { href: "/dashboard", labelKey: "nav_dashboard", iconKey: "dashboard" },
-  { href: "/dashboard/ask", labelKey: "nav_ask" as any, iconKey: "ask" },
-  { href: "/dashboard/journeys", labelKey: "nav_journeys" as any, iconKey: "journeys" },
-  { href: "/dashboard/insights", labelKey: "nav_insights" as any, iconKey: "insights" },
-  { href: "/dashboard/decisions", labelKey: "nav_decision_lab", iconKey: "decision-lab" },
+  { href: "/dashboard", label: "Home", iconKey: "dashboard" },
+  { href: "/dashboard/think", label: "Think", iconKey: "think" },
+  { href: "/dashboard/ask", label: "Ask", iconKey: "ask" },
+  { href: "/dashboard/progress", label: "Progress", iconKey: "progress" },
+  { href: "/dashboard/profile", label: "My Akuche", iconKey: "profile" },
 ] as const;
 
 const MORE_NAV = [
-  { href: "/dashboard/transformation", labelKey: "nav_transformation" as any, iconKey: "progress" },
-  { href: "/dashboard/library", labelKey: "nav_activities", iconKey: "library" },
-  { href: "/dashboard/daily-challenge", labelKey: "nav_daily_challenge", iconKey: "challenge" },
-  { href: "/dashboard/avatar", labelKey: "nav_avatar", iconKey: "avatar" },
-  { href: "/dashboard/shop", labelKey: "nav_shop", iconKey: "shop" },
-  { href: "/dashboard/missions", labelKey: "nav_missions", iconKey: "missions" },
-  { href: "/dashboard/challenges", labelKey: "nav_challenges", iconKey: "challenges" },
-  { href: "/dashboard/leaderboard", labelKey: "nav_leaderboard", iconKey: "leaderboard" },
-  { href: "/dashboard/history", labelKey: "nav_history", iconKey: "history" },
-  { href: "/dashboard/reports", labelKey: "nav_reports", iconKey: "reports" },
-  { href: "/dashboard/chat", labelKey: "nav_chat", iconKey: "chat" },
-  { href: "/dashboard/journal", labelKey: "nav_journal", iconKey: "journal" },
-  { href: "/dashboard/share", labelKey: "nav_share_card", iconKey: "share" },
-  { href: "/dashboard/decision-lab", labelKey: "nav_decision_lab", iconKey: "decision-lab" },
+  { href: "/dashboard/move", label: "Move", iconKey: "move" },
+  { href: "/dashboard/surprise", label: "Surprise Me", iconKey: "surprise" },
+  { href: "/dashboard/journeys", label: "Journeys", iconKey: "journeys" },
+  { href: "/dashboard/decisions", label: "Decision Lab", iconKey: "decision-lab" },
+  { href: "/dashboard/journal", label: "Thinking Journal", iconKey: "journal" },
+  { href: "/dashboard/transformation", label: "Transformation", iconKey: "progress" },
+  { href: "/dashboard/library", label: "Activities", iconKey: "library" },
+  { href: "/dashboard/daily-challenge", label: "Daily Challenge", iconKey: "challenge" },
+  { href: "/dashboard/missions", label: "Missions", iconKey: "missions" },
+  { href: "/dashboard/challenges", label: "Challenges", iconKey: "challenges" },
+  { href: "/dashboard/leaderboard", label: "Leaderboard", iconKey: "leaderboard" },
+  { href: "/dashboard/reports", label: "Reports", iconKey: "reports" },
+  { href: "/dashboard/history", label: "History", iconKey: "history" },
+  { href: "/dashboard/chat", label: "Community", iconKey: "chat" },
 ] as const;
 
-const SETTINGS_NAV = { href: "/dashboard/settings", labelKey: "nav_settings", iconKey: "settings" } as const;
+const SETTINGS_NAV = { href: "/dashboard/settings", label: "Settings", iconKey: "settings" } as const;
 
 export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   const pathname = usePathname();
@@ -73,10 +73,10 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
       });
   }, [user, supabase]);
 
-  function renderNavItem(item: { href: string; labelKey: string; iconKey: string }) {
+  function renderNavItem(item: { href: string; label?: string; labelKey?: string; iconKey: string }) {
     const active = pathname === item.href;
     const Icon = SIDEBAR_ICONS[item.iconKey];
-    const label = (t as unknown as Record<string, string>)[item.labelKey] ?? item.labelKey;
+    const label = item.label ?? ((item.labelKey && (t as unknown as Record<string, string>)[item.labelKey]) || item.labelKey || item.href);
     return (
       <Link
         key={item.href}

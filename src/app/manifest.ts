@@ -1,0 +1,95 @@
+import type { MetadataRoute } from "next";
+
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: "AKUCHE — Think Better. Decide Better. Live Better.",
+    short_name: "AKUCHE",
+    description: "When life gets complicated, think it through with Akuche. Your intelligent personal thinking, decision-making and action companion.",
+    start_url: "/dashboard",
+    display: "standalone",
+    background_color: "#042F24",
+    theme_color: "#042F24",
+    orientation: "portrait",
+    scope: "/",
+    lang: "en",
+    prefer_related_applications: false,
+    categories: ["education", "productivity", "lifestyle", "utilities"],
+    icons: [
+      {
+        src: "/icons/akuche-192.png",
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icons/akuche-192.png",
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "maskable",
+      },
+      {
+        src: "/icons/akuche-512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icons/akuche-512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable",
+      },
+      {
+        src: "/icons/icon-192x192.png",
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icons/icon-512x512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icons/akuche-apple-touch.png",
+        sizes: "180x180",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/favicon.png",
+        sizes: "64x64",
+        type: "image/png",
+        purpose: "any",
+      },
+    ],
+    shortcuts: [
+      {
+        name: "Think With Akuche",
+        short_name: "Think",
+        url: "/dashboard/think",
+      },
+      {
+        name: "Ask Akuche",
+        short_name: "Ask",
+        url: "/dashboard/ask",
+      },
+      {
+        name: "Decision Lab",
+        short_name: "Decide",
+        url: "/dashboard/decisions",
+      },
+      {
+        name: "Move Reset",
+        short_name: "Move",
+        url: "/dashboard/move",
+      },
+      {
+        name: "Home",
+        short_name: "Home",
+        url: "/dashboard",
+      },
+    ],
+  };
+}

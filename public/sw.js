@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'akuche-v5-master-clean';
+const CACHE_VERSION = 'akuche-v7-instant-sync';
 const STATIC_CACHE = `akuche-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `akuche-dynamic-${CACHE_VERSION}`;
 
@@ -29,14 +29,21 @@ const STATIC_ASSETS = [
   '/offline.html',
 ];
 
-// Message listener to trigger immediate activation
+// Message listener to trigger immediate activation & full cache purge
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
+  if (event.data && event.data.type === 'FORCE_PURGE') {
+    caches.keys().then((keys) => {
+      return Promise.all(keys.map((k) => caches.delete(k)));
+    }).then(() => {
+      self.skipWaiting();
+    });
+  }
 });
 
-// Install: pre-cache all core application routes for complete offline availability
+// Install: pre-cache all core static assets
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
@@ -56,7 +63,7 @@ self.addEventListener('activate', (event) => {
         keys
           .filter((key) => key !== STATIC_CACHE && key !== DYNAMIC_CACHE)
           .map((key) => {
-            console.log('Purging old cache:', key);
+            console.log('Purging legacy cache version:', key);
             return caches.delete(key);
           })
       );
@@ -64,7 +71,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch: Stale-While-Revalidate & Network-First with Offline Fallback
+// Fetch: Network-First for Navigation & HTML, Stale-While-Revalidate for Static Assets
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -72,14 +79,41 @@ self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (request.method !== 'GET') return;
 
-  // Skip Supabase auth and external AI API calls
+  // Skip Supabase auth, Paystack, and external AI API calls
   if (url.hostname.includes('supabase.co') && url.pathname.includes('/auth/v1/')) return;
+  if (url.hostname.includes('paystack.co') || url.hostname.includes('api.paystack.co')) return;
   if (url.hostname.includes('openai') || url.hostname.includes('anthropic') || url.hostname.includes('googleapis')) return;
 
-  // Skip Chrome extension requests
-  if (url.protocol === 'chrome-extension:') return;
+  // Skip browser extension requests
+  if (url.protocol === 'chrome-extension:' || url.protocol === 'moz-extension:') return;
 
-  // For static assets and pages, try network first, fallback to offline cache immediately
+  // 1. For Page Navigations (HTML): Strict Network-First so changes ALWAYS reflect immediately
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response && response.status === 200) {
+            const responseClone = response.clone();
+            caches.open(DYNAMIC_CACHE).then((cache) => {
+              cache.put(request, responseClone);
+            });
+          }
+          return response;
+        })
+        .catch(() => {
+          // Offline fallback
+          return caches.match(request).then((cachedResponse) => {
+            if (cachedResponse) return cachedResponse;
+            return caches.match('/dashboard').then((dashMatch) => {
+              return dashMatch || caches.match('/offline.html');
+            });
+          });
+        })
+    );
+    return;
+  }
+
+  // 2. For Static Assets (images, fonts, stylesheets, scripts): Network First with Cache Fallback
   event.respondWith(
     fetch(request)
       .then((response) => {
@@ -92,14 +126,8 @@ self.addEventListener('fetch', (event) => {
         return response;
       })
       .catch(() => {
-        // Fallback to cache if offline
-        return caches.match(request).then((cachedResponse) => {
-          if (cachedResponse) return cachedResponse;
-          if (request.mode === 'navigate') {
-            return caches.match('/dashboard').then((dashMatch) => {
-              return dashMatch || caches.match('/offline.html');
-            });
-          }
+        return caches.match(request).then((cached) => {
+          if (cached) return cached;
           return new Response('Offline', { status: 503, statusText: 'Offline' });
         });
       })

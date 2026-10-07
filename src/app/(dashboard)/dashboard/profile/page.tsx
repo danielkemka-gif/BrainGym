@@ -446,6 +446,9 @@ export default function MyAkuchePage() {
         )}
       </div>
 
+      {/* ─── PWA MOBILE APP INSTALLATION CARD ─── */}
+      <AppInstallCard variant="banner" />
+
       {/* ─── 4. OFFICIAL AKUCHE BRAND & APP ICON ─── */}
       <div className="rounded-3xl border border-emerald-500/30 bg-emerald-500/5 p-5 sm:p-6 shadow-sm space-y-3">
         <div className="flex items-center justify-between border-b border-border/60 pb-3">

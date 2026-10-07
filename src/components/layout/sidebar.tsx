@@ -137,7 +137,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
           <button
             onClick={() => {
               onClose();
-              window.dispatchEvent(new Event("braingym:open-navigator"));
+              window.dispatchEvent(new Event("akuche:open-navigator"));
             }}
             className="flex w-full items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 px-3 py-2.5 text-xs font-semibold text-primary hover:bg-primary/10 transition-colors min-h-[44px] touch-manipulation mb-2"
           >

@@ -27,7 +27,8 @@ import {
   Command,
 } from "lucide-react";
 
-export const OPEN_NAVIGATOR_EVENT = "braingym:open-navigator";
+export const OPEN_NAVIGATOR_EVENT = "akuche:open-navigator";
+export const LEGACY_OPEN_NAVIGATOR_EVENT = "braingym:open-navigator";
 
 export interface NavFeature {
   id: string;
@@ -251,10 +252,12 @@ export function FeatureNavigator() {
 
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener(OPEN_NAVIGATOR_EVENT, openListener);
+    window.addEventListener(LEGACY_OPEN_NAVIGATOR_EVENT, openListener);
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener(OPEN_NAVIGATOR_EVENT, openListener);
+      window.removeEventListener(LEGACY_OPEN_NAVIGATOR_EVENT, openListener);
     };
   }, [open]);
 

@@ -144,6 +144,9 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* ─── PWA MOBILE APP QUICK-INSTALL BANNER ─── */}
+      <AppInstallCard variant="compact" />
+
       {/* ─── 2. PENDING COMMITMENT CHECK-IN (SECTION 20 ACCOUNTABILITY) ─── */}
       {commitments.length > 0 && (
         <div className="rounded-2xl sm:rounded-3xl border-2 border-amber-500/40 bg-amber-500/10 p-4 sm:p-5 shadow-sm space-y-3 animate-fade-in">

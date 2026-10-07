@@ -22,13 +22,13 @@ export const metadata: Metadata = {
   title: "AKUCHE — Think Better. Decide Better. Live Better.",
   description:
     "When life gets complicated, think it through with Akuche. Your intelligent thinking, decision-making and action companion.",
-  manifest: "/manifest.json",
+  manifest: "/manifest.json?v=7.0.0",
   icons: {
     icon: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
-      { url: "/favicon.png", type: "image/png" },
+      { url: "/favicon.svg?v=7.0.0", type: "image/svg+xml" },
+      { url: "/favicon.png?v=7.0.0", type: "image/png" },
     ],
-    apple: "/icons/akuche-apple-touch.png",
+    apple: "/icons/akuche-apple-touch.png?v=7.0.0",
   },
   openGraph: {
     title: "AKUCHE — Think Better. Decide Better. Live Better.",
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
       "When life gets complicated, think it through with Akuche. Think better, decide better, take action and grow intentionally.",
     images: [
       {
-        url: "/og-image.png",
+        url: "/og-image.png?v=7.0.0",
         width: 1200,
         height: 630,
         alt: "AKUCHE",
@@ -50,10 +50,10 @@ export const metadata: Metadata = {
     title: "AKUCHE — Think Better. Decide Better. Live Better.",
     description:
       "When life gets complicated, think it through with Akuche. Think better, decide better, take action and grow intentionally.",
-    images: ["/og-image.png"],
+    images: ["/og-image.png?v=7.0.0"],
   },
   other: {
-    "msapplication-TileImage": "/logo.png",
+    "msapplication-TileImage": "/logo.png?v=7.0.0",
     "apple-mobile-web-app-capable": "yes",
     "apple-mobile-web-app-status-bar-style": "black-translucent",
     "apple-mobile-web-app-title": "AKUCHE",
@@ -78,14 +78,14 @@ export default function RootLayout({
     <html lang="en" className="dark" suppressHydrationWarning>
       <head>
         <title>AKUCHE — Think Better. Decide Better. Live Better.</title>
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=3.1.0" />
-        <link rel="icon" type="image/png" href="/favicon.png?v=3.1.0" />
-        <link rel="shortcut icon" href="/favicon.svg?v=3.1.0" />
-        <link rel="apple-touch-icon" href="/icons/akuche-apple-touch.png?v=3.1.0" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/icons/akuche-apple-touch.png?v=3.1.0" />
-        <link rel="icon" type="image/png" sizes="192x192" href="/icons/akuche-192.png?v=3.1.0" />
-        <link rel="icon" type="image/png" sizes="512x512" href="/icons/akuche-512.png?v=3.1.0" />
-        <link rel="manifest" href="/manifest.json?v=3.1.0" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=7.0.0" />
+        <link rel="icon" type="image/png" href="/favicon.png?v=7.0.0" />
+        <link rel="shortcut icon" href="/favicon.svg?v=7.0.0" />
+        <link rel="apple-touch-icon" href="/icons/akuche-apple-touch.png?v=7.0.0" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/icons/akuche-apple-touch.png?v=7.0.0" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/icons/akuche-192.png?v=7.0.0" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/icons/akuche-512.png?v=7.0.0" />
+        <link rel="manifest" href="/manifest.json?v=7.0.0" />
         <meta name="application-name" content="AKUCHE" />
         <meta name="apple-mobile-web-app-title" content="AKUCHE" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

@@ -1,28 +1,31 @@
-const CACHE_VERSION = 'akuche-v3.1.0-icons-rasterized';
+const CACHE_VERSION = 'akuche-v5-master-clean';
 const STATIC_CACHE = `akuche-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `akuche-dynamic-${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [
   '/',
   '/dashboard',
+  '/dashboard/think',
   '/dashboard/ask',
-  '/dashboard/journeys',
-  '/dashboard/insights',
-  '/dashboard/decisions',
-  '/dashboard/profile',
-  '/dashboard/skills',
-  '/dashboard/workout',
-  '/dashboard/journal',
-  '/dashboard/games',
+  '/dashboard/move',
+  '/dashboard/surprise',
   '/dashboard/progress',
+  '/dashboard/profile',
+  '/dashboard/journeys',
+  '/dashboard/decisions',
   '/manifest.json',
   '/favicon.svg',
   '/favicon.png',
   '/akuche-logo.svg',
+  '/akuche-logo.png',
   '/logo.png',
   '/icons/akuche-192.png',
   '/icons/akuche-512.png',
   '/icons/akuche-apple-touch.png',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
+  '/icons/icon-192.svg',
+  '/icons/icon-512.svg',
   '/offline.html',
 ];
 

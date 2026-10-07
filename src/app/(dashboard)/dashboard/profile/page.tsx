@@ -446,7 +446,59 @@ export default function MyAkuchePage() {
         )}
       </div>
 
-      {/* ─── 4. ACCOUNT & SIGN OUT ─── */}
+      {/* ─── 4. OFFICIAL AKUCHE BRAND & APP ICON ─── */}
+      <div className="rounded-3xl border border-emerald-500/30 bg-emerald-500/5 p-5 sm:p-6 shadow-sm space-y-3">
+        <div className="flex items-center justify-between border-b border-border/60 pb-3">
+          <div className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
+              <Sparkles className="h-4 w-4" />
+            </span>
+            <h3 className="text-base font-bold text-foreground">
+              Official Akuche Brand &amp; App Icon
+            </h3>
+          </div>
+        </div>
+
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Download the new official Akuche logo asset directly to your phone gallery or update your phone&apos;s home screen shortcut.
+        </p>
+
+        <div className="flex flex-col sm:flex-row gap-2 pt-1">
+          <a
+            href="/akuche-logo.png"
+            download="akuche-logo.png"
+            className="flex-1 inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 text-xs sm:text-sm font-bold shadow-md transition active:scale-95 touch-manipulation min-h-[44px]"
+          >
+            <Sparkles className="h-4 w-4" />
+            <span>Download Official Akuche Logo (HD PNG)</span>
+          </a>
+
+          <button
+            type="button"
+            onClick={() => {
+              if (typeof window !== "undefined") {
+                if (typeof caches !== "undefined") {
+                  caches.keys().then((keys) => {
+                    Promise.all(keys.map((k) => caches.delete(k))).then(() => {
+                      window.location.reload();
+                    });
+                  }).catch(() => {
+                    window.location.reload();
+                  });
+                } else {
+                  window.location.reload();
+                }
+              }
+            }}
+            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border bg-card hover:bg-muted px-4 py-3 text-xs font-bold text-foreground transition active:scale-95 touch-manipulation min-h-[44px]"
+          >
+            <RotateCcw className="h-4 w-4 text-emerald-500" />
+            <span>Purge Stale Cache &amp; Refresh</span>
+          </button>
+        </div>
+      </div>
+
+      {/* ─── 5. ACCOUNT & SIGN OUT ─── */}
       <div className="pt-2 flex items-center justify-between border-t border-border/60">
         <span className="text-xs text-muted-foreground">
           Akuche v2.1.0 · Intelligent Decision Companion

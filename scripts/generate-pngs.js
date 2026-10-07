@@ -254,6 +254,7 @@ console.log('Generating high-resolution Akuche PNG assets...');
 const targets = [
   { path: path.join(publicDir, 'logo.png'), size: 512 },
   { path: path.join(publicDir, 'akuche-logo.png'), size: 512 },
+  { path: path.join(publicDir, 'braingym-logo.png'), size: 512 },
   { path: path.join(publicDir, 'favicon.png'), size: 64 },
   { path: path.join(publicDir, 'og-image.png'), size: 512 },
   { path: path.join(iconsDir, 'akuche-192.png'), size: 192 },

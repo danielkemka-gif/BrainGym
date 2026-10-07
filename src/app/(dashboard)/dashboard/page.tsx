@@ -144,9 +144,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* ─── APP INSTALL BANNER (EASY 1-TAP INSTALLATION ON PHONES) ─── */}
-      <AppInstallCard variant="banner" />
-
       {/* ─── 2. PENDING COMMITMENT CHECK-IN (SECTION 20 ACCOUNTABILITY) ─── */}
       {commitments.length > 0 && (
         <div className="rounded-2xl sm:rounded-3xl border-2 border-amber-500/40 bg-amber-500/10 p-4 sm:p-5 shadow-sm space-y-3 animate-fade-in">
@@ -500,10 +497,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* ─── 7. APP INSTALL CARD (EASY MOBILE & HOME SCREEN INSTALLATION) ─── */}
-      <AppInstallCard />
-
-      {/* ─── 8. SMART RECOMMENDATIONS (SECTION 8 & 17) ─── */}
+      {/* ─── 7. SMART RECOMMENDATIONS (SECTION 8 & 17) ─── */}
       <div className="space-y-2.5">
         <span className="text-xs font-bold text-foreground uppercase tracking-wider block">
           Recommended Next Actions

@@ -293,8 +293,17 @@ export function AppInstallCard({
             </div>
           )}
 
-          {/* Cache Refresh Button */}
+          {/* Direct Download Logo Asset & Cache Refresh Buttons */}
           <div className="pt-2 border-t border-border/60 space-y-2">
+            <a
+              href="/akuche-logo.png"
+              download="akuche-logo.png"
+              className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-600/10 hover:bg-emerald-600/20 border border-emerald-500/30 py-2.5 px-4 text-xs font-bold text-emerald-700 dark:text-emerald-300 transition active:scale-95 min-h-[42px]"
+            >
+              <Download className="h-4 w-4 text-emerald-500" />
+              <span>Download Official Akuche Logo (HD PNG)</span>
+            </a>
+
             <button
               type="button"
               onClick={handleForceRefresh}
@@ -306,8 +315,8 @@ export function AppInstallCard({
                 {refreshSuccess
                   ? "Updated! Reloading..."
                   : refreshing
-                  ? "Clearing Cache..."
-                  : "Force Refresh App & Icons"}
+                  ? "Clearing Old Cache..."
+                  : "Purge Stale Cache & Update Icons"}
               </span>
             </button>
           </div>

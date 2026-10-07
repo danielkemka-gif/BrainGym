@@ -5,6 +5,21 @@ import { useEffect } from 'react';
 export function ServiceWorkerRegistration() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
+
+    // Automatic 1-time aggressive cache purge for version 5
+    const PURGE_KEY = 'akuche_cache_purged_v5_master';
+    if (!localStorage.getItem(PURGE_KEY)) {
+      if ('caches' in window) {
+        caches.keys().then((keys) => {
+          Promise.all(keys.map((key) => caches.delete(key))).then(() => {
+            localStorage.setItem(PURGE_KEY, 'true');
+          });
+        });
+      } else {
+        localStorage.setItem(PURGE_KEY, 'true');
+      }
+    }
+
     if (!('serviceWorker' in navigator)) return;
 
     // Register and immediately force-update service worker

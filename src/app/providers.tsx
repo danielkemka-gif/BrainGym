@@ -6,7 +6,6 @@ import { I18nProvider } from "@/lib/i18n";
 import { PostHogProvider } from "@/lib/analytics/provider";
 import { MotionConfig } from "framer-motion";
 import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
-import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 
 import { BrandProvider } from "@/lib/brand-context";
 
@@ -25,7 +24,6 @@ export function Providers({ children }: { children: ReactNode }) {
                 <I18nProvider>{children}</I18nProvider>
               </Suspense>
               <ServiceWorkerRegistration />
-              <PWAInstallPrompt />
             </PostHogProvider>
           </Suspense>
         </ReducedMotionProvider>

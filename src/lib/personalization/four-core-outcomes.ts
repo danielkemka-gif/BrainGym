@@ -1,14 +1,14 @@
 /**
- * BRAINGYM FOUR CORE OUTCOMES & MASTER MISSION MANIFESTO
+ * AKUCHE FOUR CORE OUTCOMES & MASTER MISSION MANIFESTO
  * 
  * Master Product Mission:
- * «BrainGym is a mental fitness platform designed to help people develop the ability
- * to THINK, SOLVE, DECIDE and ADAPT in real life.»
+ * «Akuche is an intelligent thinking, decision-making and personal growth companion
+ * designed to help people THINK, SOLVE, DECIDE and ADAPT in real life.»
  * 
  * Core Philosophy:
- * «You train your body. You educate yourself. You develop your career. You grow spiritually.
- * But you also need to deliberately train the mind you use to navigate all of them.
- * That's BrainGym — Mental Fitness for Real Life.»
+ * «You train your body. You educate yourself. You develop your career.
+ * But you also need to deliberately cultivate the mind and wisdom you use to navigate all of them.
+ * That's AKUCHE — Think Better. Decide Better. Live Better.»
  */
 
 import { CoreMentalFitnessArea } from "./types";

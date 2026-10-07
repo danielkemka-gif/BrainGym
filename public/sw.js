@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'akuche-v3.0.0-brand-master';
+const CACHE_VERSION = 'akuche-v3.1.0-icons-rasterized';
 const STATIC_CACHE = `akuche-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `akuche-dynamic-${CACHE_VERSION}`;
 

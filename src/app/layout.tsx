@@ -78,14 +78,14 @@ export default function RootLayout({
     <html lang="en" className="dark" suppressHydrationWarning>
       <head>
         <title>AKUCHE — Think Better. Decide Better. Live Better.</title>
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <link rel="icon" type="image/png" href="/favicon.png" />
-        <link rel="shortcut icon" href="/favicon.svg" />
-        <link rel="apple-touch-icon" href="/icons/akuche-apple-touch.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/icons/akuche-apple-touch.png" />
-        <link rel="icon" type="image/png" sizes="192x192" href="/icons/akuche-192.png" />
-        <link rel="icon" type="image/png" sizes="512x512" href="/icons/akuche-512.png" />
-        <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=3.1.0" />
+        <link rel="icon" type="image/png" href="/favicon.png?v=3.1.0" />
+        <link rel="shortcut icon" href="/favicon.svg?v=3.1.0" />
+        <link rel="apple-touch-icon" href="/icons/akuche-apple-touch.png?v=3.1.0" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/icons/akuche-apple-touch.png?v=3.1.0" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/icons/akuche-192.png?v=3.1.0" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/icons/akuche-512.png?v=3.1.0" />
+        <link rel="manifest" href="/manifest.json?v=3.1.0" />
         <meta name="application-name" content="AKUCHE" />
         <meta name="apple-mobile-web-app-title" content="AKUCHE" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

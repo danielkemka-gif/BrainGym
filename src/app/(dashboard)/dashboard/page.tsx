@@ -15,6 +15,7 @@ import {
 import { getActiveJourneyId, getJourneyById, getJourneyProgress } from "@/lib/akuche/journeys-engine";
 import { AkucheGuidedOnboarding } from "@/components/onboarding/akuche-guided-onboarding";
 import { MyMemoryModal } from "@/components/memory/my-memory-modal";
+import { AppInstallCard } from "@/components/dashboard/app-install-card";
 import {
   Sparkles,
   ArrowRight,
@@ -516,7 +517,10 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* ─── 7. SMART RECOMMENDATIONS (SECTION 8 & 17) ─── */}
+      {/* ─── 7. APP INSTALL CARD (EASY MOBILE & HOME SCREEN INSTALLATION) ─── */}
+      <AppInstallCard />
+
+      {/* ─── 8. SMART RECOMMENDATIONS (SECTION 8 & 17) ─── */}
       <div className="space-y-2.5">
         <span className="text-xs font-bold text-foreground uppercase tracking-wider block">
           Recommended Next Actions

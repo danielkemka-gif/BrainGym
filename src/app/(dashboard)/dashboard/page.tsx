@@ -321,61 +321,146 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* ─── 6. SIGNATURE ACTION TRIGGERS (SECTIONS 19, 27, 44, 48) ─── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-        {/* Challenge Me */}
-        <button
-          onClick={() => {
-            setChallengeMeActive(!challengeMeActive);
-            setSurpriseMeActive(false);
-          }}
-          className={`flex flex-col items-start p-3.5 rounded-2xl border transition text-left ${
-            challengeMeActive
-              ? "border-emerald-500 bg-emerald-500/10"
-              : "border-border/80 bg-card hover:border-emerald-500/30"
-          }`}
-        >
-          <Zap className="h-4 w-4 text-amber-500 mb-1.5" />
-          <span className="text-xs font-bold text-foreground block">Challenge Me</span>
-          <span className="text-[10px] text-muted-foreground">Immediate action</span>
-        </button>
+      {/* ─── 6. THE 6 PRIMARY ACTION GATEWAYS (SECTION 8) ─── */}
+      <div className="space-y-2.5">
+        <span className="text-xs font-black text-foreground uppercase tracking-wider block">
+          What Do You Need Today?
+        </span>
 
-        {/* Decision Lab */}
-        <Link
-          href="/dashboard/decisions"
-          className="flex flex-col items-start p-3.5 rounded-2xl border border-border/80 bg-card hover:border-emerald-500/30 transition text-left"
-        >
-          <HelpCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400 mb-1.5" />
-          <span className="text-xs font-bold text-foreground block">Decision Lab</span>
-          <span className="text-[10px] text-muted-foreground">Solve a fork in the road</span>
-        </Link>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+          {/* 1. THINK */}
+          <Link
+            href="/dashboard/decisions"
+            className="group flex flex-col justify-between p-3.5 rounded-2xl border border-border/80 bg-card hover:border-emerald-500/40 hover:bg-card/90 transition shadow-xs touch-manipulation min-h-[105px]"
+          >
+            <div className="flex items-center justify-between">
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                <Brain className="h-4 w-4" />
+              </span>
+              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-40 group-hover:opacity-100 group-hover:text-emerald-600 transition" />
+            </div>
+            <div>
+              <span className="text-xs font-black text-foreground block group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
+                THINK
+              </span>
+              <span className="text-[10px] text-muted-foreground line-clamp-2 leading-tight mt-0.5">
+                Work through a confusing situation or choice
+              </span>
+            </div>
+          </Link>
 
-        {/* Surprise Me */}
-        <button
-          onClick={() => {
-            setSurpriseMeActive(!surpriseMeActive);
-            setChallengeMeActive(false);
-          }}
-          className={`flex flex-col items-start p-3.5 rounded-2xl border transition text-left ${
-            surpriseMeActive
-              ? "border-emerald-500 bg-emerald-500/10"
-              : "border-border/80 bg-card hover:border-emerald-500/30"
-          }`}
-        >
-          <Shuffle className="h-4 w-4 text-purple-500 mb-1.5" />
-          <span className="text-xs font-bold text-foreground block">Surprise Me</span>
-          <span className="text-[10px] text-muted-foreground">Surface past wisdom</span>
-        </button>
+          {/* 2. ASK */}
+          <Link
+            href="/dashboard/ask"
+            className="group flex flex-col justify-between p-3.5 rounded-2xl border border-border/80 bg-card hover:border-emerald-500/40 hover:bg-card/90 transition shadow-xs touch-manipulation min-h-[105px]"
+          >
+            <div className="flex items-center justify-between">
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                <HelpCircle className="h-4 w-4" />
+              </span>
+              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-40 group-hover:opacity-100 group-hover:text-blue-600 transition" />
+            </div>
+            <div>
+              <span className="text-xs font-black text-foreground block group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
+                ASK
+              </span>
+              <span className="text-[10px] text-muted-foreground line-clamp-2 leading-tight mt-0.5">
+                Understand a topic, dilemma, or idea
+              </span>
+            </div>
+          </Link>
 
-        {/* My Memory */}
-        <button
-          onClick={() => setShowMemoryModal(true)}
-          className="flex flex-col items-start p-3.5 rounded-2xl border border-border/80 bg-card hover:border-emerald-500/30 transition text-left"
-        >
-          <Brain className="h-4 w-4 text-blue-500 mb-1.5" />
-          <span className="text-xs font-bold text-foreground block">My Memory</span>
-          <span className="text-[10px] text-muted-foreground">View &amp; edit context</span>
-        </button>
+          {/* 3. WORK ON SOMETHING */}
+          <Link
+            href="/dashboard/journeys"
+            className="group flex flex-col justify-between p-3.5 rounded-2xl border border-border/80 bg-card hover:border-emerald-500/40 hover:bg-card/90 transition shadow-xs touch-manipulation min-h-[105px]"
+          >
+            <div className="flex items-center justify-between">
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                <Compass className="h-4 w-4" />
+              </span>
+              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-40 group-hover:opacity-100 group-hover:text-emerald-600 transition" />
+            </div>
+            <div>
+              <span className="text-xs font-black text-foreground block group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
+                WORK ON GOALS
+              </span>
+              <span className="text-[10px] text-muted-foreground line-clamp-2 leading-tight mt-0.5">
+                Progress on structured outcome journeys
+              </span>
+            </div>
+          </Link>
+
+          {/* 4. TRAIN */}
+          <Link
+            href="/dashboard/workout"
+            className="group flex flex-col justify-between p-3.5 rounded-2xl border border-border/80 bg-card hover:border-emerald-500/40 hover:bg-card/90 transition shadow-xs touch-manipulation min-h-[105px]"
+          >
+            <div className="flex items-center justify-between">
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                <Zap className="h-4 w-4" />
+              </span>
+              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-40 group-hover:opacity-100 group-hover:text-purple-600 transition" />
+            </div>
+            <div>
+              <span className="text-xs font-black text-foreground block group-hover:text-purple-600 dark:group-hover:text-purple-400 transition">
+                TRAIN
+              </span>
+              <span className="text-[10px] text-muted-foreground line-clamp-2 leading-tight mt-0.5">
+                Exercise problem solving &amp; mental models
+              </span>
+            </div>
+          </Link>
+
+          {/* 5. MOVE */}
+          <Link
+            href="/dashboard/physical"
+            className="group flex flex-col justify-between p-3.5 rounded-2xl border border-border/80 bg-card hover:border-emerald-500/40 hover:bg-card/90 transition shadow-xs touch-manipulation min-h-[105px]"
+          >
+            <div className="flex items-center justify-between">
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                <Target className="h-4 w-4" />
+              </span>
+              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-40 group-hover:opacity-100 group-hover:text-amber-600 transition" />
+            </div>
+            <div>
+              <span className="text-xs font-black text-foreground block group-hover:text-amber-600 dark:group-hover:text-amber-400 transition">
+                MOVE
+              </span>
+              <span className="text-[10px] text-muted-foreground line-clamp-2 leading-tight mt-0.5">
+                2-minute sensory &amp; physical reset
+              </span>
+            </div>
+          </Link>
+
+          {/* 6. SURPRISE ME */}
+          <button
+            onClick={() => {
+              setSurpriseMeActive(!surpriseMeActive);
+              setChallengeMeActive(false);
+            }}
+            className={`group flex flex-col justify-between p-3.5 rounded-2xl border transition shadow-xs touch-manipulation min-h-[105px] text-left ${
+              surpriseMeActive
+                ? "border-emerald-500 bg-emerald-500/10"
+                : "border-border/80 bg-card hover:border-emerald-500/40 hover:bg-card/90"
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                <Shuffle className="h-4 w-4" />
+              </span>
+              <Sparkles className="h-3.5 w-3.5 text-muted-foreground opacity-40 group-hover:opacity-100 transition" />
+            </div>
+            <div>
+              <span className="text-xs font-black text-foreground block group-hover:text-purple-600 dark:group-hover:text-purple-400 transition">
+                SURPRISE ME
+              </span>
+              <span className="text-[10px] text-muted-foreground line-clamp-2 leading-tight mt-0.5">
+                Intelligent insight, challenge, or reflection
+              </span>
+            </div>
+          </button>
+        </div>
       </div>
 
       {/* Dynamic Drawer for Challenge Me / Surprise Me */}

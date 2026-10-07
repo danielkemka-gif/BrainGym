@@ -10,9 +10,9 @@ export function MobileNav() {
   const mobileTabs = [
     { href: "/dashboard", label: "Home", icon: Home },
     { href: "/dashboard/ask", label: "Ask", icon: Sparkles },
-    { href: "/dashboard/journeys", label: "Journeys", icon: Compass },
+    { href: "/dashboard/journeys", label: "Think & Move", icon: Compass },
     { href: "/dashboard/insights", label: "Insights", icon: TrendingUp },
-    { href: "/dashboard/profile", label: "Profile", icon: User },
+    { href: "/dashboard/profile", label: "My Akuche", icon: User },
   ];
 
   return (

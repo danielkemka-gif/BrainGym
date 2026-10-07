@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { Crown, Flame } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { AkucheBrandLogo } from "@/components/brand/akuche-brand-logo";
 
 interface TopbarProps {
   onMenuClick: () => void;
@@ -51,8 +52,11 @@ export function Topbar({ onMenuClick, userName }: TopbarProps) {
           </svg>
         </button>
 
-        {/* Welcome Button / Greeting at the Top */}
-        <div className="flex items-center gap-1.5 min-w-0">
+        {/* Welcome Button / Greeting at the Top with Akuche Mark */}
+        <div className="flex items-center gap-2 min-w-0">
+          <Link href="/dashboard" className="flex items-center gap-1.5 shrink-0">
+            <AkucheBrandLogo variant="mark" size="xs" />
+          </Link>
           <span className="text-sm sm:text-base font-black text-foreground tracking-tight truncate">
             Welcome, {displayName} 👋
           </span>

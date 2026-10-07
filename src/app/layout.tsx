@@ -19,18 +19,21 @@ if (
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
-  title: "AKUCHE — Train Your Mind for Real Life",
+  title: "AKUCHE — Think Better. Decide Better. Live Better.",
   description:
-    "AKUCHE is a mental fitness and real-life problem-solving platform. Ask, Think, Solve, Act, Grow.",
+    "When life gets complicated, think it through with Akuche. Your intelligent thinking, decision-making and action companion.",
   manifest: "/manifest.json",
   icons: {
-    icon: "/favicon.png",
-    apple: "/logo.png",
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.png", type: "image/png" },
+    ],
+    apple: "/icons/akuche-apple-touch.png",
   },
   openGraph: {
-    title: "AKUCHE — Train Your Mind for Real Life",
+    title: "AKUCHE — Think Better. Decide Better. Live Better.",
     description:
-      "Train your mind for real life with AKUCHE: ASK → THINK → SOLVE → ACT → GROW.",
+      "When life gets complicated, think it through with Akuche. Think better, decide better, take action and grow intentionally.",
     images: [
       {
         url: "/og-image.png",
@@ -44,9 +47,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "AKUCHE — Train Your Mind for Real Life",
+    title: "AKUCHE — Think Better. Decide Better. Live Better.",
     description:
-      "Train your mind for real life with AKUCHE: ASK → THINK → SOLVE → ACT → GROW.",
+      "When life gets complicated, think it through with Akuche. Think better, decide better, take action and grow intentionally.",
     images: ["/og-image.png"],
   },
   other: {
@@ -58,7 +61,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#1a1a2e",
+  themeColor: "#042F24",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -74,9 +77,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <head>
-        <title>AKUCHE — Train Your Mind for Real Life</title>
+        <title>AKUCHE — Think Better. Decide Better. Live Better.</title>
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="icon" type="image/png" href="/favicon.png" />
-        <link rel="shortcut icon" href="/favicon.png" />
+        <link rel="shortcut icon" href="/favicon.svg" />
         <link rel="apple-touch-icon" href="/icons/akuche-apple-touch.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/icons/akuche-apple-touch.png" />
         <link rel="icon" type="image/png" sizes="192x192" href="/icons/akuche-192.png" />
@@ -86,7 +90,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="AKUCHE" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="theme-color" content="#090d16" media="(prefers-color-scheme: dark)" />
+        <meta name="theme-color" content="#042F24" media="(prefers-color-scheme: dark)" />
         <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>

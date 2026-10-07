@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'akuche-v2.1.0-master-ux';
+const CACHE_VERSION = 'akuche-v3.0.0-brand-master';
 const STATIC_CACHE = `akuche-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `akuche-dynamic-${CACHE_VERSION}`;
 
@@ -9,14 +9,16 @@ const STATIC_ASSETS = [
   '/dashboard/journeys',
   '/dashboard/insights',
   '/dashboard/decisions',
+  '/dashboard/profile',
   '/dashboard/skills',
   '/dashboard/workout',
   '/dashboard/journal',
   '/dashboard/games',
   '/dashboard/progress',
-  '/dashboard/group-challenges',
   '/manifest.json',
+  '/favicon.svg',
   '/favicon.png',
+  '/akuche-logo.svg',
   '/logo.png',
   '/icons/akuche-192.png',
   '/icons/akuche-512.png',

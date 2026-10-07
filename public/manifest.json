@@ -1,75 +1,80 @@
 {
   "id": "/",
-  "name": "Akuche",
-  "short_name": "Akuche",
-  "description": "Train Your Mind for Real Life. Ask, Think, Solve, Act, Grow.",
+  "name": "AKUCHE — Think Better. Decide Better. Live Better.",
+  "short_name": "AKUCHE",
+  "description": "When life gets complicated, think it through with Akuche. Your intelligent personal thinking, decision-making and action companion.",
   "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#090d16",
-  "theme_color": "#090d16",
+  "background_color": "#042F24",
+  "theme_color": "#042F24",
   "orientation": "portrait",
   "scope": "/",
   "lang": "en",
-  "categories": ["education", "productivity", "utilities"],
+  "categories": ["education", "productivity", "lifestyle", "utilities"],
   "icons": [
     {
-      "src": "/icons/akuche-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "/icons/akuche-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/icons/akuche-512.png",
+      "src": "/akuche-logo.svg",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/akuche-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
-      "src": "/logo.png",
+      "src": "/icons/akuche-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/akuche-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/akuche-512.png",
       "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/akuche-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/akuche-apple-touch.png",
+      "sizes": "180x180",
       "type": "image/png",
       "purpose": "any"
     }
   ],
   "shortcuts": [
     {
-      "name": "Start Workout",
-      "short_name": "Workout",
-      "url": "/dashboard/workout"
-    },
-    {
       "name": "Ask Akuche",
       "short_name": "Ask",
       "url": "/dashboard/ask"
     },
     {
-      "name": "Daily Challenge",
-      "short_name": "Challenge",
-      "url": "/dashboard/daily-challenge"
+      "name": "Decision Lab",
+      "short_name": "Decide",
+      "url": "/dashboard/decisions"
+    },
+    {
+      "name": "Journeys",
+      "short_name": "Journeys",
+      "url": "/dashboard/journeys"
+    },
+    {
+      "name": "Today's Akuche",
+      "short_name": "Today",
+      "url": "/dashboard"
     }
   ]
 }

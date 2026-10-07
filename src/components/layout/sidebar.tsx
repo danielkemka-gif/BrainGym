@@ -11,6 +11,7 @@ import { Globe, ChevronDown, MoreHorizontal, Shield, Crown } from "lucide-react"
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { SIDEBAR_ICONS } from "@/lib/icons";
 import { useBrand } from "@/lib/brand-context";
+import { AkucheBrandLogo } from "@/components/brand/akuche-brand-logo";
 
 const PRIMARY_NAV = [
   { href: "/dashboard", labelKey: "nav_dashboard", iconKey: "dashboard" },
@@ -110,14 +111,9 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
         style={{ paddingTop: 'env(safe-area-inset-top)' }}
       >
         {/* Logo */}
-        <div className="flex h-14 items-center gap-2.5 border-b border-border px-4">
-          <img
-            src={brand.logoUrl}
-            alt={brand.name}
-            className="h-8 w-8 rounded-lg object-contain shadow-xs"
-          />
-          <Link href="/dashboard" className="text-lg font-bold tracking-tight text-foreground" onClick={onClose}>
-            {brand.name}
+        <div className="flex h-14 items-center justify-between border-b border-border px-4">
+          <Link href="/dashboard" onClick={onClose} className="flex items-center gap-2">
+            <AkucheBrandLogo variant="horizontal" size="sm" />
           </Link>
         </div>
 

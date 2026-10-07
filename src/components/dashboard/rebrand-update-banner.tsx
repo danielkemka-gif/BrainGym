@@ -13,6 +13,7 @@ import {
   Download,
   AlertCircle,
 } from "lucide-react";
+import { AkucheBrandLogo } from "@/components/brand/akuche-brand-logo";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -172,18 +173,14 @@ export function RebrandUpdateBanner() {
 
             {/* Header */}
             <div className="text-center space-y-2 pt-1">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 p-2 shadow-inner">
-                <img
-                  src="/icons/akuche-192.png"
-                  alt="Akuche Logo"
-                  className="h-full w-full object-contain rounded-xl"
-                />
+              <div className="mx-auto flex justify-center">
+                <AkucheBrandLogo variant="mark" size="lg" />
               </div>
               <h2 className="text-lg sm:text-xl font-black text-foreground tracking-tight">
-                Update to Akuche v2.0
+                Welcome to the All-New AKUCHE
               </h2>
               <p className="text-xs text-muted-foreground max-w-xs mx-auto leading-relaxed">
-                All your progress, workouts, XP, and streaks are 100% safe. Get the official Akuche icon on your phone in seconds.
+                Your intelligent thinking and decision-making companion. All your progress, memories, and streak are preserved.
               </p>
             </div>
 

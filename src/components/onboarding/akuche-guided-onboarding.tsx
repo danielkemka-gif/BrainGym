@@ -18,6 +18,8 @@ import {
   X,
 } from "lucide-react";
 
+import { AkucheBrandLogo } from "@/components/brand/akuche-brand-logo";
+
 interface AkucheGuidedOnboardingProps {
   forceOpen?: boolean;
   onClose?: () => void;
@@ -116,16 +118,16 @@ export function AkucheGuidedOnboarding({
         {/* ─── SCREEN 0: MINIMALIST OPENING SPLASH ─── */}
         {currentScreen === 0 && (
           <div className="py-8 text-center space-y-6 animate-fade-in">
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-primary/10 text-primary shadow-inner">
-              <Sparkles className="h-10 w-10 animate-pulse" />
+            <div className="mx-auto flex justify-center">
+              <AkucheBrandLogo variant="mark" size="xl" animate />
             </div>
 
             <div className="space-y-2">
               <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground">
                 AKUCHE
               </h1>
-              <p className="text-sm sm:text-base font-bold text-primary">
-                Think better. Act smarter. Grow intentionally.
+              <p className="text-sm sm:text-base font-bold text-emerald-600 dark:text-emerald-400">
+                Think better. Decide better. Live better.
               </p>
               <p className="text-xs text-muted-foreground max-w-xs mx-auto pt-2 leading-relaxed">
                 Your intelligent personal thinking, problem-solving, and action companion.

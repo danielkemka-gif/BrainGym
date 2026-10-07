@@ -15,7 +15,6 @@ import {
 import { getActiveJourneyId, getJourneyById, getJourneyProgress } from "@/lib/akuche/journeys-engine";
 import { AkucheGuidedOnboarding } from "@/components/onboarding/akuche-guided-onboarding";
 import { MyMemoryModal } from "@/components/memory/my-memory-modal";
-import { AppInstallCard } from "@/components/dashboard/app-install-card";
 import { RealWorldAssignmentCard } from "@/components/dashboard/real-world-assignment-card";
 import { AkucheMomentBanner } from "@/components/dashboard/akuche-moment-banner";
 import {
@@ -143,9 +142,6 @@ export default function DashboardPage() {
           </span>
         </div>
       </div>
-
-      {/* ─── PWA MOBILE APP QUICK-INSTALL BANNER ─── */}
-      <AppInstallCard variant="compact" />
 
       {/* ─── 2. PENDING COMMITMENT CHECK-IN (SECTION 20 ACCOUNTABILITY) ─── */}
       {commitments.length > 0 && (

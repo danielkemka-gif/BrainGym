@@ -12,7 +12,6 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { SIDEBAR_ICONS } from "@/lib/icons";
 import { useBrand } from "@/lib/brand-context";
 import { AkucheBrandLogo } from "@/components/brand/akuche-brand-logo";
-import { AppInstallCard } from "@/components/dashboard/app-install-card";
 
 const PRIMARY_NAV = [
   { href: "/dashboard", label: "Home", iconKey: "dashboard" },
@@ -151,11 +150,6 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
           </button>
 
           {PRIMARY_NAV.map((item) => renderNavItem(item))}
-
-          {/* Quick Install to Phone Button */}
-          <div className="my-2">
-            <AppInstallCard variant="compact" />
-          </div>
 
           {/* More dropdown */}
           <div>

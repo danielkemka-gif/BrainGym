@@ -19,6 +19,7 @@ import {
 import { getDecisionRecords, AkucheDecisionRecord } from "@/lib/akuche/decisions-engine";
 import { ContextualGuidanceBanner } from "@/components/layout/contextual-guidance-banner";
 import { Avatar } from "@/components/ui/avatar";
+import { AppInstallCard } from "@/components/dashboard/app-install-card";
 import {
   Brain,
   Shield,
@@ -212,10 +213,13 @@ export default function MyAkuchePage() {
             <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 block">
               Execution Math
             </span>
-            <span className="text-[11px] text-muted-foreground">$R = P \times Q$ Active</span>
+            <span className="text-[11px] text-muted-foreground">Active Trajectory</span>
           </div>
         </div>
       </div>
+
+      {/* ─── APP INSTALL CARD (EASY MOBILE & HOME SCREEN ACCESS) ─── */}
+      <AppInstallCard variant="banner" />
 
       {/* ─── 2. "WHAT AKUCHE KNOWS ABOUT ME" (TRANSPARENT MEMORY SECTION 21 & 48) ─── */}
       <div className="rounded-3xl border border-border/80 bg-card p-5 sm:p-6 shadow-sm space-y-4">

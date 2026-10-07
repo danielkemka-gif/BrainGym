@@ -7,6 +7,7 @@ import { NotificationBell } from "@/components/layout/notification-bell";
 import { Crown, Flame } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { AkucheBrandLogo } from "@/components/brand/akuche-brand-logo";
+import { AppInstallCard } from "@/components/dashboard/app-install-card";
 
 interface TopbarProps {
   onMenuClick: () => void;
@@ -63,8 +64,11 @@ export function Topbar({ onMenuClick, userName }: TopbarProps) {
         </div>
       </div>
 
-      {/* Right: Pro Version Button + Streak + Notification Bell */}
-      <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+      {/* Right: Install App Button + Pro Version Button + Streak + Notification Bell */}
+      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+        {/* Install on Phone Button */}
+        <AppInstallCard variant="button" />
+
         {/* Compact Pro Button at the top */}
         <Link
           href="/pricing"

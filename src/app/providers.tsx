@@ -6,8 +6,8 @@ import { I18nProvider } from "@/lib/i18n";
 import { PostHogProvider } from "@/lib/analytics/provider";
 import { MotionConfig } from "framer-motion";
 import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
-
 import { BrandProvider } from "@/lib/brand-context";
+import { AkucheSplashScreen } from "@/components/brand/akuche-splash-screen";
 
 function ReducedMotionProvider({ children }: { children: ReactNode }) {
   return <MotionConfig reducedMotion="user">{children}</MotionConfig>;
@@ -17,6 +17,7 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider>
       <BrandProvider>
+        <AkucheSplashScreen />
         <ReducedMotionProvider>
           <Suspense fallback={null}>
             <PostHogProvider>

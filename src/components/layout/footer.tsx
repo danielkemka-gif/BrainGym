@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Brain } from "lucide-react";
+import { AkucheBrandLogo } from "@/components/brand/akuche-brand-logo";
 
 const footerLinks = {
   Product: [
@@ -8,14 +8,14 @@ const footerLinks = {
     { href: "/about", label: "About" },
   ],
   Support: [
-    { href: "#", label: "Documentation" },
-    { href: "#", label: "Contact" },
-    { href: "#", label: "FAQ" },
+    { href: "/dashboard/guide", label: "Guide & Manual" },
+    { href: "/dashboard/ask", label: "Ask Akuche" },
+    { href: "/dashboard/profile", label: "My Profile" },
   ],
   Legal: [
-    { href: "#", label: "Privacy" },
-    { href: "#", label: "Terms" },
-    { href: "#", label: "Cookies" },
+    { href: "/privacy", label: "Privacy Policy" },
+    { href: "/terms", label: "Terms of Service" },
+    { href: "/about", label: "About Akuche" },
   ],
 };
 
@@ -26,21 +26,16 @@ export function Footer() {
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-2.5">
-              <img
-                src="/logo.png"
-                alt="AKUCHE"
-                className="h-8 w-8 rounded-lg object-contain"
-              />
-              <span className="font-bold tracking-tight text-foreground">AKUCHE</span>
+              <AkucheBrandLogo variant="horizontal" size="sm" />
             </Link>
-            <p className="text-sm text-muted-foreground">
-              Train Your Mind for Real Life. Ask, Think, Solve, Act, Grow. Non-medical mental fitness and real-world problem-solving.
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Think Better. Decide Better. Live Better. Non-medical cognitive clarity, intelligent decision support, and real-world execution.
             </p>
           </div>
 
           {Object.entries(footerLinks).map(([title, links]) => (
             <div key={title} className="space-y-3">
-              <h3 className="text-sm font-semibold">{title}</h3>
+              <h3 className="text-sm font-semibold text-foreground">{title}</h3>
               <ul className="space-y-2">
                 {links.map((link) => (
                   <li key={link.label}>

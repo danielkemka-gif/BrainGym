@@ -1,8 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useBrand } from "@/lib/brand-context";
-
 import { AkucheBrandLogo } from "@/components/brand/akuche-brand-logo";
 
 const links = [
@@ -12,24 +10,11 @@ const links = [
 ];
 
 export function Header() {
-  const { brand, brandKey } = useBrand();
-
   return (
     <header className="fixed top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2.5">
-          {brandKey === "akuche" ? (
-            <AkucheBrandLogo variant="horizontal" size="md" />
-          ) : (
-            <>
-              <img
-                src={brand.logoUrl}
-                alt={brand.name}
-                className="h-9 w-9 rounded-lg object-contain shadow-sm"
-              />
-              <span className="text-lg font-bold tracking-tight text-foreground">{brand.name}</span>
-            </>
-          )}
+          <AkucheBrandLogo variant="horizontal" size="md" />
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
@@ -53,7 +38,7 @@ export function Header() {
           </Link>
           <Link
             href="/signup"
-            className="inline-flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:bg-primary/90"
+            className="inline-flex h-9 items-center justify-center rounded-lg bg-emerald-600 hover:bg-emerald-700 px-4 text-sm font-bold text-white shadow-sm transition-all"
           >
             Get Started
           </Link>

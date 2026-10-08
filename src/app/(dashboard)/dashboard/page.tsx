@@ -17,6 +17,7 @@ import { AkucheGuidedOnboarding } from "@/components/onboarding/akuche-guided-on
 import { MyMemoryModal } from "@/components/memory/my-memory-modal";
 import { RealWorldAssignmentCard } from "@/components/dashboard/real-world-assignment-card";
 import { AkucheMomentBanner } from "@/components/dashboard/akuche-moment-banner";
+import { FollowUpCheckIn } from "@/components/dashboard/follow-up-check-in";
 import {
   Sparkles,
   ArrowRight,
@@ -143,52 +144,8 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* ─── 2. PENDING COMMITMENT CHECK-IN (SECTION 20 ACCOUNTABILITY) ─── */}
-      {commitments.length > 0 && (
-        <div className="rounded-2xl sm:rounded-3xl border-2 border-amber-500/40 bg-amber-500/10 p-4 sm:p-5 shadow-sm space-y-3 animate-fade-in">
-          <div className="flex items-center justify-between">
-            <span className="inline-flex items-center gap-1.5 text-xs font-black text-amber-900 dark:text-amber-300 uppercase tracking-wider">
-              <Clock className="h-4 w-4 text-amber-600" />
-              <span>YOUR COMMITMENT IS WAITING</span>
-            </span>
-            <span className="text-[11px] text-muted-foreground font-semibold">
-              Accountability Check
-            </span>
-          </div>
-
-          <div>
-            <h3 className="text-sm sm:text-base font-bold text-foreground">
-              &ldquo;{commitments[0].title}&rdquo;
-            </h3>
-            {commitments[0].description && (
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {commitments[0].description}
-              </p>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2 pt-1 flex-wrap">
-            <button
-              onClick={() => handleResolvePendingCommitment(commitments[0].id, "done")}
-              className="rounded-xl bg-emerald-600 text-white px-4 py-2 text-xs font-bold shadow-xs hover:bg-emerald-700 transition active:scale-95"
-            >
-              Done ✓
-            </button>
-            <button
-              onClick={() => handleResolvePendingCommitment(commitments[0].id, "partly_done")}
-              className="rounded-xl border border-border bg-card px-3.5 py-2 text-xs font-bold text-foreground hover:bg-muted transition"
-            >
-              Partly done
-            </button>
-            <button
-              onClick={() => handleResolvePendingCommitment(commitments[0].id, "not_yet")}
-              className="rounded-xl border border-border bg-card px-3.5 py-2 text-xs font-bold text-muted-foreground hover:text-foreground transition"
-            >
-              Not yet
-            </button>
-          </div>
-        </div>
-      )}
+      {/* ─── 2. PROACTIVE CONTINUITY & ACCOUNTABILITY FOLLOW-UP (PHASE 5) ─── */}
+      <FollowUpCheckIn onResolved={refreshState} />
 
       {/* ─── 3. "CONTINUE WHERE I STOPPED" (SECTIONS 1, 9 & 41) ─── */}
       {lastSession && (

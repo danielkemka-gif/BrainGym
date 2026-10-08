@@ -1,21 +1,52 @@
 /**
- * AKUCHE MEMORY & CONTINUATION ENGINE
+ * AKUCHE MEMORY & CONTINUATION ENGINE — PHASE 5
  * 
  * Implements:
- * - Structured user long-term memory (Profile, Goals, Projects, Decisions, Commitments, Patterns)
- * - "Continue Where I Stopped" contextual state tracking
- * - Non-judgmental accountability check-in system
- * - True Action Streak calculation (rewards real action/decisions/reflections, not passive app opens)
- * - Personal Insights & Discovery pattern detection
- * - Offline-first localStorage with graceful sync
+ * - Structured user long-term memory (Profile, Goals, Decisions, Commitments, Patterns, Insights)
+ * - Transparent Memory architecture with full user visibility, editing, and deletion
+ * - "Continue Where I Stopped" contextual state tracking across sessions
+ * - Non-judgmental accountability follow-up system (Done, Partly Done, Obstacle, Pivot)
+ * - Proactive Decision review triggers & outcome tracking
+ * - True Action Streak calculation (rewards real action/decisions/reflections)
+ * - Offline-first localStorage with graceful sync support
  */
 
 export interface AkucheMemoryItem {
   id: string;
-  category: "profile" | "goal" | "project" | "decision" | "commitment" | "pattern";
+  category: "profile" | "goal" | "decision" | "commitment" | "pattern" | "project";
   title: string;
   content: string;
-  sourceContext?: string; // e.g. "From Ask Akuche conversation on Dec 12"
+  sourceContext?: string; // e.g. "From Think Session on Oct 8"
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AkucheGoalItem {
+  id: string;
+  title: string;
+  category: string;
+  targetHorizon: string; // "30 days", "90 days", "1 year"
+  whyItMatters: string;
+  milestones: string[];
+  completedMilestones: string[];
+  currentObstacle?: string;
+  status: "active" | "achieved" | "paused" | "pivoted";
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AkucheDecisionRecord {
+  id: string;
+  title: string;
+  situation: string;
+  optionsConsidered: { name: string; pros: string; cons: string }[];
+  chosenOption: string;
+  rationale: string;
+  expectedOutcome: string;
+  reviewDate: string; // YYYY-MM-DD
+  actualOutcome?: string;
+  reflectionNotes?: string;
+  status: "active" | "reviewed" | "pivoted";
   createdAt: string;
   updatedAt: string;
 }
@@ -25,14 +56,17 @@ export interface AkucheCommitment {
   title: string;
   description?: string;
   deadline?: string;
-  status: "pending" | "done" | "partly_done" | "not_yet";
-  obstacleReason?: string; // "I was busy", "Felt difficult", "Wasn't sure what to say", etc.
+  status: "pending" | "done" | "partly_done" | "obstacle" | "pivoted" | "not_yet";
+  obstacleReason?: string; // e.g., "Felt difficult", "Lack of time", "Need more info"
+  pivotAction?: string;
+  sourceType?: "think" | "ask" | "decision" | "challenge" | "manual";
+  sourceId?: string;
   createdAt: string;
   resolvedAt?: string;
 }
 
 export interface AkucheLastSession {
-  type: "conversation" | "journey_step" | "decision" | "journal" | "challenge" | "goal";
+  type: "conversation" | "journey_step" | "decision" | "journal" | "challenge" | "goal" | "think";
   title: string;
   subtitle: string;
   route: string;
@@ -59,9 +93,21 @@ export interface AkuchePersonalInsight {
   isRead: boolean;
 }
 
+export interface AkucheFollowUpCheckIn {
+  type: "commitment" | "decision_review" | "goal_nudge" | "reflection";
+  id: string;
+  title: string;
+  prompt: string;
+  contextText: string;
+  suggestedActions: { label: string; action: "done" | "partly_done" | "obstacle" | "pivoted" | "dismiss" }[];
+  associatedRoute?: string;
+}
+
 const MEMORY_ITEMS_KEY = "akuche_memory_items_v2";
 const MEMORY_ENABLED_KEY = "akuche_memory_enabled_v2";
 const COMMITMENTS_KEY = "akuche_commitments_v2";
+const GOALS_KEY = "akuche_goals_v2";
+const DECISIONS_KEY = "akuche_decisions_v2";
 const LAST_SESSION_KEY = "akuche_last_session_v2";
 const ACTION_LOGS_KEY = "akuche_action_logs_v2";
 const INSIGHTS_KEY = "akuche_personal_insights_v2";
@@ -84,7 +130,6 @@ export function getMemoryItems(): AkucheMemoryItem[] {
   try {
     const raw = localStorage.getItem(MEMORY_ITEMS_KEY);
     if (!raw) {
-      // Default initial memory facts if empty
       const initial: AkucheMemoryItem[] = [
         {
           id: "mem-init-1",
@@ -92,6 +137,15 @@ export function getMemoryItems(): AkucheMemoryItem[] {
           title: "Personal Ambition",
           content: "Committed to deliberate personal growth, strategic decision-making, and taking practical daily action.",
           sourceContext: "Initial onboarding calibration",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        {
+          id: "mem-init-2",
+          category: "pattern",
+          title: "Thinking Preference",
+          content: "Responds best to clear option trade-offs, structured action steps, and realistic numerical breakdowns.",
+          sourceContext: "System observation",
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         }
@@ -142,6 +196,111 @@ export function deleteMemoryItem(id: string): void {
   }
 }
 
+export function clearAllMemories(): void {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem(MEMORY_ITEMS_KEY);
+    localStorage.removeItem(COMMITMENTS_KEY);
+    localStorage.removeItem(GOALS_KEY);
+    localStorage.removeItem(DECISIONS_KEY);
+    localStorage.removeItem(INSIGHTS_KEY);
+  }
+}
+
+// ─── STRUCTURED GOAL MEMORY ───
+
+export function getGoalMemories(): AkucheGoalItem[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(GOALS_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw);
+  } catch {
+    return [];
+  }
+}
+
+export function saveGoalMemory(goal: Omit<AkucheGoalItem, "id" | "createdAt" | "updatedAt">): AkucheGoalItem {
+  const goals = getGoalMemories();
+  const newGoal: AkucheGoalItem = {
+    ...goal,
+    id: `goal-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  goals.unshift(newGoal);
+  if (typeof window !== "undefined") {
+    localStorage.setItem(GOALS_KEY, JSON.stringify(goals));
+  }
+
+  // Also record in general memory items for transparency
+  saveMemoryItem({
+    category: "goal",
+    title: newGoal.title,
+    content: `${newGoal.whyItMatters} (Target: ${newGoal.targetHorizon})`,
+    sourceContext: "Goals Engine",
+  });
+
+  return newGoal;
+}
+
+// ─── DECISION MEMORY & REVIEW TRACKING ───
+
+export function getDecisionRecords(): AkucheDecisionRecord[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(DECISIONS_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw);
+  } catch {
+    return [];
+  }
+}
+
+export function saveDecisionRecord(decision: Omit<AkucheDecisionRecord, "id" | "createdAt" | "updatedAt">): AkucheDecisionRecord {
+  const records = getDecisionRecords();
+  const newRecord: AkucheDecisionRecord = {
+    ...decision,
+    id: `dec-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  records.unshift(newRecord);
+  if (typeof window !== "undefined") {
+    localStorage.setItem(DECISIONS_KEY, JSON.stringify(records));
+  }
+
+  // Log in general memory
+  saveMemoryItem({
+    category: "decision",
+    title: `Decision: ${newRecord.title}`,
+    content: `Chosen: ${newRecord.chosenOption}. Rationale: ${newRecord.rationale}`,
+    sourceContext: "Think & Decision Lab",
+  });
+
+  // Automatically record action streak activity
+  recordActionStreakActivity({
+    type: "decision",
+    title: newRecord.title,
+    details: `Chosen: ${newRecord.chosenOption}`,
+  });
+
+  return newRecord;
+}
+
+export function updateDecisionOutcome(id: string, actualOutcome: string, reflectionNotes: string): void {
+  const records = getDecisionRecords();
+  const idx = records.findIndex((r) => r.id === id);
+  if (idx >= 0) {
+    records[idx].actualOutcome = actualOutcome;
+    records[idx].reflectionNotes = reflectionNotes;
+    records[idx].status = "reviewed";
+    records[idx].updatedAt = new Date().toISOString();
+    if (typeof window !== "undefined") {
+      localStorage.setItem(DECISIONS_KEY, JSON.stringify(records));
+    }
+  }
+}
+
 // ─── "CONTINUE WHERE I STOPPED" ───
 
 export function getLastSession(): AkucheLastSession | null {
@@ -150,11 +309,11 @@ export function getLastSession(): AkucheLastSession | null {
     const raw = localStorage.getItem(LAST_SESSION_KEY);
     if (!raw) {
       return {
-        type: "journey_step",
-        title: "Build My Business",
-        subtitle: "Stage 1: Discover Your High-Value Strength",
-        route: "/dashboard/journeys",
-        progressText: "Stage 1 of 10",
+        type: "think",
+        title: "Clarify Your Strategic Focus",
+        subtitle: "Define what matters most today",
+        route: "/dashboard/think",
+        progressText: "Ready to start",
         timestamp: new Date().toISOString(),
       };
     }
@@ -182,7 +341,13 @@ export function getCommitments(): AkucheCommitment[] {
   }
 }
 
-export function addCommitment(title: string, description?: string, deadline?: string): AkucheCommitment {
+export function addCommitment(
+  title: string,
+  description?: string,
+  deadline?: string,
+  sourceType: AkucheCommitment["sourceType"] = "think",
+  sourceId?: string
+): AkucheCommitment {
   const commitments = getCommitments();
   const newCommitment: AkucheCommitment = {
     id: `com-${Date.now()}`,
@@ -190,6 +355,8 @@ export function addCommitment(title: string, description?: string, deadline?: st
     description,
     deadline: deadline || "Before end of today",
     status: "pending",
+    sourceType,
+    sourceId,
     createdAt: new Date().toISOString(),
   };
   commitments.unshift(newCommitment);
@@ -197,13 +364,13 @@ export function addCommitment(title: string, description?: string, deadline?: st
     localStorage.setItem(COMMITMENTS_KEY, JSON.stringify(commitments));
   }
 
-  // Also set as last session
+  // Also set as last session for quick resumption
   setLastSession({
-    type: "challenge",
-    title: "Active Action Commitment",
+    type: "think",
+    title: "Action Next Step",
     subtitle: title,
-    route: "/dashboard",
-    progressText: "Pending Action",
+    route: "/dashboard/think",
+    progressText: "Action in progress",
     timestamp: new Date().toISOString(),
   });
 
@@ -212,8 +379,9 @@ export function addCommitment(title: string, description?: string, deadline?: st
 
 export function resolveCommitment(
   id: string,
-  status: "done" | "partly_done" | "not_yet",
-  obstacleReason?: string
+  status: "done" | "partly_done" | "obstacle" | "pivoted" | "not_yet",
+  obstacleReason?: string,
+  pivotAction?: string
 ): void {
   const commitments = getCommitments();
   const index = commitments.findIndex((c) => c.id === id);
@@ -221,6 +389,7 @@ export function resolveCommitment(
     commitments[index].status = status;
     commitments[index].resolvedAt = new Date().toISOString();
     if (obstacleReason) commitments[index].obstacleReason = obstacleReason;
+    if (pivotAction) commitments[index].pivotAction = pivotAction;
     if (typeof window !== "undefined") {
       localStorage.setItem(COMMITMENTS_KEY, JSON.stringify(commitments));
     }
@@ -235,7 +404,55 @@ export function resolveCommitment(
   }
 }
 
-// ─── ACTION STREAK (REAL ACTION, NOT APP OPENS) ───
+// ─── PROACTIVE FOLLOW-UP & CHECK-IN DETECTOR ───
+
+export function getPendingFollowUpCheckIn(): AkucheFollowUpCheckIn | null {
+  if (typeof window === "undefined" || !isMemoryEnabled()) return null;
+
+  // 1. Check pending commitments that are at least 1 hour old
+  const commitments = getCommitments();
+  const activePending = commitments.find((c) => c.status === "pending");
+  if (activePending) {
+    return {
+      type: "commitment",
+      id: activePending.id,
+      title: "How did your next move go?",
+      prompt: `Last time we focused on: "${activePending.title}". Did you get a chance to take action?`,
+      contextText: activePending.description || "Action commitment from previous session.",
+      suggestedActions: [
+        { label: "Done! Completed it", action: "done" },
+        { label: "Partly done", action: "partly_done" },
+        { label: "Hit an obstacle", action: "obstacle" },
+        { label: "Changed direction", action: "pivoted" },
+      ],
+      associatedRoute: "/dashboard/think",
+    };
+  }
+
+  // 2. Check pending decision reviews
+  const decisions = getDecisionRecords();
+  const today = new Date().toISOString().split("T")[0];
+  const dueReview = decisions.find((d) => d.status === "active" && d.reviewDate <= today);
+  if (dueReview) {
+    return {
+      type: "decision_review",
+      id: dueReview.id,
+      title: "Decision Review Check-in",
+      prompt: `It's time to review your decision on: "${dueReview.title}". How did choosing "${dueReview.chosenOption}" turn out?`,
+      contextText: `Expected outcome: ${dueReview.expectedOutcome}`,
+      suggestedActions: [
+        { label: "Turned out well", action: "done" },
+        { label: "Need to adjust", action: "obstacle" },
+        { label: "Dismiss review", action: "dismiss" },
+      ],
+      associatedRoute: "/dashboard/decisions",
+    };
+  }
+
+  return null;
+}
+
+// ─── ACTION STREAK (REAL ACTION, NOT PASSIVE OPENS) ───
 
 export function getActionLogs(): AkucheActionLog[] {
   if (typeof window === "undefined") return [];
@@ -277,7 +494,6 @@ export function calculateActionStreak(): { currentStreak: number; bestStreak: nu
   let currentStreak = 0;
   let checkDate = new Date();
 
-  // If today or yesterday has action, start counting consecutive days
   const hasToday = uniqueDays.includes(todayStr);
   const hasYesterday = uniqueDays.includes(yesterdayStr);
 
@@ -310,7 +526,7 @@ export function calculateActionStreak(): { currentStreak: number; bestStreak: nu
   };
 }
 
-// ─── PERSONAL INSIGHTS & DISCOVERY ───
+// ─── PERSONAL INSIGHTS & PATTERNS ───
 
 export function getPersonalInsights(): AkuchePersonalInsight[] {
   if (typeof window === "undefined") return [];
@@ -321,19 +537,19 @@ export function getPersonalInsights(): AkuchePersonalInsight[] {
         {
           id: "ins-1",
           title: "Execution Velocity",
-          observation: "You make the fastest measurable progress when financial goals are broken into small daily units rather than high-level monthly targets.",
-          recommendation: "Continue defining exact daily conversation and outreach quotas.",
+          observation: "You make the fastest measurable progress when ambitious goals are converted into immediate 15-minute actions with exact numbers.",
+          recommendation: "Continue defining exact daily quotas and single next actions.",
           unlockedAt: new Date().toISOString(),
           category: "productivity",
           isRead: false,
         },
         {
           id: "ins-2",
-          title: "Diagnostic Communication Strength",
-          observation: "Your questions indicate strong problem-solving instinct. Focusing on customer pain before pitching increases your closing probability.",
-          recommendation: "Use the 3-Question Diagnostic Framework during negotiations.",
+          title: "Diagnostic Problem Solving",
+          observation: "Your decisions yield higher confidence when you separate verifiable facts from initial assumptions before selecting options.",
+          recommendation: "Maintain the 3-Option Trade-off filter for all high-stakes decisions.",
           unlockedAt: new Date().toISOString(),
-          category: "strength",
+          category: "decision_style",
           isRead: false,
         },
       ];
@@ -344,4 +560,24 @@ export function getPersonalInsights(): AkuchePersonalInsight[] {
   } catch {
     return [];
   }
+}
+
+// ─── MEMORY PROMPT CONTEXT INJECTOR ───
+
+export function generateMemoryContextPrompt(): string {
+  if (!isMemoryEnabled()) return "";
+  const items = getMemoryItems();
+  if (items.length === 0) return "";
+
+  const formatted = items
+    .slice(0, 8)
+    .map((item) => `- [${item.category.toUpperCase()}] ${item.title}: ${item.content}`)
+    .join("\n");
+
+  const commitments = getCommitments().filter((c) => c.status === "pending").slice(0, 3);
+  const commitmentText = commitments.length > 0
+    ? "\n\nActive Pending Commitments:\n" + commitments.map((c) => `- ${c.title} (Deadline: ${c.deadline || "Today"})`).join("\n")
+    : "";
+
+  return `\n\n## AKUCHE MEMORY & USER CONTEXT (Transparent User Profile)\n${formatted}${commitmentText}\n\nUse this context to tailor your questions and guidance naturally without robotic repetition.`;
 }

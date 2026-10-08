@@ -14,6 +14,7 @@ import { getAllGoals, BrainGoal } from "@/lib/goals/goals-engine";
 import { StreakCalendar } from "@/components/progress/streak-calendar";
 import { XpHistory } from "@/components/progress/xp-history";
 import { AchievementsGrid } from "@/components/achievements/achievements-grid";
+import { ShareProgressCard } from "@/components/progress/share-progress-card";
 import {
   TrendingUp,
   Brain,
@@ -90,6 +91,12 @@ export default function ProgressPage() {
           Here&apos;s how you&apos;ve been developing across thinking, decision-making, and real-life action.
         </p>
       </div>
+
+      {/* ─── SHARE YOUR AKUCHE EXPERIENCE & PROGRESS ─── */}
+      <ShareProgressCard
+        currentStreak={streakData.currentStreak}
+        totalActions={streakData.totalActionsCompleted}
+      />
 
       {/* ─── 1. FOUR PILLARS OVERVIEW (SECTION 29) ─── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">

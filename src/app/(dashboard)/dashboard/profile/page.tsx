@@ -20,6 +20,7 @@ import { getDecisionRecords, AkucheDecisionRecord } from "@/lib/akuche/decisions
 import { ContextualGuidanceBanner } from "@/components/layout/contextual-guidance-banner";
 import { Avatar } from "@/components/ui/avatar";
 import { AppInstallCard } from "@/components/dashboard/app-install-card";
+import { InviteFriendsCard } from "@/components/share/invite-friends-card";
 import {
   Brain,
   Shield,
@@ -445,6 +446,9 @@ export default function MyAkuchePage() {
           </div>
         )}
       </div>
+
+      {/* ─── INVITE FRIENDS & SHARE AKUCHE APP LINK ─── */}
+      <InviteFriendsCard />
 
       {/* ─── PWA MOBILE APP INSTALLATION CARD ─── */}
       <AppInstallCard variant="banner" />

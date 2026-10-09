@@ -96,7 +96,7 @@ export function JournalShareCardModal({
           <div className="flex items-center gap-2">
             <span className="flex h-2.5 w-2.5 rounded-full bg-primary animate-pulse" />
             <span className="text-xs font-black uppercase tracking-wider text-primary">
-              SHARE YOUR BRAINGYM REFLECTION
+              SHARE YOUR AKUCHE REFLECTION
             </span>
           </div>
 

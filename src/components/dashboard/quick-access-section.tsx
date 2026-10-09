@@ -43,7 +43,7 @@ export function QuickAccessSection() {
             <Compass className="h-4 w-4" />
           </div>
           <h3 className="text-base font-black text-foreground">
-            EXPLORE BRAINGYM
+            EXPLORE AKUCHE
           </h3>
         </div>
 

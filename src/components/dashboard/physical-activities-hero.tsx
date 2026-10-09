@@ -26,7 +26,7 @@ export function PhysicalActivitiesHero() {
                 </span>
               </div>
               <h3 className="text-lg sm:text-xl font-black text-foreground tracking-tight">
-                BRAINGYM PHYSICAL ACTIVITIES
+                AKUCHE PHYSICAL ACTIVITIES
               </h3>
             </div>
           </div>

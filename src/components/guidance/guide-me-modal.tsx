@@ -72,7 +72,7 @@ export function GuideMeModal({ isOpen, onClose }: GuideMeModalProps) {
             </div>
             <div>
               <span className="text-[10px] font-black uppercase tracking-wider text-primary block">
-                BRAINGYM NAVIGATOR &amp; GUIDE
+                AKUCHE NAVIGATOR &amp; GUIDE
               </span>
               <h3 className="text-sm sm:text-base font-black text-foreground">
                 {pageTitle}
@@ -101,7 +101,7 @@ export function GuideMeModal({ isOpen, onClose }: GuideMeModalProps) {
         {/* ─── THE 5-STEP DAILY LOOP ─────────────────────────────────────────── */}
         <div className="space-y-2">
           <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground block">
-            THE DAILY BRAINGYM METHOD:
+            THE DAILY AKUCHE METHOD:
           </span>
           <div className="space-y-1.5 text-xs">
             {[

@@ -147,7 +147,7 @@ export function SmartPaywallModal({
             ) : (
               <>
                 <Crown className="h-4 w-4" />
-                <span>UNLOCK BRAINGYM PRO NOW</span>
+                <span>UNLOCK AKUCHE PRO NOW</span>
                 <ArrowRight className="h-4 w-4" />
               </>
             )}

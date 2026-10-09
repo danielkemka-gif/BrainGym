@@ -103,7 +103,7 @@ export default function PhysicalActivitiesPage() {
               <span>Real-World Offline Training</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
-              BRAINGYM PHYSICAL ACTIVITIES
+              AKUCHE PHYSICAL ACTIVITIES
             </h1>
             <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl leading-relaxed">
               Train your mind away from the screen. Movement, deep focus, real-world memory, language acquisition, and sensory habits that build long-term brain health.

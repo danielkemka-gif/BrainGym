@@ -260,7 +260,7 @@ export default function SingleChallengeDashboardPage({
           <div className="flex items-center gap-2">
             <Zap className="h-5 w-5 text-emerald-500" />
             <span className="text-xs font-black uppercase text-foreground">
-              TODAY&apos;S BRAINGYM ACTIVITY · DAY {challenge.currentDay}
+              TODAY&apos;S AKUCHE ACTIVITY · DAY {challenge.currentDay}
             </span>
           </div>
           <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-3 py-0.5">

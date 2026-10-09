@@ -41,7 +41,7 @@ export function ThirtyDayChallenge({
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
-              30-DAY BRAINGYM TRANSFORMATION
+              30-DAY AKUCHE TRANSFORMATION
             </h2>
             <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-xl text-justify">
               Train your brain for 5–10 minutes every day for 30 consecutive days. Unlock permanent neuroplastic gains and earn your official graduation certificate.

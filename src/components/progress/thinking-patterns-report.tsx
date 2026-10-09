@@ -34,7 +34,7 @@ export function ThinkingPatternsReport() {
         <div>
           <div className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-primary">
             <Sparkles className="h-4 w-4 animate-pulse" />
-            <span>BRAINGYM PERFORMANCE INSIGHTS</span>
+            <span>AKUCHE PERFORMANCE INSIGHTS</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-black text-foreground mt-0.5">
             Discover How You Think

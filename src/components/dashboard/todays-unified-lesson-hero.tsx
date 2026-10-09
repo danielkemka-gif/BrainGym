@@ -44,7 +44,7 @@ export function TodaysUnifiedLessonHero({ lesson }: TodaysUnifiedLessonHeroProps
         <div className="flex items-center gap-2">
           <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
           <span className="text-[11px] font-black uppercase tracking-widest text-primary">
-            TODAY&apos;S BRAINGYM TOPIC
+            TODAY&apos;S AKUCHE TOPIC
           </span>
           <span className="rounded-full bg-muted border border-border px-2.5 py-0.5 text-[10px] font-bold text-muted-foreground">
             {lesson.category}

@@ -3,12 +3,10 @@
 import React, { useState, useEffect } from "react";
 import { AkucheBrandLogo } from "@/components/brand/akuche-brand-logo";
 import {
-  Smartphone,
   Download,
   CheckCircle2,
   Share,
-  Sparkles,
-  RefreshCw,
+  X,
 } from "lucide-react";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -19,20 +17,28 @@ interface BeforeInstallPromptEvent extends Event {
 export interface AppInstallCardProps {
   variant?: "banner" | "card" | "button" | "compact";
   className?: string;
+  dismissible?: boolean;
 }
 
 export function AppInstallCard({
   variant = "banner",
   className = "",
+  dismissible = false,
 }: AppInstallCardProps) {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
   const [installedSuccess, setInstalledSuccess] = useState(false);
   const [showIOSHint, setShowIOSHint] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
+      // Check if previously dismissed on this device
+      if (dismissible && localStorage.getItem("akuche_install_card_dismissed") === "true") {
+        setIsDismissed(true);
+      }
+
       // Detect standalone mode (already installed as PWA)
       if (
         window.matchMedia("(display-mode: standalone)").matches ||
@@ -57,7 +63,7 @@ export function AppInstallCard({
         window.removeEventListener("beforeinstallprompt", installHandler);
       };
     }
-  }, []);
+  }, [dismissible]);
 
   const handleInstallClick = async () => {
     if (deferredPrompt) {
@@ -79,7 +85,7 @@ export function AppInstallCard({
       return;
     }
 
-    // Attempt native browser fallback if possible
+    // Attempt native browser share fallback if possible
     if (typeof navigator !== "undefined" && (navigator as any).share) {
       try {
         await navigator.share({
@@ -90,7 +96,18 @@ export function AppInstallCard({
     }
   };
 
+  const handleDismiss = () => {
+    setIsDismissed(true);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("akuche_install_card_dismissed", "true");
+    }
+  };
+
+  if (isDismissed) return null;
+
   if (isStandalone || installedSuccess) {
+    if (dismissible) return null; // Don't show duplicate success banner on dashboard if already running as standalone app
+
     return (
       <div className={`rounded-3xl border-2 border-emerald-500/40 bg-emerald-500/10 p-4 sm:p-5 flex items-center justify-between gap-3 ${className}`}>
         <div className="flex items-center gap-3">
@@ -114,8 +131,20 @@ export function AppInstallCard({
   }
 
   return (
-    <div className={`rounded-3xl border-2 border-emerald-500/40 bg-gradient-to-r from-emerald-500/15 via-card to-card p-4 sm:p-5 shadow-sm space-y-3 ${className}`}>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5">
+    <div className={`rounded-3xl border-2 border-emerald-500/40 bg-gradient-to-r from-emerald-500/15 via-card to-card p-4 sm:p-5 shadow-sm space-y-3 relative ${className}`}>
+      {dismissible && (
+        <button
+          type="button"
+          onClick={handleDismiss}
+          className="absolute top-3 right-3 p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition"
+          title="Dismiss banner"
+          aria-label="Dismiss banner"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      )}
+
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 pr-6 sm:pr-0">
         <div className="flex items-center gap-3 min-w-0">
           <div className="shrink-0">
             <AkucheBrandLogo variant="mark" size="md" animate />
@@ -139,7 +168,7 @@ export function AppInstallCard({
           <button
             type="button"
             onClick={handleInstallClick}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 text-xs sm:text-sm font-black shadow-md shadow-emerald-900/20 transition active:scale-95 min-h-[44px] touch-manipulation"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 text-xs sm:text-sm font-black shadow-md shadow-emerald-900/20 transition active:scale-95 min-h-[44px] touch-manipulation cursor-pointer"
           >
             <Download className="h-4 w-4" />
             <span>Install App</span>
@@ -152,7 +181,7 @@ export function AppInstallCard({
           <div className="flex items-center gap-2 text-foreground">
             <Share className="h-4 w-4 text-emerald-500 shrink-0" />
             <span>
-              Tap Safari <strong>Share</strong> icon below $\rightarrow$ tap <strong>&ldquo;Add to Home Screen&rdquo;</strong>
+              Tap Safari <strong>Share</strong> icon below → tap <strong>&ldquo;Add to Home Screen&rdquo;</strong>
             </span>
           </div>
           <button

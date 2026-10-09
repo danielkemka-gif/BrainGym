@@ -133,7 +133,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ─── 2. PROMINENT 1-TAP APP INSTALL (FOR PHONE HOME SCREEN) ─── */}
-      <AppInstallCard variant="banner" />
+      <AppInstallCard variant="banner" dismissible />
 
       {/* ─── 3. TODAY'S AKUCHE DAILY INSPIRATION & PRINCIPLE ─── */}
       <DailyInspirationCard />

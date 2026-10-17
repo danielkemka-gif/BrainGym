@@ -13,6 +13,7 @@ import {
   Target,
   Heart,
   CheckCircle2,
+  Download,
   X,
 } from "lucide-react";
 
@@ -174,6 +175,37 @@ export function AkucheGuidedOnboarding({
                 className="w-full sm:w-auto inline-flex items-center justify-center rounded-2xl border border-border bg-background hover:bg-muted text-foreground px-6 py-3.5 text-xs sm:text-sm font-bold transition active:scale-95 min-h-[48px] touch-manipulation uppercase tracking-wider"
               >
                 <span>EXPLORE AKUCHE</span>
+              </button>
+            </div>
+
+            {/* 1-Tap Install Option for smart phones */}
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const promptEvent =
+                    typeof window !== "undefined"
+                      ? (window as any).__akuche_deferred_prompt
+                      : null;
+                  if (promptEvent) {
+                    promptEvent.prompt();
+                  } else if (
+                    typeof navigator !== "undefined" &&
+                    (navigator as any).share
+                  ) {
+                    navigator
+                      .share({
+                        title: "AKUCHE — Train Your Mind. Transform Your Life.",
+                        text: "Install Akuche to your smart phone.",
+                        url: window.location.origin,
+                      })
+                      .catch(() => {});
+                  }
+                }}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline transition cursor-pointer"
+              >
+                <Download className="h-3.5 w-3.5" />
+                <span>Install Akuche to Phone (1-Tap)</span>
               </button>
             </div>
           </div>

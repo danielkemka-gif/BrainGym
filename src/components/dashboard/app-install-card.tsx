@@ -122,6 +122,48 @@ export function AppInstallCard({
 
   if (isDismissed) return null;
 
+  if (variant === "button") {
+    if (isStandalone || installedSuccess) return null;
+    return (
+      <button
+        type="button"
+        onClick={handleInstallClick}
+        className={`inline-flex items-center gap-1.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 text-xs font-bold shadow-xs transition active:scale-95 touch-manipulation cursor-pointer ${className}`}
+      >
+        <Download className="h-3.5 w-3.5" />
+        <span>Install App</span>
+      </button>
+    );
+  }
+
+  if (variant === "compact") {
+    if (isStandalone || installedSuccess) return null;
+    return (
+      <div className={`rounded-2xl border border-primary/30 bg-primary/10 p-3 flex items-center justify-between gap-2.5 ${className}`}>
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-primary-foreground shrink-0">
+            <Download className="h-4 w-4" />
+          </div>
+          <div className="min-w-0 text-left">
+            <span className="text-xs font-bold text-foreground block truncate">
+              Install Akuche to Your Phone
+            </span>
+            <span className="text-[10px] text-muted-foreground block truncate">
+              Instant 1-tap launch &amp; offline thinking tools
+            </span>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={handleInstallClick}
+          className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground px-3.5 py-1.5 text-xs font-bold shadow-xs transition active:scale-95 shrink-0"
+        >
+          Install
+        </button>
+      </div>
+    );
+  }
+
   if (isStandalone || installedSuccess) {
     if (dismissible) return null;
 

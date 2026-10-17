@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { AkucheBrandLogo } from "@/components/brand/akuche-brand-logo";
+import { AppInstallCard } from "@/components/dashboard/app-install-card";
 
 const links = [
   { href: "/features", label: "Features" },
@@ -29,7 +30,9 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <AppInstallCard variant="button" />
+
           <Link
             href="/login"
             className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:inline"

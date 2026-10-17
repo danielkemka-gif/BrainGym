@@ -2,18 +2,19 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "AKUCHE — Think Better. Decide Better. Live Better.",
+    name: "AKUCHE — Train Your Mind. Transform Your Life.",
     short_name: "AKUCHE",
-    description: "When life gets complicated, think it through with Akuche. Your intelligent personal thinking, decision-making and action companion.",
+    description:
+      "Akuche is an AI coach that trains the mind to make better decisions in business, relationships and everyday life.",
     start_url: "/dashboard",
     display: "standalone",
-    background_color: "#042F24",
-    theme_color: "#042F24",
+    background_color: "#F7F9F5",
+    theme_color: "#167A52",
     orientation: "portrait",
     scope: "/",
     lang: "en",
     prefer_related_applications: false,
-    categories: ["education", "productivity", "lifestyle", "utilities"],
+    categories: ["education", "productivity", "lifestyle", "business"],
     icons: [
       {
         src: "/icons/akuche-192.png",
@@ -49,7 +50,7 @@ export default function manifest(): MetadataRoute.Manifest {
         src: "/icons/icon-512x512.png",
         sizes: "512x512",
         type: "image/png",
-        purpose: "any",
+        purpose: "maskable",
       },
       {
         src: "/icons/akuche-apple-touch.png",
@@ -66,9 +67,9 @@ export default function manifest(): MetadataRoute.Manifest {
     ],
     shortcuts: [
       {
-        name: "Think With Akuche",
-        short_name: "Think",
-        url: "/dashboard/think",
+        name: "Train Mind",
+        short_name: "Train",
+        url: "/dashboard/daily-challenge",
       },
       {
         name: "Ask Akuche",
@@ -76,19 +77,19 @@ export default function manifest(): MetadataRoute.Manifest {
         url: "/dashboard/ask",
       },
       {
-        name: "Decision Lab",
-        short_name: "Decide",
-        url: "/dashboard/decisions",
+        name: "Goals & Execution",
+        short_name: "Goals",
+        url: "/dashboard/goals",
       },
       {
-        name: "Move Reset",
-        short_name: "Move",
-        url: "/dashboard/move",
+        name: "Think Through",
+        short_name: "Think",
+        url: "/dashboard/think",
       },
       {
-        name: "Home",
-        short_name: "Home",
-        url: "/dashboard",
+        name: "My Progress",
+        short_name: "Progress",
+        url: "/dashboard/progress",
       },
     ],
   };

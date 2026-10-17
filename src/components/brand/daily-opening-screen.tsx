@@ -26,6 +26,7 @@ import {
   Check,
   Zap,
   HelpCircle,
+  Download,
   X,
 } from "lucide-react";
 
@@ -239,6 +240,36 @@ export function DailyOpeningScreen({
                 ) : (
                   <Bookmark className="h-4 w-4 text-emerald-300/80" />
                 )}
+              </button>
+
+              {/* Install App Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  const promptEvent =
+                    typeof window !== "undefined"
+                      ? (window as any).__akuche_deferred_prompt
+                      : null;
+                  if (promptEvent) {
+                    promptEvent.prompt();
+                  } else if (
+                    typeof navigator !== "undefined" &&
+                    (navigator as any).share
+                  ) {
+                    navigator
+                      .share({
+                        title: "AKUCHE — Train Your Mind. Transform Your Life.",
+                        text: "Install Akuche to your smart phone.",
+                        url: window.location.origin,
+                      })
+                      .catch(() => {});
+                  }
+                }}
+                className="rounded-full p-2 text-emerald-300/80 hover:text-white hover:bg-emerald-900/60 transition active:scale-90"
+                title="Install App to Phone"
+                aria-label="Install App"
+              >
+                <Download className="h-4 w-4 text-emerald-300/80" />
               </button>
 
               {/* Share Button */}

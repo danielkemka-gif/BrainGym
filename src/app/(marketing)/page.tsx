@@ -18,6 +18,7 @@ import {
   Workflow,
   MessageSquare,
 } from "lucide-react";
+import { AppInstallCard } from "@/components/dashboard/app-install-card";
 
 const pillars = [
   {
@@ -156,6 +157,11 @@ export default function HomePage() {
               >
                 <span>EXPLORE DASHBOARD</span>
               </Link>
+            </div>
+
+            {/* 1-Tap App Install (for smart phones) */}
+            <div className="pt-2">
+              <AppInstallCard variant="compact" className="max-w-md mx-auto" />
             </div>
           </motion.div>
         </div>

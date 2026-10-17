@@ -1,10 +1,12 @@
-const CACHE_VERSION = 'akuche-v7-instant-sync';
+const CACHE_VERSION = 'akuche-v8-production-release';
 const STATIC_CACHE = `akuche-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `akuche-dynamic-${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [
   '/',
   '/dashboard',
+  '/dashboard/goals',
+  '/dashboard/daily-challenge',
   '/dashboard/think',
   '/dashboard/ask',
   '/dashboard/move',

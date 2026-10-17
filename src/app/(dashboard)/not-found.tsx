@@ -1,12 +1,13 @@
 import Link from "next/link";
-import { Brain, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { AkucheBrandLogo } from "@/components/brand/akuche-brand-logo";
 
 export default function DashboardNotFound() {
   return (
     <div className="flex min-h-[60vh] items-center justify-center p-6">
       <div className="max-w-md text-center">
-        <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-violet-500/10">
-          <Brain className="h-8 w-8 text-violet-500" />
+        <div className="mb-6 flex justify-center">
+          <AkucheBrandLogo variant="mark" size="lg" />
         </div>
         <h1 className="mb-2 text-4xl font-bold">404</h1>
         <h2 className="mb-4 text-xl font-semibold">Page not found</h2>

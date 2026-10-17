@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { Brain } from "lucide-react";
+import { AkucheBrandLogo } from "@/components/brand/akuche-brand-logo";
 
 export default function AuthNotFound() {
   return (
     <div className="flex min-h-screen items-center justify-center p-4 sm:p-6 pb-[env(safe-area-inset-bottom)] touch-manipulation">
       <div className="max-w-md text-center">
-        <div className="mb-4 sm:mb-6 inline-flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-violet-500/10">
-          <Brain className="h-7 w-7 sm:h-8 sm:w-8 text-violet-500" />
+        <div className="mb-4 sm:mb-6 flex justify-center">
+          <AkucheBrandLogo variant="mark" size="lg" />
         </div>
         <h1 className="mb-1 sm:mb-2 text-3xl sm:text-4xl font-bold text-balance">404</h1>
         <h2 className="mb-2 sm:mb-4 text-lg sm:text-xl font-semibold text-balance">Page not found</h2>

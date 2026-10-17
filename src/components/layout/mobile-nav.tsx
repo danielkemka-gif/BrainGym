@@ -9,7 +9,7 @@ export function MobileNav() {
 
   const mobileTabs = [
     { href: "/dashboard", label: "Home", icon: Home },
-    { href: "/dashboard/ask", label: "Ask", icon: Sparkles },
+    { href: "/dashboard/ask", label: "Ask Akuche", icon: Sparkles },
     { href: "/dashboard/daily-challenge", label: "Train", icon: Dumbbell },
     { href: "/dashboard/goals", label: "Goals", icon: Target },
     { href: "/dashboard/progress", label: "Progress", icon: TrendingUp },

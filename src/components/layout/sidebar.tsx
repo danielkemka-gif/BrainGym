@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { LOCALES } from "@/lib/i18n/types";
 import { Avatar } from "@/components/ui/avatar";
-import { Globe, ChevronDown, MoreHorizontal, Shield, Crown } from "lucide-react";
+import { Globe, ChevronDown, MoreHorizontal, Shield, Crown, BookOpen } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { SIDEBAR_ICONS } from "@/lib/icons";
 import { useBrand } from "@/lib/brand-context";
@@ -15,7 +15,7 @@ import { AkucheBrandLogo } from "@/components/brand/akuche-brand-logo";
 
 const PRIMARY_NAV = [
   { href: "/dashboard", label: "Home", iconKey: "dashboard" },
-  { href: "/dashboard/ask", label: "Ask", iconKey: "ask" },
+  { href: "/dashboard/ask", label: "Ask Akuche", iconKey: "ask" },
   { href: "/dashboard/daily-challenge", label: "Train", iconKey: "train" },
   { href: "/dashboard/goals", label: "Goals", iconKey: "goals" },
   { href: "/dashboard/progress", label: "Progress", iconKey: "progress" },
@@ -202,8 +202,22 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
           </div>
         </nav>
 
-        {/* Bottom: Settings + Language + Theme */}
-        <div className="border-t border-border p-3 space-y-2">
+        {/* Bottom: Settings + Introduction + Language + Theme */}
+        <div className="border-t border-border p-3 space-y-1">
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              if (typeof window !== "undefined") {
+                localStorage.removeItem("akuche_book_intro_completed");
+                window.location.reload();
+              }
+            }}
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors min-h-[44px] focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <BookOpen className="h-4 w-4 shrink-0 text-[#167A52] dark:text-emerald-400" />
+            <span>About Akuche / Introduction</span>
+          </button>
           {renderNavItem(SETTINGS_NAV)}
 
           {isAdmin && (

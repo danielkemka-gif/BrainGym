@@ -71,8 +71,11 @@ import {
 /* ── Sidebar Nav ──────────────────────────────────────────────── */
 export const SIDEBAR_ICONS: Record<string, LucideIcon> = {
   dashboard: LayoutDashboard,
+  home: LayoutDashboard,
   think: Brain,
   ask: Sparkles,
+  train: Dumbbell,
+  goals: Target,
   progress: TrendingUp,
   profile: Users,
   move: Footprints,

@@ -22,7 +22,19 @@ export function ServiceWorkerRegistration() {
       }
     }
 
-    if (!('serviceWorker' in navigator)) return;
+    // Capture PWA beforeinstallprompt globally
+    const handleBeforeInstall = (e: Event) => {
+      e.preventDefault();
+      (window as any).__akuche_deferred_prompt = e;
+      window.dispatchEvent(new CustomEvent('akuche:installpromptready'));
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+
+    if (!('serviceWorker' in navigator)) {
+      return () => {
+        window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+      };
+    }
 
     // Register service worker with force update check
     navigator.serviceWorker

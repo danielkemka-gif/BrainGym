@@ -19,9 +19,9 @@ if (
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
-  title: "AKUCHE — Think Better. Decide Better. Live Better.",
+  title: "AKUCHE — Train Your Mind. Transform Your Life.",
   description:
-    "When life gets complicated, think it through with Akuche. Your intelligent personal thinking, decision-making and action companion.",
+    "Akuche is an AI coach that trains the mind to make better decisions in business, relationships and everyday life.",
   manifest: "/manifest.json?v=9.0.0",
   icons: {
     icon: [
@@ -31,15 +31,15 @@ export const metadata: Metadata = {
     apple: "/icons/akuche-apple-touch.png?v=9.0.0",
   },
   openGraph: {
-    title: "AKUCHE — Think Better. Decide Better. Live Better.",
+    title: "AKUCHE — Train Your Mind. Transform Your Life.",
     description:
-      "When life gets complicated, think it through with Akuche. Think better, decide better, take action and grow intentionally.",
+      "Akuche is an AI coach that trains the mind to make better decisions in business, relationships and everyday life.",
     images: [
       {
         url: "/og-image-v9.png?v=9.0.0",
         width: 1200,
         height: 630,
-        alt: "AKUCHE — Think Better. Decide Better. Live Better.",
+        alt: "AKUCHE — Train Your Mind. Transform Your Life.",
       },
     ],
     type: "website",
@@ -47,21 +47,21 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "AKUCHE — Think Better. Decide Better. Live Better.",
+    title: "AKUCHE — Train Your Mind. Transform Your Life.",
     description:
-      "When life gets complicated, think it through with Akuche. Think better, decide better, take action and grow intentionally.",
+      "Akuche is an AI coach that trains the mind to make better decisions in business, relationships and everyday life.",
     images: ["/og-image-v9.png?v=9.0.0"],
   },
   other: {
     "msapplication-TileImage": "/logo.png?v=9.0.0",
     "apple-mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-status-bar-style": "black-translucent",
+    "apple-mobile-web-app-status-bar-style": "default",
     "apple-mobile-web-app-title": "AKUCHE",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#042F24",
+  themeColor: "#167A52",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -75,9 +75,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
-        <title>AKUCHE — Think Better. Decide Better. Live Better.</title>
+        <title>AKUCHE — Train Your Mind. Transform Your Life.</title>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=9.0.0" />
         <link rel="icon" type="image/png" href="/favicon.png?v=9.0.0" />
         <link rel="shortcut icon" href="/favicon.ico?v=9.0.0" />

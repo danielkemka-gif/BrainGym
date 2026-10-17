@@ -15,21 +15,22 @@ import { AkucheBrandLogo } from "@/components/brand/akuche-brand-logo";
 
 const PRIMARY_NAV = [
   { href: "/dashboard", label: "Home", iconKey: "dashboard" },
-  { href: "/dashboard/think", label: "Think", iconKey: "think" },
   { href: "/dashboard/ask", label: "Ask", iconKey: "ask" },
+  { href: "/dashboard/daily-challenge", label: "Train", iconKey: "train" },
+  { href: "/dashboard/goals", label: "Goals", iconKey: "goals" },
   { href: "/dashboard/progress", label: "Progress", iconKey: "progress" },
-  { href: "/dashboard/profile", label: "My Akuche", iconKey: "profile" },
 ] as const;
 
 const MORE_NAV = [
-  { href: "/dashboard/move", label: "Move", iconKey: "move" },
-  { href: "/dashboard/surprise", label: "Surprise Me", iconKey: "surprise" },
+  { href: "/dashboard/profile", label: "My Akuche", iconKey: "profile" },
+  { href: "/dashboard/think", label: "Think", iconKey: "think" },
   { href: "/dashboard/journeys", label: "Journeys", iconKey: "journeys" },
   { href: "/dashboard/decisions", label: "Decision Lab", iconKey: "decision-lab" },
   { href: "/dashboard/journal", label: "Thinking Journal", iconKey: "journal" },
+  { href: "/dashboard/move", label: "Move", iconKey: "move" },
+  { href: "/dashboard/surprise", label: "Surprise Me", iconKey: "surprise" },
   { href: "/dashboard/transformation", label: "Transformation", iconKey: "progress" },
   { href: "/dashboard/library", label: "Activities", iconKey: "library" },
-  { href: "/dashboard/daily-challenge", label: "Daily Challenge", iconKey: "challenge" },
   { href: "/dashboard/missions", label: "Missions", iconKey: "missions" },
   { href: "/dashboard/challenges", label: "Challenges", iconKey: "challenges" },
   { href: "/dashboard/leaderboard", label: "Leaderboard", iconKey: "leaderboard" },

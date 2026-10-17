@@ -58,7 +58,18 @@ export function AppInstallCard({
         setDeferredPrompt(e as BeforeInstallPromptEvent);
       };
 
+      // Check if prompt was already captured globally
+      if ((window as any).__akuche_deferred_prompt) {
+        setDeferredPrompt((window as any).__akuche_deferred_prompt);
+      }
+
       window.addEventListener("beforeinstallprompt", installHandler);
+      window.addEventListener("akuche:installpromptready", () => {
+        if ((window as any).__akuche_deferred_prompt) {
+          setDeferredPrompt((window as any).__akuche_deferred_prompt);
+        }
+      });
+
       return () => {
         window.removeEventListener("beforeinstallprompt", installHandler);
       };
@@ -66,32 +77,38 @@ export function AppInstallCard({
   }, [dismissible]);
 
   const handleInstallClick = async () => {
-    if (deferredPrompt) {
+    // 1. Check local deferred prompt or globally captured prompt
+    const promptEvent =
+      deferredPrompt ||
+      (typeof window !== "undefined" ? (window as any).__akuche_deferred_prompt : null);
+
+    if (promptEvent) {
       try {
-        await deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
+        await promptEvent.prompt();
+        const { outcome } = await promptEvent.userChoice;
         if (outcome === "accepted") {
           setInstalledSuccess(true);
           setDeferredPrompt(null);
+          if (typeof window !== "undefined") {
+            (window as any).__akuche_deferred_prompt = null;
+          }
           return;
         }
       } catch {
-        // Continue
+        // Fallback to native share
       }
     }
 
-    if (isIOS) {
-      setShowIOSHint(true);
-      return;
-    }
-
-    // Attempt native browser share fallback if possible
+    // 2. On iOS Safari or other mobile environments without beforeinstallprompt,
+    // trigger native system sheet directly with zero obstructive instructions
     if (typeof navigator !== "undefined" && (navigator as any).share) {
       try {
         await navigator.share({
-          title: "Akuche App",
+          title: "AKUCHE — Train Your Mind. Transform Your Life.",
+          text: "Install Akuche to your smart phone.",
           url: window.location.origin,
         });
+        return;
       } catch {}
     }
   };
@@ -106,12 +123,12 @@ export function AppInstallCard({
   if (isDismissed) return null;
 
   if (isStandalone || installedSuccess) {
-    if (dismissible) return null; // Don't show duplicate success banner on dashboard if already running as standalone app
+    if (dismissible) return null;
 
     return (
-      <div className={`rounded-3xl border-2 border-emerald-500/40 bg-emerald-500/10 p-4 sm:p-5 flex items-center justify-between gap-3 ${className}`}>
+      <div className={`rounded-3xl border-2 border-primary/40 bg-primary/10 p-4 sm:p-5 flex items-center justify-between gap-3 ${className}`}>
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-xs">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-xs">
             <CheckCircle2 className="h-5 w-5" />
           </div>
           <div>
@@ -123,7 +140,7 @@ export function AppInstallCard({
             </p>
           </div>
         </div>
-        <span className="rounded-xl bg-emerald-600 text-white px-3 py-1.5 text-xs font-black shrink-0">
+        <span className="rounded-xl bg-primary text-primary-foreground px-3 py-1.5 text-xs font-black shrink-0">
           Installed ✓
         </span>
       </div>
@@ -131,7 +148,7 @@ export function AppInstallCard({
   }
 
   return (
-    <div className={`rounded-3xl border-2 border-emerald-500/40 bg-gradient-to-r from-emerald-500/15 via-card to-card p-4 sm:p-5 shadow-sm space-y-3 relative ${className}`}>
+    <div className={`rounded-3xl border-2 border-primary/40 bg-gradient-to-r from-primary/15 via-card to-card p-4 sm:p-5 shadow-sm space-y-3 relative ${className}`}>
       {dismissible && (
         <button
           type="button"
@@ -154,7 +171,7 @@ export function AppInstallCard({
               <h3 className="text-sm sm:text-base font-black text-foreground tracking-tight">
                 Install AKUCHE to Your Phone
               </h3>
-              <span className="rounded-md bg-emerald-500/20 px-2 py-0.5 text-[9px] font-black uppercase text-emerald-700 dark:text-emerald-300 shrink-0">
+              <span className="rounded-md bg-primary/20 px-2 py-0.5 text-[9px] font-black uppercase text-primary shrink-0">
                 1-TAP
               </span>
             </div>
@@ -168,31 +185,13 @@ export function AppInstallCard({
           <button
             type="button"
             onClick={handleInstallClick}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 text-xs sm:text-sm font-black shadow-md shadow-emerald-900/20 transition active:scale-95 min-h-[44px] touch-manipulation cursor-pointer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 text-xs sm:text-sm font-black shadow-md transition active:scale-95 min-h-[44px] touch-manipulation cursor-pointer"
           >
             <Download className="h-4 w-4" />
             <span>Install App</span>
           </button>
         </div>
       </div>
-
-      {showIOSHint && (
-        <div className="rounded-2xl bg-emerald-500/10 border border-emerald-500/30 p-3 flex items-center justify-between gap-2 text-xs animate-fade-in">
-          <div className="flex items-center gap-2 text-foreground">
-            <Share className="h-4 w-4 text-emerald-500 shrink-0" />
-            <span>
-              Tap Safari <strong>Share</strong> icon below → tap <strong>&ldquo;Add to Home Screen&rdquo;</strong>
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={() => setShowIOSHint(false)}
-            className="text-[11px] font-bold text-muted-foreground hover:text-foreground px-2 py-0.5 rounded-lg"
-          >
-            Done
-          </button>
-        </div>
-      )}
     </div>
   );
 }

@@ -2,17 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Brain, Sparkles, TrendingUp, User } from "lucide-react";
+import { Home, Sparkles, Dumbbell, Target, TrendingUp } from "lucide-react";
 
 export function MobileNav() {
   const pathname = usePathname();
 
   const mobileTabs = [
     { href: "/dashboard", label: "Home", icon: Home },
-    { href: "/dashboard/think", label: "Think", icon: Brain },
     { href: "/dashboard/ask", label: "Ask", icon: Sparkles },
+    { href: "/dashboard/daily-challenge", label: "Train", icon: Dumbbell },
+    { href: "/dashboard/goals", label: "Goals", icon: Target },
     { href: "/dashboard/progress", label: "Progress", icon: TrendingUp },
-    { href: "/dashboard/profile", label: "My Akuche", icon: User },
   ];
 
   return (
@@ -26,26 +26,24 @@ export function MobileNav() {
           const active =
             pathname === tab.href ||
             (tab.href === "/dashboard" && pathname === "/dashboard") ||
-            (tab.href === "/dashboard/think" &&
-              (pathname.startsWith("/dashboard/think") ||
-                pathname.startsWith("/dashboard/decisions") ||
-                pathname.startsWith("/dashboard/journeys") ||
-                pathname.startsWith("/dashboard/journal") ||
-                pathname.startsWith("/dashboard/decision-lab"))) ||
             (tab.href === "/dashboard/ask" &&
-              (pathname === "/dashboard/ask" ||
-                pathname === "/dashboard/coach" ||
-                pathname === "/dashboard/chat")) ||
+              (pathname.startsWith("/dashboard/ask") ||
+                pathname.startsWith("/dashboard/coach") ||
+                pathname.startsWith("/dashboard/chat"))) ||
+            (tab.href === "/dashboard/daily-challenge" &&
+              (pathname.startsWith("/dashboard/daily-challenge") ||
+                pathname.startsWith("/dashboard/challenges") ||
+                pathname.startsWith("/dashboard/challenge") ||
+                pathname.startsWith("/dashboard/library") ||
+                pathname.startsWith("/dashboard/workout"))) ||
+            (tab.href === "/dashboard/goals" &&
+              pathname.startsWith("/dashboard/goals")) ||
             (tab.href === "/dashboard/progress" &&
               (pathname.startsWith("/dashboard/progress") ||
                 pathname.startsWith("/dashboard/insights") ||
                 pathname.startsWith("/dashboard/reports") ||
                 pathname.startsWith("/dashboard/transformation") ||
-                pathname.startsWith("/dashboard/history"))) ||
-            (tab.href === "/dashboard/profile" &&
-              (pathname.startsWith("/dashboard/profile") ||
-                pathname.startsWith("/dashboard/settings") ||
-                pathname.startsWith("/dashboard/avatar")));
+                pathname.startsWith("/dashboard/history")));
 
           const Icon = tab.icon;
           return (

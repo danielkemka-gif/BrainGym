@@ -32,13 +32,13 @@ function applyTheme(resolved: "dark" | "light") {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("dark");
-  const [resolved, setResolved] = useState<"dark" | "light">("dark");
+  const [theme, setThemeState] = useState<Theme>("light");
+  const [resolved, setResolved] = useState<"dark" | "light">("light");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("braingym-theme") as Theme | null;
-    const initial = stored || "dark";
+    const stored = (localStorage.getItem("akuche-theme") || localStorage.getItem("braingym-theme")) as Theme | null;
+    const initial = stored || "light";
     setThemeState(initial);
     const r = initial === "system" ? getSystemTheme() : initial;
     setResolved(r);
@@ -48,7 +48,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     // Listen for system changes
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const handler = () => {
-      if ((stored || "dark") === "system") {
+      if ((stored || "light") === "system") {
         const newR = getSystemTheme();
         setResolved(newR);
         applyTheme(newR);
@@ -60,7 +60,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const setTheme = useCallback((t: Theme) => {
     setThemeState(t);
-    localStorage.setItem("braingym-theme", t);
+    localStorage.setItem("akuche-theme", t);
     const r = t === "system" ? getSystemTheme() : t;
     setResolved(r);
     applyTheme(r);

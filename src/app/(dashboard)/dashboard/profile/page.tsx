@@ -219,6 +219,9 @@ export default function MyAkuchePage() {
         </div>
       </div>
 
+      {/* ─── INVITE FRIENDS & SHARE AKUCHE APP LINK (PROMINENT AT TOP OF PROFILE) ─── */}
+      <InviteFriendsCard />
+
       {/* ─── APP INSTALL CARD (EASY MOBILE & HOME SCREEN ACCESS) ─── */}
       <AppInstallCard variant="banner" />
 
@@ -446,12 +449,6 @@ export default function MyAkuchePage() {
           </div>
         )}
       </div>
-
-      {/* ─── INVITE FRIENDS & SHARE AKUCHE APP LINK ─── */}
-      <InviteFriendsCard />
-
-      {/* ─── PWA MOBILE APP INSTALLATION CARD ─── */}
-      <AppInstallCard variant="banner" />
 
       {/* ─── 4. OFFICIAL AKUCHE BRAND & APP ICON ─── */}
       <div className="rounded-3xl border border-emerald-500/30 bg-emerald-500/5 p-5 sm:p-6 shadow-sm space-y-3">

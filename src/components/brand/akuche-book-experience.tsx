@@ -32,7 +32,7 @@ export function AkucheBookExperience({
   const supabase = createClient();
 
   const [isOpen, setIsOpen] = useState(false);
-  const [stage, setStage] = useState<"cover" | "introduction" | "welcome">("cover");
+  const [stage, setStage] = useState<"cover" | "introduction" | "welcome" | "daily_welcome">("cover");
   const [firstName, setFirstName] = useState<string>("");
 
   useEffect(() => {
@@ -49,6 +49,16 @@ export function AkucheBookExperience({
     }
   }, [user]);
 
+  // Auto-dismiss daily welcome after 2.2 seconds
+  useEffect(() => {
+    if (stage === "daily_welcome" && isOpen) {
+      const timer = setTimeout(() => {
+        setIsOpen(false);
+      }, 2200);
+      return () => clearTimeout(timer);
+    }
+  }, [stage, isOpen]);
+
   useEffect(() => {
     if (forceOpen) {
       setIsOpen(true);
@@ -56,10 +66,23 @@ export function AkucheBookExperience({
       return;
     }
 
+    // Helper for returning user daily welcome
+    const triggerReturningUserWelcome = () => {
+      if (typeof window !== "undefined") {
+        const welcomed = sessionStorage.getItem("akuche_session_welcomed");
+        if (!welcomed) {
+          sessionStorage.setItem("akuche_session_welcomed", "true");
+          setStage("daily_welcome");
+          setIsOpen(true);
+        }
+      }
+    };
+
     // Check if user has already experienced or dismissed the book introduction
     if (typeof window !== "undefined") {
       const completed = localStorage.getItem("akuche_book_intro_completed");
       if (completed === "true") {
+        triggerReturningUserWelcome();
         return;
       }
     }
@@ -78,6 +101,7 @@ export function AkucheBookExperience({
             if (typeof window !== "undefined") {
               localStorage.setItem("akuche_book_intro_completed", "true");
             }
+            triggerReturningUserWelcome();
             return;
           }
           setIsOpen(true);
@@ -90,6 +114,8 @@ export function AkucheBookExperience({
           const completed = localStorage.getItem("akuche_book_intro_completed");
           if (!completed) {
             setIsOpen(true);
+          } else {
+            triggerReturningUserWelcome();
           }
         }
       }
@@ -131,6 +157,46 @@ export function AkucheBookExperience({
   };
 
   if (!isOpen) return null;
+
+  const currentHour = new Date().getHours();
+  const timeOfDayGreeting = currentHour < 12 ? "morning" : currentHour < 17 ? "afternoon" : "evening";
+
+  if (stage === "daily_welcome") {
+    return (
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Welcome to Akuche"
+        onClick={() => setIsOpen(false)}
+        className="fixed inset-0 z-[100] flex items-center justify-center bg-[#FDFCF7] dark:bg-[#042F24] text-[#17231D] dark:text-[#F7F9F5] p-6 select-none cursor-pointer touch-manipulation transition-opacity duration-300"
+      >
+        <div className="flex flex-col items-center justify-center text-center space-y-6 max-w-sm">
+          {/* Subtle brand mark */}
+          <div className="relative flex items-center justify-center animate-in zoom-in-75 duration-500">
+            <div className="absolute h-28 w-28 rounded-full bg-emerald-500/15 blur-2xl" />
+            <AkucheBrandLogo variant="mark" size="xl" animate />
+          </div>
+
+          {/* Word popping: Welcome to Akuche */}
+          <div className="space-y-2 animate-in zoom-in-95 fade-in duration-500">
+            <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground font-heading">
+              Welcome to Akuche
+            </h1>
+            <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+              {firstName ? `Good ${timeOfDayGreeting}, ${firstName}.` : "Think clearly. Choose wisely. Move forward."}
+            </p>
+            <p className="text-xs text-muted-foreground pt-1">
+              Let&apos;s make today a little clearer.
+            </p>
+          </div>
+
+          <div className="pt-4 text-[11px] font-semibold text-muted-foreground/60 animate-pulse">
+            Tap anywhere to continue →
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

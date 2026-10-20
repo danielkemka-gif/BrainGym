@@ -10,6 +10,7 @@ import { MobileNav } from "./mobile-nav";
 import { TouchDebug } from "@/components/debug/touch-debug";
 import { FeatureNavigator } from "./feature-navigator";
 import { OfflineStatusBanner } from "@/components/offline/offline-status-banner";
+import { KucheCompanion } from "@/components/guide/kuche-companion";
 
 function AppShellInner({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -52,6 +53,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
         </main>
         <MobileNav />
         <FeatureNavigator />
+        <KucheCompanion />
         {process.env.NODE_ENV === "development" && <TouchDebug />}
       </div>
     </div>

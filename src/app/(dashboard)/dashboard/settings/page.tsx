@@ -13,6 +13,7 @@ import { ReferralSection } from "@/components/settings/referral-section";
 import { DailyReminderSettings } from "@/components/reminders/daily-reminder-settings";
 import { LanguageSettingsSection } from "@/components/settings/language-settings-section";
 import { BrandSwitcherSection } from "@/components/settings/brand-switcher-section";
+import { GuideSettingsSection } from "@/components/settings/guide-settings-section";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -503,6 +504,9 @@ export default function SettingsPage() {
           </p>
         </div>
       </section>
+
+      {/* Akuche Guide (Kuche) Settings */}
+      <GuideSettingsSection />
 
       {/* Referral */}
       <ReferralSection />

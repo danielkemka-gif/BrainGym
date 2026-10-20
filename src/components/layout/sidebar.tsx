@@ -7,11 +7,13 @@ import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { LOCALES } from "@/lib/i18n/types";
 import { Avatar } from "@/components/ui/avatar";
-import { Globe, ChevronDown, MoreHorizontal, Shield, Crown, BookOpen } from "lucide-react";
+import { Globe, ChevronDown, MoreHorizontal, Shield, Crown, BookOpen, Sparkles, UserCheck } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { SIDEBAR_ICONS } from "@/lib/icons";
 import { useBrand } from "@/lib/brand-context";
 import { AkucheBrandLogo } from "@/components/brand/akuche-brand-logo";
+import { CharacterPreviewModal } from "@/components/guide/character-preview-modal";
+import { START_KUCHE_TOUR_EVENT } from "@/components/guide/kuche-companion";
 
 const PRIMARY_NAV = [
   { href: "/dashboard", label: "Home", iconKey: "dashboard" },
@@ -50,6 +52,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
   const [showLang, setShowLang] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [showCharacterPreview, setShowCharacterPreview] = useState(false);
 
   const isMoreActive = MORE_NAV.some((item) => pathname === item.href);
 
@@ -202,8 +205,36 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
           </div>
         </nav>
 
-        {/* Bottom: Settings + Introduction + Language + Theme */}
+        {/* Bottom: Guide & Tour + About Akuche + Settings + Language + Theme */}
         <div className="border-t border-border p-3 space-y-1">
+          {/* Guide & Tour Trigger */}
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              if (typeof window !== "undefined") {
+                window.dispatchEvent(new CustomEvent(START_KUCHE_TOUR_EVENT));
+              }
+            }}
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-emerald-500/10 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors min-h-[44px] focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <Sparkles className="h-4 w-4 shrink-0 text-[#167A52] dark:text-emerald-400" />
+            <span className="font-bold">Guide &amp; Tour (Kuche)</span>
+          </button>
+
+          {/* Character Showcase Trigger */}
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              setShowCharacterPreview(true);
+            }}
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors min-h-[44px] focus-visible:ring-2 focus-visible:ring-ring text-xs"
+          >
+            <UserCheck className="h-4 w-4 shrink-0 text-amber-500" />
+            <span>Character Showcase</span>
+          </button>
+
           <button
             type="button"
             onClick={() => {
@@ -213,11 +244,12 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
                 window.location.reload();
               }
             }}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors min-h-[44px] focus-visible:ring-2 focus-visible:ring-ring"
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors min-h-[44px] focus-visible:ring-2 focus-visible:ring-ring text-xs"
           >
-            <BookOpen className="h-4 w-4 shrink-0 text-[#167A52] dark:text-emerald-400" />
-            <span>About Akuche / Introduction</span>
+            <BookOpen className="h-4 w-4 shrink-0" />
+            <span>About Akuche / Book Cover</span>
           </button>
+
           {renderNavItem(SETTINGS_NAV)}
 
           {isAdmin && (
@@ -276,6 +308,12 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
           </p>
         </div>
       </aside>
+
+      {/* Interactive Character Showcase Modal */}
+      <CharacterPreviewModal
+        isOpen={showCharacterPreview}
+        onClose={() => setShowCharacterPreview(false)}
+      />
     </>
   );
 }

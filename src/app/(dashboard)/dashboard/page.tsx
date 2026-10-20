@@ -165,6 +165,7 @@ export default function DashboardPage() {
 
         <Link
           href="/dashboard/profile"
+          data-guide="profile"
           className="flex h-10 w-10 items-center justify-center rounded-2xl border border-border/80 bg-card text-foreground font-bold hover:bg-muted transition text-xs shadow-xs"
           title="My Profile & Settings"
           aria-label="My Profile"
@@ -188,6 +189,7 @@ export default function DashboardPage() {
 
       {/* ─── SECTION 3: THE PRIMARY ACTION (WHAT'S ON YOUR MIND?) ─── */}
       <section
+        data-guide="think"
         aria-labelledby="primary-action-heading"
         className="rounded-3xl border-2 border-[#167A52]/40 bg-[#FFFFFF] dark:bg-[#122119] p-6 sm:p-8 shadow-sm space-y-4"
       >
@@ -244,6 +246,7 @@ export default function DashboardPage() {
 
       {/* ─── SECTION 4: ONE RELEVANT NEXT STEP ─── */}
       <section
+        data-guide="actions"
         aria-labelledby="next-step-heading"
         className="rounded-3xl border border-border/80 bg-card p-5 sm:p-6 shadow-xs space-y-3"
       >
@@ -277,6 +280,7 @@ export default function DashboardPage() {
 
       {/* ─── SECTION 5: MIND TRAINING (VISUALLY SECONDARY) ─── */}
       <section
+        data-guide="clarity"
         aria-labelledby="mind-training-heading"
         className="rounded-3xl border border-border/80 bg-card p-5 sm:p-6 shadow-xs space-y-2.5"
       >
@@ -304,6 +308,7 @@ export default function DashboardPage() {
 
       {/* ─── SECTION 6: SUBTLE PROGRESS INDICATOR ─── */}
       <section
+        data-guide="progress"
         aria-labelledby="progress-indicator-heading"
         className="rounded-3xl border border-border/60 bg-muted/20 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
       >

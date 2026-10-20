@@ -198,7 +198,7 @@ export function KucheCompanion() {
   return (
     <div
       aria-label="Akuche Guide Companion"
-      className="fixed bottom-20 right-3 sm:bottom-6 sm:right-6 z-40 flex flex-col items-end gap-3 pointer-events-none select-none max-w-sm"
+      className="fixed bottom-[calc(env(safe-area-inset-bottom)+4.5rem)] right-3 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end gap-2.5 pointer-events-none select-none max-w-[calc(100vw-1.5rem)] sm:max-w-sm"
       style={{
         paddingBottom: "env(safe-area-inset-bottom)",
       }}
@@ -284,7 +284,8 @@ export function KucheCompanion() {
       {/* ─── B. THE CHARACTER AVATAR DOCKED TRIGGER ─── */}
       <div className="pointer-events-auto flex items-center gap-2">
         {/* Floating companion character */}
-        <div
+        <button
+          type="button"
           onClick={() => {
             if (mode === "minimized") {
               setMode("onboarding");
@@ -294,29 +295,34 @@ export function KucheCompanion() {
               setCharacterState("idle");
             }
           }}
-          className="relative transition-transform active:scale-95 cursor-pointer touch-manipulation group"
+          className="relative transition-all active:scale-95 cursor-pointer touch-manipulation group outline-none"
           title={mode === "minimized" ? "Open Kuche Guide" : "Minimize Kuche"}
+          aria-label={mode === "minimized" ? "Open Kuche Guide" : "Minimize Kuche"}
         >
-          {/* Subtle glow plate behind avatar */}
-          <div className="absolute -inset-1 rounded-full bg-emerald-500/20 blur-md group-hover:bg-emerald-500/35 transition" />
+          {/* Outer glow ring */}
+          <div className="absolute -inset-1 rounded-full bg-emerald-500/25 blur-sm group-hover:bg-emerald-500/40 transition" />
 
-          {/* Character in responsive size */}
-          <div className="relative rounded-full border-2 border-[#167A52]/40 bg-card/90 backdrop-blur-md p-1 shadow-xl">
-            <KucheCharacter
-              state={characterState}
-              size={mode === "minimized" ? "sm" : "md"}
-              pointingDirection={pointingDirection}
-              reducedMotion={reducedMotion}
-            />
+          {/* Interactive companion pill */}
+          <div className="relative flex items-center gap-2 rounded-full border-2 border-[#167A52]/60 bg-card/95 backdrop-blur-md pl-1 pr-3 py-1 shadow-2xl hover:border-[#167A52] transition">
+            <div className="flex items-center justify-center">
+              <KucheCharacter
+                state={characterState}
+                size="sm"
+                pointingDirection={pointingDirection}
+                reducedMotion={reducedMotion}
+              />
+            </div>
+            <div className="flex flex-col text-left leading-none pr-0.5">
+              <span className="text-[11px] font-black text-foreground flex items-center gap-1">
+                <span>Kuche</span>
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              </span>
+              <span className="text-[9px] font-bold text-[#167A52] dark:text-emerald-400">
+                {mode === "minimized" ? "Guide" : "Close"}
+              </span>
+            </div>
           </div>
-
-          {/* Quick status badge if minimized */}
-          {mode === "minimized" && (
-            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-600 text-white text-[9px] font-bold shadow-xs">
-              ✦
-            </span>
-          )}
-        </div>
+        </button>
       </div>
     </div>
   );

@@ -6,8 +6,8 @@ export function ServiceWorkerRegistration() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // Automatic aggressive cache purge for version 7
-    const PURGE_KEY = 'akuche_cache_purged_v7_master';
+    // Automatic aggressive cache purge for version 12
+    const PURGE_KEY = 'akuche_cache_purged_v12_guide';
     if (!localStorage.getItem(PURGE_KEY)) {
       if (typeof caches !== 'undefined') {
         caches.keys().then((keys) => {
@@ -38,7 +38,7 @@ export function ServiceWorkerRegistration() {
 
     // Register service worker with force update check
     navigator.serviceWorker
-      .register('/sw.js')
+      .register('/sw.js?v=12.0.0')
       .then((registration) => {
         // If a worker is waiting, activate it immediately
         if (registration.waiting) {

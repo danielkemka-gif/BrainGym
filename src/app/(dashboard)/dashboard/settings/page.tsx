@@ -243,6 +243,9 @@ export default function SettingsPage() {
         </div>
       )}
 
+      {/* ─── 1. AKUCHE ANIMATED GUIDE (KUCHE) & SHOWCASE ─── */}
+      <GuideSettingsSection />
+
       {/* 1. Language & Region (Prominent Top Section) */}
       <LanguageSettingsSection />
 
@@ -504,9 +507,6 @@ export default function SettingsPage() {
           </p>
         </div>
       </section>
-
-      {/* Akuche Guide (Kuche) Settings */}
-      <GuideSettingsSection />
 
       {/* Referral */}
       <ReferralSection />

@@ -146,7 +146,13 @@ export function KucheCompanion() {
     }
   }, [currentTourIndex, mode, reducedMotion]);
 
-  if (!guideEnabled || mode === "hidden" || isKeyboardOpen) {
+  if (
+    !guideEnabled ||
+    mode === "hidden" ||
+    isKeyboardOpen ||
+    pathname?.startsWith("/dashboard/ask") ||
+    pathname === "/dashboard/guide"
+  ) {
     return null;
   }
 

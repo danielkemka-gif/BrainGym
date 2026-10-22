@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
@@ -324,6 +325,10 @@ export function AskBrainGymInterface() {
         }),
       });
 
+      if (!response.ok) {
+        throw new Error(`Server returned status ${response.status}`);
+      }
+
       const data = await response.json();
 
       const assistantMessage: ChatMessage = {
@@ -340,7 +345,7 @@ export function AskBrainGymInterface() {
         {
           id: "err_" + Date.now(),
           role: "assistant",
-          content: "Let's focus on breaking this dilemma down into what we know, what we don't know, and your next immediate step.",
+          content: "We experienced a temporary connection difficulty reaching the AI coaching service. Please verify your internet connection and try sending your question again.",
         },
       ]);
     } finally {
@@ -399,24 +404,35 @@ export function AskBrainGymInterface() {
 
   return (
     <div className="mx-auto w-full max-w-2xl px-3 sm:px-4 py-3 pb-36 space-y-4">
-      {/* Contextual Guidance Banner for Section 17 */}
-      <ContextualGuidanceBanner
-        featureKey="ask"
-        title="Ask anything important to you"
-        description="Tell Akuche what you're trying to understand, solve, decide or accomplish. Move from Question → Clarity → Plan → Action."
-      />
-
-      {/* 1. CLEAN DOORWAY HEADER */}
-      {messages.length === 0 && (
-        <div className="text-center pt-2 pb-1 space-y-1.5">
-          <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-inner">
-            <Sparkles className="h-5 w-5" />
+      {/* Persistent Page Header */}
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/60 pb-3">
+        <div className="space-y-0.5">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-primary">
+            <Sparkles className="h-3 w-3" />
+            <span>AI Thinking &amp; Coaching Partner</span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-black text-foreground font-heading tracking-tight">
             ASK AKUCHE
           </h1>
+          <p className="text-xs text-muted-foreground">
+            Tell Akuche what you are trying to understand, decide or accomplish.
+          </p>
+        </div>
+
+        <Link
+          href="/dashboard/guide?step=3"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline self-start sm:self-auto pt-1"
+        >
+          <CompassIcon className="h-3.5 w-3.5" />
+          <span>Interactive Guide</span>
+        </Link>
+      </header>
+
+      {/* 1. CLEAN DOORWAY PROMPT IN EMPTY STATE */}
+      {messages.length === 0 && (
+        <div className="text-center pt-2 pb-1 space-y-2">
           <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-            What are you trying to understand, solve, decide or achieve?
+            Move from <strong>Question → Clarity → Plan → Action</strong>. Choose a starting challenge below or type directly into the box.
           </p>
 
           <button
@@ -424,7 +440,7 @@ export function AskBrainGymInterface() {
             className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 hover:bg-primary/20 text-primary px-3.5 py-1 text-xs font-bold transition active:scale-95 touch-manipulation"
           >
             <CompassIcon className="h-3.5 w-3.5" />
-            <span>I'M NOT SURE WHAT I NEED</span>
+            <span>I&apos;M NOT SURE WHAT I NEED</span>
           </button>
         </div>
       )}
@@ -744,7 +760,7 @@ export function AskBrainGymInterface() {
                   ? "Listening... speak clearly"
                   : "Ask anything you're trying to understand, solve, decide or accomplish..."
               }
-              className="flex-1 min-w-0 resize-none bg-transparent px-2.5 py-2 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none min-h-[40px] max-h-[140px] overflow-y-auto leading-relaxed break-words whitespace-pre-wrap"
+              className="flex-1 min-w-0 resize-none bg-transparent px-2.5 py-2 text-base sm:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none min-h-[40px] max-h-[140px] overflow-y-auto leading-relaxed break-words whitespace-pre-wrap"
               style={{
                 wordBreak: "break-word",
                 overflowWrap: "break-word",
@@ -913,7 +929,7 @@ export function AskBrainGymInterface() {
                   onChange={(e) => setReflectionInput(e.target.value)}
                   placeholder="e.g. Prospects responded faster when I mentioned their specific industry pain point..."
                   rows={2}
-                  className="w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+                  className="w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-base sm:text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
                   required
                 />
               </div>

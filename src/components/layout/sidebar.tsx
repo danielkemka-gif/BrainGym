@@ -19,7 +19,7 @@ const PRIMARY_NAV = [
   { href: "/dashboard", label: "Home", iconKey: "dashboard" },
   { href: "/dashboard/ask", label: "Ask Akuche", iconKey: "ask" },
   { href: "/dashboard/daily-challenge", label: "Train", iconKey: "train" },
-  { href: "/dashboard/goals", label: "Goals", iconKey: "goals" },
+  { href: "/dashboard/goals", label: "Goals & Commitments", iconKey: "goals" },
   { href: "/dashboard/progress", label: "Progress", iconKey: "progress" },
 ] as const;
 
@@ -207,20 +207,19 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
 
         {/* Bottom: Guide & Tour + About Akuche + Settings + Language + Theme */}
         <div className="border-t border-border p-3 space-y-1">
-          {/* Guide & Tour Trigger */}
-          <button
-            type="button"
-            onClick={() => {
-              onClose();
-              if (typeof window !== "undefined") {
-                window.dispatchEvent(new CustomEvent(START_KUCHE_TOUR_EVENT));
-              }
-            }}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-emerald-500/10 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors min-h-[44px] focus-visible:ring-2 focus-visible:ring-ring"
+          {/* Akuche Guide */}
+          <Link
+            href="/dashboard/guide"
+            onClick={onClose}
+            className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors min-h-[44px] focus-visible:ring-2 focus-visible:ring-ring ${
+              pathname === "/dashboard/guide"
+                ? "bg-primary/10 text-primary font-bold"
+                : "text-foreground hover:bg-emerald-500/10 hover:text-emerald-600 dark:hover:text-emerald-400"
+            }`}
           >
             <Sparkles className="h-4 w-4 shrink-0 text-[#167A52] dark:text-emerald-400" />
-            <span className="font-bold">Guide &amp; Tour (Kuche)</span>
-          </button>
+            <span className="font-bold">Akuche Guide &amp; Tour</span>
+          </Link>
 
           {/* Character Showcase Trigger */}
           <button

@@ -6,8 +6,8 @@ export function ServiceWorkerRegistration() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // Automatic aggressive cache purge for version 12
-    const PURGE_KEY = 'akuche_cache_purged_v12_guide';
+    // Automatic aggressive cache purge for mobile release v14
+    const PURGE_KEY = 'akuche_cache_purged_v14_mobile_refresh';
     if (!localStorage.getItem(PURGE_KEY)) {
       if (typeof caches !== 'undefined') {
         caches.keys().then((keys) => {
@@ -36,19 +36,18 @@ export function ServiceWorkerRegistration() {
       };
     }
 
-    // Register service worker with force update check
+    // Register service worker gracefully without disruptive reload loops
     navigator.serviceWorker
-      .register('/sw.js?v=12.0.0')
+      .register('/sw.js?v=14.0.0')
       .then((registration) => {
-        // If a worker is waiting, activate it immediately
+        // If a worker is waiting, activate it
         if (registration.waiting) {
           registration.waiting.postMessage({ type: 'SKIP_WAITING' });
         }
 
-        // Trigger immediate registration update check
+        // Check for updates once on mount and on visibility change only
         registration.update().catch(() => {});
 
-        // Re-check when mobile app gains visibility (e.g. user opens phone screen)
         const handleVisibilityChange = () => {
           if (document.visibilityState === 'visible') {
             registration.update().catch(() => {});
@@ -56,26 +55,7 @@ export function ServiceWorkerRegistration() {
         };
         document.addEventListener('visibilitychange', handleVisibilityChange);
 
-        // Periodically check for updates
-        const interval = setInterval(() => {
-          registration.update().catch(() => {});
-        }, 60 * 1000);
-
-        // On new update found, tell installing worker to skip waiting
-        registration.addEventListener('updatefound', () => {
-          const installingWorker = registration.installing;
-          if (installingWorker) {
-            installingWorker.addEventListener('statechange', () => {
-              if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                console.log('New Akuche version ready. Activating...');
-                installingWorker.postMessage({ type: 'SKIP_WAITING' });
-              }
-            });
-          }
-        });
-
         return () => {
-          clearInterval(interval);
           document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
       })
@@ -83,13 +63,9 @@ export function ServiceWorkerRegistration() {
         console.warn('SW registration info:', err);
       });
 
-    // Listen for controllerchange so the mobile client picks up the new bundle seamlessly
-    let refreshing = false;
+    // Notify listeners when controller changes, without forcing a disruptive page reload
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (!refreshing) {
-        refreshing = true;
-        window.location.reload();
-      }
+      window.dispatchEvent(new CustomEvent('akuche:sw-updated'));
     });
   }, []);
 

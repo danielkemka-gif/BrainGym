@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'akuche-v12-guide-character-release';
+const CACHE_VERSION = 'akuche-v14-mobile-release';
 const STATIC_CACHE = `akuche-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `akuche-dynamic-${CACHE_VERSION}`;
 

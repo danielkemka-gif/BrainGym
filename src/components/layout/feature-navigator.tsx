@@ -25,6 +25,7 @@ import {
   ArrowRight,
   Sparkles,
   Command,
+  Target,
 } from "lucide-react";
 
 export const OPEN_NAVIGATOR_EVENT = "akuche:open-navigator";
@@ -45,15 +46,37 @@ export interface NavFeature {
 
 export const APP_FEATURES: NavFeature[] = [
   {
+    id: "ask",
+    title: "Ask Akuche",
+    category: "ai",
+    description: "Your intelligent personal thinking, decision-making and action assistant.",
+    href: "/dashboard/ask",
+    badge: "Core Feature",
+    icon: Sparkles,
+    color: "from-emerald-600 to-teal-700",
+    keywords: ["ask", "ask akuche", "coaching", "decide", "thinking", "questions", "solve", "help", "money", "career", "clarity"],
+  },
+  {
+    id: "goals",
+    title: "Goals & Commitments",
+    category: "daily",
+    description: "Turn decisions into measurable goals, daily action steps, and adaptive learning.",
+    href: "/dashboard/goals",
+    badge: "Action Loop",
+    icon: Target,
+    color: "from-amber-500 to-orange-600",
+    keywords: ["goals", "commitments", "action", "targets", "execution", "results", "plan"],
+  },
+  {
     id: "guide",
-    title: "Feature Guide & Manual",
+    title: "Akuche Guide & Interactive Tour",
     category: "guide",
-    description: "Read the complete clarity guide on how all AKUCHE features, scoring, and pillars work.",
+    description: "Complete 5-stage interactive guide on how to think, decide, and act with Akuche.",
     href: "/dashboard/guide",
     badge: "Start Here",
     icon: BookOpen,
     color: "from-amber-500 to-orange-600",
-    keywords: ["guide", "how it works", "manual", "tutorial", "help", "clarity", "onboarding", "features", "learn"],
+    keywords: ["guide", "how it works", "manual", "tutorial", "help", "clarity", "onboarding", "features", "learn", "tour"],
   },
   {
     id: "workout",

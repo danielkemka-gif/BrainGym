@@ -49,16 +49,6 @@ export function AkucheBookExperience({
     }
   }, [user]);
 
-  // Auto-dismiss daily welcome after 2.2 seconds
-  useEffect(() => {
-    if (stage === "daily_welcome" && isOpen) {
-      const timer = setTimeout(() => {
-        setIsOpen(false);
-      }, 2200);
-      return () => clearTimeout(timer);
-    }
-  }, [stage, isOpen]);
-
   useEffect(() => {
     if (forceOpen) {
       setIsOpen(true);
@@ -66,23 +56,10 @@ export function AkucheBookExperience({
       return;
     }
 
-    // Helper for returning user daily welcome
-    const triggerReturningUserWelcome = () => {
-      if (typeof window !== "undefined") {
-        const welcomed = sessionStorage.getItem("akuche_session_welcomed");
-        if (!welcomed) {
-          sessionStorage.setItem("akuche_session_welcomed", "true");
-          setStage("daily_welcome");
-          setIsOpen(true);
-        }
-      }
-    };
-
     // Check if user has already experienced or dismissed the book introduction
     if (typeof window !== "undefined") {
       const completed = localStorage.getItem("akuche_book_intro_completed");
       if (completed === "true") {
-        triggerReturningUserWelcome();
         return;
       }
     }
@@ -101,7 +78,6 @@ export function AkucheBookExperience({
             if (typeof window !== "undefined") {
               localStorage.setItem("akuche_book_intro_completed", "true");
             }
-            triggerReturningUserWelcome();
             return;
           }
           setIsOpen(true);
@@ -114,8 +90,6 @@ export function AkucheBookExperience({
           const completed = localStorage.getItem("akuche_book_intro_completed");
           if (!completed) {
             setIsOpen(true);
-          } else {
-            triggerReturningUserWelcome();
           }
         }
       }
@@ -205,7 +179,7 @@ export function AkucheBookExperience({
       aria-label="Akuche Book Experience"
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-3 sm:p-4 overflow-y-auto select-none"
     >
-      <div className="relative w-full max-w-lg rounded-3xl border border-border/80 bg-[#FFFFFF] dark:bg-[#122119] text-[#17231D] dark:text-[#F7F9F5] shadow-2xl p-6 sm:p-10 max-h-[94vh] overflow-y-auto transition-all duration-300">
+      <div className="relative w-full max-w-lg rounded-3xl border border-border/80 bg-card text-foreground shadow-2xl p-6 sm:p-10 max-h-[94vh] overflow-y-auto transition-all duration-300">
         {/* Optional Close / Skip Button */}
         <button
           type="button"

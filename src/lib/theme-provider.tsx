@@ -32,23 +32,34 @@ function applyTheme(resolved: "dark" | "light") {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("light");
-  const [resolved, setResolved] = useState<"dark" | "light">("light");
-  const [mounted, setMounted] = useState(false);
+  const [theme, setThemeState] = useState<Theme>(() => {
+    if (typeof window !== "undefined") {
+      const stored = (localStorage.getItem("akuche-theme") || localStorage.getItem("braingym-theme")) as Theme | null;
+      if (stored) return stored;
+      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    return "light";
+  });
+  const [resolved, setResolved] = useState<"dark" | "light">(() => {
+    if (typeof window !== "undefined") {
+      return document.documentElement.classList.contains("dark") ? "dark" : "light";
+    }
+    return "light";
+  });
 
   useEffect(() => {
     const stored = (localStorage.getItem("akuche-theme") || localStorage.getItem("braingym-theme")) as Theme | null;
-    const initial = stored || "light";
+    const initial = stored || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     setThemeState(initial);
     const r = initial === "system" ? getSystemTheme() : initial;
     setResolved(r);
     applyTheme(r);
-    setMounted(true);
 
     // Listen for system changes
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const handler = () => {
-      if ((stored || "light") === "system") {
+      const curStored = localStorage.getItem("akuche-theme") || localStorage.getItem("braingym-theme");
+      if (!curStored || curStored === "system") {
         const newR = getSystemTheme();
         setResolved(newR);
         applyTheme(newR);
@@ -65,11 +76,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setResolved(r);
     applyTheme(r);
   }, []);
-
-  // Prevent flash by not rendering until mounted
-  if (!mounted) {
-    return <>{children}</>;
-  }
 
   return (
     <ThemeContext.Provider value={{ theme, resolved, setTheme }}>

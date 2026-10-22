@@ -71,6 +71,8 @@
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: auto;
     touch-action: auto;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
   }
 
   body {

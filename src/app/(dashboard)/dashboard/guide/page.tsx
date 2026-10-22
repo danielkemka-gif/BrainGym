@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { InteractiveAkucheGuide } from "@/components/guide/interactive-akuche-guide";
 import {
   BookOpen,
   Compass,
@@ -169,6 +170,7 @@ const FAQS = [
 ];
 
 export default function GuidePage() {
+  const [viewMode, setViewMode] = useState<"interactive" | "manual">("interactive");
   const [activeTab, setActiveTab] = useState<"loop" | "pillars" | "scoring" | "ai" | "faq">("loop");
   const [readChapters, setReadChapters] = useState<Record<string, boolean>>({});
 
@@ -181,39 +183,88 @@ export default function GuidePage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-5 sm:space-y-8 pb-32 sm:pb-16 overflow-x-hidden">
-      {/* Hero Header */}
-      <div className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-indigo-950/40 via-background to-violet-950/30 p-5 sm:p-8 backdrop-blur-sm">
-        <div className="relative z-10 max-w-2xl space-y-3">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-            <Compass className="h-3.5 w-3.5" />
-            <span>AKUCHE Onboarding & Feature Manual</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-foreground">
-            How AKUCHE Works
-          </h1>
-          <p className="text-xs sm:text-base text-muted-foreground leading-relaxed">
-            Gain complete clarity on the 7 brain fitness pillars, daily workout habits, Brain Age benchmarks, and AI decision systems.
-          </p>
+    <div className="mx-auto w-full max-w-5xl space-y-6 pb-32 sm:pb-16 overflow-x-hidden">
+      {/* View Switcher: Interactive Product Tour vs Reference Manual */}
+      <div className="flex items-center justify-between border-b border-border/60 pb-3 px-1">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setViewMode("interactive")}
+            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs sm:text-sm font-bold transition active:scale-95 min-h-[40px] touch-manipulation ${
+              viewMode === "interactive"
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
+            }`}
+          >
+            <Sparkles className="h-4 w-4" />
+            <span>Interactive Product Tour</span>
+          </button>
+          <button
+            onClick={() => setViewMode("manual")}
+            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs sm:text-sm font-bold transition active:scale-95 min-h-[40px] touch-manipulation ${
+              viewMode === "manual"
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
+            }`}
+          >
+            <BookOpen className="h-4 w-4" />
+            <span>Reference Manual</span>
+          </button>
+        </div>
 
-          <div className="flex flex-col sm:flex-row gap-2.5 pt-2">
+        <Link
+          href="/dashboard"
+          className="text-xs font-bold text-primary hover:underline hidden sm:inline-block"
+        >
+          Back to Dashboard →
+        </Link>
+      </div>
+
+      {viewMode === "interactive" ? (
+        <div className="space-y-4">
+          <InteractiveAkucheGuide />
+          <div className="text-center pt-4">
             <button
-              onClick={openNavigator}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-xs sm:text-sm font-semibold text-primary-foreground shadow-md hover:bg-primary/90 transition active:scale-[0.98] min-h-[44px] touch-manipulation"
+              onClick={() => setViewMode("manual")}
+              className="text-xs font-semibold text-muted-foreground hover:text-foreground hover:underline"
             >
-              <Compass className="h-4 w-4" />
-              <span>Launch Feature Navigator</span>
+              Need the deep reference documentation? Open Comprehensive Feature Manual →
             </button>
-            <Link
-              href="/dashboard/workout"
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3 text-xs sm:text-sm font-semibold text-foreground hover:bg-accent transition active:scale-[0.98] min-h-[44px] touch-manipulation"
-            >
-              <Zap className="h-4 w-4 text-emerald-500" />
-              <span>Start Today&apos;s Workout</span>
-            </Link>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="space-y-6">
+          {/* Hero Header */}
+          <div className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-indigo-950/40 via-background to-violet-950/30 p-5 sm:p-8 backdrop-blur-sm">
+            <div className="relative z-10 max-w-2xl space-y-3">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                <Compass className="h-3.5 w-3.5" />
+                <span>AKUCHE Reference Manual</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-foreground">
+                How AKUCHE Works
+              </h1>
+              <p className="text-xs sm:text-base text-muted-foreground leading-relaxed">
+                Gain complete clarity on the 7 brain fitness pillars, daily workout habits, Brain Age benchmarks, and AI decision systems.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-2.5 pt-2">
+                <button
+                  onClick={() => setViewMode("interactive")}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-xs sm:text-sm font-semibold text-primary-foreground shadow-md hover:bg-primary/90 transition active:scale-[0.98] min-h-[44px] touch-manipulation"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  <span>Start Interactive Tour (Step 1 of 5)</span>
+                </button>
+                <button
+                  onClick={openNavigator}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3 text-xs sm:text-sm font-semibold text-foreground hover:bg-accent transition active:scale-[0.98] min-h-[44px] touch-manipulation"
+                >
+                  <Compass className="h-4 w-4" />
+                  <span>Launch Feature Navigator</span>
+                </button>
+              </div>
+            </div>
+          </div>
 
       {/* Navigation Tabs */}
       <div className="flex items-center gap-2 overflow-x-auto border-b border-border pb-2 scrollbar-none text-xs sm:text-sm">
@@ -532,6 +583,8 @@ export default function GuidePage() {
             ))}
           </div>
         </motion.div>
+      )}
+        </div>
       )}
     </div>
   );

@@ -25,8 +25,7 @@ export default function TermsOfServicePage() {
         <section>
           <h2 className="text-xl font-semibold">2. Eligibility</h2>
           <p>
-            The Service is intended for users aged 13 and above. By using AKUCHE, you represent that you are at least 13 years old.
-            Users under 18 should have parental consent before using the Service.
+            The Service is intended for individuals aged 16 and above. By registering for or using AKUCHE, you represent and warrant that you are at least 16 years of age. Users aged 16–17 should have parental or guardian consent before using the Service or entering into financial or career commitments.
           </p>
         </section>
 
@@ -97,15 +96,12 @@ export default function TermsOfServicePage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold">7. AI-Generated Content</h2>
+          <h2 className="text-xl font-semibold">7. AI-Generated Content &amp; Professional Boundaries</h2>
           <p>
-            AKUCHE uses artificial intelligence (powered by OpenAI) to provide coaching, recommendations,
-            and educational content. AI-generated content is provided for informational and educational purposes only
-            and should not be considered professional medical, psychological, or educational advice.
+            AKUCHE uses artificial intelligence (including OpenAI models) to provide decision-making frameworks, critical thinking exercises, and action planning. All AI-generated content, suggestions, calculations, and coaching frameworks are provided strictly for informational, reflective, and educational purposes.
           </p>
           <p className="mt-2">
-            We do not guarantee the accuracy, completeness, or reliability of AI-generated content.
-            You should consult qualified professionals for specific advice.
+            AKUCHE does not provide licensed medical diagnosis, clinical psychiatric therapy, formal legal counsel, or certified fiduciary financial advice. You must consult qualified, licensed professionals for formal medical, legal, or investment decisions. In any medical crisis or emergency, call your local emergency services (112 in Nigeria) immediately.
           </p>
         </section>
 

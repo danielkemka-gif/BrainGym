@@ -53,13 +53,29 @@ export function SocialAuthButtons({
 
       const supabase = createClient();
       const browserOrigin =
-        typeof window !== "undefined" ? window.location.origin : getSiteUrl();
-      const baseRedirect = redirectTo || `${browserOrigin}/auth/callback`;
+        typeof window !== "undefined" && window.location.origin
+          ? window.location.origin
+          : getSiteUrl();
+
+      // Ensure the OAuth redirect ALWAYS targets /auth/callback so the server exchanges the code for a session cookie
+      let oauthCallback = `${browserOrigin}/auth/callback`;
+      if (redirectTo && typeof redirectTo === "string") {
+        if (redirectTo.startsWith("/") && !redirectTo.startsWith("//")) {
+          oauthCallback = `${browserOrigin}/auth/callback?next=${encodeURIComponent(redirectTo)}`;
+        } else if (redirectTo.startsWith("http")) {
+          try {
+            const parsed = new URL(redirectTo);
+            oauthCallback = `${browserOrigin}/auth/callback?next=${encodeURIComponent(parsed.pathname + parsed.search)}`;
+          } catch {
+            // keep standard /auth/callback
+          }
+        }
+      }
 
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: baseRedirect,
+          redirectTo: oauthCallback,
           queryParams: {
             access_type: "offline",
             prompt: "select_account",
@@ -69,10 +85,15 @@ export function SocialAuthButtons({
 
       if (error) {
         console.error(`${provider} OAuth error:`, error);
-        const message =
-          error?.message?.includes("provider is not enabled")
-            ? "Google sign-in is being connected. If your Google account doesn't redirect, please use email sign-in below."
-            : error?.message || `${provider} sign-in failed. Please try again.`;
+        const rawMsg = error?.message?.toLowerCase() || "";
+        let message = "Google sign-in could not be completed. Please try again or use email below.";
+        if (rawMsg.includes("provider is not enabled")) {
+          message = "Google sign-in is currently being enabled on our authentication server. In the meantime, you can sign in instantly using email below.";
+        } else if (rawMsg.includes("access_denied") || rawMsg.includes("cancelled")) {
+          message = "Google sign-in was cancelled. Tap Continue with Google again to proceed.";
+        } else if (error?.message) {
+          message = error.message;
+        }
         setError(message);
         setLoading((prev) => ({ ...prev, [provider]: false }));
         return;
@@ -118,10 +139,10 @@ export function SocialAuthButtons({
         ) : (
           <GoogleIcon />
         )}
-        <span>Continue with Google / Gmail</span>
+        <span>Continue with Google</span>
       </button>
       <p className="text-[11px] text-center text-muted-foreground">
-        Use any personal or work Gmail address for instant login
+        Fast, secure 1-tap sign-in with your Gmail or Google account
       </p>
     </div>
   );

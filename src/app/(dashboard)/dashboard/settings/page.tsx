@@ -46,6 +46,9 @@ export default function SettingsPage() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const avatarInputRef = useRef<HTMLInputElement>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const [loading, setLoading] = useState(true);
 
@@ -173,6 +176,27 @@ export default function SettingsPage() {
     const supabase = createClient();
     await supabase.auth.signOut();
     router.push("/login");
+  }
+
+  async function handleDeleteAccount() {
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      const res = await fetch("/api/auth/delete-account", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to delete account");
+      }
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      if (typeof window !== "undefined") {
+        localStorage.clear();
+      }
+      router.push("/?deleted=true");
+    } catch (err: any) {
+      setDeleteError(err.message || "Failed to delete account. Please try again or contact privacy@akuche.app.");
+      setDeleting(false);
+    }
   }
 
   async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -512,8 +536,8 @@ export default function SettingsPage() {
       <ReferralSection />
 
       {/* Account */}
-      <section className="rounded-2xl border border-border bg-card p-4 sm:p-6">
-        <h2 className="mb-5 text-lg font-semibold">Account</h2>
+      <section className="rounded-2xl border border-border bg-card p-4 sm:p-6 space-y-4">
+        <h2 className="text-lg font-semibold">Account</h2>
         <div className="space-y-3">
           <div className="flex items-center justify-between rounded-lg bg-muted/50 px-4 py-3">
             <span className="text-sm">Member since</span>
@@ -521,12 +545,70 @@ export default function SettingsPage() {
           </div>
           <button
             onClick={handleSignOut}
-            className="w-full rounded-lg border border-destructive/30 px-4 py-3 text-sm text-destructive hover:bg-destructive/10 min-h-[44px]"
+            className="w-full rounded-lg border border-border px-4 py-3 text-sm text-foreground hover:bg-muted font-medium transition min-h-[44px]"
           >
             Sign out
           </button>
         </div>
+
+        {/* Danger Zone: Account Deletion */}
+        <div className="pt-4 border-t border-destructive/20 space-y-2">
+          <span className="text-xs font-black uppercase text-destructive tracking-wider block">
+            Danger Zone
+          </span>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Permanently delete your account, saved commitments, personal logs, and streaks. This action is irreversible under NDPA / GDPR data protection rights.
+          </p>
+          <button
+            type="button"
+            onClick={() => setShowDeleteModal(true)}
+            className="rounded-xl border border-destructive/40 text-destructive hover:bg-destructive/10 px-4 py-2.5 text-xs font-bold transition min-h-[40px] active:scale-95"
+          >
+            Delete Account Permanently
+          </button>
+        </div>
       </section>
+
+      {/* Delete Account Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
+          <div className="w-full max-w-md rounded-3xl border border-destructive/30 bg-card p-6 shadow-xl space-y-4">
+            <div className="space-y-1">
+              <h3 className="text-lg font-black text-destructive font-heading">
+                Delete Your Akuche Account?
+              </h3>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                This will permanently remove your profile, streaks, goal progress, and coaching history from our database. This action cannot be undone.
+              </p>
+            </div>
+
+            {deleteError && (
+              <div className="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-xs text-destructive">
+                {deleteError}
+              </div>
+            )}
+
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={() => setShowDeleteModal(false)}
+                className="rounded-xl border border-border px-4 py-2.5 text-xs font-bold text-muted-foreground hover:text-foreground transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={handleDeleteAccount}
+                className="rounded-xl bg-destructive hover:bg-destructive/90 text-destructive-foreground px-4 py-2.5 text-xs font-bold transition active:scale-95 disabled:opacity-50"
+              >
+                {deleting ? "Deleting Account..." : "Yes, Delete Everything"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pb-8">
         <p className="text-xs text-muted-foreground">

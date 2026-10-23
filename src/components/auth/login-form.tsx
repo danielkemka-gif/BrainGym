@@ -22,12 +22,26 @@ export function LoginForm({ refCode }: { refCode?: string | null }) {
 
   useEffect(() => {
     const errorParam = searchParams.get("error");
+    const errorDesc = searchParams.get("error_description");
     const emailParam = searchParams.get("email");
     if (emailParam) {
       setEmail(emailParam);
     }
-    if (errorParam === "auth_callback_error") {
-      setError("Sign-in or confirmation link expired or invalid. Please try signing in or requesting a fresh link.");
+    if (errorParam || errorDesc) {
+      const fullError = (errorDesc || errorParam || "").toLowerCase();
+      if (fullError.includes("access_denied") || fullError.includes("cancelled")) {
+        setError("Google sign-in was cancelled. You can tap Continue with Google again or sign in with your email below.");
+      } else if (
+        fullError.includes("already exists") ||
+        fullError.includes("identity_already_exists") ||
+        fullError.includes("user already registered")
+      ) {
+        setError("An account already exists with this email address. Please enter your password below to sign in.");
+      } else if (errorParam === "auth_callback_error") {
+        setError("Sign-in link expired or could not be verified. Please try signing in again.");
+      } else {
+        setError(errorDesc || errorParam || "Authentication could not be completed. Please try again.");
+      }
     }
   }, [searchParams]);
 

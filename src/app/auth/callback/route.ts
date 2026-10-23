@@ -2,8 +2,7 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import type { EmailOtpType } from "@supabase/supabase-js";
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://brain-gym-nsu6.vercel.app";
+import { getSiteUrl } from "@/lib/site-url";
 
 async function createServiceClient() {
   const cookieStore = await cookies();
@@ -124,17 +123,22 @@ export async function GET(request: NextRequest) {
           });
         }
 
+        const safeOrigin =
+          origin && origin.startsWith("http")
+            ? origin
+            : getSiteUrl();
+
         // Determine destination target
         let targetPath = "/dashboard";
         if (type === "recovery") {
           targetPath = "/dashboard/settings";
-        } else if (!profile || !profile.onboarding_complete) {
-          targetPath = "/onboarding";
         } else if (next && next.startsWith("/") && !next.startsWith("//")) {
           targetPath = next;
+        } else if (!profile || !profile.onboarding_complete) {
+          targetPath = "/onboarding";
         }
 
-        const redirectResponse = NextResponse.redirect(`${origin}${targetPath}`);
+        const redirectResponse = NextResponse.redirect(`${safeOrigin}${targetPath}`);
         cookiesToSetOnRedirect.forEach(({ name, value, options }) => {
           redirectResponse.cookies.set(name, value, options);
         });
@@ -143,8 +147,13 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    const safeOrigin =
+      origin && origin.startsWith("http")
+        ? origin
+        : getSiteUrl();
+
     // Auth verification failed or no code/token provided
-    const redirectUrl = `${origin}/login?error=${encodeURIComponent(
+    const redirectUrl = `${safeOrigin}/login?error=${encodeURIComponent(
       errorParam || "auth_callback_error"
     )}`;
     const failResponse = NextResponse.redirect(redirectUrl);
@@ -152,6 +161,7 @@ export async function GET(request: NextRequest) {
     return failResponse;
   } catch (err) {
     console.error("Auth callback unexpected error:", err);
-    return NextResponse.redirect(`${APP_URL}/login?error=auth_callback_error`);
+    const safeOrigin = getSiteUrl();
+    return NextResponse.redirect(`${safeOrigin}/login?error=auth_callback_error`);
   }
 }

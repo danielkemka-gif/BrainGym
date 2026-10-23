@@ -102,27 +102,30 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold">7. Your Rights</h2>
-          <p>Depending on your location, you have the right to:</p>
-          <ul className="list-disc pl-6 space-y-2">
-            <li>Access the personal data we hold about you</li>
-            <li>Correct inaccurate or incomplete data</li>
-            <li>Request deletion of your personal data</li>
-            <li>Object to or restrict the processing of your data</li>
-            <li>Data portability (receive your data in a structured, machine-readable format)</li>
-            <li>Withdraw consent at any time</li>
-          </ul>
-          <p className="mt-2">
-            To exercise any of these rights, please contact us at privacy@akuche.app.
+          <h2 className="text-xl font-semibold">7. Your Rights &amp; Self-Serve Data Deletion</h2>
+          <p>
+            Under the Nigeria Data Protection Act (NDPA 2023), the General Data Protection Regulation (GDPR), and applicable privacy laws, you possess fundamental rights regarding your personal information:
           </p>
+          <ul className="list-disc pl-6 space-y-2 mt-2">
+            <li><strong>Right to Deletion:</strong> You can permanently delete your entire account, coaching conversations, streaks, and goals at any time via <strong>Settings &rarr; Account &rarr; Delete Account</strong>, or by emailing privacy@akuche.app.</li>
+            <li><strong>Right of Access &amp; Portability:</strong> Request an export of your personal training and decision records.</li>
+            <li><strong>Right of Rectification:</strong> Edit your name, goals, preferences, and profile data directly in your account settings.</li>
+            <li><strong>Right to Restrict or Object:</strong> Opt out of optional analytics tracking and reminder notifications.</li>
+            <li><strong>Transparency in AI Processing:</strong> Your coaching interactions are processed via enterprise API endpoints that do not use your private personal conversations to train public foundation models.</li>
+          </ul>
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold">8. Children&apos;s Privacy</h2>
+          <h2 className="text-xl font-semibold">8. Youth Safeguards &amp; Users Aged 16&ndash;17</h2>
           <p>
-            AKUCHE is designed for users aged 13 and above. We do not knowingly collect personal information from children under 13.
-            If we become aware that a child under 13 has provided us with personal information, we will take steps to delete such information promptly.
+            AKUCHE is intended for users aged 16 and above. We apply heightened safeguards for young adults aged 16&ndash;17:
           </p>
+          <ul className="list-disc pl-6 space-y-2 mt-2">
+            <li>We do not collect unnecessary financial details or encourage unvetted speculative ventures.</li>
+            <li>Where major career, educational, or financial crossroads are discussed, our coaching prompts encourage transparent consultation with parents, legal guardians, or trusted educators.</li>
+            <li>Young adult profiles receive strict default privacy settings with zero public directory sharing.</li>
+            <li>We do not knowingly collect personal data from minors under 16 without verified parental or legal guardian consent. If we discover that a user under 16 has registered without authorization, we delete their account immediately.</li>
+          </ul>
         </section>
 
         <section>

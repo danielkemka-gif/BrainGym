@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { AuthProvider, useAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/client";
 import { identifyUser } from "@/lib/analytics/events";
@@ -13,9 +14,36 @@ import { OfflineStatusBanner } from "@/components/offline/offline-status-banner"
 import { KucheCompanion } from "@/components/guide/kuche-companion";
 
 function AppShellInner({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { user, loading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
+
+  // Protected route enforcement for logged-out visitors
+  useEffect(() => {
+    if (loading) return;
+
+    const isPublicGuide = pathname === "/dashboard/guide";
+    const isProtected =
+      pathname.startsWith("/dashboard/profile") ||
+      pathname.startsWith("/dashboard/settings") ||
+      pathname.startsWith("/dashboard/goals") ||
+      pathname.startsWith("/dashboard/journal") ||
+      pathname.startsWith("/dashboard/progress") ||
+      pathname.startsWith("/dashboard/reports") ||
+      pathname.startsWith("/dashboard/insights") ||
+      pathname.startsWith("/dashboard/transformation") ||
+      pathname.startsWith("/dashboard/history") ||
+      pathname.startsWith("/dashboard/shop") ||
+      pathname.startsWith("/dashboard/reminders") ||
+      pathname.startsWith("/dashboard/missions") ||
+      pathname.startsWith("/dashboard/avatar");
+
+    if (!user && isProtected && !isPublicGuide) {
+      router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
+    }
+  }, [user, loading, pathname, router]);
 
   useEffect(() => {
     if (!user) return;

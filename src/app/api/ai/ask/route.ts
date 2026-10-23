@@ -126,6 +126,13 @@ YOUR DECISION: Final choice
 Problem → Possible Causes → Options → Best Approach → Next Action
 
 ---
+22. SAFETY, PROFESSIONAL BOUNDARIES & YOUTH SAFEGUARDS
+- PROFESSIONAL BOUNDARIES: Akuche provides cognitive decision-making frameworks and problem-solving structures. You are not a licensed physician, clinical psychologist, certified financial fiduciary, or legal attorney.
+- MEDICAL/HEALTH: For questions about symptoms or diagnoses, provide general educational health habits (sleep, hydration, light exercise), but always advise consulting a qualified physician. Never advise stopping medication.
+- LEGAL/TAX: Provide conflict negotiation principles, but explicitly advise consulting a qualified legal practitioner in their jurisdiction for formal legal proceedings.
+- YOUTH SAFEGUARDS (Users 16-17): For young adults discussing significant life, career, or financial choices, encourage open dialogue with parents, guardians, or experienced mentors. Never encourage high-risk debt, adult activities, or speculative financial schemes.
+
+---
 OUTPUT FORMAT
 Always return valid JSON strictly in this format:
 {
@@ -167,6 +174,16 @@ export async function POST(request: NextRequest) {
     }
 
     const trimmedMessage = message.trim();
+
+    // PRIORITY 8 SAFETY INTERCEPT: Crisis, Self-Harm, or Medical Emergency Detection
+    const crisisCheck = detectSafetyCrisis(trimmedMessage);
+    if (crisisCheck) {
+      return NextResponse.json({
+        reply: crisisCheck.text,
+        structuredCards: crisisCheck.cards,
+      });
+    }
+
     const openaiApiKey = process.env.OPENAI_API_KEY;
 
     // If OpenAI key is not configured or in offline mode, provide high-quality procedural Socratic reverse-engineering response
@@ -229,6 +246,131 @@ export async function POST(request: NextRequest) {
       structuredCards: fallbackResponse.cards,
     });
   }
+}
+
+// -----------------------------------------------------------------------------
+// SAFETY & CRISIS INTERCEPT (PRIORITY 8: AI SAFETY & RESPONSIBLE USE)
+// -----------------------------------------------------------------------------
+
+function detectSafetyCrisis(query: string): { text: string; cards: SocraticThinkingCards } | null {
+  const q = query.toLowerCase();
+
+  // 1. Self-Harm / Suicide / Life-threatening Emotional Distress
+  const selfHarmPatterns = [
+    "kill myself",
+    "commit suicide",
+    "end my life",
+    "want to die",
+    "suicidal",
+    "hang myself",
+    "overdose",
+    "slit my wrists",
+    "harm myself",
+    "no reason to live",
+    "don't want to live",
+    "life is not worth living",
+    "take my own life",
+  ];
+
+  if (selfHarmPatterns.some((pattern) => q.includes(pattern))) {
+    return {
+      text: `### ⚠️ Immediate Crisis Support — You Are Not Alone\n\nIf you are experiencing overwhelming distress, thoughts of self-harm, or feeling like you cannot go on, please know that your life has immense value and there is compassionate, professional human help available right now.\n\n**Akuche is an AI thinking tool and cannot replace trained crisis counselors or emergency medical professionals.**\n\nPlease pause what you are doing and connect with trusted support immediately:\n\n- **Nigeria (SURPIN - Suicide Research & Prevention Initiative):** 0908 021 7555 / 0903 444 4401 / 0811 110 0110\n- **Nigeria (Mentally Aware Nigeria - MANI):** 0809 111 6264 / 0811 168 0686\n- **Nigeria National Emergency Services:** Dial **112**\n- **United States & Canada:** Call or text **988** (Suicide & Crisis Lifeline)\n- **United Kingdom:** Call **111** or text **SHOUT to 85258**\n- **International:** Find confidential, free local crisis support at [findahelpline.com](https://findahelpline.com) or [befrienders.org](https://www.befrienders.org)\n\n### YOUR NEXT MOVE\nStep away from your screen and call one of the numbers above, or reach out to a trusted family member, close friend, or healthcare provider who can support you in person right now.`,
+      cards: {
+        type: "guided_thinking",
+        whatWeKnow: [
+          "You are experiencing significant distress or pain right now.",
+          "Immediate professional human support is available 24/7.",
+        ],
+        whatWeDontKnow: [
+          "Your current physical location and immediate safety status.",
+        ],
+        assumptions: [
+          "You do not have to carry this burden alone.",
+        ],
+        risks: [
+          "Remaining isolated without speaking to a qualified human professional.",
+        ],
+        options: [
+          "Call SURPIN (Nigeria): 0908 021 7555",
+          "Call National Emergency: 112",
+          "Contact a trusted friend or family member nearby",
+        ],
+        questionsToInvestigate: [
+          "Can you reach out to someone who cares about you right now?",
+        ],
+        nextQuestion: "Who is the closest person you can call or visit right now?",
+        mission: {
+          title: "Reach Out for Immediate Support",
+          deadline: "Right now",
+          steps: [
+            "Dial 112 or 0908 021 7555 (SURPIN Nigeria) or 988 (US/Canada)",
+            "Tell the counselor honestly what you are feeling",
+            "Be in the presence of someone you trust",
+          ],
+          whyItMatters: "Your life matters, and trained professionals are dedicated to helping you through this moment.",
+          howToDoIt: "Call directly from your phone or text a helpline.",
+          doneWhen: "You are in contact with a human support professional or trusted friend.",
+        },
+      },
+    };
+  }
+
+  // 2. Acute Medical Emergencies
+  const medicalEmergencyPatterns = [
+    "having a heart attack",
+    "chest pain can't breathe",
+    "severe chest pain",
+    "cannot breathe",
+    "can't breathe",
+    "stroke symptoms",
+    "severe allergic reaction",
+    "anaphylaxis",
+    "choking",
+    "unconscious breathing",
+  ];
+
+  if (medicalEmergencyPatterns.some((pattern) => q.includes(pattern))) {
+    return {
+      text: `### 🚨 Potential Medical Emergency — Seek Immediate In-Person Care\n\nThis situation may be a serious medical emergency requiring immediate in-person healthcare intervention.\n\n**Akuche is an AI thinking assistant and is never a substitute for emergency medical care, diagnosis, or triage.**\n\n### YOUR NEXT MOVE\n1. **Call Emergency Services Right Now:** Dial **112** (Nigeria), **911** (US), or **999** (UK).\n2. **Go to the Nearest Emergency Room:** Seek immediate in-person hospital care.\n3. **Notify Someone Nearby:** Tell a family member, neighbor, or coworker immediately so you are not alone.`,
+      cards: {
+        type: "guided_thinking",
+        whatWeKnow: [
+          "Acute physical symptoms require immediate hands-on clinical evaluation.",
+          "AI cannot diagnose or treat life-threatening conditions.",
+        ],
+        whatWeDontKnow: [
+          "Your clinical history and physical vital signs.",
+        ],
+        assumptions: [
+          "Immediate emergency care provides the highest safety margin.",
+        ],
+        risks: [
+          "Delaying in-person clinical intervention.",
+        ],
+        options: [
+          "Call emergency services (112 / 911 / 999)",
+          "Go directly to the nearest hospital emergency department",
+        ],
+        questionsToInvestigate: [
+          "Are you accompanied by someone who can assist you right now?",
+        ],
+        nextQuestion: "Can you or someone with you call emergency medical services immediately?",
+        mission: {
+          title: "Call Emergency Medical Care",
+          deadline: "Immediately",
+          steps: [
+            "Call 112 (Nigeria) or local emergency services",
+            "Alert someone near you",
+            "Proceed to the nearest hospital emergency room",
+          ],
+          whyItMatters: "Acute physical symptoms must be evaluated by licensed healthcare professionals.",
+          doneWhen: "You are under the care of emergency medical personnel.",
+        },
+      },
+    };
+  }
+
+  return null;
 }
 
 // -----------------------------------------------------------------------------

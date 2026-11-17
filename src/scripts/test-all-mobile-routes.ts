@@ -1,13 +1,17 @@
 import { chromium } from "@playwright/test";
 
 const ROUTES = [
-  { name: "Dashboard", path: "/dashboard" },
+  { name: "Personal Clarity Dashboard", path: "/dashboard" },
+  { name: "My Business Workspace", path: "/dashboard/business" },
+  { name: "My Career Workspace", path: "/dashboard/career" },
+  { name: "My Potential Workspace", path: "/dashboard/potential" },
+  { name: "My Life Workspace", path: "/dashboard/life" },
+  { name: "Personal Clarity Hub", path: "/dashboard/clarity" },
+  { name: "Explore Intelligence", path: "/dashboard/explore" },
   { name: "Ask Akuche", path: "/dashboard/ask" },
-  { name: "Train (Daily Challenge)", path: "/dashboard/daily-challenge" },
-  { name: "Goals & Commitments", path: "/dashboard/goals" },
-  { name: "Progress", path: "/dashboard/progress" },
+  { name: "Goals & Progress", path: "/dashboard/progress" },
   { name: "Think Workspace", path: "/dashboard/think" },
-  { name: "Settings", path: "/dashboard/settings" },
+  { name: "Profile & Settings", path: "/dashboard/profile" },
   { name: "Auth / Login", path: "/login" },
 ];
 

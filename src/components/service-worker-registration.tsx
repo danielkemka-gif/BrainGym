@@ -132,18 +132,22 @@ export function ServiceWorkerRegistration() {
       }
     };
 
+    let hadPreviousController = !!navigator.serviceWorker.controller;
     const handleControllerChange = () => {
-      // New service worker has taken control. If user isn't actively typing,
-      // refresh so mobile PWA displays the new interface instantly.
-      const isTyping =
-        document.activeElement &&
-        (document.activeElement.tagName === 'INPUT' ||
-          document.activeElement.tagName === 'TEXTAREA');
-      if (!isTyping) {
-        window.location.reload();
-      } else {
-        setUpdateAvailable(true);
+      // Only reload if this is an actual upgrade from a previous service worker,
+      // not an initial install, and only once per session to avoid reload cycles.
+      if (hadPreviousController && !sessionStorage.getItem('akuche_sw_reloaded')) {
+        const isTyping =
+          document.activeElement &&
+          (document.activeElement.tagName === 'INPUT' ||
+            document.activeElement.tagName === 'TEXTAREA');
+        if (!isTyping) {
+          sessionStorage.setItem('akuche_sw_reloaded', 'true');
+          window.location.reload();
+          return;
+        }
       }
+      setUpdateAvailable(true);
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);

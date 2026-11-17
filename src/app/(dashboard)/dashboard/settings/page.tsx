@@ -14,6 +14,7 @@ import { DailyReminderSettings } from "@/components/reminders/daily-reminder-set
 import { LanguageSettingsSection } from "@/components/settings/language-settings-section";
 import { BrandSwitcherSection } from "@/components/settings/brand-switcher-section";
 import { GuideSettingsSection } from "@/components/settings/guide-settings-section";
+import { AKUCHE_APP_VERSION, AKUCHE_BUILD_ID, AKUCHE_SW_CACHE_VERSION } from "@/lib/version";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -55,7 +56,10 @@ export default function SettingsPage() {
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) return;
+      if (!user) {
+        setLoading(false);
+        return;
+      }
       setEmail(user.email ?? "");
       setMemberSince(new Date(user.created_at).toLocaleDateString());
 
@@ -610,7 +614,7 @@ export default function SettingsPage() {
         </div>
       )}
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pb-8">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pb-4">
         <p className="text-xs text-muted-foreground">
           {saved && "Settings saved!"}
         </p>
@@ -628,6 +632,19 @@ export default function SettingsPage() {
             "Save settings"
           )}
         </button>
+      </div>
+
+      {/* Application Version & Build Verification Card (Desktop & Mobile Sync Check) */}
+      <div className="rounded-2xl border border-border bg-muted/30 p-4 text-xs text-muted-foreground flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-6">
+        <div className="space-y-0.5">
+          <p className="font-bold text-foreground">AKUCHE Application Version</p>
+          <p>Use this identifier to verify your smartphone and desktop are running the identical build.</p>
+        </div>
+        <div className="font-mono text-[11px] bg-background border border-border rounded-xl px-3 py-2 shrink-0 space-y-0.5">
+          <div>Version: <strong className="text-foreground">v{AKUCHE_APP_VERSION}</strong></div>
+          <div>Build: <strong className="text-foreground">{AKUCHE_BUILD_ID}</strong></div>
+          <div>SW Cache: <strong className="text-foreground">{AKUCHE_SW_CACHE_VERSION}</strong></div>
+        </div>
       </div>
     </div>
   );

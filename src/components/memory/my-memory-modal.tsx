@@ -1,13 +1,16 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
 import {
   getMemoryItems,
   saveMemoryItem,
   updateMemoryItem,
   deleteMemoryItem,
+  confirmMemoryItem,
   isMemoryEnabled,
   setMemoryEnabled,
+  syncAkucheIntelligenceWithSupabase,
   AkucheMemoryItem,
 } from "@/lib/akuche/memory-engine";
 import {
@@ -17,10 +20,11 @@ import {
   Plus,
   Shield,
   Eye,
-  Check,
+  CheckCircle2,
   AlertCircle,
   Pencil,
   Sparkles,
+  RefreshCw,
 } from "lucide-react";
 
 interface MyMemoryModalProps {
@@ -31,6 +35,8 @@ interface MyMemoryModalProps {
 export function MyMemoryModal({ isOpen, onClose }: MyMemoryModalProps) {
   const [items, setItems] = useState<AkucheMemoryItem[]>([]);
   const [enabled, setEnabled] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>("all");
   const [isAdding, setIsAdding] = useState(false);
   const [newTitle, setNewTitle] = useState("");
@@ -46,7 +52,29 @@ export function MyMemoryModal({ isOpen, onClose }: MyMemoryModalProps) {
   };
 
   useEffect(() => {
-    if (isOpen) refresh();
+    if (!isOpen) return;
+    refresh();
+    setLoading(true);
+    setSyncError(null);
+
+    const supabase = createClient();
+    supabase.auth
+      .getUser()
+      .then(async ({ data: { user } }) => {
+        if (user) {
+          const res = await syncAkucheIntelligenceWithSupabase(supabase, user.id);
+          if (!res.synced && res.error && !res.error.includes("deferred")) {
+            setSyncError("Using local browser memory (cloud sync unavailable).");
+          }
+          refresh();
+        }
+      })
+      .catch(() => {
+        setSyncError("Using local browser memory.");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -63,11 +91,18 @@ export function MyMemoryModal({ isOpen, onClose }: MyMemoryModalProps) {
       category: newCategory,
       title: newTitle,
       content: newContent,
+      verificationStatus: "confirmed",
+      confidence: 1.0,
       sourceContext: "Manually added by you in My Memory",
     });
     setNewTitle("");
     setNewContent("");
     setIsAdding(false);
+    refresh();
+  };
+
+  const handleConfirm = (id: string) => {
+    confirmMemoryItem(id);
     refresh();
   };
 
@@ -106,7 +141,10 @@ export function MyMemoryModal({ isOpen, onClose }: MyMemoryModalProps) {
                 </span>
               </h3>
               <p className="text-xs text-muted-foreground">
-                What Akuche remembers to personalize your thinking sessions.
+                Separating{" "}
+                <strong className="text-emerald-600 dark:text-emerald-400">Confirmed Facts</strong>{" "}
+                from{" "}
+                <strong className="text-amber-600 dark:text-amber-400">AI Interpretations</strong>.
               </p>
             </div>
           </div>
@@ -126,6 +164,9 @@ export function MyMemoryModal({ isOpen, onClose }: MyMemoryModalProps) {
             <span className="text-xs font-semibold text-foreground">
               Long-Term Context Memory
             </span>
+            {loading && (
+              <RefreshCw className="h-3 w-3 animate-spin text-muted-foreground" />
+            )}
           </div>
           <button
             onClick={handleToggleMemory}
@@ -135,9 +176,16 @@ export function MyMemoryModal({ isOpen, onClose }: MyMemoryModalProps) {
                 : "bg-muted text-muted-foreground"
             }`}
           >
-            {enabled ? "Enabled" : "Disabled"}
+            {enabled ? "Enabled ✓" : "Disabled"}
           </button>
         </div>
+
+        {syncError && (
+          <div className="px-5 py-2 bg-amber-500/10 border-b border-amber-500/20 flex items-center gap-1.5 text-[11px] text-amber-600 dark:text-amber-400">
+            <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+            <span>{syncError}</span>
+          </div>
+        )}
 
         {/* Category Tabs */}
         <div className="flex items-center gap-1.5 px-5 py-2.5 border-b border-border/60 overflow-x-auto text-xs scrollbar-none">
@@ -161,7 +209,7 @@ export function MyMemoryModal({ isOpen, onClose }: MyMemoryModalProps) {
           {isAdding && (
             <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/5 p-3.5 space-y-2.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-foreground">Add New Memory Fact</span>
+                <span className="text-xs font-bold text-foreground">Add New Confirmed Fact</span>
                 <button
                   onClick={() => setIsAdding(false)}
                   className="text-xs text-muted-foreground hover:text-foreground"
@@ -189,7 +237,7 @@ export function MyMemoryModal({ isOpen, onClose }: MyMemoryModalProps) {
                 type="text"
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
-                placeholder="Title (e.g. ₦5M Target by Q4)"
+                placeholder="Title (e.g. Primary Revenue Target)"
                 className="w-full rounded-lg border border-border bg-background p-2 text-xs text-foreground focus:border-emerald-500 focus:outline-none"
               />
 
@@ -216,7 +264,7 @@ export function MyMemoryModal({ isOpen, onClose }: MyMemoryModalProps) {
           {filteredItems.length === 0 && !isAdding && (
             <div className="py-8 text-center space-y-1.5 text-muted-foreground">
               <Eye className="mx-auto h-6 w-6 opacity-40" />
-              <p className="text-xs font-semibold">No memories in this category.</p>
+              <p className="text-xs font-semibold">No memories in this category yet.</p>
             </div>
           )}
 
@@ -257,14 +305,34 @@ export function MyMemoryModal({ isOpen, onClose }: MyMemoryModalProps) {
               ) : (
                 <>
                   <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex flex-wrap items-center gap-1.5">
                       <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-black uppercase text-emerald-600 dark:text-emerald-400">
                         {item.category}
                       </span>
+                      {item.verificationStatus === "ai_interpreted" ? (
+                        <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/15 border border-amber-500/30 px-1.5 py-0.5 text-[9px] font-bold text-amber-600 dark:text-amber-400">
+                          <Sparkles className="h-2.5 w-2.5" />
+                          AI Interpretation
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/15 border border-emerald-500/30 px-1.5 py-0.5 text-[9px] font-bold text-emerald-600 dark:text-emerald-400">
+                          <CheckCircle2 className="h-2.5 w-2.5" />
+                          Confirmed Fact
+                        </span>
+                      )}
                       <h4 className="text-xs font-bold text-foreground">{item.title}</h4>
                     </div>
 
                     <div className="flex items-center gap-1">
+                      {item.verificationStatus === "ai_interpreted" && (
+                        <button
+                          onClick={() => handleConfirm(item.id)}
+                          className="rounded-md bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-0.5 text-[10px] font-bold transition"
+                          title="Confirm this interpretation as a verified fact"
+                        >
+                          Confirm
+                        </button>
+                      )}
                       <button
                         onClick={() => {
                           setEditingId(item.id);
@@ -272,12 +340,14 @@ export function MyMemoryModal({ isOpen, onClose }: MyMemoryModalProps) {
                           setEditContent(item.content);
                         }}
                         className="rounded-md p-1 text-muted-foreground hover:text-foreground transition"
+                        title="Edit Fact"
                       >
                         <Pencil className="h-3 w-3" />
                       </button>
                       <button
                         onClick={() => handleDelete(item.id)}
                         className="rounded-md p-1 text-muted-foreground hover:text-red-500 transition"
+                        title="Delete Fact"
                       >
                         <Trash2 className="h-3 w-3" />
                       </button>

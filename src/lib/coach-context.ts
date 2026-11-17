@@ -1,6 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { CATEGORIES } from "@/lib/constants";
 import { getLevel } from "@/lib/scoring";
+import {
+  AKUCHE_MASTER_SYSTEM_PROMPT,
+  getModeInstructionExtension,
+} from "@/lib/akuche/master-intelligence";
 
 interface ActivityRow {
   title: string;
@@ -40,9 +44,9 @@ export async function buildCoachContext(userId: string): Promise<CoachContext | 
       supabase.from("profiles").select("*").eq("user_id", userId).maybeSingle(),
       supabase.from("brain_scores").select("category_id, score").eq("user_id", userId).order("date", { ascending: false }).limit(50),
       supabase.from("streaks").select("current_streak, longest_streak").eq("user_id", userId).maybeSingle(),
-      supabase.from("activity_logs").select("date, activity_id, activities!inner(title, category_id)").eq("user_id", userId).order("date", { ascending: false }).limit(20),
+      supabase.from("activity_logs").select("date, activity_id, activities!inner(title, category_id)").eq("user_id", userId).order("date", { ascending: false }).limit(12),
       supabase.from("xp_ledger").select("amount").eq("user_id", userId).then((r) => r.data?.reduce((s, l) => s + l.amount, 0) ?? 0),
-      supabase.from("activities").select("title, category_id, difficulty, xp, estimated_time").eq("is_active", true),
+      supabase.from("activities").select("title, category_id, difficulty, xp, estimated_time").eq("is_active", true).limit(20),
       supabase.from("brain_momentum").select("score").eq("user_id", userId).order("calculated_at", { ascending: false }).limit(2),
       supabase.from("daily_quests").select("category, completed, quest_date").eq("user_id", userId).eq("quest_date", new Date().toISOString().split("T")[0]),
       supabase.from("user_identities").select("identity:cognitive_identities(name)").eq("user_id", userId).eq("is_active", true).maybeSingle(),
@@ -51,7 +55,6 @@ export async function buildCoachContext(userId: string): Promise<CoachContext | 
     const profile = profileRes.data;
     if (!profile) return null;
 
-    // Build latest score per category
     const latestScores = new Map<string, number>();
     for (const s of scoresRes.data ?? []) {
       if (!latestScores.has(s.category_id)) {
@@ -65,7 +68,6 @@ export async function buildCoachContext(userId: string): Promise<CoachContext | 
       score: latestScores.get(c.id) ?? 0,
     }));
 
-    // Map category IDs to labels
     const catMap = Object.fromEntries(CATEGORIES.map((c) => [c.id, c.label]));
 
     const logs = (logsRes.data ?? []) as unknown as { date: string; activities: { title: string; category_id: string } | null }[];
@@ -83,32 +85,39 @@ export async function buildCoachContext(userId: string): Promise<CoachContext | 
       time: a.estimated_time,
     }));
 
-    // Momentum
     const momentumData = momentumRes.data ?? [];
     const momentumScore = momentumData[0]?.score ?? 50;
     const momentumPrev = momentumData[1]?.score ?? momentumScore;
     const momentumDelta = momentumScore - momentumPrev;
-    const momentumTrend = momentumDelta > 5 ? 'improving' : momentumDelta < -5 ? 'declining' : 'stable';
-    const momentumLabel = momentumScore >= 90 ? 'Unstoppable' : momentumScore >= 75 ? 'Soaring' : momentumScore >= 60 ? 'Building' : momentumScore >= 40 ? 'Warming Up' : 'Recovering';
+    const momentumTrend = momentumDelta > 5 ? "improving" : momentumDelta < -5 ? "declining" : "stable";
+    const momentumLabel =
+      momentumScore >= 90
+        ? "Unstoppable"
+        : momentumScore >= 75
+        ? "Soaring"
+        : momentumScore >= 60
+        ? "Building"
+        : momentumScore >= 40
+        ? "Warming Up"
+        : "Recovering";
 
-    // Today's quests
     const questsToday = questsRes.data ?? [];
-    const questsCompleted = questsToday.filter(q => q.completed).length;
 
-    // Cognitive identity
     const identityRaw = identityRes.data?.identity as unknown;
-    const identity = identityRaw && typeof identityRaw === 'object' && 'name' in identityRaw
-      ? (identityRaw as { name: string }).name
-      : null;
+    const identity =
+      identityRaw && typeof identityRaw === "object" && "name" in identityRaw
+        ? (identityRaw as { name: string }).name
+        : null;
 
-    // Brain health (simple avg from latest scores - reuse existing latestScores map)
     const allScores = Array.from(latestScores.values());
-    const brainHealthOverall = allScores.length > 0 ? Math.round(allScores.reduce((a, b) => a + b, 0) / allScores.length) : 50;
-    const catMapHealth = Object.fromEntries(CATEGORIES.map((c) => [c.id, c.label]));
-    let bestCat = { name: 'N/A', score: 0 };
-    let weakCat = { name: 'N/A', score: 100 };
+    const brainHealthOverall =
+      allScores.length > 0
+        ? Math.round(allScores.reduce((a, b) => a + b, 0) / allScores.length)
+        : 50;
+    let bestCat = { name: "N/A", score: 0 };
+    let weakCat = { name: "N/A", score: 100 };
     for (const [cat, score] of latestScores) {
-      const name = catMapHealth[cat] ?? cat;
+      const name = catMap[cat] ?? cat;
       if (score > bestCat.score) bestCat = { name, score };
       if (score < weakCat.score) weakCat = { name, score };
     }
@@ -137,7 +146,7 @@ export async function buildCoachContext(userId: string): Promise<CoachContext | 
         trend: momentumTrend,
         label: momentumLabel,
       },
-      quests: questsToday.map(q => ({
+      quests: questsToday.map((q) => ({
         completed: q.completed ? 1 : 0,
         total: 1,
         category: q.category,
@@ -155,81 +164,58 @@ export async function buildCoachContext(userId: string): Promise<CoachContext | 
 }
 
 export function buildSystemPrompt(ctx: CoachContext): string {
-  const goalsText = ctx.profile.goals.length > 0
-    ? ctx.profile.goals.join(", ")
-    : "Not specified yet";
-  const challengesText = ctx.profile.challenges.length > 0
-    ? ctx.profile.challenges.join(", ")
-    : "Not specified yet";
+  const goalsText =
+    ctx.profile.goals.length > 0 ? ctx.profile.goals.join(", ") : "Not specified yet";
+  const challengesText =
+    ctx.profile.challenges.length > 0
+      ? ctx.profile.challenges.join(", ")
+      : "Not specified yet";
 
-  const scoreText = ctx.scores
-    .map((s) => `${s.label}: ${s.score}/100`)
-    .join("\n");
+  const scoreText = ctx.scores.map((s) => `${s.label}: ${s.score}/100`).join("\n");
 
-  const recentText = ctx.recentActivities.length > 0
-    ? ctx.recentActivities.map((a) => `- ${a.title} (${a.date}, ${a.category})`).join("\n")
-    : "No recent activity";
+  const recentText =
+    ctx.recentActivities.length > 0
+      ? ctx.recentActivities
+          .slice(0, 8)
+          .map((a) => `- ${a.title} (${a.date}, ${a.category})`)
+          .join("\n")
+      : "No recent activity";
 
+  // Select top 12 representative activities rather than dumping the entire database on every turn
   const activityCatalog = ctx.activities
+    .slice(0, 12)
     .map((a) => `- ${a.title} [${a.category}, ${a.difficulty}, ${a.time}s, ${a.xp} XP]`)
     .join("\n");
 
-  return `You are AKUCHE's AI Coach — a friendly, expert-level brain training and cognitive fitness coach powered by the Brain Momentum Engine™.
+  return `${AKUCHE_MASTER_SYSTEM_PROMPT}
+${getModeInstructionExtension("brain_coach")}
 
-You have deep knowledge of neuroscience, cognitive science, habit formation, productivity, and learning techniques. Your tone is warm, encouraging, and conversational — like a personal cognitive fitness trainer for the brain.
-
-## Positioning & Non-Medical Principles
-- AKUCHE is a personalized cognitive fitness platform that builds daily routines around user data.
-- Brain Momentum (0-100) is a cognitive fitness and training engagement metric, NOT a medical or diagnostic score.
-- Never give medical advice, diagnostic claims, or treatment guarantees.
-- NEVER invent or hallucinate user performance statistics. If insufficient activity data exists, state honestly: "I don't have enough activity data yet. Complete a few more workouts and I'll be able to give you a more useful analysis."
-
-## User Profile
+## USER PROFILE & TRAINING CONTEXT (CONFIRMED DATA)
 - Name: ${ctx.profile.name ?? "User"}
 - Age: ${ctx.profile.age ?? "Not specified"}
 - Occupation: ${ctx.profile.occupation ?? "Not specified"}
 - Primary Goals: ${goalsText}
 - Challenges: ${challengesText}
 - Preferred workout time: ${ctx.profile.preferred_workout_time ?? "Not specified"}
-- Cognitive Identity: ${ctx.cognitiveIdentity ?? "Brain Explorer (new user)"}
+- Cognitive Identity: ${ctx.cognitiveIdentity ?? "Brain Explorer"}
 
 ## Brain Scores & Personal Baseline
 ${scoreText}
 
-## Brain Momentum Engine™ State: ${ctx.momentum?.score ?? 50}/100 (${ctx.momentum?.label ?? "Building Momentum"})
+## Brain Momentum State: ${ctx.momentum?.score ?? 50}/100 (${ctx.momentum?.label ?? "Building"})
 - Trend: ${ctx.momentum?.trend ?? "stable"}
 - Strongest Domain: ${ctx.brainHealth?.best ?? "Memory"}
 - Focus / Growth Area: ${ctx.brainHealth?.weakest ?? "Focus"}
-
-## Current Training Stats
-- Workouts completed: ${ctx.totalWorkouts}
-- Current streak: ${ctx.streak.current} days
-- Longest streak: ${ctx.streak.longest} days
-- Total XP: ${ctx.totalXp}
+- Workouts completed: ${ctx.totalWorkouts} | Current streak: ${ctx.streak.current} days | Total XP: ${ctx.totalXp}
 
 ## Recent Training Activity
 ${recentText}
 
-## Available Activity Library (${ctx.activities.length} total)
+## Highlighted Activity Library
 ${activityCatalog}
 
-## Akuche Phase 5 Conversational Intelligence & Reasoning Philosophy:
-Akuche is not a generic chatbot that rushes to give quick answers. Akuche is a personal thinking and clarity partner.
-Always operate under this framework:
-SITUATION → UNDERSTAND → ANALYSE → REFLECT → OPTIONS → DECIDE → ACT → FOLLOW UP → LEARN
-
-1. **Understand Before Answering**: If important context is missing, ask one high-value clarifying question before prescribing advice.
-2. **Options & Trade-offs**: When presenting choices, clearly state benefits, downsides, effort, and risks.
-3. **End with Action**: Never leave a user with abstract theory. Always provide "YOUR NEXT MOVE" — one concrete, high-leverage 15-minute action with realistic numbers.
-4. **Non-Judgmental Accountability**: Celebrate real action, acknowledge partial execution, and diagnose obstacles without shame.
-5. **Memory & Context Continuity**: Remember past decisions, active goals, and pending commitments to build seamless continuity.
-
-## Core Answering Guidelines:
-1. "What should I work on today?" → Recommend their prescribed focus domains (${ctx.brainHealth?.weakest ?? "Focus"}) and explain why based on their recent performance.
-2. "Why did my Brain Momentum change?" → Break down their score (${ctx.momentum?.score ?? 50}/100) using consistency (${ctx.streak.current}-day streak), recent domain scores, and completed workouts.
-3. "What is my strongest area?" → Point to ${ctx.brainHealth?.best ?? "Memory"} and explain how their performance reflects high accuracy.
-4. "Give me a quick workout" → Suggest a 3-minute Quick Win session targeting ${ctx.brainHealth?.weakest ?? "Focus"}.
-5. "What have I improved this week?" → Highlight their positive trends and streak momentum.
-6. Connect in-app training with "Take It Into Real Life" everyday mental exercises.
-7. Be concise, motivating, and actionable (2-3 short paragraphs).`;
+Important Context Rules:
+1. Answer the user's actual question directly first (whether it is about brain training, a business decision, career dilemma, or personal habit).
+2. Only reference workout scores or activities when relevant to the user's question.
+3. Never invent user performance statistics.`;
 }

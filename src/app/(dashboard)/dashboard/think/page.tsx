@@ -106,62 +106,165 @@ export default function ThinkPage() {
     },
   ];
 
-  // Dynamic clarifying question based on situation
-  const getClarifyingQuestion = () => {
+  // Determine whether the user is genuinely comparing choices vs. solving a problem/situation
+  const isDecisionComparison = () => {
     const text = situationText.toLowerCase();
-    if (text.includes("job") || text.includes("career") || text.includes("interview")) {
-      return "What stage is breaking down most often: getting initial responses, or converting interviews into offers?";
-    }
-    if (text.includes("money") || text.includes("business") || text.includes("client") || text.includes("sales")) {
-      return "Are you speaking directly to warm qualified decision-makers, or relying mostly on passive channels (websites, cold forms)?";
-    }
-    if (text.includes("relationship") || text.includes("partner") || text.includes("family")) {
-      return "What is the single unspoken expectation that is creating tension in this dynamic?";
-    }
-    return "What is the single biggest unknown variable or bottleneck preventing clear progress right now?";
+    return (
+      selectedCategory === "decision" ||
+      /\b(should i .* or\b|between .* and\b|option a|option b|whether to .* or\b|two offers|torn between)\b/i.test(
+        text
+      )
+    );
   };
 
-  // Dynamic Situation Synthesis
+  // Dynamic clarifying question based on domain intelligence
+  const getClarifyingQuestion = () => {
+    const text = situationText.toLowerCase();
+    if (/\b(proposal|proposals|pitch|pitched|training.*organization|training.*organisation)\b/i.test(text)) {
+      return "What kind of responses have you been getting so far (price pushback, polite delays, or silence)—and were these proposals requested after a discovery call with the budget owner, or sent out cold?";
+    }
+    if (text.includes("job") || text.includes("career") || text.includes("interview")) {
+      return "What is the main sticking point right now: getting initial interview responses, converting interviews into offers, or deciding whether to leave your current role?";
+    }
+    if (text.includes("money") || text.includes("business") || text.includes("client") || text.includes("sales")) {
+      return "Where is the slowdown happening: getting enough qualified enquiries, converting enquiries into paying clients, or keeping profit after delivery costs?";
+    }
+    if (text.includes("relationship") || text.includes("partner") || text.includes("family")) {
+      return "When this tension comes up, what usually triggers it—and what deeper concern do you think each of you is trying to protect?";
+    }
+    if (text.includes("exam") || text.includes("study") || text.includes("learn")) {
+      return "When you study right now, are you mostly re-reading notes/watching videos, or testing yourself actively without looking at your material?";
+    }
+    return "What is the specific outcome you want here, and what has been the main obstacle holding back progress so far?";
+  };
+
+  // Dynamic Domain-Intelligent Situation Synthesis
   const getSituationSynthesis = () => {
+    const text = situationText.toLowerCase();
+    if (/\b(proposal|proposals|pitch|training.*organization|training.*organisation)\b/i.test(text)) {
+      return {
+        summary: situationText.trim(),
+        factors: [
+          "Pre-Proposal Qualification: Proposals sent before confirming urgency and budget with the actual decision-maker often stall in HR or procurement.",
+          "Business Outcome vs. Activity Framing: Corporate buyers approve solutions to costly performance gaps, not generic workshop brochures.",
+          "Perceived Commitment Risk: Organisations hesitate on large contracts with a new vendor unless offered a lower-friction diagnostic audit or pilot session first.",
+        ],
+        unknown: clarifyingAnswer.trim()
+          ? `Your diagnostic context: "${clarifyingAnswer.slice(0, 120)}"`
+          : "Whether a direct discovery conversation took place with the budget owner before the proposals were submitted.",
+      };
+    }
+    if (text.includes("relationship") || text.includes("partner") || text.includes("family")) {
+      return {
+        summary: situationText.trim(),
+        factors: [
+          "Surface Trigger vs. Deeper Need: Arguments usually start over a practical trigger while deeper needs (security, fairness, respect) go unspoken.",
+          "Timing of the Conversation: Raising sensitive topics during moments of stress triggers immediate defensiveness.",
+          "Shared Alignment: Framing the issue around a shared goal ('us vs. the problem') lowers resistance.",
+        ],
+        unknown: clarifyingAnswer.trim()
+          ? `Your diagnostic context: "${clarifyingAnswer.slice(0, 120)}"`
+          : "What shared priority both of you genuinely agree on when defensiveness is removed.",
+      };
+    }
     return {
-      summary: situationText.trim() || "You are assessing a critical path decision with competing trade-offs.",
+      summary: situationText.trim() || "Working through your situation with structured domain reasoning.",
       factors: [
-        "Positioning & Direct Targeting: Whether your current approach is reaching the right audience.",
-        "Resource Allocation: Balancing speed, capital, and emotional energy without burning out.",
-        "Execution Feedback Loop: Tightening the cycle between taking an action and testing results.",
+        "Root-Cause Diagnosis: Separating the visible symptom from the underlying bottleneck driving it.",
+        "Leverage & Constraints: Focusing effort on the variable you directly control without overextending resources.",
+        "Real-World Feedback: Applying a targeted adjustment and measuring the actual response.",
       ],
       unknown: clarifyingAnswer.trim()
-        ? `Clarified context: "${clarifyingAnswer.slice(0, 100)}..."`
-        : "The true conversion rate when you pitch directly to pre-qualified contacts.",
+        ? `Your diagnostic context: "${clarifyingAnswer.slice(0, 120)}"`
+        : "Which single constraint is having the biggest impact on your outcome right now.",
     };
   };
 
-  // Generated Realistic Options
+  // Generated Approaches (Options for Decisions, Strategic Approaches for Problems/Goals)
   const getOptions = (): OptionDetail[] => {
+    const text = `${situationText} ${clarifyingAnswer}`.toLowerCase();
+    if (/\b(proposal|proposals|pitch|training|client|sales|b2b)\b/i.test(text) && !isDecisionComparison()) {
+      return [
+        {
+          id: "A",
+          name: "Strategy 1: Problem-Focused Follow-Up & Pre-Proposal Discovery",
+          headline: "Re-engage warm prospects around their business bottleneck, and require a 15-minute discovery call with the budget owner before sending any new proposal.",
+          benefit: "Uncovers real budget and urgency upfront so you stop wasting time on unrequested documents.",
+          downside: "You send fewer total proposals, focusing strictly on qualified decision-makers.",
+          requires: "Reaching out to your top 2–3 warmest contacts with a brief question about their current priority.",
+        },
+        {
+          id: "B",
+          name: "Strategy 2: Reposition Around a Paid Pilot or Diagnostic Workshop",
+          headline: "Offer a focused, low-friction executive briefing or single-team pilot session as an entry point rather than pitching only a large annual contract.",
+          benefit: "Dramatically lowers buyer hesitation and builds trust with a new organisation quickly.",
+          downside: "Smaller initial contract value before expanding into the full engagement.",
+          requires: "Restructuring your proposal into a 2-tier offer (Pilot Entry + Full Programme).",
+        },
+        {
+          id: "C",
+          name: "Strategy 3: Reframe Proposal Around Quantified Business ROI",
+          headline: "Rewrite the executive summary around the organisation's costly performance gap and measurable outcomes rather than training modules.",
+          benefit: "Speaks the language of executives and budget owners who sign off on corporate spend.",
+          downside: "Requires asking tougher diagnostic questions about the client's metrics beforehand.",
+          requires: "Updating your proposal template to lead with client business outcomes.",
+        },
+      ];
+    }
+
+    if (!isDecisionComparison()) {
+      return [
+        {
+          id: "A",
+          name: "Approach 1: Address the Primary Bottleneck Directly",
+          headline: "Focus your immediate effort on the single root cause we identified rather than changing everything at once.",
+          benefit: "Produces the clearest feedback with minimal wasted effort.",
+          downside: "Requires saying no to secondary distractions while you fix the core issue.",
+          requires: "Direct action on the main constraint in your next working block.",
+        },
+        {
+          id: "B",
+          name: "Approach 2: Small-Scale Validation Before Full Commitment",
+          headline: "Test your adjusted approach on your highest-probability opportunity first and observe the real response.",
+          benefit: "Protects your downside while giving you real-world evidence.",
+          downside: "Takes a measured step first before scaling up.",
+          requires: "Applying the change to 1–3 concrete cases and reviewing the outcome.",
+        },
+        {
+          id: "C",
+          name: "Approach 3: Strengthen Core Positioning & Capability",
+          headline: "Upgrade the underlying skill, framing, or structure that is limiting your conversion or effectiveness.",
+          benefit: "Compounds your long-term results across every future opportunity.",
+          downside: "Takes deliberate preparation alongside your day-to-day execution.",
+          requires: "Targeted refinement of your method and a clear review checkpoint.",
+        },
+      ];
+    }
+
     return [
       {
         id: "A",
-        name: "Option A: Tighten & Optimize Existing Strategy",
-        headline: "Double down on your current path by refining the value proposition and targeting.",
-        benefit: "Low switching cost, leverages existing assets and momentum immediately.",
-        downside: "If the core premise is flawed, you risk continuing in an unprofitable direction.",
-        requires: "3–5 days of rigorous testing with measurable daily outreach.",
+        name: "Option A: Refine & Strengthen Your Current Path",
+        headline: "Improve execution and positioning within your existing setup before making a disruptive switch.",
+        benefit: "Preserves stability and leverages the assets and relationships you already have.",
+        downside: "If the underlying structure is fundamentally misaligned, incremental fixes may not be enough.",
+        requires: "Targeted adjustments and an honest review of whether results improve.",
       },
       {
         id: "B",
-        name: "Option B: Pivot to High-Leverage Pilot Experiment",
-        headline: "Test a direct, simplified 24-hour micro-offer on warm contacts before making large commitments.",
-        benefit: "Fastest clarity with real real-world validation in under 48 hours.",
-        downside: "Requires direct communication and confronting immediate market feedback.",
-        requires: "Crafting a 1-sentence value offer and sending 5 personal messages.",
+        name: "Option B: Phased Transition with Downside Protection",
+        headline: "Validate the new path in stages while protecting your current income, relationships, or obligations.",
+        benefit: "Gives you real-world proof before you make an irreversible commitment.",
+        downside: "Requires managing both tracks temporarily with disciplined boundaries.",
+        requires: "Setting a clear milestone that must be met before committing fully.",
       },
       {
         id: "C",
-        name: "Option C: Build Missing Core Capability First",
-        headline: "Pause active pitching to upgrade the primary bottleneck skill or portfolio proof.",
-        benefit: "Significantly higher conversion rate when you re-launch.",
-        downside: "Delays immediate cash flow and can become a form of productive procrastination.",
-        requires: "Strict 7-day learning sprint with a tangible output by day 7.",
+        name: "Option C: Direct Structural Change",
+        headline: "Commit directly to the new direction with a clear plan to manage the transition risks.",
+        benefit: "Focuses 100% of your energy and attention on the new path immediately.",
+        downside: "Carries higher pressure if the transition takes longer than expected.",
+        requires: "Confirmed runway and clear contingency planning.",
       },
     ];
   };
@@ -463,25 +566,35 @@ export default function ThinkPage() {
               onClick={handleProceedToOptions}
               className="inline-flex items-center gap-2 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 text-xs sm:text-sm font-bold shadow-md shadow-emerald-900/20 active:scale-95 transition"
             >
-              <span>Let&apos;s Investigate Options</span>
+              <span>
+                {isDecisionComparison()
+                  ? "Compare Options"
+                  : "Explore Strategic Approaches"}
+              </span>
               <ArrowRight className="h-4 w-4" />
             </button>
           </div>
         </div>
       )}
 
-      {/* ─── STAGE 3: OPTIONS COMPARISON (SECTION 15) ─── */}
+      {/* ─── STAGE 3: STRATEGIC APPROACHES OR OPTIONS COMPARISON (SECTION 15) ─── */}
       {step === 3 && (
         <div className="space-y-6 animate-fade-in">
           <div className="space-y-1">
             <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
-              STEP 3 OF 5 · EXPLORE OPTIONS
+              {isDecisionComparison()
+                ? "STEP 3 OF 5 · COMPARE OPTIONS"
+                : "STEP 3 OF 5 · STRATEGIC APPROACHES"}
             </span>
             <h2 className="text-xl sm:text-2xl font-black text-foreground">
-              You Have 3 Realistic Paths
+              {isDecisionComparison()
+                ? "Comparing Your Realistic Options"
+                : "3 Practical Approaches to Move Forward"}
             </h2>
             <p className="text-xs text-muted-foreground">
-              Compare benefits, downsides, and real requirements for each option.
+              {isDecisionComparison()
+                ? "Compare benefits, trade-offs, and requirements for each choice."
+                : "Select the strategic approach that best addresses the root cause we diagnosed."}
             </p>
           </div>
 

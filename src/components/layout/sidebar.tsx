@@ -14,13 +14,21 @@ import { useBrand } from "@/lib/brand-context";
 import { AkucheBrandLogo } from "@/components/brand/akuche-brand-logo";
 import { CharacterPreviewModal } from "@/components/guide/character-preview-modal";
 import { START_KUCHE_TOUR_EVENT } from "@/components/guide/kuche-companion";
+import { AKUCHE_APP_VERSION, AKUCHE_BUILD_ID } from "@/lib/version";
 
 const PRIMARY_NAV = [
-  { href: "/dashboard", label: "Home", iconKey: "dashboard" },
+  { href: "/dashboard", label: "Home", iconKey: "home" },
   { href: "/dashboard/ask", label: "Ask Akuche", iconKey: "ask" },
-  { href: "/dashboard/daily-challenge", label: "Train", iconKey: "train" },
-  { href: "/dashboard/goals", label: "Goals & Commitments", iconKey: "goals" },
-  { href: "/dashboard/progress", label: "Progress", iconKey: "progress" },
+  { href: "/dashboard/explore", label: "Explore", iconKey: "explore" },
+  { href: "/dashboard/progress", label: "My Progress", iconKey: "progress" },
+  { href: "/dashboard/profile", label: "My Profile", iconKey: "profile" },
+] as const;
+
+const WORKSPACE_NAV = [
+  { href: "/dashboard/business", label: "My Business", iconKey: "business" },
+  { href: "/dashboard/career", label: "My Career", iconKey: "career" },
+  { href: "/dashboard/potential", label: "My Potential", iconKey: "potential" },
+  { href: "/dashboard/life", label: "My Life", iconKey: "life" },
 ] as const;
 
 const MORE_NAV = [
@@ -154,6 +162,14 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
           </button>
 
           {PRIMARY_NAV.map((item) => renderNavItem(item))}
+
+          {/* Workspaces Section */}
+          <div className="pt-2 pb-1">
+            <span className="px-3 text-[10px] font-black uppercase tracking-wider text-muted-foreground/70 block mb-1">
+              Workspaces
+            </span>
+            {WORKSPACE_NAV.map((item) => renderNavItem(item))}
+          </div>
 
           {/* More dropdown */}
           <div>
@@ -301,9 +317,13 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
           )}
         </div>
 
-        <div className="border-t border-border px-4 py-3">
+        <div className="border-t border-border px-4 py-3 space-y-1">
           <p className="text-xs text-muted-foreground">
             {t.nav_tagline}
+          </p>
+          <p className="text-[10px] font-mono text-muted-foreground/80 flex items-center justify-between" data-testid="app-version-badge">
+            <span>AKUCHE v{AKUCHE_APP_VERSION}</span>
+            <span>{AKUCHE_BUILD_ID}</span>
           </p>
         </div>
       </aside>

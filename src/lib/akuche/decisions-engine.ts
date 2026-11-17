@@ -37,13 +37,63 @@ export interface AkucheDecisionRecord {
 }
 
 const DECISIONS_KEY = "akuche_decision_lab_records_v2";
+const LEGACY_DECISIONS_KEY = "akuche_decisions_v2";
 
+/**
+ * Authoritative Decision Lab store reader (Phase 3).
+ * Preserves and reconciles both `akuche_decision_lab_records_v2` and legacy `akuche_decisions_v2`
+ * without deleting either store.
+ */
 export function getDecisionRecords(): AkucheDecisionRecord[] {
   if (typeof window === "undefined") return [];
   try {
-    const raw = localStorage.getItem(DECISIONS_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw);
+    const rawPrimary = localStorage.getItem(DECISIONS_KEY);
+    const primaryRecords: AkucheDecisionRecord[] = rawPrimary ? JSON.parse(rawPrimary) : [];
+
+    // Safe non-destructive reconciliation with legacy store (`akuche_decisions_v2`)
+    const rawLegacy = localStorage.getItem(LEGACY_DECISIONS_KEY);
+    if (!rawLegacy) return primaryRecords;
+
+    const legacyRecords: any[] = JSON.parse(rawLegacy);
+    if (!Array.isArray(legacyRecords) || legacyRecords.length === 0) {
+      return primaryRecords;
+    }
+
+    const existingIds = new Set(primaryRecords.map((r) => r.id));
+    const existingTitles = new Set(
+      primaryRecords.map((r) => r.title.toLowerCase().trim())
+    );
+
+    const reconciled = [...primaryRecords];
+    for (const leg of legacyRecords) {
+      if (!leg || typeof leg.title !== "string") continue;
+      const normTitle = leg.title.toLowerCase().trim();
+      if (existingIds.has(leg.id) || existingTitles.has(normTitle)) continue;
+
+      reconciled.push({
+        id: leg.id || `dec-leg-${Date.now()}`,
+        title: leg.title,
+        category: "Business",
+        optionA: leg.optionsConsidered?.[0]?.name || leg.chosenOption || "Option A",
+        optionB: leg.optionsConsidered?.[1]?.name || "Alternative Option",
+        advantagesA: [leg.optionsConsidered?.[0]?.pros || "Primary path advantage"],
+        advantagesB: [leg.optionsConsidered?.[1]?.pros || "Alternative path advantage"],
+        risksA: [leg.optionsConsidered?.[0]?.cons || "Execution risk"],
+        risksB: [leg.optionsConsidered?.[1]?.cons || "Opportunity cost"],
+        worstCaseA: "Manageable downside",
+        worstCaseB: "Manageable downside",
+        isReversible: true,
+        experiment24h: leg.expectedOutcome || "Monitor initial outcome",
+        finalChoice: leg.chosenOption || leg.finalChoice || "Selected Option",
+        rationale: leg.rationale || leg.expectedOutcome || "",
+        actionSteps: [],
+        status: leg.status === "reviewed" ? "reviewed" : "active",
+        reviewDueAt: leg.reviewDate || new Date().toISOString(),
+        createdAt: leg.createdAt || new Date().toISOString(),
+      });
+    }
+
+    return reconciled;
   } catch {
     return [];
   }
@@ -96,6 +146,57 @@ export function saveDecisionRecord(
   });
 
   return newRecord;
+}
+
+export function updateDecisionRecord(
+  id: string,
+  updates: Partial<Omit<AkucheDecisionRecord, "id" | "createdAt">>
+): AkucheDecisionRecord | null {
+  const records = getDecisionRecords();
+  const index = records.findIndex((r) => r.id === id);
+  if (index < 0) return null;
+
+  const updated: AkucheDecisionRecord = {
+    ...records[index],
+    ...updates,
+  };
+  records[index] = updated;
+
+  if (typeof window !== "undefined") {
+    localStorage.setItem(DECISIONS_KEY, JSON.stringify(records));
+  }
+
+  // Keep Context Profile decision memory synchronized
+  saveMemoryItem({
+    category: "decision",
+    title: `Decision: ${updated.title}`,
+    content: `Chose: ${updated.finalChoice}. Rationale: ${updated.rationale}`,
+    sourceContext: "Decision Lab",
+  });
+
+  return updated;
+}
+
+export function reopenDecisionRecord(id: string): AkucheDecisionRecord | null {
+  const records = getDecisionRecords();
+  const index = records.findIndex((r) => r.id === id);
+  if (index < 0) return null;
+
+  const nextReview = new Date();
+  nextReview.setDate(nextReview.getDate() + 30);
+
+  const reopened: AkucheDecisionRecord = {
+    ...records[index],
+    status: "active",
+    reviewDueAt: nextReview.toISOString(),
+  };
+  records[index] = reopened;
+
+  if (typeof window !== "undefined") {
+    localStorage.setItem(DECISIONS_KEY, JSON.stringify(records));
+  }
+
+  return reopened;
 }
 
 export function submitDecisionReview(

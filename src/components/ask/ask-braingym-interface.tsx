@@ -5,8 +5,24 @@ import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
+import { createClient } from "@/lib/supabase/client";
 import { SocraticThinkingCards } from "@/app/api/ai/ask/route";
-import { saveGoal } from "@/lib/goals/goals-engine";
+import { saveGoal, getActiveGoal } from "@/lib/goals/goals-engine";
+import { getDecisionRecords } from "@/lib/akuche/decisions-engine";
+import {
+  isMemoryEnabled,
+  getMemoryItems,
+  getCommitments,
+  getLatestClaritySnapshot,
+  saveClaritySnapshot,
+  recordThinkingMirrorObservation,
+  getConversationThreads,
+  saveConversationThread,
+  syncAkucheIntelligenceWithSupabase,
+  AkucheClaritySnapshot,
+  AkucheThinkingMirrorPattern,
+} from "@/lib/akuche/memory-engine";
+import { LiveClaritySnapshot } from "@/components/akuche/live-clarity-snapshot";
 import { ContextualGuidanceBanner } from "@/components/layout/contextual-guidance-banner";
 import {
   Mic,
@@ -28,6 +44,10 @@ import {
   PlusCircle,
   Compass as CompassIcon,
   X,
+  ShieldAlert,
+  Brain,
+  Scale,
+  RotateCcw,
 } from "lucide-react";
 
 interface ChatMessage {
@@ -35,6 +55,11 @@ interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   cards?: SocraticThinkingCards;
+  stageLabel?: string;
+  cognitiveSkill?: string;
+  hasSufficientContextForPlan?: boolean;
+  isGenuineDecisionChoice?: boolean;
+  responseSource?: "live_ai" | "fallback_engine" | "safety_intercept" | "security_guard";
 }
 
 const CATEGORY_PROMPTS = [
@@ -221,6 +246,14 @@ export function AskBrainGymInterface() {
   const [isListening, setIsListening] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
 
+  // Akuche Signature System Modes & Live Clarity Snapshot
+  const [chatMode, setChatMode] = useState<
+    "coaching_chat" | "devils_advocate" | "decision_lab" | "thinking_mirror"
+  >("coaching_chat");
+  const [threadId, setThreadId] = useState<string>("");
+  const [claritySnapshot, setClaritySnapshot] = useState<AkucheClaritySnapshot | null>(null);
+  const [thinkingMirror, setThinkingMirror] = useState<AkucheThinkingMirrorPattern | null>(null);
+
   // Discovery Modal ("I'M NOT SURE WHAT I NEED")
   const [showDiscoveryModal, setShowDiscoveryModal] = useState(false);
 
@@ -240,13 +273,56 @@ export function AskBrainGymInterface() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<any>(null);
 
-  // Handle URL query parameter `?prompt=...` on mount
+  // Restore latest conversation thread and Clarity Snapshot on mount, and sync with Supabase when authenticated
   useEffect(() => {
+    const latestSnap = getLatestClaritySnapshot();
+    if (latestSnap) {
+      setClaritySnapshot(latestSnap);
+    }
+
     const promptParam = searchParams?.get("prompt");
     if (promptParam && promptParam.trim()) {
-      handleSend(promptParam.trim());
+      const freshId = "thread_" + Date.now();
+      setThreadId(freshId);
+      handleSend(promptParam.trim(), freshId);
+      return;
     }
-  }, [searchParams]);
+
+    const existingThreads = getConversationThreads();
+    if (existingThreads.length > 0 && existingThreads[0].messages.length > 0) {
+      setThreadId(existingThreads[0].id);
+      setChatMode(existingThreads[0].mode || "coaching_chat");
+      setMessages(
+        existingThreads[0].messages.map((m) => ({
+          id: m.id,
+          role: m.role,
+          content: m.content,
+          cards: m.cards,
+        }))
+      );
+    } else {
+      setThreadId("thread_" + Date.now());
+    }
+
+    if (user?.id) {
+      const supabase = createClient();
+      syncAkucheIntelligenceWithSupabase(supabase, user.id)
+        .then(() => {
+          const syncedSnap = getLatestClaritySnapshot();
+          if (syncedSnap) setClaritySnapshot(syncedSnap);
+        })
+        .catch(() => {
+          // Offline or unapplied migration fallback is graceful
+        });
+    }
+  }, [searchParams, user?.id]);
+
+  const handleStartNewSession = () => {
+    const freshId = "thread_" + Date.now();
+    setThreadId(freshId);
+    setMessages([]);
+    setThinkingMirror(null);
+  };
 
   // Synchronous auto-resize on input
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -298,9 +374,12 @@ export function AskBrainGymInterface() {
     }
   };
 
-  const handleSend = async (queryText?: string) => {
+  const handleSend = async (queryText?: string, overrideThreadId?: string) => {
     const textToSend = (queryText || input).trim();
     if (!textToSend || loading) return;
+
+    const activeThreadId = overrideThreadId || threadId || "thread_" + Date.now();
+    if (!threadId) setThreadId(activeThreadId);
 
     const userMessage: ChatMessage = {
       id: "user_" + Date.now(),
@@ -308,7 +387,8 @@ export function AskBrainGymInterface() {
       content: textToSend,
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    const updatedWithUser = [...messages, userMessage];
+    setMessages(updatedWithUser);
     setInput("");
     if (textareaRef.current) {
       textareaRef.current.style.height = "40px";
@@ -316,14 +396,67 @@ export function AskBrainGymInterface() {
     setLoading(true);
 
     try {
+      // Gather client-side Context Profile & Decision records for personalized coaching
+      const memoryEnabled = isMemoryEnabled();
+      const memories = memoryEnabled ? getMemoryItems() : [];
+      const commitments = memoryEnabled
+        ? getCommitments()
+            .filter((c) => c.status === "pending")
+            .map((c) => ({ title: c.title, deadline: c.deadline, status: c.status }))
+        : [];
+      const decisions = memoryEnabled
+        ? getDecisionRecords().slice(0, 5).map((d) => ({
+            title: d.title,
+            chosenOption: d.finalChoice,
+            rationale: d.rationale,
+            status: d.status,
+          }))
+        : [];
+      let activeGoalsList: Array<{ title: string; currentSituation: string; nextAction: string }> = [];
+      try {
+        const activeGoal = await getActiveGoal();
+        if (activeGoal) {
+          activeGoalsList = [
+            {
+              title: activeGoal.title,
+              currentSituation: activeGoal.currentSituation,
+              nextAction: activeGoal.nextAction,
+            },
+          ];
+        }
+      } catch {
+        // Ignore goal fetch error if offline
+      }
+
       const response = await fetch("/api/ai/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: textToSend,
-          history: messages.slice(-4),
+          mode: chatMode === "coaching_chat" ? "coaching_chat" : chatMode,
+          history: messages.slice(-8),
+          clientContext: {
+            memoryEnabled,
+            memories,
+            activeGoals: activeGoalsList,
+            pendingCommitments: commitments,
+            recentDecisions: decisions,
+          },
         }),
       });
+
+      if (response.status === 401) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: "auth_" + Date.now(),
+            role: "assistant",
+            content:
+              "Please sign in to your Akuche account to continue your personalised thinking and decision-coaching session.",
+          },
+        ]);
+        return;
+      }
 
       if (!response.ok) {
         throw new Error(`Server returned status ${response.status}`);
@@ -336,9 +469,49 @@ export function AskBrainGymInterface() {
         role: "assistant",
         content: data.reply || "Let's work through this step by step.",
         cards: data.structuredCards || undefined,
+        stageLabel: data.classification?.stageLabel,
+        cognitiveSkill: data.classification?.cognitiveFocus?.primarySkill,
+        hasSufficientContextForPlan: Boolean(data.classification?.hasSufficientContextForPlan),
+        isGenuineDecisionChoice: Boolean(data.classification?.isGenuineDecisionChoice),
+        responseSource: data.responseSource,
       };
 
-      setMessages((prev) => [...prev, assistantMessage]);
+      const finalMessages = [...updatedWithUser, assistantMessage];
+      setMessages(finalMessages);
+
+      // Persist thread so refreshing never loses conversation context
+      saveConversationThread({
+        id: activeThreadId,
+        title: finalMessages[0]?.content.slice(0, 60) || "Akuche Coaching Session",
+        mode: chatMode,
+        messages: finalMessages.map((m) => ({
+          id: m.id,
+          role: m.role,
+          content: m.content,
+          cards: m.cards,
+          createdAt: new Date().toISOString(),
+        })),
+        updatedAt: new Date().toISOString(),
+      });
+
+      // Update Live Clarity Snapshot if returned
+      if (data.claritySnapshot) {
+        const savedSnap = saveClaritySnapshot(data.claritySnapshot);
+        setClaritySnapshot(savedSnap);
+      }
+
+      // Record Thinking Mirror observation if returned
+      if (data.thinkingMirrorObservation) {
+        const savedPattern = recordThinkingMirrorObservation(data.thinkingMirrorObservation);
+        setThinkingMirror(savedPattern);
+      }
+
+      if (user?.id) {
+        const supabase = createClient();
+        syncAkucheIntelligenceWithSupabase(supabase, user.id).catch(() => {
+          // Non-blocking background sync
+        });
+      }
     } catch (err) {
       setMessages((prev) => [
         ...prev,
@@ -405,28 +578,113 @@ export function AskBrainGymInterface() {
   return (
     <div className="mx-auto w-full max-w-2xl px-3 sm:px-4 py-3 pb-36 space-y-4">
       {/* Persistent Page Header */}
-      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/60 pb-3">
-        <div className="space-y-0.5">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-primary">
-            <Sparkles className="h-3 w-3" />
-            <span>AI Thinking &amp; Coaching Partner</span>
+      <header className="flex flex-col gap-3 border-b border-border/60 pb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="space-y-0.5">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-primary">
+              <Sparkles className="h-3 w-3" />
+              <span>THINK CLEARER • SEE FURTHER • DECIDE BETTER</span>
+            </div>
+            <h1 className="text-xl sm:text-2xl font-black text-foreground font-heading tracking-tight">
+              ASK AKUCHE
+            </h1>
+            <p className="text-xs text-muted-foreground">
+              Your AI personal intelligence &amp; decision-making coach.
+            </p>
           </div>
-          <h1 className="text-xl sm:text-2xl font-black text-foreground font-heading tracking-tight">
-            ASK AKUCHE
-          </h1>
-          <p className="text-xs text-muted-foreground">
-            Tell Akuche what you are trying to understand, decide or accomplish.
-          </p>
+
+          <div className="flex items-center gap-2 self-start sm:self-auto pt-1">
+            {messages.length > 0 && (
+              <button
+                type="button"
+                onClick={handleStartNewSession}
+                className="inline-flex items-center gap-1 rounded-lg border border-border bg-card hover:bg-accent px-2.5 py-1.5 text-xs font-bold text-foreground transition"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                <span>New Session</span>
+              </button>
+            )}
+            <Link
+              href="/dashboard/profile"
+              className="inline-flex items-center gap-1 rounded-lg border border-primary/30 bg-primary/10 px-2.5 py-1.5 text-xs font-bold text-primary hover:bg-primary/20 transition"
+            >
+              <Brain className="h-3.5 w-3.5" />
+              <span>Context Profile</span>
+            </Link>
+            <Link
+              href="/dashboard/guide?step=3"
+              className="inline-flex items-center gap-1 text-xs font-bold text-muted-foreground hover:text-primary transition"
+            >
+              <CompassIcon className="h-3.5 w-3.5" />
+              <span>Guide</span>
+            </Link>
+          </div>
         </div>
 
-        <Link
-          href="/dashboard/guide?step=3"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline self-start sm:self-auto pt-1"
-        >
-          <CompassIcon className="h-3.5 w-3.5" />
-          <span>Interactive Guide</span>
-        </Link>
+        {/* Signature Systems Mode Switcher */}
+        <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+          <button
+            type="button"
+            onClick={() => setChatMode("coaching_chat")}
+            className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition ${
+              chatMode === "coaching_chat"
+                ? "bg-primary text-primary-foreground shadow-xs"
+                : "bg-card border border-border/80 text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            <span>Coaching Chat</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setChatMode("devils_advocate")}
+            className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition ${
+              chatMode === "devils_advocate"
+                ? "bg-amber-600 text-white shadow-xs"
+                : "bg-card border border-border/80 text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <ShieldAlert className="h-3.5 w-3.5" />
+            <span>Devil&apos;s Advocate</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setChatMode("decision_lab")}
+            className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition ${
+              chatMode === "decision_lab"
+                ? "bg-indigo-600 text-white shadow-xs"
+                : "bg-card border border-border/80 text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Scale className="h-3.5 w-3.5" />
+            <span>Decision Simulator</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setChatMode("thinking_mirror")}
+            className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition ${
+              chatMode === "thinking_mirror"
+                ? "bg-purple-600 text-white shadow-xs"
+                : "bg-card border border-border/80 text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Brain className="h-3.5 w-3.5" />
+            <span>Thinking Mirror</span>
+          </button>
+        </div>
       </header>
+
+      {/* Live Clarity Snapshot & Thinking Mirror Panel */}
+      {(claritySnapshot || thinkingMirror) && (
+        <LiveClaritySnapshot
+          snapshot={claritySnapshot}
+          thinkingMirror={thinkingMirror}
+          compact={messages.length === 0}
+        />
+      )}
 
       {/* 1. CLEAN DOORWAY PROMPT IN EMPTY STATE */}
       {messages.length === 0 && (
@@ -454,6 +712,31 @@ export function AskBrainGymInterface() {
               msg.role === "user" ? "items-end" : "items-start"
             }`}
           >
+            {msg.role === "assistant" && (msg.stageLabel || msg.cognitiveSkill || msg.responseSource) && (
+              <div className="flex flex-wrap items-center gap-1.5 mb-1.5 pl-1">
+                {msg.stageLabel && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 border border-primary/25 px-2.5 py-0.5 text-[10px] font-bold text-primary">
+                    <Sparkles className="h-2.5 w-2.5" />
+                    {msg.stageLabel}
+                  </span>
+                )}
+                {msg.cognitiveSkill && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-purple-500/10 border border-purple-500/25 px-2.5 py-0.5 text-[10px] font-semibold text-purple-600 dark:text-purple-400">
+                    <Brain className="h-2.5 w-2.5" />
+                    {msg.cognitiveSkill}
+                  </span>
+                )}
+                {msg.responseSource === "fallback_engine" && (
+                  <span
+                    title="OpenAI live API key is inactive or unreachable; response generated by Akuche's deterministic 5-stage Socratic engine."
+                    className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400"
+                  >
+                    Socratic Reasoning Engine (Fallback Mode)
+                  </span>
+                )}
+              </div>
+            )}
+
             <div
               className={`rounded-2xl sm:rounded-3xl px-4 py-3.5 text-xs sm:text-sm max-w-[95%] sm:max-w-[90%] leading-relaxed break-words whitespace-pre-wrap ${
                 msg.role === "user"
@@ -468,7 +751,7 @@ export function AskBrainGymInterface() {
               )}
             </div>
 
-            {/* Action Conversion Loop Buttons & Socratic Thinking Pills (Phase 2) */}
+            {/* Socratic Thinking Pills & Stage-Appropriate Action Conversion Buttons */}
             {msg.role === "assistant" && (
               <div className="w-full mt-2 pl-0.5 space-y-1.5">
                 <div className="flex flex-wrap items-center gap-1.5">
@@ -490,44 +773,48 @@ export function AskBrainGymInterface() {
                   >
                     <span>🎯 Challenge assumptions</span>
                   </button>
+                  {(msg.isGenuineDecisionChoice || chatMode === "decision_lab") && (
+                    <button
+                      onClick={() => handleSend("Can you break down and compare my realistic options with pros, cons, and trade-offs?")}
+                      className="inline-flex items-center gap-1 rounded-xl bg-card border border-border/80 hover:border-blue-500/50 hover:bg-blue-500/5 text-foreground px-2.5 py-1 text-[11px] font-semibold transition active:scale-95 touch-manipulation shadow-xs"
+                    >
+                      <span>⚖️ Compare options</span>
+                    </button>
+                  )}
                   <button
-                    onClick={() => handleSend("Can you break down and compare my top 2 to 3 realistic options with pros, cons, and trade-offs?")}
-                    className="inline-flex items-center gap-1 rounded-xl bg-card border border-border/80 hover:border-blue-500/50 hover:bg-blue-500/5 text-foreground px-2.5 py-1 text-[11px] font-semibold transition active:scale-95 touch-manipulation shadow-xs"
-                  >
-                    <span>⚖️ Compare options</span>
-                  </button>
-                  <button
-                    onClick={() => handleSend("Convert this into a structured 3-step action plan for Today, Tomorrow, and This Week.")}
+                    onClick={() => handleSend("Based on what we have discussed so far, let's develop a practical strategy and next steps.")}
                     className="inline-flex items-center gap-1 rounded-xl bg-card border border-border/80 hover:border-emerald-500/50 hover:bg-emerald-500/5 text-foreground px-2.5 py-1 text-[11px] font-semibold transition active:scale-95 touch-manipulation shadow-xs"
                   >
-                    <span>📋 Action plan</span>
+                    <span>📋 Practical strategy</span>
                   </button>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                  <button
-                    onClick={() => {
-                      setPlanTitle("My 30-Day Execution Plan");
-                      setPlanAction("Execute Step 1 before 6 PM");
-                      setShowPlanModal(true);
-                    }}
-                    className="inline-flex items-center gap-1 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 px-3 py-1.5 text-[11px] font-bold transition active:scale-95 touch-manipulation"
-                  >
-                    <PlusCircle className="h-3.5 w-3.5" />
-                    <span>CREATE MY PLAN</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setPlanTitle("Achieve Target Goal");
-                      setPlanAction("Complete today's milestone");
-                      setShowPlanModal(true);
-                    }}
-                    className="inline-flex items-center gap-1 rounded-xl bg-muted hover:bg-accent text-foreground px-3 py-1.5 text-[11px] font-bold transition active:scale-95 touch-manipulation"
-                  >
-                    <Target className="h-3.5 w-3.5 text-emerald-500" />
-                    <span>SET A GOAL</span>
-                  </button>
-                </div>
+                {msg.hasSufficientContextForPlan && (
+                  <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                    <button
+                      onClick={() => {
+                        setPlanTitle("Decision & Execution Plan");
+                        setPlanAction("Complete Priority 1 and review progress at the 7-day checkpoint");
+                        setShowPlanModal(true);
+                      }}
+                      className="inline-flex items-center gap-1 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 px-3 py-1.5 text-[11px] font-bold transition active:scale-95 touch-manipulation"
+                    >
+                      <PlusCircle className="h-3.5 w-3.5" />
+                      <span>CREATE MY PLAN</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setPlanTitle("Achieve Target Goal");
+                        setPlanAction("Complete Priority 1 milestone");
+                        setShowPlanModal(true);
+                      }}
+                      className="inline-flex items-center gap-1 rounded-xl bg-muted hover:bg-accent text-foreground px-3 py-1.5 text-[11px] font-bold transition active:scale-95 touch-manipulation"
+                    >
+                      <Target className="h-3.5 w-3.5 text-emerald-500" />
+                      <span>SET A GOAL</span>
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 
@@ -602,13 +889,13 @@ export function AskBrainGymInterface() {
                   </div>
                 )}
 
-                {/* TODAY'S ACTION ASSIGNMENT (SECTION 10) */}
+                {/* STAGE 5: REASONED EXECUTION PLAN & REVIEW CHECKPOINT */}
                 {msg.cards.mission && (
                   <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-primary/40 bg-gradient-to-br from-primary/10 via-card to-card p-4 sm:p-5 shadow-md">
                     <div className="flex items-center justify-between gap-2 mb-2">
                       <span className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-2.5 py-1 text-[11px] font-black text-primary-foreground shadow-sm">
                         <Target className="h-3.5 w-3.5" />
-                        TODAY'S ACTION ASSIGNMENT
+                        REASONED EXECUTION PLAN &amp; REVIEW CHECKPOINT
                       </span>
                       <span className="inline-flex items-center gap-1 text-[11px] font-bold text-muted-foreground">
                         <Clock className="h-3.5 w-3.5" />
@@ -697,7 +984,7 @@ export function AskBrainGymInterface() {
       )}
 
       {/* 4. FIXED BOTTOM INPUT BAR WITH PERSISTENT HORIZONTAL PROMPTS STRIP */}
-      <div className="fixed inset-x-0 bottom-16 lg:bottom-4 z-30 px-3 sm:px-4">
+      <div className="fixed inset-x-0 bottom-[calc(3.75rem+env(safe-area-inset-bottom))] lg:bottom-4 z-30 px-3 sm:px-4">
         <div className="mx-auto max-w-2xl space-y-1.5">
           {/* Scrollable Quick Prompts Ribbon (Always Accessible on Mobile) */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-[11px] font-bold scrollbar-none">

@@ -9,14 +9,21 @@ import {
   saveMemoryItem,
   updateMemoryItem,
   deleteMemoryItem,
+  confirmMemoryItem,
   isMemoryEnabled,
   setMemoryEnabled,
   calculateActionStreak,
   getPersonalInsights,
+  getLatestClaritySnapshot,
+  getThinkingMirrorPatterns,
+  syncAkucheIntelligenceWithSupabase,
   AkucheMemoryItem,
   AkuchePersonalInsight,
+  AkucheClaritySnapshot,
+  AkucheThinkingMirrorPattern,
 } from "@/lib/akuche/memory-engine";
 import { getDecisionRecords, AkucheDecisionRecord } from "@/lib/akuche/decisions-engine";
+import { LiveClaritySnapshot } from "@/components/akuche/live-clarity-snapshot";
 import { ContextualGuidanceBanner } from "@/components/layout/contextual-guidance-banner";
 import { Avatar } from "@/components/ui/avatar";
 import { AppInstallCard } from "@/components/dashboard/app-install-card";
@@ -51,6 +58,8 @@ export default function MyAkuchePage() {
   const [streakData, setStreakData] = useState({ currentStreak: 1, bestStreak: 3, totalActionsCompleted: 0 });
   const [decisions, setDecisions] = useState<AkucheDecisionRecord[]>([]);
   const [insights, setInsights] = useState<AkuchePersonalInsight[]>([]);
+  const [claritySnapshot, setClaritySnapshot] = useState<AkucheClaritySnapshot | null>(null);
+  const [thinkingPatterns, setThinkingPatterns] = useState<AkucheThinkingMirrorPattern[]>([]);
   const [profileData, setProfileData] = useState<{
     name: string;
     occupation: string;
@@ -75,8 +84,20 @@ export default function MyAkuchePage() {
     setStreakData(calculateActionStreak());
     setDecisions(getDecisionRecords());
     setInsights(getPersonalInsights());
+    setClaritySnapshot(getLatestClaritySnapshot());
+    setThinkingPatterns(getThinkingMirrorPatterns());
 
     if (user) {
+      syncAkucheIntelligenceWithSupabase(supabase, user.id)
+        .then(() => {
+          setMemoryItems(getMemoryItems());
+          setClaritySnapshot(getLatestClaritySnapshot());
+          setThinkingPatterns(getThinkingMirrorPatterns());
+        })
+        .catch(() => {
+          // Graceful fallback if offline
+        });
+
       supabase
         .from("profiles")
         .select("name, username")
@@ -219,13 +240,22 @@ export default function MyAkuchePage() {
         </div>
       </div>
 
+      {/* ─── LIVE CLARITY SNAPSHOT (COMPONENT C) ─── */}
+      {claritySnapshot && (
+        <LiveClaritySnapshot
+          snapshot={claritySnapshot}
+          thinkingMirror={thinkingPatterns[0] || null}
+          onMemoryConfirmed={refresh}
+        />
+      )}
+
       {/* ─── INVITE FRIENDS & SHARE AKUCHE APP LINK (PROMINENT AT TOP OF PROFILE) ─── */}
       <InviteFriendsCard />
 
       {/* ─── APP INSTALL CARD (EASY MOBILE & HOME SCREEN ACCESS) ─── */}
       <AppInstallCard variant="banner" />
 
-      {/* ─── 2. "WHAT AKUCHE KNOWS ABOUT ME" (TRANSPARENT MEMORY SECTION 21 & 48) ─── */}
+      {/* ─── 2. CONTEXT PROFILE: "WHAT AKUCHE KNOWS ABOUT ME" (COMPONENT B) ─── */}
       <div className="rounded-3xl border border-border/80 bg-card p-5 sm:p-6 shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/60 pb-3">
           <div>
@@ -234,11 +264,13 @@ export default function MyAkuchePage() {
                 <Brain className="h-4 w-4" />
               </span>
               <h2 className="text-base sm:text-lg font-black tracking-tight text-foreground">
-                What Akuche Knows About Me
+                Context Profile: What Akuche Knows About Me
               </h2>
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Transparent, user-controlled memory used to personalize your thinking sessions.
+              Transparent, user-controlled intelligence profile distinguishing{" "}
+              <strong className="text-emerald-600 dark:text-emerald-400">Confirmed Facts</strong> from{" "}
+              <strong className="text-amber-600 dark:text-amber-400">AI Interpretations</strong>.
             </p>
           </div>
 
@@ -360,14 +392,37 @@ export default function MyAkuchePage() {
               ) : (
                 <>
                   <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex flex-wrap items-center gap-1.5">
                       <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-black uppercase text-emerald-600 dark:text-emerald-400">
                         {item.category}
                       </span>
+                      {item.verificationStatus === "ai_interpreted" ? (
+                        <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/15 border border-amber-500/30 px-1.5 py-0.5 text-[9px] font-bold text-amber-600 dark:text-amber-400">
+                          <Sparkles className="h-2.5 w-2.5" />
+                          AI Interpretation
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/15 border border-emerald-500/30 px-1.5 py-0.5 text-[9px] font-bold text-emerald-600 dark:text-emerald-400">
+                          <CheckCircle2 className="h-2.5 w-2.5" />
+                          Confirmed Fact
+                        </span>
+                      )}
                       <h4 className="text-xs font-bold text-foreground">{item.title}</h4>
                     </div>
 
                     <div className="flex items-center gap-1">
+                      {item.verificationStatus === "ai_interpreted" && (
+                        <button
+                          onClick={() => {
+                            confirmMemoryItem(item.id);
+                            refresh();
+                          }}
+                          className="rounded-md bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-0.5 text-[10px] font-bold transition"
+                          title="Confirm this interpretation as a verified fact"
+                        >
+                          Confirm
+                        </button>
+                      )}
                       <button
                         onClick={() => {
                           setEditingMemoryId(item.id);
@@ -400,6 +455,55 @@ export default function MyAkuchePage() {
                   )}
                 </>
               )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ─── 2B. THINKING MIRROR (SIGNATURE SYSTEM #2) ─── */}
+      <div className="rounded-3xl border border-purple-500/30 bg-card p-5 sm:p-6 shadow-sm space-y-3">
+        <div className="flex items-center justify-between border-b border-border/60 pb-3">
+          <div className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-500/15 text-purple-600 dark:text-purple-400">
+              <Brain className="h-4 w-4" />
+            </span>
+            <div>
+              <h3 className="text-base font-bold text-foreground">
+                Thinking Mirror ({thinkingPatterns.length})
+              </h3>
+              <p className="text-[11px] text-muted-foreground">
+                Observed cognitive patterns, decision habits, and potential blind spots from your coaching sessions.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/dashboard/ask"
+            className="text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline shrink-0"
+          >
+            Reflect in Chat →
+          </Link>
+        </div>
+
+        <div className="space-y-2.5">
+          {thinkingPatterns.map((p) => (
+            <div
+              key={p.id}
+              className="rounded-2xl border border-border/70 bg-background/60 p-3.5 space-y-1.5 text-xs"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-bold text-foreground">{p.patternName}</span>
+                <span className="rounded-full bg-purple-500/15 px-2 py-0.5 text-[10px] font-bold text-purple-600 dark:text-purple-300">
+                  {p.type === "blind_spot"
+                    ? "Blind Spot Watch"
+                    : p.type === "strength"
+                    ? "Cognitive Strength"
+                    : "Decision Habit"}
+                </span>
+              </div>
+              <p className="text-muted-foreground leading-relaxed">{p.observation}</p>
+              <p className="text-purple-600 dark:text-purple-300 font-medium italic">
+                Self-Awareness Question: &ldquo;{p.selfAwarenessPrompt}&rdquo;
+              </p>
             </div>
           ))}
         </div>

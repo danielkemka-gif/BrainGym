@@ -4,9 +4,10 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import { NotificationBell } from "@/components/layout/notification-bell";
-import { Crown, Flame } from "lucide-react";
+import { Crown, Flame, Search } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { AkucheBrandLogo } from "@/components/brand/akuche-brand-logo";
+import { OPEN_NAVIGATOR_EVENT } from "@/components/layout/feature-navigator";
 
 interface TopbarProps {
   onMenuClick: () => void;
@@ -63,8 +64,19 @@ export function Topbar({ onMenuClick, userName }: TopbarProps) {
         </div>
       </div>
 
-      {/* Right: Pro Version Button + Streak + Notification Bell */}
-      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+      {/* Right: Search/Explore + Pro Version Button + Streak + Notification Bell */}
+      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        {/* Quick Explore / Search Trigger for Mobile & Desktop */}
+        <button
+          type="button"
+          onClick={() => window.dispatchEvent(new Event(OPEN_NAVIGATOR_EVENT))}
+          aria-label="Search and explore all Akuche features"
+          title="Explore all features (Ctrl+K)"
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card/80 text-muted-foreground hover:bg-accent hover:text-foreground transition active:scale-95 touch-manipulation"
+        >
+          <Search className="h-4 w-4 text-primary" />
+        </button>
+
         {/* Compact Pro Button */}
         <Link
           href="/pricing"

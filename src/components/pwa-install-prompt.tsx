@@ -85,7 +85,7 @@ export function PWAInstallPrompt() {
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 50 }}
-        className="fixed bottom-16 sm:bottom-6 left-3 right-3 sm:left-auto sm:right-6 sm:w-[420px] z-50 pointer-events-auto"
+        className="fixed bottom-[calc(4.25rem+env(safe-area-inset-bottom))] sm:bottom-6 left-3 right-3 sm:left-auto sm:right-6 sm:w-[420px] z-50 pointer-events-auto"
       >
         <div className="rounded-3xl bg-background/95 border-2 border-emerald-500/40 shadow-2xl p-4 sm:p-5 backdrop-blur-xl space-y-3.5 text-foreground">
           {/* Header with Akuche Vector Mark */}

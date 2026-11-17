@@ -2,15 +2,15 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "AKUCHE — Train Your Mind. Transform Your Life.",
+    name: "AKUCHE — Personal Clarity Intelligence",
     short_name: "AKUCHE",
     description:
-      "Akuche is an AI coach that trains the mind to make better decisions in business, relationships and everyday life.",
+      "Understand Better. Move Forward. Your personal clarity intelligence for navigating life, work, and business.",
     start_url: "/dashboard",
     display: "standalone",
     background_color: "#F7F9F5",
     theme_color: "#167A52",
-    orientation: "portrait",
+    orientation: "any",
     scope: "/",
     lang: "en",
     prefer_related_applications: false,
@@ -67,29 +67,34 @@ export default function manifest(): MetadataRoute.Manifest {
     ],
     shortcuts: [
       {
-        name: "Train Mind",
-        short_name: "Train",
-        url: "/dashboard/daily-challenge",
+        name: "My Business",
+        short_name: "Business",
+        url: "/dashboard/business",
+      },
+      {
+        name: "My Career",
+        short_name: "Career",
+        url: "/dashboard/career",
+      },
+      {
+        name: "My Potential",
+        short_name: "Potential",
+        url: "/dashboard/potential",
+      },
+      {
+        name: "My Life",
+        short_name: "Life",
+        url: "/dashboard/life",
+      },
+      {
+        name: "Personal Clarity",
+        short_name: "Clarity",
+        url: "/dashboard/clarity",
       },
       {
         name: "Ask Akuche",
         short_name: "Ask",
         url: "/dashboard/ask",
-      },
-      {
-        name: "Goals & Execution",
-        short_name: "Goals",
-        url: "/dashboard/goals",
-      },
-      {
-        name: "Think Through",
-        short_name: "Think",
-        url: "/dashboard/think",
-      },
-      {
-        name: "My Progress",
-        short_name: "Progress",
-        url: "/dashboard/progress",
       },
     ],
   };

@@ -5,6 +5,8 @@ import Link from "next/link";
 import {
   getDecisionRecords,
   saveDecisionRecord,
+  updateDecisionRecord,
+  reopenDecisionRecord,
   submitDecisionReview,
   AkucheDecisionRecord,
 } from "@/lib/akuche/decisions-engine";
@@ -19,6 +21,7 @@ import {
   ShieldCheck,
   RotateCcw,
   Zap,
+  Pencil,
 } from "lucide-react";
 
 export function DecisionLab() {
@@ -51,6 +54,12 @@ export function DecisionLab() {
   const [wasChoiceCorrect, setWasChoiceCorrect] = useState(true);
   const [lessonsLearned, setLessonsLearned] = useState("");
 
+  // Edit state
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editFinalChoice, setEditFinalChoice] = useState("");
+  const [editRationale, setEditRationale] = useState("");
+
   const refresh = () => {
     setRecords(getDecisionRecords());
   };
@@ -58,6 +67,29 @@ export function DecisionLab() {
   useEffect(() => {
     refresh();
   }, []);
+
+  const handleStartEdit = (r: AkucheDecisionRecord) => {
+    setEditingId(r.id);
+    setEditTitle(r.title);
+    setEditFinalChoice(r.finalChoice);
+    setEditRationale(r.rationale || "");
+  };
+
+  const handleSaveEdit = (id: string) => {
+    if (!editTitle.trim() || !editFinalChoice.trim()) return;
+    updateDecisionRecord(id, {
+      title: editTitle.trim(),
+      finalChoice: editFinalChoice.trim(),
+      rationale: editRationale.trim(),
+    });
+    setEditingId(null);
+    refresh();
+  };
+
+  const handleReopen = (id: string) => {
+    reopenDecisionRecord(id);
+    refresh();
+  };
 
   const handleSave = () => {
     if (!title.trim() || !finalChoice.trim()) return;
@@ -520,15 +552,79 @@ export function DecisionLab() {
                   </div>
                 )}
 
-                {/* Review Action Button */}
-                {r.status === "active" && reviewingId !== r.id && (
-                  <button
-                    onClick={() => setReviewingId(r.id)}
-                    className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400"
-                  >
-                    <RotateCcw className="h-3.5 w-3.5" />
-                    <span>Complete 30-Day Retrospective</span>
-                  </button>
+                {/* Review, Edit & Reopen Action Buttons */}
+                <div className="flex flex-wrap items-center gap-3 pt-1">
+                  {r.status === "active" && reviewingId !== r.id && (
+                    <button
+                      onClick={() => setReviewingId(r.id)}
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400"
+                    >
+                      <RotateCcw className="h-3.5 w-3.5" />
+                      <span>Complete 30-Day Retrospective</span>
+                    </button>
+                  )}
+
+                  {r.status === "reviewed" && (
+                    <button
+                      onClick={() => handleReopen(r.id)}
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-600 hover:text-amber-700 dark:text-amber-400"
+                    >
+                      <RotateCcw className="h-3.5 w-3.5" />
+                      <span>Reopen Decision</span>
+                    </button>
+                  )}
+
+                  {editingId !== r.id && (
+                    <button
+                      onClick={() => handleStartEdit(r)}
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-foreground"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                      <span>Edit Decision</span>
+                    </button>
+                  )}
+                </div>
+
+                {editingId === r.id && (
+                  <div className="rounded-xl border border-border bg-muted/30 p-3 space-y-2.5">
+                    <h5 className="text-xs font-bold text-foreground">Edit Decision Record</h5>
+                    <input
+                      type="text"
+                      value={editTitle}
+                      onChange={(e) => setEditTitle(e.target.value)}
+                      placeholder="Decision title"
+                      className="w-full rounded-lg border border-border bg-background p-2 text-xs text-foreground focus:border-emerald-500 focus:outline-none"
+                    />
+                    <input
+                      type="text"
+                      value={editFinalChoice}
+                      onChange={(e) => setEditFinalChoice(e.target.value)}
+                      placeholder="Chosen option"
+                      className="w-full rounded-lg border border-border bg-background p-2 text-xs text-foreground focus:border-emerald-500 focus:outline-none"
+                    />
+                    <textarea
+                      rows={2}
+                      value={editRationale}
+                      onChange={(e) => setEditRationale(e.target.value)}
+                      placeholder="Rationale"
+                      className="w-full rounded-lg border border-border bg-background p-2 text-xs text-foreground focus:border-emerald-500 focus:outline-none"
+                    />
+                    <div className="flex items-center justify-between">
+                      <button
+                        onClick={() => setEditingId(null)}
+                        className="text-xs text-muted-foreground hover:text-foreground"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        disabled={!editTitle.trim() || !editFinalChoice.trim()}
+                        onClick={() => handleSaveEdit(r.id)}
+                        className="rounded-lg bg-emerald-600 text-white px-4 py-1.5 text-xs font-bold disabled:opacity-40"
+                      >
+                        Save Changes
+                      </button>
+                    </div>
+                  </div>
                 )}
 
                 {reviewingId === r.id && (

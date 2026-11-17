@@ -40,6 +40,24 @@ function SignupContent() {
 
       <SignupForm refCode={refCode} />
 
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-background px-2 text-muted-foreground font-semibold">
+            Instant Access
+          </span>
+        </div>
+      </div>
+
+      <Link
+        href="/dashboard"
+        className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border-2 border-emerald-600/30 bg-emerald-500/10 px-4 text-sm font-bold text-emerald-700 dark:text-emerald-400 transition-all hover:bg-emerald-500/15 active:scale-[0.98] shadow-sm"
+      >
+        <span>Explore as Guest (No Sign-Up Required)</span>
+      </Link>
+
       <p className="text-center text-xs text-muted-foreground">
         By signing up you agree to our{" "}
         <Link href="/terms" className="underline hover:text-foreground">

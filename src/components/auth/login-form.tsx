@@ -111,8 +111,22 @@ export function LoginForm({ refCode }: { refCode?: string | null }) {
         router.push(destination);
         router.refresh();
       }
-    } catch {
-      setError("Network error. Please check your connection and try again.");
+    } catch (err: any) {
+      console.error("Login attempt error:", err);
+      const isDnsOrNetwork =
+        !navigator.onLine ||
+        err?.message?.includes("Failed to fetch") ||
+        err?.message?.includes("NetworkError") ||
+        err?.message?.includes("ENOTFOUND") ||
+        err?.name === "TypeError";
+
+      if (isDnsOrNetwork) {
+        setError(
+          "Authentication server is currently unreachable. If your Supabase database is paused, please unpause it from your Supabase Dashboard. You can also tap 'Continue as Guest' below to enter the dashboard immediately."
+        );
+      } else {
+        setError(err?.message || "Invalid email or password. Please try again.");
+      }
     } finally {
       setLoading(false);
     }

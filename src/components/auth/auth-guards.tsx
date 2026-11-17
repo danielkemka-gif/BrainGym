@@ -11,10 +11,18 @@ export function SignedIn({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
-      setLoading(false);
-    });
+    const timeout = setTimeout(() => setLoading(false), 3000);
+    supabase.auth
+      .getUser()
+      .then(({ data }) => {
+        setUser(data.user);
+        setLoading(false);
+      })
+      .catch(() => {
+        setUser(null);
+        setLoading(false);
+      })
+      .finally(() => clearTimeout(timeout));
   }, []);
 
   if (loading) return null;
@@ -28,10 +36,18 @@ export function SignedOut({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
-      setLoading(false);
-    });
+    const timeout = setTimeout(() => setLoading(false), 3000);
+    supabase.auth
+      .getUser()
+      .then(({ data }) => {
+        setUser(data.user);
+        setLoading(false);
+      })
+      .catch(() => {
+        setUser(null);
+        setLoading(false);
+      })
+      .finally(() => clearTimeout(timeout));
   }, []);
 
   if (loading) return null;
@@ -45,12 +61,20 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) {
+    const timeout = setTimeout(() => setChecking(false), 3000);
+    supabase.auth
+      .getUser()
+      .then(({ data }) => {
+        if (!data.user) {
+          router.replace("/login");
+        }
+        setChecking(false);
+      })
+      .catch(() => {
         router.replace("/login");
-      }
-      setChecking(false);
-    });
+        setChecking(false);
+      })
+      .finally(() => clearTimeout(timeout));
   }, [router]);
 
   if (checking) {

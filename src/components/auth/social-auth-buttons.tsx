@@ -105,12 +105,19 @@ export function SocialAuthButtons({
       }
 
       setLoading((prev) => ({ ...prev, [provider]: false }));
-    } catch (err) {
+    } catch (err: any) {
       console.error(`Unexpected ${provider} OAuth error:`, err);
-      const message =
-        (err as any)?.message ||
-        (err as any)?.error_description ||
-        "Connection error. Please check your internet and try again.";
+      const isDnsOrNetwork =
+        !navigator.onLine ||
+        err?.message?.includes("Failed to fetch") ||
+        err?.message?.includes("NetworkError") ||
+        err?.message?.includes("ENOTFOUND") ||
+        err?.name === "TypeError";
+
+      const message = isDnsOrNetwork
+        ? "Authentication server is currently unreachable. If your Supabase database is paused, please unpause it in your Supabase Dashboard, or continue as a Guest."
+        : err?.message || err?.error_description || "Connection error. Please try again.";
+
       setError(message);
       setLoading((prev) => ({ ...prev, [provider]: false }));
     }

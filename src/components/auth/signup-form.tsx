@@ -130,9 +130,22 @@ export function SignupForm({ refCode }: { refCode?: string | null }) {
 
       console.log("Signup successful — confirmation email sent");
       setSubmitted(true);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Unexpected signup error:", err);
-      setError("Network error. Please check your connection and try again.");
+      const isDnsOrNetwork =
+        !navigator.onLine ||
+        err?.message?.includes("Failed to fetch") ||
+        err?.message?.includes("NetworkError") ||
+        err?.message?.includes("ENOTFOUND") ||
+        err?.name === "TypeError";
+
+      if (isDnsOrNetwork) {
+        setError(
+          "Authentication server is currently unreachable. If your Supabase database is paused, please unpause it in your Supabase Dashboard. You can also explore immediately as a Guest."
+        );
+      } else {
+        setError("Network error. Please check your connection and try again.");
+      }
     } finally {
       setLoading(false);
     }

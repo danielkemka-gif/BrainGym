@@ -34,13 +34,13 @@ export function analyzeWhatAmIMissing(
   // Detect domain if not provided
   let domain = userDomain || "general";
   if (domain === "general") {
-    if (/\b(business|sales|revenue|profit|customer|client|pricing|market|proposal|product|startup|cash flow)\b/i.test(text)) {
+    if (/\b(business|sale(s)?|revenue|profit|customer(s)?|client(s)?|pricing|market|propos(al|als)?|product(s)?|startup|cash\s*flow|b2b|contract(s)?)\b/i.test(text)) {
       domain = "business";
-    } else if (/\b(job|career|promotion|boss|manager|salary|colleague|workplace|interview|burnout|cv|resume)\b/i.test(text)) {
+    } else if (/\b(job(s)?|career(s)?|promot(ion|ions)?|boss|manager|salary|colleague(s)?|workplace|interview(s)?|burnout|cv|resume|resign(ing)?)\b/i.test(text)) {
       domain = "career";
-    } else if (/\b(graduate|student|degree|potential|strength|passion|direction|skill|future|university)\b/i.test(text)) {
+    } else if (/\b(graduate(s|d)?|student(s)?|degree(s)?|potential|strength(s)?|passion|direction|skill(s)?|future|university|college)\b/i.test(text)) {
       domain = "potential";
-    } else if (/\b(relationship|partner|marriage|family|debt|loan|rent|health|balance|friend|personal)\b/i.test(text)) {
+    } else if (/\b(relationship(s)?|partner(s)?|marriage|family|debt|loan(s)?|rent|health|balance|friend(s)?|personal)\b/i.test(text)) {
       domain = "life";
     }
   }

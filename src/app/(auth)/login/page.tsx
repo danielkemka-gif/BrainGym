@@ -90,10 +90,18 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="w-full max-w-sm space-y-4 animate-pulse">
-          <div className="h-8 bg-muted rounded-xl w-1/2 mx-auto" />
-          <div className="h-4 bg-muted rounded w-3/4 mx-auto" />
-          <div className="h-48 bg-muted rounded-2xl" />
+        <div className="w-full max-w-sm space-y-4">
+          <div className="space-y-4 animate-pulse">
+            <div className="h-8 bg-muted rounded-xl w-1/2 mx-auto" />
+            <div className="h-4 bg-muted rounded w-3/4 mx-auto" />
+            <div className="h-48 bg-muted rounded-2xl" />
+          </div>
+          <Link
+            href="/dashboard"
+            className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border-2 border-emerald-600/30 bg-emerald-500/10 px-4 text-sm font-bold text-emerald-700 dark:text-emerald-400 transition-all shadow-sm"
+          >
+            <span>Explore as Guest (No Sign-In Required)</span>
+          </Link>
         </div>
       }
     >

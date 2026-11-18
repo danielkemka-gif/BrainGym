@@ -1297,14 +1297,19 @@ export function exportClarityVaultData(): string {
 export function purgeAllIntelligenceData(): void {
   if (typeof window === "undefined") return;
   try {
-    localStorage.removeItem(MEMORY_ITEMS_KEY);
+    localStorage.setItem(MEMORY_ITEMS_KEY, "[]");
     localStorage.removeItem(CLARITY_SNAPSHOT_KEY);
     localStorage.removeItem(THINKING_MIRROR_KEY);
     localStorage.removeItem(CONVERSATIONS_KEY);
-    localStorage.removeItem(GOALS_KEY);
-    localStorage.removeItem(COMMITMENTS_KEY);
+    localStorage.setItem(GOALS_KEY, "[]");
+    localStorage.setItem(COMMITMENTS_KEY, "[]");
     localStorage.removeItem(DELETED_MEMORIES_KEY);
   } catch (err) {
     console.error("Error purging intelligence data:", err);
   }
 }
+
+/**
+ * Backward compatibility alias for addCommitment
+ */
+export const saveCommitment = addCommitment;

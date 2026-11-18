@@ -1273,3 +1273,38 @@ export async function syncAkucheIntelligenceWithSupabase(
     };
   }
 }
+
+/**
+ * Export all personal intelligence data (Clarity Vault) as a portable JSON package.
+ */
+export function exportClarityVaultData(): string {
+  if (typeof window === "undefined") return "{}";
+  const data = {
+    exportedAt: new Date().toISOString(),
+    platform: "AKUCHE 2.0 Personal Clarity Intelligence",
+    memories: getMemoryItems(),
+    commitments: getCommitments(),
+    threads: getConversationThreads(),
+    thinkingMirrorPatterns: getThinkingMirrorPatterns(),
+    claritySnapshot: getLatestClaritySnapshot(),
+  };
+  return JSON.stringify(data, null, 2);
+}
+
+/**
+ * Irreversibly wipe all local intelligence, memories, and patterns for this browser session.
+ */
+export function purgeAllIntelligenceData(): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(MEMORY_ITEMS_KEY);
+    localStorage.removeItem(CLARITY_SNAPSHOT_KEY);
+    localStorage.removeItem(THINKING_MIRROR_KEY);
+    localStorage.removeItem(CONVERSATIONS_KEY);
+    localStorage.removeItem(GOALS_KEY);
+    localStorage.removeItem(COMMITMENTS_KEY);
+    localStorage.removeItem(DELETED_MEMORIES_KEY);
+  } catch (err) {
+    console.error("Error purging intelligence data:", err);
+  }
+}

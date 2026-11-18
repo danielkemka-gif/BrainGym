@@ -7,13 +7,15 @@ import { GOALS, CHALLENGES, WORKOUT_TIMES, STREAK } from "@/lib/constants";
 import { useI18n } from "@/lib/i18n";
 import { LOCALES, type Locale } from "@/lib/i18n/types";
 import { Avatar } from "@/components/ui/avatar";
-import { Camera, X, Globe, Sun, Moon, Monitor } from "lucide-react";
+import { Camera, X, Globe, Sun, Moon, Monitor, Shield, Download, Trash2, Eye, Lock } from "lucide-react";
 import { useTheme } from "@/lib/theme-provider";
 import { ReferralSection } from "@/components/settings/referral-section";
 import { DailyReminderSettings } from "@/components/reminders/daily-reminder-settings";
 import { LanguageSettingsSection } from "@/components/settings/language-settings-section";
 import { BrandSwitcherSection } from "@/components/settings/brand-switcher-section";
 import { GuideSettingsSection } from "@/components/settings/guide-settings-section";
+import { MyMemoryModal } from "@/components/memory/my-memory-modal";
+import { exportClarityVaultData, purgeAllIntelligenceData } from "@/lib/akuche/memory-engine";
 import { AKUCHE_APP_VERSION, AKUCHE_BUILD_ID, AKUCHE_SW_CACHE_VERSION } from "@/lib/version";
 
 export default function SettingsPage() {
@@ -48,8 +50,36 @@ export default function SettingsPage() {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showMemoryModal, setShowMemoryModal] = useState(false);
+  const [vaultPurged, setVaultPurged] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const handleExportVault = () => {
+    const jsonStr = exportClarityVaultData();
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `akuche-clarity-vault-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handlePurgeVault = () => {
+    if (typeof window !== "undefined") {
+      const confirmed = window.confirm(
+        "Are you sure you want to purge all local intelligence memories, patterns, and clarity snapshots? This action is irreversible."
+      );
+      if (confirmed) {
+        purgeAllIntelligenceData();
+        setVaultPurged(true);
+        setTimeout(() => setVaultPurged(false), 4000);
+      }
+    }
+  };
 
   const [loading, setLoading] = useState(true);
 
@@ -539,6 +569,63 @@ export default function SettingsPage() {
       {/* Referral */}
       <ReferralSection />
 
+      {/* Personal Intelligence Vault & Privacy Controls (PRD Part 7) */}
+      <section className="rounded-2xl border border-indigo-500/30 bg-gradient-to-br from-card via-indigo-950/10 to-card p-4 sm:p-6 space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-500">
+            <Shield className="h-5 w-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-base font-bold text-foreground">
+                Personal Intelligence Vault
+              </h2>
+              <span className="rounded-full bg-indigo-500/15 px-2 py-0.5 text-[10px] font-bold text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+                Privacy-First
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              You own 100% of your data. Review, correct, export or wipe what Akuche remembers about you.
+            </p>
+          </div>
+        </div>
+
+        {vaultPurged && (
+          <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-700 dark:text-amber-400">
+            All local intelligence memories and patterns have been successfully purged.
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button
+            type="button"
+            onClick={() => setShowMemoryModal(true)}
+            className="flex items-center justify-center gap-2 rounded-xl border border-indigo-500/30 bg-indigo-500/10 px-4 py-3 text-xs font-bold text-indigo-700 dark:text-indigo-300 hover:bg-indigo-500/20 transition min-h-[44px]"
+          >
+            <Eye className="h-4 w-4" />
+            <span>Open Memory Vault</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleExportVault}
+            className="flex items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 py-3 text-xs font-bold text-foreground hover:bg-muted transition min-h-[44px]"
+          >
+            <Download className="h-4 w-4" />
+            <span>Export Clarity Vault (JSON)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handlePurgeVault}
+            className="flex items-center justify-center gap-2 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-xs font-bold text-destructive hover:bg-destructive/10 transition min-h-[44px]"
+          >
+            <Trash2 className="h-4 w-4" />
+            <span>Purge Local Memory</span>
+          </button>
+        </div>
+      </section>
+
       {/* Account */}
       <section className="rounded-2xl border border-border bg-card p-4 sm:p-6 space-y-4">
         <h2 className="text-lg font-semibold">Account</h2>
@@ -646,6 +733,9 @@ export default function SettingsPage() {
           <div>SW Cache: <strong className="text-foreground">{AKUCHE_SW_CACHE_VERSION}</strong></div>
         </div>
       </div>
+
+      {/* Personal Intelligence Vault Modal */}
+      <MyMemoryModal isOpen={showMemoryModal} onClose={() => setShowMemoryModal(false)} />
     </div>
   );
 }

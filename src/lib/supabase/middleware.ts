@@ -28,9 +28,14 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
+  try {
+    const res = await supabase.auth.getUser();
+    user = res.data?.user ?? null;
+  } catch {
+    // If Supabase is unreachable or paused, fall back gracefully
+    user = null;
+  }
 
   return { supabaseResponse, user };
 }

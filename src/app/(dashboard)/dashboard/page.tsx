@@ -395,6 +395,64 @@ export default function DashboardPage() {
         </div>
       </section>
 
+      {/* ─── SIGNATURE FEATURE: THE AKUCHE CLARITY MAP & WHAT AM I MISSING ─── */}
+      <section className="rounded-3xl border-2 border-emerald-500/25 bg-gradient-to-br from-card via-emerald-950/10 to-card p-5 sm:p-6 space-y-4 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400">
+              <Compass className="h-6 w-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-base font-black text-foreground">
+                  The Akuche Clarity Map
+                </h2>
+                <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                  Signature Feature
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Your evolving personal intelligence map: Connect circumstances, expose blind spots &amp; track direction
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Link
+              href="/dashboard/clarity"
+              className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white px-4 text-xs font-bold transition shadow-xs"
+            >
+              <span>Open Living Clarity Map</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+        </div>
+
+        {/* Quick 'What Am I Missing?' Trigger */}
+        <div className="rounded-2xl border border-amber-500/25 bg-amber-500/5 p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400">
+              💡
+            </span>
+            <div>
+              <p className="text-xs font-bold text-foreground">
+                Unsure about a decision or proposal? Run &ldquo;What Am I Missing?&rdquo;
+              </p>
+              <p className="text-[11px] text-muted-foreground">
+                Expose hidden assumptions and unconsidered risks before committing resources.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/dashboard/clarity"
+            className="inline-flex h-8 items-center gap-1 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 text-xs font-bold text-amber-700 dark:text-amber-400 hover:bg-amber-500/20 transition shrink-0"
+          >
+            <span>Run Diagnostic</span>
+            <ArrowRight className="h-3 w-3" />
+          </Link>
+        </div>
+      </section>
+
       {/* ─── SECTION 4: THE THREE-PILLAR INTELLIGENCE HIERARCHY ─── */}
       <section className="rounded-3xl border border-border/80 bg-muted/20 p-5 sm:p-6 space-y-3.5">
         <div className="flex items-center justify-between border-b border-border/50 pb-2">

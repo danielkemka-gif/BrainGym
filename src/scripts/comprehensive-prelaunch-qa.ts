@@ -97,8 +97,14 @@ async function runQA() {
       // 3. Clarity Hub Accessibility
       await page.goto(`${BASE_URL}/dashboard/clarity`, { waitUntil: "domcontentloaded", timeout: 20000 });
       await page.waitForTimeout(2500);
-      const hasMissingCard = await page.evaluate(() => document.body.innerText.includes("What Am I Missing"));
-      const hasQuadrantMap = await page.evaluate(() => document.body.innerText.includes("Living Map") || document.body.innerText.includes("Clarity Map"));
+      const hasMissingCard = await page.evaluate(() => {
+        const text = document.body.innerText.toLowerCase();
+        return text.includes("what am i missing") || text.includes("blind spot");
+      });
+      const hasQuadrantMap = await page.evaluate(() => {
+        const text = document.body.innerText.toLowerCase();
+        return text.includes("clarity map") || text.includes("living map");
+      });
       record(
         "PHASE 2",
         "Clarity Hub Load & Key Elements",

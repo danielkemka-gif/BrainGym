@@ -4,11 +4,13 @@ import { updateSession } from "@/lib/supabase/middleware";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // 1. Immediate early bypass for reset, recovery and diagnostic endpoints
+  // 1. Immediate early bypass for reset, recovery, static html and diagnostic endpoints
   if (
     pathname === "/api/reset" ||
     pathname.startsWith("/api/reset") ||
-    pathname === "/api/version"
+    pathname === "/api/version" ||
+    pathname === "/reset.html" ||
+    pathname === "/offline.html"
   ) {
     return NextResponse.next();
   }
@@ -60,8 +62,8 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - sw.js, manifest.json, manifest.webmanifest (PWA service worker / manifests)
-     * - icons, public images
+     * - icons, public images, static html
      */
-    "/((?!_next/static|_next/image|favicon.ico|sw.js|manifest.json|manifest.webmanifest|icons/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|sw.js|manifest.json|manifest.webmanifest|icons/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|html)$).*)",
   ],
 };

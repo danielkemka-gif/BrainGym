@@ -176,7 +176,7 @@ self.addEventListener('fetch', (event) => {
     url.searchParams.has('reset') ||
     url.searchParams.has('clear') ||
     url.searchParams.has('bypass') ||
-    url.pathname.startsWith('/api/reset')
+    url.pathname.startsWith('/api/reset') || url.pathname === '/reset.html'
   ) {
     self.registration.unregister().catch(() => {});
     return; // Pass through to server directly

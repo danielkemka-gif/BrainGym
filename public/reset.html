@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Resetting Akuche...</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #03251D;
+      color: #F7F9F5;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .card {
+      max-width: 400px;
+      width: 100%;
+      background: rgba(4, 47, 36, 0.95);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: 24px;
+      padding: 2.5rem 1.75rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    }
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid rgba(16, 185, 129, 0.2);
+      border-top-color: #10B981;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 1.5rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    h1 { font-size: 1.35rem; font-weight: 800; margin-bottom: 0.5rem; color: #FFFFFF; }
+    p { color: #A7F3D0; font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.5rem; }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 0.85rem 1.5rem;
+      background: linear-gradient(135deg, #059669, #10B981);
+      color: #03251D;
+      border: none;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="spinner" id="spinner"></div>
+    <h1 id="title">Restoring Akuche...</h1>
+    <p id="msg">Purging cached service worker and establishing fresh connection...</p>
+    <a href="/dashboard" class="btn" id="btn" style="display:none;">Open Dashboard Directly</a>
+  </div>
+  <script>
+    (async function() {
+      try {
+        if ('serviceWorker' in navigator) {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          for (const reg of registrations) {
+            await reg.unregister();
+          }
+        }
+        if ('caches' in window) {
+          const keys = await caches.keys();
+          for (const key of keys) {
+            await caches.delete(key);
+          }
+        }
+        if ('sessionStorage' in window) {
+          sessionStorage.clear();
+        }
+        document.getElementById('title').innerText = 'Cache Cleared!';
+        document.getElementById('msg').innerText = 'Opening your Akuche Dashboard...';
+        setTimeout(function() {
+          window.location.replace('/dashboard');
+        }, 400);
+      } catch (e) {
+        document.getElementById('title').innerText = 'Ready to Open';
+        document.getElementById('msg').innerText = 'Tap below to enter your dashboard:';
+        document.getElementById('spinner').style.display = 'none';
+        document.getElementById('btn').style.display = 'block';
+      }
+    })();
+  </script>
+</body>
+</html>

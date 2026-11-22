@@ -101,6 +101,12 @@ export default function RootLayout({
             __html: `(function(){try{var s=localStorage.getItem("akuche-theme")||localStorage.getItem("braingym-theme");var d=s==="dark"||(!s&&window.matchMedia("(prefers-color-scheme: dark)").matches);var r=document.documentElement;if(d){r.classList.add("dark");r.classList.remove("light");}else{r.classList.remove("dark");r.classList.add("light");}}catch(e){}})();`,
           }}
         />
+        {/* Instant Mobile URL Cache Reset Handler */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{if(window.location.search.indexOf('reset=')!==-1||window.location.search.indexOf('clear=')!==-1){if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(regs){for(var i=0;i<regs.length;i++){regs[i].unregister();}});}if('caches' in window){caches.keys().then(function(keys){return Promise.all(keys.map(function(k){return caches.delete(k);}));});}if('sessionStorage' in window){sessionStorage.clear();}window.history.replaceState({},document.title,window.location.pathname);window.location.reload();}}catch(e){}})();`,
+          }}
+        />
         {/* PWA & Mobile WebAPK ChunkLoadError Auto-Recovery Guard */}
         <script
           dangerouslySetInnerHTML={{

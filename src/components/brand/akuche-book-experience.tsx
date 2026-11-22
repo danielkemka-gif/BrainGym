@@ -36,7 +36,6 @@ export function AkucheBookExperience({
   const [firstName, setFirstName] = useState<string>("");
 
   useEffect(() => {
-    // Determine user's first name if available
     if (user) {
       const rawName =
         user.user_metadata?.full_name ||
@@ -56,47 +55,15 @@ export function AkucheBookExperience({
       return;
     }
 
-    // Check if user has already experienced or dismissed the book introduction
-    if (typeof window !== "undefined") {
-      const completed = localStorage.getItem("akuche_book_intro_completed");
-      if (completed === "true") {
-        return;
-      }
-    }
-
-    // Check server profile for cross-device returning users
-    async function checkServerProfile() {
-      if (user) {
-        try {
-          const { data } = await supabase
-            .from("profiles")
-            .select("onboarding_complete")
-            .eq("user_id", user.id)
-            .maybeSingle();
-
-          if (data?.onboarding_complete) {
-            if (typeof window !== "undefined") {
-              localStorage.setItem("akuche_book_intro_completed", "true");
-            }
-            return;
-          }
-          setIsOpen(true);
-        } catch {
-          setIsOpen(true);
-        }
-      } else {
-        // Unauthenticated first-time visitor
-        if (typeof window !== "undefined") {
-          const completed = localStorage.getItem("akuche_book_intro_completed");
-          if (!completed) {
-            setIsOpen(true);
-          }
-        }
-      }
-    }
-
-    checkServerProfile();
-  }, [forceOpen, user, supabase]);
+    const handleManualOpen = () => {
+      setIsOpen(true);
+      setStage("cover");
+    };
+    window.addEventListener("akuche:open-book-experience", handleManualOpen);
+    return () => {
+      window.removeEventListener("akuche:open-book-experience", handleManualOpen);
+    };
+  }, [forceOpen]);
 
   const markCompleted = async () => {
     if (typeof window !== "undefined") {

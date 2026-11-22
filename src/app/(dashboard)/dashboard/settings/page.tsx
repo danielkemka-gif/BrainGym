@@ -7,7 +7,7 @@ import { GOALS, CHALLENGES, WORKOUT_TIMES, STREAK } from "@/lib/constants";
 import { useI18n } from "@/lib/i18n";
 import { LOCALES, type Locale } from "@/lib/i18n/types";
 import { Avatar } from "@/components/ui/avatar";
-import { Camera, X, Globe, Sun, Moon, Monitor, Shield, Download, Trash2, Eye, Lock } from "lucide-react";
+import { Camera, X, Globe, Sun, Moon, Monitor, Shield, Download, Trash2, Eye, Lock, Smartphone } from "lucide-react";
 import { useTheme } from "@/lib/theme-provider";
 import { ReferralSection } from "@/components/settings/referral-section";
 import { UnifiedReminderSettings } from "@/components/reminders/unified-reminder-settings";
@@ -724,6 +724,34 @@ export default function SettingsPage() {
           ) : (
             "Save settings"
           )}
+        </button>
+      </div>
+
+      {/* PWA Mobile & Desktop Installation Card */}
+      <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <Smartphone className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+            <p className="font-bold text-foreground text-sm">Install Akuche on this Device</p>
+            <span className="rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 text-[10px] font-bold uppercase">
+              PWA
+            </span>
+          </div>
+          <p className="text-xs text-muted-foreground leading-relaxed max-w-xl">
+            Add Akuche to your home screen or desktop for quicker 1-tap access, reliable offline sessions, and a full native app experience.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            if (typeof window !== "undefined") {
+              window.dispatchEvent(new CustomEvent("akuche:open-install-prompt"));
+            }
+          }}
+          className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] px-5 text-xs font-bold text-white shadow-md shadow-emerald-900/15 transition"
+        >
+          <Download className="h-4 w-4" />
+          <span>Install Akuche</span>
         </button>
       </div>
 

@@ -19,7 +19,7 @@ function getAdminClient() {
 
 const signupRateBuckets = new Map<string, number[]>();
 const SIGNUP_WINDOW_MS = 15 * 60 * 1000;
-const SIGNUP_MAX_PER_WINDOW = 5;
+const SIGNUP_MAX_PER_WINDOW = 10;
 
 function checkSignupRateLimit(ip: string): boolean {
   const now = Date.now();
@@ -46,7 +46,8 @@ export async function POST(req: Request) {
       );
     }
 
-    const { email, password, refCode } = await req.json();
+    const body = await req.json();
+    const { email, password, fullName, refCode } = body;
 
     if (!email || typeof email !== "string" || !password || typeof password !== "string") {
       return NextResponse.json(
@@ -65,19 +66,23 @@ export async function POST(req: Request) {
 
     if (password.length < 8) {
       return NextResponse.json(
-        { error: "Password must be at least 8 characters" },
+        { error: "Password must be at least 8 characters long" },
         { status: 400 }
       );
     }
 
+    const trimmedName = typeof fullName === "string" ? fullName.trim() : "";
+
     const admin = getAdminClient();
 
-    // Create user directly (avoids full listUsers scan and prevents scale bottleneck)
+    // Create user directly in Supabase Auth
     const { data: newUser, error: createError } = await admin.auth.admin.createUser({
       email: trimmedEmail,
       password: password,
       email_confirm: true,
       user_metadata: {
+        full_name: trimmedName || undefined,
+        name: trimmedName || undefined,
         ref_code: refCode || undefined,
       },
     });
@@ -87,15 +92,16 @@ export async function POST(req: Request) {
       if (msg.includes("already") || msg.includes("registered") || msg.includes("exists")) {
         return NextResponse.json(
           {
-            error: "Unable to create account with these details. If you already have an account, please sign in.",
+            error: "An account with this email already exists. Please sign in.",
+            isExisting: true,
           },
-          { status: 400 }
+          { status: 409 }
         );
       }
       console.error("[api/auth/signup] Admin createUser error:", createError);
       return NextResponse.json(
         {
-          error: "Unable to create account right now. Please try again or use Google sign-in.",
+          error: createError.message || "Unable to create account right now. Please try again or use Google sign-in.",
         },
         { status: 500 }
       );
@@ -108,6 +114,7 @@ export async function POST(req: Request) {
       await admin.from("profiles").upsert(
         {
           user_id: userId,
+          name: trimmedName || trimmedEmail.split("@")[0],
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         },
@@ -149,37 +156,39 @@ export async function POST(req: Request) {
           status: "trialing",
           plan_tier: "premium",
           current_period_start: new Date().toISOString(),
-          current_period_end: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+          current_period_end: new Date(Date.now() + 14 * 86400000).toISOString(),
         },
         { onConflict: "user_id" }
       );
 
-      // Attribute referral if present
+      await admin.from("user_avatars").upsert(
+        { user_id: userId },
+        { onConflict: "user_id" }
+      );
+
       if (refCode) {
         try {
           await admin.rpc("attribute_referral", {
             p_user_id: userId,
             p_ref: refCode,
           });
-        } catch (rErr) {
-          console.warn("[api/auth/signup] Referral attribution warning:", rErr);
+        } catch (refErr) {
+          console.warn("[api/auth/signup] Referral attribution warning:", refErr);
         }
       }
     } catch (dbErr) {
-      console.warn("[api/auth/signup] Baseline data initialization warning:", dbErr);
+      console.warn("[api/auth/signup] Non-critical baseline table upsert warning:", dbErr);
     }
 
     return NextResponse.json({
       success: true,
-      user: {
-        id: userId,
-        email: trimmedEmail,
-      },
+      userId: newUser.user.id,
+      email: newUser.user.email,
     });
-  } catch (error: any) {
-    console.error("[api/auth/signup] Unexpected error:", error);
+  } catch (err: any) {
+    console.error("[api/auth/signup] Unexpected error:", err);
     return NextResponse.json(
-      { error: error?.message || "Internal server error" },
+      { error: err?.message || "Internal server error" },
       { status: 500 }
     );
   }

@@ -131,7 +131,7 @@ export async function GET(request: NextRequest) {
         // Determine destination target
         let targetPath = "/dashboard";
         if (type === "recovery") {
-          targetPath = "/dashboard/settings";
+          targetPath = "/reset-password";
         } else if (next && next.startsWith("/") && !next.startsWith("//")) {
           targetPath = next;
         } else if (!profile || !profile.onboarding_complete) {

@@ -12,6 +12,7 @@ import { TouchDebug } from "@/components/debug/touch-debug";
 import { FeatureNavigator } from "./feature-navigator";
 import { OfflineStatusBanner } from "@/components/offline/offline-status-banner";
 import { KucheCompanion } from "@/components/guide/kuche-companion";
+import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 
 function AppShellInner({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -82,6 +83,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
         <MobileNav />
         <FeatureNavigator />
         <KucheCompanion />
+        <PWAInstallPrompt />
         {process.env.NODE_ENV === "development" && <TouchDebug />}
       </div>
     </div>

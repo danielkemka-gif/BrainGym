@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Eye, EyeOff, RefreshCw } from "lucide-react";
+import { Eye, EyeOff, RefreshCw, Mail, Lock, AlertCircle } from "lucide-react";
 import Link from "next/link";
 
 export function LoginForm({ refCode }: { refCode?: string | null }) {
@@ -15,6 +15,7 @@ export function LoginForm({ refCode }: { refCode?: string | null }) {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isUnconfirmed, setIsUnconfirmed] = useState(false);
+  const [isNotFound, setIsNotFound] = useState(false);
   const [resending, setResending] = useState(false);
   const [resendMessage, setResendMessage] = useState<string | null>(null);
 
@@ -30,7 +31,7 @@ export function LoginForm({ refCode }: { refCode?: string | null }) {
     if (errorParam || errorDesc) {
       const fullError = (errorDesc || errorParam || "").toLowerCase();
       if (fullError.includes("access_denied") || fullError.includes("cancelled")) {
-        setError("Google sign-in was cancelled. You can tap Continue with Google again or sign in with your email below.");
+        setError("Google sign-in was cancelled. Tap Continue with Google again or sign in with your email below.");
       } else if (
         fullError.includes("already exists") ||
         fullError.includes("identity_already_exists") ||
@@ -49,15 +50,14 @@ export function LoginForm({ refCode }: { refCode?: string | null }) {
     e.preventDefault();
     setError(null);
     setIsUnconfirmed(false);
+    setIsNotFound(false);
     setResendMessage(null);
     setLoading(true);
 
     if (effectiveRef) {
       try {
         document.cookie = `pending_ref=${encodeURIComponent(effectiveRef)}; path=/; max-age=900; SameSite=Lax`;
-      } catch {
-        // ignore cookie write failures
-      }
+      } catch {}
     }
 
     const trimmedEmail = email.trim().toLowerCase();
@@ -75,7 +75,10 @@ export function LoginForm({ refCode }: { refCode?: string | null }) {
           setIsUnconfirmed(true);
           setError("Your email address is not verified yet. Please check your inbox or resend the verification email.");
         } else if (msg.includes("invalid login credentials")) {
-          setError("Incorrect email or password. Please try again or reset your password.");
+          setError("Incorrect email or password. Please verify your details or reset your password.");
+        } else if (msg.includes("user not found")) {
+          setIsNotFound(true);
+          setError("No account found with this email. Would you like to create one?");
         } else if (msg.includes("rate limit") || msg.includes("too many")) {
           setError("Too many sign-in attempts. Please wait a minute before trying again.");
         } else {
@@ -122,7 +125,7 @@ export function LoginForm({ refCode }: { refCode?: string | null }) {
 
       if (isDnsOrNetwork) {
         setError(
-          "Authentication server is currently unreachable. If your Supabase database is paused, please unpause it from your Supabase Dashboard. You can also tap 'Continue as Guest' below to enter the dashboard immediately."
+          "Authentication server is currently unreachable. If your Supabase database is paused, please unpause it from your Supabase Dashboard. You can also explore immediately as a Guest below."
         );
       } else {
         setError(err?.message || "Invalid email or password. Please try again.");
@@ -162,8 +165,12 @@ export function LoginForm({ refCode }: { refCode?: string | null }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-3.5">
       <div className="space-y-1.5">
-        <label htmlFor="login-email" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-          Email
+        <label
+          htmlFor="login-email"
+          className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5"
+        >
+          <Mail className="h-3.5 w-3.5" />
+          Email Address
         </label>
         <input
           id="login-email"
@@ -179,7 +186,11 @@ export function LoginForm({ refCode }: { refCode?: string | null }) {
 
       <div className="space-y-1.5">
         <div className="flex items-center justify-between">
-          <label htmlFor="login-password" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          <label
+            htmlFor="login-password"
+            className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5"
+          >
+            <Lock className="h-3.5 w-3.5" />
             Password
           </label>
           <Link
@@ -199,12 +210,12 @@ export function LoginForm({ refCode }: { refCode?: string | null }) {
             required
             minLength={6}
             autoComplete="current-password"
-            className="flex h-12 w-full rounded-xl border border-border bg-background px-4 py-2 pr-10 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring touch-manipulation"
+            className="flex h-12 w-full rounded-xl border border-border bg-background px-4 py-2 pr-11 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring touch-manipulation"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1"
             tabIndex={-1}
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
@@ -215,29 +226,44 @@ export function LoginForm({ refCode }: { refCode?: string | null }) {
 
       {error && (
         <div className="rounded-xl bg-destructive/10 p-3 sm:p-4 text-xs sm:text-sm text-destructive border border-destructive/20 space-y-2">
-          <p>{error}</p>
+          <div className="flex items-start gap-2">
+            <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+            <p className="flex-1 leading-relaxed">{error}</p>
+          </div>
           {isUnconfirmed && (
             <div className="pt-1">
               <button
                 type="button"
                 onClick={handleResendVerification}
                 disabled={resending}
-                className="inline-flex items-center gap-1.5 font-semibold text-primary hover:underline text-xs"
+                className="inline-flex items-center gap-1.5 font-bold text-primary hover:underline text-xs"
               >
                 <RefreshCw className={`h-3.5 w-3.5 ${resending ? "animate-spin" : ""}`} />
                 {resending ? "Resending..." : "Click here to resend verification email"}
               </button>
             </div>
           )}
+          {isNotFound && (
+            <div className="pt-1">
+              <Link
+                href={`/signup?email=${encodeURIComponent(email)}`}
+                className="inline-flex items-center gap-1.5 font-bold text-primary hover:underline text-xs"
+              >
+                Create new free account →
+              </Link>
+            </div>
+          )}
         </div>
       )}
 
       {resendMessage && (
-        <div className={`rounded-xl p-3 text-xs border ${
-          resendMessage.includes("resent")
-            ? "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20"
-            : "bg-destructive/10 text-destructive border-destructive/20"
-        }`}>
+        <div
+          className={`rounded-xl p-3 text-xs border ${
+            resendMessage.includes("resent")
+              ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+              : "bg-destructive/10 text-destructive border-destructive/20"
+          }`}
+        >
           {resendMessage}
         </div>
       )}
@@ -245,12 +271,12 @@ export function LoginForm({ refCode }: { refCode?: string | null }) {
       <button
         type="submit"
         disabled={loading}
-        className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-primary px-4 text-sm sm:text-base font-semibold text-primary-foreground transition-all hover:bg-primary/90 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 shadow-md shadow-primary/20"
+        className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-primary px-4 text-sm sm:text-base font-bold text-primary-foreground transition-all hover:bg-primary/90 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 shadow-md shadow-primary/20 touch-manipulation"
       >
         {loading ? (
           <span className="h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent" />
         ) : (
-          "Sign in"
+          "Sign In"
         )}
       </button>
     </form>

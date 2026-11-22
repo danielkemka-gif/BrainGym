@@ -4,10 +4,19 @@ import { updateSession } from "@/lib/supabase/middleware";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // 1. Refresh Supabase session cookies safely and resolve user
+  // 1. Immediate early bypass for reset, recovery and diagnostic endpoints
+  if (
+    pathname === "/api/reset" ||
+    pathname.startsWith("/api/reset") ||
+    pathname === "/api/version"
+  ) {
+    return NextResponse.next();
+  }
+
+  // 2. Refresh Supabase session cookies defensively (with strict timeout)
   const { supabaseResponse, user, isAdminInDb } = await updateSession(request);
 
-  // 2. Defensive HTTP Security Headers (OWASP ASVS 5.0 L2 Baseline)
+  // 3. Defensive HTTP Security Headers (OWASP ASVS 5.0 L2 Baseline)
   supabaseResponse.headers.set("X-Content-Type-Options", "nosniff");
   supabaseResponse.headers.set("X-Frame-Options", "DENY");
   supabaseResponse.headers.set("X-XSS-Protection", "1; mode=block");
@@ -17,7 +26,7 @@ export async function middleware(request: NextRequest) {
     "camera=(), microphone=(self), geolocation=(), payment=(self)"
   );
 
-  // 3. Admin Route Protection: require authenticated admin user (verified via env or admins table)
+  // 4. Admin Route Protection: require authenticated admin user
   if (pathname.startsWith("/admin")) {
     const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
     const isAdminByEnv = Boolean(adminEmail && user?.email?.toLowerCase() === adminEmail);
@@ -28,8 +37,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // 4. Edge Route Protection for strictly private personal areas
-  // Retains full guest exploratory access to /dashboard, /dashboard/clarity, and the 4 audience workspaces
+  // 5. Edge Route Protection for strictly private personal areas
   const isPrivateDataRoute =
     pathname.startsWith("/dashboard/settings") ||
     pathname.startsWith("/dashboard/profile") ||

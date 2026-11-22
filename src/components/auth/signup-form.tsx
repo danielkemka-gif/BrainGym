@@ -126,7 +126,19 @@ export function SignupForm({ refCode }: { refCode?: string | null }) {
             setLoading(false);
             return;
           } else if (apiData.error) {
-            setError(apiData.error);
+            const apiMsg = (apiData.error || "").toLowerCase();
+            if (
+              apiMsg.includes("trouble connecting") ||
+              apiMsg.includes("failed to fetch") ||
+              apiMsg.includes("network") ||
+              apiMsg.includes("enotfound")
+            ) {
+              setError(
+                "We're having trouble connecting to Akuche right now. Your internet connection or our service may be temporarily unavailable. Please try again shortly."
+              );
+            } else {
+              setError(apiData.error);
+            }
             setLoading(false);
             return;
           }
@@ -134,10 +146,22 @@ export function SignupForm({ refCode }: { refCode?: string | null }) {
           console.error("Server fallback error:", fallbackErr);
         }
 
-        if (msg.includes("rate limit") || msg.includes("too many requests")) {
+        const isNetworkFailure =
+          msg.includes("failed to fetch") ||
+          msg.includes("networkerror") ||
+          msg.includes("enotfound") ||
+          msg.includes("fetch failed") ||
+          msg.includes("load failed") ||
+          (authError as any).status === 0;
+
+        if (isNetworkFailure) {
+          setError(
+            "We're having trouble connecting to Akuche right now. Your internet connection or our service may be temporarily unavailable. Please try again shortly."
+          );
+        } else if (msg.includes("rate limit") || msg.includes("too many requests")) {
           setError("Too many signup attempts. Please wait a moment or try Google sign-in.");
         } else if (!authError.message || authError.message.includes("Database error")) {
-          setError("Unable to create account right now. Please try with Google or sign in.");
+          setError("Unable to create account right now. Please try again shortly.");
         } else {
           setError(authError.message);
         }
@@ -176,7 +200,7 @@ export function SignupForm({ refCode }: { refCode?: string | null }) {
 
       if (isDnsOrNetwork) {
         setError(
-          "Authentication server is currently unreachable. If your Supabase database is paused, please unpause it from your Supabase Dashboard, or tap 'Explore as Guest' below."
+          "We're having trouble connecting to Akuche right now. Your internet connection or our service may be temporarily unavailable. Please try again shortly."
         );
       } else {
         setError(err?.message || "Connection error. Please try again.");
@@ -387,6 +411,17 @@ export function SignupForm({ refCode }: { refCode?: string | null }) {
             <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
             <p className="flex-1 leading-relaxed">{error}</p>
           </div>
+          {error.includes("trouble connecting") && (
+            <div className="pt-1">
+              <button
+                type="submit"
+                className="inline-flex items-center gap-1.5 font-bold text-primary hover:underline text-xs"
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                Retry registration
+              </button>
+            </div>
+          )}
           {isExistingAccount && (
             <Link
               href={`/login?email=${encodeURIComponent(email)}`}

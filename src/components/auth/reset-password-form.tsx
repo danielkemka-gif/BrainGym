@@ -39,7 +39,17 @@ export function ResetPasswordForm() {
       });
 
       if (updateError) {
-        setError(updateError.message || "Failed to update password. Your reset link may have expired.");
+        const raw = (updateError.message || "").toLowerCase();
+        const isNetwork =
+          raw.includes("failed to fetch") ||
+          raw.includes("network") ||
+          raw.includes("enotfound") ||
+          (updateError as any).status === 0;
+
+        const message = isNetwork
+          ? "We're having trouble connecting to Akuche right now. Your internet connection or our service may be temporarily unavailable. Please try again shortly."
+          : updateError.message || "Failed to update password. Your reset link may have expired.";
+        setError(message);
         setLoading(false);
         return;
       }
@@ -51,7 +61,17 @@ export function ResetPasswordForm() {
       }, 1500);
     } catch (err: any) {
       console.error("Password reset error:", err);
-      setError(err?.message || "An unexpected error occurred. Please try again.");
+      const raw = (err?.message || "").toLowerCase();
+      const isNetwork =
+        raw.includes("failed to fetch") ||
+        raw.includes("network") ||
+        raw.includes("enotfound") ||
+        err?.name === "TypeError";
+
+      const message = isNetwork
+        ? "We're having trouble connecting to Akuche right now. Your internet connection or our service may be temporarily unavailable. Please try again shortly."
+        : err?.message || "An unexpected error occurred. Please try again.";
+      setError(message);
     } finally {
       setLoading(false);
     }

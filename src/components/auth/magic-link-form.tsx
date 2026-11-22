@@ -37,10 +37,16 @@ export function MagicLinkForm({ refCode }: { refCode?: string | null }) {
 
       if (authError) {
         console.error("Magic link error:", authError);
-        const message =
-          authError?.message ||
-          (authError as any)?.error_description ||
-          "Failed to send sign-in link. Please try again.";
+        const raw = (authError?.message || "").toLowerCase();
+        const isNetwork =
+          raw.includes("failed to fetch") ||
+          raw.includes("network") ||
+          raw.includes("enotfound") ||
+          (authError as any).status === 0;
+
+        const message = isNetwork
+          ? "We're having trouble connecting to Akuche right now. Your internet connection or our service may be temporarily unavailable. Please try again shortly."
+          : authError?.message || "Failed to send sign-in link. Please try again.";
         setError(message);
         setLoading(false);
         return;
@@ -48,11 +54,18 @@ export function MagicLinkForm({ refCode }: { refCode?: string | null }) {
 
       console.log("Magic link sent successfully");
       setSubmitted(true);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Unexpected magic link error:", err);
-      const message =
-        (err as any)?.message ||
-        "Network error. Please check your connection and try again.";
+      const raw = (err?.message || "").toLowerCase();
+      const isNetwork =
+        raw.includes("failed to fetch") ||
+        raw.includes("network") ||
+        raw.includes("enotfound") ||
+        err?.name === "TypeError";
+
+      const message = isNetwork
+        ? "We're having trouble connecting to Akuche right now. Your internet connection or our service may be temporarily unavailable. Please try again shortly."
+        : err?.message || "Connection error. Please try again.";
       setError(message);
     } finally {
       setLoading(false);

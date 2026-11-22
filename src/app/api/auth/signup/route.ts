@@ -92,16 +92,31 @@ export async function POST(req: Request) {
       if (msg.includes("already") || msg.includes("registered") || msg.includes("exists")) {
         return NextResponse.json(
           {
-            error: "An account with this email already exists. Please sign in.",
+            error: "An account with this email already exists. Please log in instead.",
             isExisting: true,
           },
           { status: 409 }
         );
       }
+      if (
+        msg.includes("fetch failed") ||
+        msg.includes("enotfound") ||
+        msg.includes("network") ||
+        msg.includes("failed to fetch") ||
+        msg.includes("trouble connecting")
+      ) {
+        return NextResponse.json(
+          {
+            error:
+              "We're having trouble connecting to Akuche right now. Your internet connection or our service may be temporarily unavailable. Please try again shortly.",
+          },
+          { status: 503 }
+        );
+      }
       console.error("[api/auth/signup] Admin createUser error:", createError);
       return NextResponse.json(
         {
-          error: createError.message || "Unable to create account right now. Please try again or use Google sign-in.",
+          error: createError.message || "Unable to create account right now. Please try again shortly.",
         },
         { status: 500 }
       );

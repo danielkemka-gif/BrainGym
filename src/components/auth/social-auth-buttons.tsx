@@ -115,7 +115,7 @@ export function SocialAuthButtons({
         err?.name === "TypeError";
 
       const message = isDnsOrNetwork
-        ? "Authentication server is currently unreachable. If your Supabase database is paused, please unpause it in your Supabase Dashboard, or continue as a Guest."
+        ? "We're having trouble connecting to Akuche right now. Your internet connection or our service may be temporarily unavailable. Please try again shortly."
         : err?.message || err?.error_description || "Connection error. Please try again.";
 
       setError(message);

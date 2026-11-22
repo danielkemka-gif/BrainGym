@@ -71,18 +71,34 @@ export function LoginForm({ refCode }: { refCode?: string | null }) {
 
       if (authError) {
         const msg = authError.message?.toLowerCase() || "";
-        if (msg.includes("email not confirmed")) {
+        const isNetworkFailure =
+          msg.includes("failed to fetch") ||
+          msg.includes("networkerror") ||
+          msg.includes("enotfound") ||
+          msg.includes("fetch failed") ||
+          msg.includes("load failed") ||
+          (authError as any).status === 0;
+
+        if (isNetworkFailure) {
+          setError(
+            "We're having trouble connecting to Akuche right now. Your internet connection or our service may be temporarily unavailable. Please try again shortly."
+          );
+        } else if (msg.includes("email not confirmed")) {
           setIsUnconfirmed(true);
-          setError("Your email address is not verified yet. Please check your inbox or resend the verification email.");
-        } else if (msg.includes("invalid login credentials")) {
-          setError("Incorrect email or password. Please verify your details or reset your password.");
+          setError("Your account has been created. Please check your email to verify your account before signing in.");
+        } else if (
+          msg.includes("invalid login credentials") ||
+          msg.includes("invalid_grant") ||
+          msg.includes("invalid_credentials")
+        ) {
+          setError("Your email or password is incorrect. Please check your details and try again.");
         } else if (msg.includes("user not found")) {
           setIsNotFound(true);
           setError("No account found with this email. Would you like to create one?");
         } else if (msg.includes("rate limit") || msg.includes("too many")) {
           setError("Too many sign-in attempts. Please wait a minute before trying again.");
         } else {
-          setError(authError.message || "Invalid email or password. Please try again.");
+          setError("Your email or password is incorrect. Please check your details and try again.");
         }
         setLoading(false);
         return;
@@ -125,7 +141,7 @@ export function LoginForm({ refCode }: { refCode?: string | null }) {
 
       if (isDnsOrNetwork) {
         setError(
-          "Authentication server is currently unreachable. If your Supabase database is paused, please unpause it from your Supabase Dashboard. You can also explore immediately as a Guest below."
+          "We're having trouble connecting to Akuche right now. Your internet connection or our service may be temporarily unavailable. Please try again shortly."
         );
       } else {
         setError(err?.message || "Invalid email or password. Please try again.");
@@ -230,6 +246,17 @@ export function LoginForm({ refCode }: { refCode?: string | null }) {
             <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
             <p className="flex-1 leading-relaxed">{error}</p>
           </div>
+          {error.includes("trouble connecting") && (
+            <div className="pt-1">
+              <button
+                type="submit"
+                className="inline-flex items-center gap-1.5 font-bold text-primary hover:underline text-xs"
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                Retry connection
+              </button>
+            </div>
+          )}
           {isUnconfirmed && (
             <div className="pt-1">
               <button

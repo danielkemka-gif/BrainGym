@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { initializeSubscription, createPlanIfNotExists } from "@/lib/paystack/server";
 
 export async function POST() {
@@ -11,15 +12,17 @@ export async function POST() {
     }
 
     const planCode = await createPlanIfNotExists();
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://akuche.app";
 
     const { authorizationUrl, reference } = await initializeSubscription(
       user.email,
       planCode,
-      `${process.env.NEXT_PUBLIC_APP_URL || "https://brain-gym-nsu6.vercel.app"}/api/paystack/verify`
+      `${appUrl}/api/paystack/verify`
     );
 
-    // Store the reference so we can match it on callback
-    await supabase.from("subscriptions").upsert({
+    // Use service-role admin client so 00035 RLS on subscriptions is respected
+    const admin = createAdminClient();
+    await admin.from("subscriptions").upsert({
       user_id: user.id,
       status: "incomplete",
     }, { onConflict: "user_id" });

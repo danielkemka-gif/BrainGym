@@ -17,8 +17,35 @@ function getAdminClient() {
   });
 }
 
+const signupRateBuckets = new Map<string, number[]>();
+const SIGNUP_WINDOW_MS = 15 * 60 * 1000;
+const SIGNUP_MAX_PER_WINDOW = 5;
+
+function checkSignupRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const timestamps = (signupRateBuckets.get(ip) ?? []).filter(
+    (ts) => now - ts < SIGNUP_WINDOW_MS
+  );
+  if (timestamps.length >= SIGNUP_MAX_PER_WINDOW) {
+    signupRateBuckets.set(ip, timestamps);
+    return false;
+  }
+  timestamps.push(now);
+  signupRateBuckets.set(ip, timestamps);
+  return true;
+}
+
 export async function POST(req: Request) {
   try {
+    const forwarded = req.headers.get("x-forwarded-for");
+    const clientIp = forwarded ? forwarded.split(",")[0].trim() : "unknown";
+    if (!checkSignupRateLimit(clientIp)) {
+      return NextResponse.json(
+        { error: "Too many signup attempts. Please wait a few minutes and try again." },
+        { status: 429 }
+      );
+    }
+
     const { email, password, refCode } = await req.json();
 
     if (!email || typeof email !== "string" || !password || typeof password !== "string") {
@@ -29,49 +56,46 @@ export async function POST(req: Request) {
     }
 
     const trimmedEmail = email.trim().toLowerCase();
-
-    if (password.length < 6) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
       return NextResponse.json(
-        { error: "Password must be at least 6 characters" },
+        { error: "Please enter a valid email address" },
+        { status: 400 }
+      );
+    }
+
+    if (password.length < 8) {
+      return NextResponse.json(
+        { error: "Password must be at least 8 characters" },
         { status: 400 }
       );
     }
 
     const admin = getAdminClient();
 
-    // Check if user already exists
-    const { data: userList } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
-    const existing = userList?.users?.find(
-      (u) => u.email?.toLowerCase() === trimmedEmail
-    );
-
-    if (existing) {
-      return NextResponse.json(
-        {
-          error: "An account with this email already exists. Please sign in.",
-          isExisting: true,
-        },
-        { status: 409 }
-      );
-    }
-
-    // Create user with admin API
+    // Create user directly (avoids full listUsers scan and prevents scale bottleneck)
     const { data: newUser, error: createError } = await admin.auth.admin.createUser({
       email: trimmedEmail,
       password: password,
-      email_confirm: true, // Auto-confirm email so test runners and new users can immediately log in without email delays
+      email_confirm: true,
       user_metadata: {
         ref_code: refCode || undefined,
       },
     });
 
     if (createError) {
+      const msg = createError.message?.toLowerCase() ?? "";
+      if (msg.includes("already") || msg.includes("registered") || msg.includes("exists")) {
+        return NextResponse.json(
+          {
+            error: "Unable to create account with these details. If you already have an account, please sign in.",
+          },
+          { status: 400 }
+        );
+      }
       console.error("[api/auth/signup] Admin createUser error:", createError);
       return NextResponse.json(
         {
-          error:
-            createError.message ||
-            "Unable to create account right now. Please try again or use Google sign-in.",
+          error: "Unable to create account right now. Please try again or use Google sign-in.",
         },
         { status: 500 }
       );

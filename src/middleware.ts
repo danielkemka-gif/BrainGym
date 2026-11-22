@@ -5,7 +5,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 1. Refresh Supabase session cookies safely and resolve user
-  const { supabaseResponse, user } = await updateSession(request);
+  const { supabaseResponse, user, isAdminInDb } = await updateSession(request);
 
   // 2. Defensive HTTP Security Headers (OWASP ASVS 5.0 L2 Baseline)
   supabaseResponse.headers.set("X-Content-Type-Options", "nosniff");
@@ -17,10 +17,11 @@ export async function middleware(request: NextRequest) {
     "camera=(), microphone=(self), geolocation=(), payment=(self)"
   );
 
-  // 3. Admin Route Protection: require authenticated admin user
+  // 3. Admin Route Protection: require authenticated admin user (verified via env or admins table)
   if (pathname.startsWith("/admin")) {
-    const adminEmail = process.env.ADMIN_EMAIL || "kemkadaniel@gmail.com";
-    if (!user || user.email !== adminEmail) {
+    const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+    const isAdminByEnv = Boolean(adminEmail && user?.email?.toLowerCase() === adminEmail);
+    if (!user || (!isAdminByEnv && !isAdminInDb)) {
       const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(loginUrl);

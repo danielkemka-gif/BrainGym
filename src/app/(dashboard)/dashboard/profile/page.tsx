@@ -17,6 +17,7 @@ import {
   getLatestClaritySnapshot,
   getThinkingMirrorPatterns,
   syncAkucheIntelligenceWithSupabase,
+  purgeAllIntelligenceData,
   AkucheMemoryItem,
   AkuchePersonalInsight,
   AkucheClaritySnapshot,
@@ -615,6 +616,10 @@ export default function MyAkuchePage() {
         <button
           onClick={() => {
             supabase.auth.signOut().then(() => {
+              try {
+                purgeAllIntelligenceData();
+                localStorage.removeItem("akuche_active_user_id_v1");
+              } catch { /* ignore */ }
               window.location.href = "/login";
             });
           }}

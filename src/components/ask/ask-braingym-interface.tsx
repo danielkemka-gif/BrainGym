@@ -539,15 +539,51 @@ export function AskBrainGymInterface() {
     if (!resultInput.trim()) return;
     setSavingResult(true);
 
-    await saveGoal({
-      title: activeMission?.title || "Real-Life Problem Mission",
-      currentSituation: resultInput,
-      target: 10,
-      currentProgress: 1,
-      unit: "milestones",
-      nextAction: "Continue next cycle based on reflection",
-      isActive: true,
-    });
+    const combinedFeedback = [
+      resultInput.trim(),
+      reflectionInput.trim() ? `Reflection: ${reflectionInput.trim()}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+
+    await Promise.allSettled([
+      saveGoal({
+        title: activeMission?.title || "Real-Life Problem Mission",
+        currentSituation: resultInput,
+        target: 10,
+        currentProgress: 1,
+        unit: "milestones",
+        nextAction: reflectionInput.trim() || "Continue next cycle based on reflection",
+        isActive: true,
+      }),
+      fetch("/api/assignments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: activeMission?.title || "Coaching Action Completed",
+          why_it_matters: "Action taken directly from an Akuche coaching session.",
+          what_to_do: resultInput.trim(),
+          instructions: activeMission?.steps ?? [],
+          status: "completed",
+          completion_feedback: combinedFeedback,
+        }),
+      }).then(async (res) => {
+        if (res.ok) {
+          const created = await res.json();
+          if (created?.assignment?.id) {
+            await fetch(`/api/assignments/${created.assignment.id}`, {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                action: "complete",
+                completion_feedback: combinedFeedback,
+                outcome_rating: 4,
+              }),
+            });
+          }
+        }
+      }),
+    ]);
 
     setSavingResult(false);
     setShowResultModal(false);
@@ -559,20 +595,38 @@ export function AskBrainGymInterface() {
     e.preventDefault();
     if (!planTitle.trim()) return;
 
-    await saveGoal({
-      title: planTitle.trim(),
-      currentSituation: "Initiated from Ask Akuche thinking session",
-      target: 10,
-      currentProgress: 1,
-      unit: "milestones",
-      nextAction: planAction.trim() || "Complete Step 1 today",
-      isActive: true,
-    });
+    const cleanTitle = planTitle.trim();
+    const cleanAction = planAction.trim() || "Complete Step 1 within 48 hours";
+
+    await Promise.allSettled([
+      saveGoal({
+        title: cleanTitle,
+        currentSituation: "Initiated from Akuche coaching session",
+        target: 10,
+        currentProgress: 1,
+        unit: "milestones",
+        nextAction: cleanAction,
+        isActive: true,
+      }),
+      fetch("/api/assignments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: cleanTitle,
+          why_it_matters: "Created from your Akuche coaching session to turn clarity into action.",
+          what_to_do: cleanAction,
+          instructions: [cleanAction],
+          estimated_duration_mins: 20,
+          priority: "medium",
+          status: "accepted",
+        }),
+      }),
+    ]);
 
     setShowPlanModal(false);
     setPlanTitle("");
     setPlanAction("");
-    router.push("/dashboard/journal");
+    router.push("/dashboard/goals");
   };
 
   return (

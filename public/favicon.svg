@@ -1,28 +1,49 @@
-<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="fav-bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stopColor="#042F24" />
-      <stop offset="100%" stopColor="#021B14" />
+    <!-- Deep Obsidian Green Background Gradient -->
+    <linearGradient id="bg-grad" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stopColor="#03251D" />
+      <stop offset="50%" stopColor="#042F24" />
+      <stop offset="100%" stopColor="#021C16" />
     </linearGradient>
-    <linearGradient id="fav-emerald" x1="8" y1="56" x2="56" y2="8" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stopColor="#047857" />
-      <stop offset="50%" stopColor="#059669" />
-      <stop offset="100%" stopColor="#10b981" />
+
+    <!-- Vibrant Emerald / Fresh Lime Growth Gradient -->
+    <linearGradient id="emerald-grad" x1="120" y1="440" x2="392" y2="90" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stopColor="#059669" />
+      <stop offset="45%" stopColor="#10B981" />
+      <stop offset="100%" stopColor="#34D399" />
     </linearGradient>
-    <linearGradient id="fav-gold" x1="26" y1="6" x2="38" y2="18" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stopColor="#fef08a" />
-      <stop offset="100%" stopColor="#f59e0b" />
+
+    <!-- Radiant Clarity Gold Spark Gradient -->
+    <linearGradient id="gold-grad" x1="220" y1="50" x2="292" y2="130" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stopColor="#FDE68A" />
+      <stop offset="40%" stopColor="#F59E0B" />
+      <stop offset="100%" stopColor="#D97706" />
     </linearGradient>
+
+    <!-- Subtle Inner Glow Filter -->
+    <filter id="soft-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
   </defs>
 
-  <rect width="64" height="64" rx="14" fill="url(#fav-bg)" />
-  <rect x="1" y="1" width="62" height="62" rx="13" stroke="#10b981" stroke-opacity="0.3" stroke-width="2" />
+  <!-- Background container -->
+  <rect width="512" height="512" rx="112" fill="url(#bg-grad)" />
+  <rect x="2" y="2" width="508" height="508" rx="110" stroke="#10B981" stroke-opacity="0.28" stroke-width="4" />
 
-  <path
-    d="M17 49L29.3 20C30.2 18 33.8 18 34.7 20L47 49C47.8 50.8 46.4 52.5 44.5 52.5H41C39.8 52.5 38.9 51.7 38.4 50.7L35.5 43.5H28.5L25.6 50.7C25.1 51.7 24.2 52.5 23 52.5H19.5C17.6 52.5 16.2 50.8 17 49Z"
-    fill="url(#fav-emerald)"
-  />
-  <path d="M32 24.5L37 36H27L32 24.5Z" fill="#021B14" />
-  <rect x="24.5" y="38.5" width="15" height="4.5" rx="2.25" fill="#34d399" />
-  <circle cx="32" cy="12" r="4.5" fill="url(#fav-gold)" />
+  <!-- The Master 'A' Structure — Clarity, Strength, Upward Momentum -->
+  <!-- Left to Right Ascending Arch -->
+  <path d="M142 396L240 162C246 148 266 148 272 162L370 396C375 408 366 422 352 422H326C318 422 310 416 307 408L284 350H228L205 408C202 416 194 422 186 422H160C146 422 137 408 142 396Z" fill="url(#emerald-grad)" />
+
+  <!-- Inner Apex Chevron (Wisdom / Intentional Thought) -->
+  <path d="M256 200L298 292H214L256 200Z" fill="#03251D" fill-opacity="0.95" />
+
+  <!-- Action Bridge Crossbar (Connecting Insight to Execution) -->
+  <rect x="206" y="312" width="100" height="26" rx="13" fill="#34D399" />
+
+  <!-- Crown Radiant Spark — Illumination & Breakthrough (Ako) -->
+  <circle cx="256" cy="98" r="32" fill="url(#gold-grad)" filter="url(#soft-glow)" />
+  <!-- Spark Rays -->
+  <path d="M256 46V64M256 132V150M204 98H222M290 98H308M219 61L232 74M280 122L293 135M293 61L280 74M232 122L219 135" stroke="#FBBF24" stroke-width="8" stroke-linecap="round" />
 </svg>

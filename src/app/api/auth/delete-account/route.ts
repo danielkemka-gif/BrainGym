@@ -58,8 +58,26 @@ export async function POST(request: NextRequest) {
 
     const userId = user.id;
 
-    // 3. Cascade delete associated user data
+    // 3. Cascade delete associated user data (verified columns & all Akuche tables)
     const userTables = [
+      "akuche_messages",
+      "akuche_conversations",
+      "akuche_memories",
+      "akuche_clarity_snapshots",
+      "akuche_thinking_patterns",
+      "akuche_assignments",
+      "akuche_goals",
+      "akuche_reminder_logs",
+      "akuche_reminders",
+      "akuche_reflections",
+      "akuche_activity_logs",
+      "akuche_activity_preferences",
+      "akuche_shared_stories",
+      "push_subscriptions",
+      "smart_reminders",
+      "brain_journal",
+      "ai_feedback",
+      "decision_lab_entries",
       "user_settings",
       "activity_logs",
       "brain_scores",
@@ -67,7 +85,8 @@ export async function POST(request: NextRequest) {
       "xp_ledger",
       "coins_ledger",
       "achievements",
-      "mission_progress",
+      "user_missions",
+      "missions",
       "notifications",
       "daily_workouts",
       "subscriptions",

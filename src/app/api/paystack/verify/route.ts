@@ -33,13 +33,13 @@ async function verifyAndActivate(reference: string) {
 
   let userId: string | null = existing?.user_id ?? null;
 
-  if (!userId) {
-    const { data: byEmail } = await supabase
-      .from("subscriptions")
-      .select("user_id, paystack_customer_code")
-      .eq("user_email", customerEmail)
-      .maybeSingle();
-    userId = byEmail?.user_id ?? null;
+  if (!userId && customerEmail) {
+    // Match via authenticated session or Supabase auth lookup instead of non-existent user_email column
+    const { data: usersPage } = await supabase.auth.admin.listUsers({ page: 1, perPage: 100 });
+    const matched = usersPage?.users?.find(
+      (u) => u.email?.toLowerCase() === customerEmail.toLowerCase()
+    );
+    userId = matched?.id ?? null;
   }
 
   if (!userId) {
@@ -47,9 +47,9 @@ async function verifyAndActivate(reference: string) {
   }
 
   const updateData: Record<string, unknown> = {
+    user_id: userId,
     status: "active",
     plan_tier: "premium",
-    user_email: customerEmail,
   };
   if (data.customer?.customer_code) {
     updateData.paystack_customer_code = data.customer.customer_code;
@@ -60,8 +60,7 @@ async function verifyAndActivate(reference: string) {
 
   await supabase
     .from("subscriptions")
-    .update(updateData)
-    .eq("user_id", userId);
+    .upsert(updateData, { onConflict: "user_id" });
 
   return { success: true };
 }

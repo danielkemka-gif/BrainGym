@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
 
 const TRIAL_DAYS = 14;
@@ -14,7 +15,8 @@ export async function POST() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { data: existing } = await supabase
+    const admin = createAdminClient();
+    const { data: existing } = await admin
       .from("subscriptions")
       .select("id, status, current_period_end")
       .eq("user_id", user.id)
@@ -30,7 +32,7 @@ export async function POST() {
     const now = new Date();
     const periodEnd = new Date(now.getTime() + TRIAL_DAYS * 24 * 60 * 60 * 1000);
 
-    const { error } = await supabase
+    const { error } = await admin
       .from("subscriptions")
       .upsert(
         {

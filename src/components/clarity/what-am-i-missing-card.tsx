@@ -35,16 +35,59 @@ export function WhatAmIMissingCard({
   const [analysis, setAnalysis] = useState<WhatAmIMissingAnalysis | null>(() =>
     initialPrompt.trim() ? analyzeWhatAmIMissing(initialPrompt, domain) : null
   );
+  const [loading, setLoading] = useState(false);
+  const [sourceLabel, setSourceLabel] = useState<"ai" | "local" | null>(null);
   const [expanded, setExpanded] = useState(true);
   const [saved, setSaved] = useState(false);
 
-  const handleAnalyze = (e: React.FormEvent) => {
+  const handleAnalyze = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!prompt.trim()) return;
-    const res = analyzeWhatAmIMissing(prompt, domain);
-    setAnalysis(res);
-    setExpanded(true);
+    if (!prompt.trim() || loading) return;
+    setLoading(true);
     setSaved(false);
+    try {
+      const res = await fetch("/api/ai/blindspots", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ situation: prompt.trim(), domain }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const a = data.analysis;
+        if (a && Array.isArray(a.blindSpots)) {
+          setAnalysis({
+            situationSummary: prompt.trim().slice(0, 120),
+            domain: domain || "general",
+            missingInformation: Array.isArray(a.missingQuestions) ? a.missingQuestions : [],
+            hiddenAssumptions: Array.isArray(a.assumptions) ? a.assumptions : [],
+            alternativeExplanations: Array.isArray(a.alternativeInterpretations)
+              ? a.alternativeInterpretations
+              : [],
+            potentialBlindSpots: Array.isArray(a.blindSpots) ? a.blindSpots : [],
+            unexaminedRisks: [],
+            conflictingPriorities: [],
+            singlePriorityQuestion:
+              (Array.isArray(a.missingQuestions) && a.missingQuestions[0]) ||
+              "What single assumption needs to be verified before you commit?",
+            suggestedAction:
+              typeof a.smallestTest === "string"
+                ? a.smallestTest
+                : "Test your riskiest assumption on a small scale within 48 hours.",
+          });
+          setSourceLabel(data.responseSource === "live_ai" ? "ai" : "local");
+          setExpanded(true);
+          setLoading(false);
+          return;
+        }
+      }
+    } catch {
+      // Fall back gracefully to local structured engine
+    }
+    const localRes = analyzeWhatAmIMissing(prompt, domain);
+    setAnalysis(localRes);
+    setSourceLabel("local");
+    setExpanded(true);
+    setLoading(false);
   };
 
   const handleSaveToMap = () => {
@@ -106,11 +149,15 @@ export function WhatAmIMissingCard({
           />
           <button
             type="submit"
-            disabled={!prompt.trim()}
+            disabled={!prompt.trim() || loading}
             className="inline-flex h-10 items-center gap-2 rounded-xl bg-amber-500 px-4 text-xs font-bold text-slate-950 transition hover:bg-amber-400 disabled:opacity-50"
           >
             <Sparkles className="h-4 w-4" />
-            <span>Expose Blind Spots & What I&apos;m Missing</span>
+            <span>
+              {loading
+                ? "Analyzing Blind Spots..."
+                : "Expose Blind Spots & What I'm Missing"}
+            </span>
           </button>
         </form>
       )}

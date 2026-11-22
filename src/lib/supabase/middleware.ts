@@ -29,13 +29,22 @@ export async function updateSession(request: NextRequest) {
   });
 
   let user = null;
+  let isAdminInDb = false;
   try {
     const res = await supabase.auth.getUser();
     user = res.data?.user ?? null;
+    if (user && request.nextUrl.pathname.startsWith("/admin")) {
+      const { data: adminRow } = await supabase
+        .from("admins")
+        .select("user_id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      isAdminInDb = Boolean(adminRow);
+    }
   } catch {
     // If Supabase is unreachable or paused, fall back gracefully
     user = null;
   }
 
-  return { supabaseResponse, user };
+  return { supabaseResponse, user, isAdminInDb };
 }

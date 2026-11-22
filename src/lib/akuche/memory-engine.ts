@@ -975,6 +975,18 @@ export async function syncAkucheIntelligenceWithSupabase(
     };
   }
 
+  // Cross-user isolation guard: if a different user previously used this browser,
+  // purge local intelligence cache BEFORE merging so User A's private data can NEVER
+  // contaminate or be upserted into User B's Supabase account.
+  if (typeof window !== "undefined") {
+    const ACTIVE_USER_KEY = "akuche_active_user_id_v1";
+    const previousUserId = localStorage.getItem(ACTIVE_USER_KEY);
+    if (previousUserId && previousUserId !== userId) {
+      purgeAllIntelligenceData();
+    }
+    localStorage.setItem(ACTIVE_USER_KEY, userId);
+  }
+
   try {
     // 1. Synchronise Context Profile Memories (`akuche_memories`)
     const deletedIds = getDeletedMemoryIds();

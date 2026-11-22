@@ -10,7 +10,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Camera, X, Globe, Sun, Moon, Monitor, Shield, Download, Trash2, Eye, Lock } from "lucide-react";
 import { useTheme } from "@/lib/theme-provider";
 import { ReferralSection } from "@/components/settings/referral-section";
-import { DailyReminderSettings } from "@/components/reminders/daily-reminder-settings";
+import { UnifiedReminderSettings } from "@/components/reminders/unified-reminder-settings";
 import { LanguageSettingsSection } from "@/components/settings/language-settings-section";
 import { BrandSwitcherSection } from "@/components/settings/brand-switcher-section";
 import { GuideSettingsSection } from "@/components/settings/guide-settings-section";
@@ -209,6 +209,12 @@ export default function SettingsPage() {
   async function handleSignOut() {
     const supabase = createClient();
     await supabase.auth.signOut();
+    try {
+      purgeAllIntelligenceData();
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("akuche_active_user_id_v1");
+      }
+    } catch { /* ignore */ }
     router.push("/login");
   }
 
@@ -462,8 +468,8 @@ export default function SettingsPage() {
         </div>
       </section>
 
-      {/* 3-Layer Daily Brain Training Reminder System */}
-      <DailyReminderSettings />
+      {/* Unified Proactive Reminder, Quiet Hours & Coaching Style Settings */}
+      <UnifiedReminderSettings />
 
       {/* Streak Protection */}
       <section className="rounded-2xl border border-border bg-card p-4 sm:p-6">

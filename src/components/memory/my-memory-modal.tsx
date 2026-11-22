@@ -87,7 +87,7 @@ export function MyMemoryModal({ isOpen, onClose }: MyMemoryModalProps) {
 
   const handleAddNew = () => {
     if (!newTitle.trim() || !newContent.trim()) return;
-    saveMemoryItem({
+    const saved = saveMemoryItem({
       category: newCategory,
       title: newTitle,
       content: newContent,
@@ -95,6 +95,18 @@ export function MyMemoryModal({ isOpen, onClose }: MyMemoryModalProps) {
       confidence: 1.0,
       sourceContext: "Manually added by you in My Memory",
     });
+    fetch("/api/memory", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        client_id: saved?.id,
+        category: newCategory,
+        title: newTitle,
+        content: newContent,
+        verification_status: "confirmed",
+        source_context: "Manually added by you in My Memory",
+      }),
+    }).catch(() => {});
     setNewTitle("");
     setNewContent("");
     setIsAdding(false);
@@ -103,6 +115,11 @@ export function MyMemoryModal({ isOpen, onClose }: MyMemoryModalProps) {
 
   const handleConfirm = (id: string) => {
     confirmMemoryItem(id);
+    fetch("/api/memory", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ client_id: id, verification_status: "confirmed" }),
+    }).catch(() => {});
     refresh();
   };
 
@@ -112,12 +129,20 @@ export function MyMemoryModal({ isOpen, onClose }: MyMemoryModalProps) {
       title: editTitle,
       content: editContent,
     });
+    fetch("/api/memory", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ client_id: id, title: editTitle, content: editContent }),
+    }).catch(() => {});
     setEditingId(null);
     refresh();
   };
 
   const handleDelete = (id: string) => {
     deleteMemoryItem(id);
+    fetch(`/api/memory?client_id=${encodeURIComponent(id)}`, {
+      method: "DELETE",
+    }).catch(() => {});
     refresh();
   };
 

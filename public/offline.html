@@ -2,46 +2,186 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BrainGym — Offline</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Akuche — Personal Clarity Intelligence</title>
+  <meta name="theme-color" content="#042F24">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0f0f23;
-      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #03251D;
+      color: #F7F9F5;
       display: flex;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
+      padding: 1.5rem;
       text-align: center;
-      padding: 2rem;
+      -webkit-font-smoothing: antialiased;
     }
-    .container { max-width: 400px; }
-    .emoji { font-size: 4rem; margin-bottom: 1rem; }
-    h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
-    p { color: #94a3b8; margin-bottom: 1.5rem; line-height: 1.5; }
-    .btn {
+    .card {
+      max-width: 420px;
+      width: 100%;
+      background: rgba(4, 47, 36, 0.75);
+      border: 1px solid rgba(16, 185, 129, 0.22);
+      border-radius: 24px;
+      padding: 2.25rem 1.75rem;
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(16px);
+    }
+    .logo-wrap {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #042F24, #021C16);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.25);
+    }
+    h1 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.65rem;
+      color: #FFFFFF;
+    }
+    .badge {
       display: inline-block;
-      padding: 0.75rem 1.5rem;
-      background: linear-gradient(135deg, #8b5cf6, #6366f1);
-      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #FBBF24;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 1rem;
+    }
+    p {
+      color: #A7F3D0;
+      opacity: 0.88;
+      font-size: 0.92rem;
+      line-height: 1.55;
+      margin-bottom: 1.75rem;
+    }
+    .btn-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      width: 100%;
+      padding: 0.85rem 1.5rem;
+      background: linear-gradient(135deg, #059669, #10B981);
+      color: #03251D;
       border: none;
-      border-radius: 0.75rem;
-      font-size: 1rem;
-      font-weight: 500;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-weight: 800;
       cursor: pointer;
       text-decoration: none;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+      transition: transform 0.15s ease, opacity 0.15s ease;
     }
-    .btn:hover { opacity: 0.9; }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-secondary {
+      display: inline-block;
+      margin-top: 1rem;
+      color: #6EE7B7;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-decoration: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      opacity: 0.9;
+    }
+    .btn-secondary:hover { text-decoration: underline; opacity: 1; }
+    .status-text {
+      font-size: 0.75rem;
+      color: #94A3B8;
+      margin-top: 1.25rem;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="emoji">🧠</div>
-    <h1>You're Offline</h1>
-    <p>No internet connection detected. Your brain training will resume when you're back online.</p>
-    <button class="btn" onclick="location.reload()">Try Again</button>
+  <div class="card">
+    <div class="logo-wrap">
+      <svg width="44" height="44" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="off-em" x1="120" y1="440" x2="392" y2="90" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#059669" />
+            <stop offset="50%" stopColor="#10B981" />
+            <stop offset="100%" stopColor="#34D399" />
+          </linearGradient>
+          <linearGradient id="off-gold" x1="220" y1="50" x2="292" y2="130" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#FDE68A" />
+            <stop offset="100%" stopColor="#F59E0B" />
+          </linearGradient>
+        </defs>
+        <path d="M142 396L240 162C246 148 266 148 272 162L370 396C375 408 366 422 352 422H326C318 422 310 416 307 408L284 350H228L205 408C202 416 194 422 186 422H160C146 422 137 408 142 396Z" fill="url(#off-em)" />
+        <path d="M256 200L298 292H214L256 200Z" fill="#03251D" />
+        <rect x="206" y="312" width="100" height="26" rx="13" fill="#34D399" />
+        <circle cx="256" cy="98" r="32" fill="url(#off-gold)" />
+      </svg>
+    </div>
+    <div class="badge">Offline Mode</div>
+    <h1>Personal Clarity Intact</h1>
+    <p>Your device is currently disconnected from the internet. Your local commitments, clarity maps, and reflections remain safely preserved.</p>
+    <button class="btn-primary" onclick="retryConnection()">
+      Reconnect &amp; Refresh
+    </button>
+    <div>
+      <button class="btn-secondary" onclick="purgeStaleCacheAndReload()">
+        Trouble opening? Reset Cached Version
+      </button>
+    </div>
+    <div class="status-text" id="status-hint">
+      Auto-reconnecting as soon as signal returns...
+    </div>
   </div>
+
+  <script>
+    function retryConnection() {
+      document.getElementById('status-hint').innerText = 'Checking network connection...';
+      if (navigator.onLine) {
+        window.location.href = '/dashboard';
+      } else {
+        fetch('/manifest.json?t=' + Date.now(), { cache: 'no-store' })
+          .then(function() { window.location.href = '/dashboard'; })
+          .catch(function() {
+            document.getElementById('status-hint').innerText = 'Still offline. Please check your Wi-Fi or mobile data.';
+          });
+      }
+    }
+
+    function purgeStaleCacheAndReload() {
+      if ('caches' in window) {
+        caches.keys().then(function(keys) {
+          return Promise.all(keys.map(function(k) { return caches.delete(k); }));
+        }).then(function() {
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(regs) {
+              return Promise.all(regs.map(function(r) { return r.unregister(); }));
+            }).finally(function() {
+              window.location.href = '/dashboard';
+            });
+          } else {
+            window.location.href = '/dashboard';
+          }
+        });
+      } else {
+        window.location.reload();
+      }
+    }
+
+    window.addEventListener('online', function() {
+      document.getElementById('status-hint').innerText = 'Connection restored! Reloading Akuche...';
+      setTimeout(function() { window.location.href = '/dashboard'; }, 400);
+    });
+  </script>
 </body>
 </html>

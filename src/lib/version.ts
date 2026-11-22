@@ -3,9 +3,9 @@
  * Single Source of Truth across Desktop, Tablet, Smartphone (WAP) and Installed PWA.
  */
 
-export const AKUCHE_APP_VERSION = "23.0.0";
-export const AKUCHE_BUILD_ID = "2026.11.22-v23.0-pwa-recovery";
-export const AKUCHE_SW_CACHE_VERSION = "akuche-v23-mobile-pwa-recovery";
+export const AKUCHE_APP_VERSION = "24.0.0";
+export const AKUCHE_BUILD_ID = "2026.11.22-v24.0-mobile-network-first";
+export const AKUCHE_SW_CACHE_VERSION = "akuche-v24-mobile-network-first";
 export const AKUCHE_RELEASE_CHANNEL = "personal-intelligence-platform";
 export const AKUCHE_BUILD_DATE = "2026-11-22";
 

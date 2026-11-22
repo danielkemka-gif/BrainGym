@@ -1,21 +1,23 @@
 /**
- * AKUCHE ROBUST MOBILE PWA SERVICE WORKER — v23
+ * AKUCHE RESILIENT MOBILE PWA SERVICE WORKER — v24
  *
- * Designed for reliable Android WebAPK & mobile browser startup:
- * - Ultra-fast 3.5s network timeout on HTML navigations so mobile never hangs on blank screens
+ * Engineered for 100% reliable mobile browser & Android WebAPK startup:
+ * - Natural Network-First HTML navigations without premature timeouts
+ * - Immediate bypass and self-unregister on reset/clear query parameters
+ * - Guaranteed offline fallback with styled UI and retry action (never raw text)
  * - Clean cache-first for immutable hashed Next.js static assets (_next/static/*)
- * - Safe network-first with offline fallback for HTML routes
  * - Automatic purge of obsolete cache generations on activate
  * - Isolated bypass for auth, payments, API routes, and RSC flight data
  * - Background push notifications and notification deep-linking
  */
 
-const CACHE_VERSION = 'akuche-v23-mobile-pwa-recovery';
+const CACHE_VERSION = 'akuche-v24-mobile-network-first';
 const STATIC_CACHE = `akuche-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `akuche-dynamic-${CACHE_VERSION}`;
 
-// Only pre-cache verified static assets that physically exist
+// Pre-cache verified static assets with /offline.html as highest priority
 const STATIC_ASSETS = [
+  '/offline.html',
   '/manifest.json',
   '/favicon.svg',
   '/favicon.png',
@@ -28,27 +30,73 @@ const STATIC_ASSETS = [
   '/icons/icon-maskable-512.png',
   '/icons/akuche-apple-touch.png',
   '/icons/apple-touch-icon.png',
-  '/offline.html',
 ];
 
-// Helper: timeout wrapper to prevent mobile devices from hanging on stalled networks
-function fetchWithTimeout(request, timeoutMs = 3500) {
-  return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => {
-      reject(new Error('Akuche network timeout'));
-    }, timeoutMs);
-
-    fetch(request)
-      .then((response) => {
-        clearTimeout(timer);
-        resolve(response);
-      })
-      .catch((err) => {
-        clearTimeout(timer);
-        reject(err);
-      });
-  });
-}
+// Rich fallback HTML if both network and cached offline page are inaccessible
+const OFFLINE_FALLBACK_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Akuche — Offline</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #03251D;
+      color: #F7F9F5;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .card {
+      max-width: 400px;
+      width: 100%;
+      background: rgba(4, 47, 36, 0.85);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 24px;
+      padding: 2.25rem 1.75rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+    h1 { font-size: 1.35rem; font-weight: 800; margin-bottom: 0.5rem; color: #FFFFFF; }
+    p { color: #A7F3D0; font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.5rem; }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 0.85rem 1.5rem;
+      background: linear-gradient(135deg, #059669, #10B981);
+      color: #03251D;
+      border: none;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-sub {
+      display: inline-block;
+      margin-top: 1rem;
+      color: #6EE7B7;
+      font-size: 0.82rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Personal Clarity Intact</h1>
+    <p>You appear to be temporarily offline or experiencing a slow network connection. Your local progress is safely stored.</p>
+    <button class="btn" onclick="window.location.reload()">Retry Connection</button>
+    <button class="btn-sub" onclick="window.location.href='/api/reset'">Reset Cache & Reconnect</button>
+  </div>
+</body>
+</html>`;
 
 // 1. Message listener: Skip waiting, force cache purges, inspect version
 self.addEventListener('message', (event) => {
@@ -77,7 +125,7 @@ self.addEventListener('message', (event) => {
   }
 });
 
-// 2. Install: Pre-cache verified static assets and skip waiting immediately
+// 2. Install: Pre-cache offline page & verified static assets and skip waiting immediately
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
@@ -123,6 +171,17 @@ self.addEventListener('fetch', (event) => {
   // Skip browser extensions
   if (url.protocol === 'chrome-extension:' || url.protocol === 'moz-extension:') return;
 
+  // Dedicated fail-safe: bypass and unregister if requested by query params or reset route
+  if (
+    url.searchParams.has('reset') ||
+    url.searchParams.has('clear') ||
+    url.searchParams.has('bypass') ||
+    url.pathname.startsWith('/api/reset')
+  ) {
+    self.registration.unregister().catch(() => {});
+    return; // Pass through to server directly
+  }
+
   // Bypass external APIs (Supabase, Paystack, AI providers, Google fonts)
   if (
     url.hostname.includes('supabase.co') ||
@@ -151,10 +210,10 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // A. Page Navigations (HTML): Fast Network-First with 3.5s timeout, falling back to cached page or /offline.html
+  // A. Page Navigations (HTML): True Network-First WITHOUT premature timeout
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetchWithTimeout(request, 3500)
+      fetch(request)
         .then((response) => {
           if (response && response.status === 200) {
             const clone = response.clone();
@@ -164,18 +223,19 @@ self.addEventListener('fetch', (event) => {
           }
           return response;
         })
-        .catch(() => {
-          // If network failed or timed out, attempt cache match or offline fallback
-          return caches.match(request).then((cached) => {
+        .catch(async () => {
+          // Truly offline or network dropped: serve cached page or offline fallback
+          try {
+            const cached = await caches.match(request);
             if (cached) return cached;
-            return caches.match('/offline.html').then((offline) => {
-              return (
-                offline ||
-                new Response('Akuche Offline. Please reconnect to the internet.', {
-                  headers: { 'Content-Type': 'text/plain' },
-                })
-              );
-            });
+            const offline = await caches.match('/offline.html');
+            if (offline) return offline;
+          } catch {
+            // Cache lookup failed
+          }
+          return new Response(OFFLINE_FALLBACK_HTML, {
+            headers: { 'Content-Type': 'text/html; charset=utf-8' },
+            status: 200,
           });
         })
     );
